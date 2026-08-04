@@ -1,0 +1,109 @@
+import React from 'react';
+import Link from 'next/link';
+
+interface Trek {
+  id: string;
+  title: string;
+  description: string;
+  heroImage: string;
+  durationDays: string;
+  price: number;
+  region: string;
+  difficulty: string;
+}
+
+interface TrekkingPageProps {
+  treks: Trek[];
+}
+
+export default function TrekkingPage({ treks = [] }: TrekkingPageProps) {
+  return (
+    <div className="min-h-screen bg-[#f7f9f7] font-sans text-gray-800">
+      
+      {/* HERO SECTION */}
+      <section className="relative py-28 bg-[#112233] text-white overflow-hidden">
+        <div 
+          className="absolute inset-0 z-0 opacity-40"
+          style={{
+            backgroundImage: 'url(https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?q=80&w=2000&auto=format&fit=crop)',
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
+          }}
+        />
+        <div className="max-w-[1200px] mx-auto px-5 relative z-20 text-center">
+          <h1 className="text-4xl md:text-6xl font-black uppercase tracking-wider oswald mb-4">
+            TREKKING IN NEPAL
+          </h1>
+          <p className="text-gray-300 text-sm md:text-base italic max-w-xl mx-auto">
+            &quot;Experience the world&apos;s most iconic trekking routes through Nepal&apos;s breathtaking Himalayan landscapes.&quot;
+          </p>
+        </div>
+      </section>
+
+      {/* TREKKING PACKAGES GRID */}
+      <section className="py-16">
+        <div className="max-w-[1200px] mx-auto px-5">
+          
+          {treks.length === 0 ? (
+            <div className="text-center py-20 text-gray-500">
+              <p>No trekking packages found in the database.</p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+              {treks.map((trek) => (
+                <div 
+                  key={trek.id} 
+                  className="bg-white rounded-xl overflow-hidden border border-gray-100 shadow-[0_4px_20px_rgba(0,0,0,0.04)] flex flex-col justify-between group hover:shadow-lg transition-shadow"
+                >
+                  {/* Image & Price Ribbon */}
+                  <div className="relative h-48 overflow-hidden bg-gray-100">
+                    <img 
+                      src={trek.heroImage} 
+                      alt={trek.title}
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                    />
+                    {trek.price && (
+                      <div className="absolute top-0 left-0 bg-[#d93838] text-white font-bold text-xs px-3 py-1.5 rounded-br-lg shadow-sm oswald">
+                        ${trek.price}
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Content Details */}
+                  <div className="p-5 flex flex-col flex-1 justify-between">
+                    <div>
+                      <h3 className="font-bold text-[#222222] text-sm md:text-base line-clamp-2 mb-3 group-hover:text-[#24a0ed] transition-colors">
+                        {trek.title}
+                      </h3>
+                    </div>
+
+                    <div className="pt-4 border-t border-gray-100 flex items-center justify-between text-xs text-gray-500 font-medium">
+                      <span>Duration : {trek.durationDays}</span>
+                      <Link 
+                        href={`/trekking/${trek.id}`}
+                        className="text-[#24a0ed] hover:underline font-bold"
+                      >
+                        Explore →
+                      </Link>
+                    </div>
+                  </div>
+
+                </div>
+              ))}
+            </div>
+          )}
+
+          {/* Pagination */}
+          <div className="flex items-center justify-center gap-2 mt-12">
+            <span className="w-8 h-8 rounded bg-[#24a0ed] text-white flex items-center justify-center font-bold text-xs">1</span>
+            <span className="w-8 h-8 rounded bg-white border border-gray-200 text-gray-600 hover:bg-gray-50 flex items-center justify-center font-bold text-xs cursor-pointer">2</span>
+            <span className="w-8 h-8 rounded bg-white border border-gray-200 text-gray-600 hover:bg-gray-50 flex items-center justify-center font-bold text-xs cursor-pointer">3</span>
+            <span className="px-3 py-1.5 rounded bg-white border border-gray-200 text-gray-600 hover:bg-gray-50 font-bold text-xs cursor-pointer">Next</span>
+          </div>
+
+        </div>
+      </section>
+
+    </div>
+  );
+}

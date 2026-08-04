@@ -1,0 +1,126 @@
+interface FixedDeparturesProps {
+  data: any[];
+}
+
+export default function FixedDepartures({ data = [] }: FixedDeparturesProps) {
+  return (
+    <section className="py-12 px-5 bg-[#f5f7f9] font-sans">
+      <div className="max-w-[1100px] mx-auto shadow-[0_10px_30px_rgba(0,0,0,0.05)] rounded-2xl overflow-hidden">
+        
+        {/* Header Section */}
+        <div className="relative bg-[#113255] px-8 py-10 flex flex-col md:flex-row justify-between items-start md:items-center overflow-hidden">
+          <div 
+            className="absolute top-0 left-0 w-1/2 h-full opacity-20 pointer-events-none"
+            style={{ backgroundImage: 'repeating-linear-gradient(45deg, transparent, transparent 10px, #ffffff 10px, #ffffff 12px)' }}
+          ></div>
+          <div className="absolute top-[-50%] right-[-10%] w-[500px] h-[500px] bg-[#0c243f] rounded-full opacity-50 pointer-events-none"></div>
+
+          <div className="relative z-10 mb-6 md:mb-0">
+            <div className="flex items-center gap-3 mb-2">
+              <div className="w-6 h-[2px] bg-[#6395c7]"></div>
+              <span className="text-[#6395c7] text-xs font-bold tracking-widest uppercase">
+                Departure Dates
+              </span>
+            </div>
+            <h2 className="text-3xl md:text-4xl font-bold text-white tracking-tight">
+              Join Fixed Departure Trips
+            </h2>
+          </div>
+
+          <div className="relative z-10 flex items-center gap-3 w-full md:w-auto">
+            <button className="bg-[#eef5fa] text-[#113255] px-5 py-2.5 rounded-md text-sm font-bold shadow-sm hover:bg-white transition-colors whitespace-nowrap">
+              All Departures
+            </button>
+            <div className="relative w-full md:w-auto">
+              <select className="appearance-none bg-white text-[#333333] px-5 py-2.5 pr-10 rounded-md text-sm font-medium shadow-sm w-full md:w-auto outline-none cursor-pointer">
+                <option>Select Month, Year</option>
+                <option>September 2026</option>
+                <option>October 2026</option>
+              </select>
+              <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400">
+                <svg viewBox="0 0 24 24" className="w-4 h-4 fill-current"><path d="M7 10l5 5 5-5z"/></svg>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Table Section */}
+        <div className="bg-white px-8 pb-6">
+          <div className="hidden md:grid grid-cols-[2fr_1.5fr_1fr_1fr_auto] gap-4 py-5 border-b border-gray-100 text-xs font-bold text-[#888888] uppercase tracking-wider">
+            <div>Trip Name</div>
+            <div>Departure Date</div>
+            <div>Status</div>
+            <div>Price</div>
+            <div className="w-[120px]"></div>
+          </div>
+
+          <div className="flex flex-col">
+            {data.map((trip, index) => (
+              <div 
+                key={trip.id} 
+                className={`grid grid-cols-1 md:grid-cols-[2fr_1.5fr_1fr_1fr_auto] gap-4 md:gap-4 items-center py-5 ${
+                  index !== data.length - 1 ? 'border-b border-gray-100' : ''
+                }`}
+              >
+                <div className="flex items-center gap-4">
+                  <div className="w-12 h-12 rounded-lg overflow-hidden shrink-0">
+                    <img 
+                      src={trip.heroImage} 
+                      alt={trip.title || "Trek image"} 
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                  <h3 className="text-[0.95rem] font-bold text-[#222222]">
+                    {trip.title}
+                  </h3>
+                </div>
+
+                <div className="flex flex-col">
+                  <span className="text-sm font-bold text-[#222222]">
+                    {trip.durationDays}
+                  </span>
+                  <span className="text-[0.8rem] text-[#777777] mt-0.5">
+                    From {trip.startDate} {trip.endDate ? `To ${trip.endDate}` : ''}
+                  </span>
+                </div>
+
+                <div className="flex flex-col">
+                  <div className="flex items-center gap-1.5">
+                    <svg viewBox="0 0 24 24" className="w-4 h-4 fill-none stroke-[#1a5b88] stroke-2" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                      <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                    </svg>
+                    <span className="text-sm font-bold text-[#1a5b88]">
+                      {trip.status || "Guaranteed"}
+                    </span>
+                  </div>
+                  <span className="text-[0.8rem] text-[#777777] mt-0.5">
+                    {trip.seatsLeft} Seats Left
+                  </span>
+                </div>
+
+                <div className="flex flex-col">
+                  <span className="text-[0.95rem] font-bold text-[#1a5b88]">
+                    US$ {trip.price}
+                  </span>
+                  {trip.originalPrice && (
+                    <span className="text-[0.8rem] text-[#777777] line-through mt-0.5">
+                      US$ {trip.originalPrice}
+                    </span>
+                  )}
+                </div>
+
+                <div className="flex justify-start md:justify-end mt-2 md:mt-0">
+                  <button className="border border-[#1a5b88] text-[#1a5b88] hover:bg-[#1a5b88] hover:text-white transition-colors duration-200 px-4 py-2 rounded text-sm font-bold w-full md:w-[120px] cursor-pointer">
+                    Join this trip
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+        
+      </div>
+    </section>
+  );
+}
