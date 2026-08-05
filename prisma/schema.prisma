@@ -37,17 +37,32 @@ model Trek {
 }
 
 model Tour {
-  id           String   @id @default(uuid())
-  title        String
-  slug         String   @unique
-  image        String
-  duration     String   // E.g., '7–8 Days'
-  bestTime     String   // E.g., 'March–June & September–November'
-  order        Int      @default(0)
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  id              String   @id @default(uuid())
+  title           String
+  slug            String   @unique
+  image           String   // Hero / Featured Image
+  gallery         String[] // Additional gallery images
+  duration        String
+  bestTime        String
+  destination     String   @default("nepal")
+  
+  grade           String   @default("Easy / Moderate")
+  maxAltitude     String   @default("1,350 m")
+  startPoint      String   @default("Kathmandu")
+  endPoint        String   @default("Kathmandu")
+  meals           String   @default("B.B.")
+  overview        String   @default("")
+  
+  highlights      String[]
+  itinerary       Json?
+  inclusions      String[]
+  exclusions      String[]
+  
+  price           Float    @default(0)
+  order           Int      @default(0)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
 }
-
 model BlogPost {
   id        String   @id @default(uuid())
   title     String
@@ -295,4 +310,45 @@ model CtaBannerContent {
   primaryLink   String   @default("/contact")
   secondaryLink String   @default("/tours")
   updatedAt     DateTime @updatedAt
+}
+model LegalDocument {
+  id          String   @id @default(uuid())
+  title       String
+  image       String
+  documentUrl String?  
+  order       Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+model PrivacyPolicyContent {
+  id          String   @id @default(uuid())
+  title       String   @default("Privacy Policy")
+  subtitle    String   @default("Have questions or ready to plan your Himalayan adventure? Our friendly and experienced team is here to help you every step of the way.")
+  contentHtml String   @db.Text
+  updatedAt   DateTime @updatedAt
+}
+model SystemSetting {
+  id              String   @id @default(uuid())
+  clientExpiry    String   @default("16 Dec, 2026")
+  packageType     String   @default("Advanced CMS Platform")
+  databaseStatus  String   @default("Optimized (PostgreSQL)")
+  daysLeft        String   @default("133 days remaining")
+  updatedAt       DateTime @updatedAt
+}
+model BookingSubmission {
+  id              String   @id @default(uuid())
+  tripTitle       String
+  groupSize       String
+  fullName        String
+  email           String
+  phone           String
+  country         String
+  travelDate      String
+  adultMale       Int      @default(0)
+  adultFemale     Int      @default(0)
+  childMale       Int      @default(0)
+  childFemale     Int      @default(0)
+  notes           String?
+  estimatedTotal  String
+  createdAt       DateTime @default(now())
 }

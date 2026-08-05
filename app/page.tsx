@@ -1,6 +1,7 @@
 import Hero from "./components/home/Hero";
 import BestSellersWrapper from "./components/wrappers/BestSellersWrapper";
 import BlueBannerWrapper from "./components/wrappers/BlueBannerWrapper";
+import ClientReviewsWrapper from "./components/wrappers/ClientReviewsWrapper";
 import CtaBannerWrapper from "./components/wrappers/CtaBannerWrapper";
 import ExploreBlogsWrapper from "./components/wrappers/ExploreBlogsWrapper";
 import FeaturedTreksWrapper from "./components/wrappers/FeaturedTreksWrapper";
@@ -26,6 +27,7 @@ export default function Home() {
       <PopularToursWrapper />
       <CtaBannerWrapper />
       <ExploreBlogsWrapper />
+      <ClientReviewsWrapper />
       <BlueBannerWrapper />
     </main>
   );

@@ -12,9 +12,11 @@ interface TourPackage {
 
 interface TourPackagesProps {
   packages: TourPackage[];
+  currentPage: number;
+  totalPages: number;
 }
 
-export default function TourPackagesPage({ packages = [] }: TourPackagesProps) {
+export default function TourPackagesPage({ packages = [], currentPage = 1, totalPages = 1 }: TourPackagesProps) {
   return (
     <div className="min-h-screen bg-[#f7f9f7] font-sans text-gray-800">
       
@@ -43,7 +45,7 @@ export default function TourPackagesPage({ packages = [] }: TourPackagesProps) {
           
           {packages.length === 0 ? (
             <div className="text-center py-20 text-gray-500">
-              <p>No tour packages found in the database.</p>
+              <p>No tour packages found on this page.</p>
             </div>
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -83,7 +85,7 @@ export default function TourPackagesPage({ packages = [] }: TourPackagesProps) {
 
                     {/* Action Button */}
                     <Link 
-                      href={`/tours/${pkg.slug}`}
+                      href={`/tour/${pkg.slug}`}
                       className="w-full bg-[#1c2e40] hover:bg-[#24a0ed] text-white font-bold text-xs py-2.5 rounded-lg text-center transition-colors uppercase tracking-wider block"
                     >
                       View Details
@@ -95,12 +97,42 @@ export default function TourPackagesPage({ packages = [] }: TourPackagesProps) {
             </div>
           )}
 
-          {/* Pagination */}
-          <div className="flex items-center justify-center gap-2 mt-12">
-            <span className="w-8 h-8 rounded bg-[#24a0ed] text-white flex items-center justify-center font-bold text-xs">1</span>
-            <span className="w-8 h-8 rounded bg-white border border-gray-200 text-gray-600 hover:bg-gray-50 flex items-center justify-center font-bold text-xs cursor-pointer">2</span>
-            <span className="px-3 py-1.5 rounded bg-white border border-gray-200 text-gray-600 hover:bg-gray-50 font-bold text-xs cursor-pointer">Next</span>
-          </div>
+          {/* Dynamic Pagination Controls */}
+          {totalPages > 1 && (
+            <div className="flex items-center justify-center gap-2 mt-12">
+              {currentPage > 1 && (
+                <Link 
+                  href={`/tour?page=${currentPage - 1}`}
+                  className="px-3 py-1.5 rounded bg-white border border-gray-200 text-gray-600 hover:bg-gray-50 font-bold text-xs transition-colors"
+                >
+                  ← Prev
+                </Link>
+              )}
+
+              {Array.from({ length: totalPages }, (_, i) => i + 1).map((pageNum) => (
+                <Link
+                  key={pageNum}
+                  href={`/tour?page=${pageNum}`}
+                  className={`w-8 h-8 rounded flex items-center justify-center font-bold text-xs transition-colors ${
+                    currentPage === pageNum
+                      ? 'bg-[#24a0ed] text-white shadow-sm'
+                      : 'bg-white border border-gray-200 text-gray-600 hover:bg-gray-50'
+                  }`}
+                >
+                  {pageNum}
+                </Link>
+              ))}
+
+              {currentPage < totalPages && (
+                <Link 
+                  href={`/tour?page=${currentPage + 1}`}
+                  className="px-3 py-1.5 rounded bg-white border border-gray-200 text-gray-600 hover:bg-gray-50 font-bold text-xs transition-colors"
+                >
+                  Next →
+                </Link>
+              )}
+            </div>
+          )}
 
         </div>
       </section>

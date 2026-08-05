@@ -1,6 +1,7 @@
 import { Calendar, Footprints, Headphones, ShieldCheck, Users } from "lucide-react";
 import { prisma } from "@/lib/prisma";
 import type { JSX, SVGProps, ComponentType } from 'react';
+import Link from "next/link";
 
 // Map string icon names from DB to actual Lucide components
 const iconMap: Record<string, ComponentType<SVGProps<SVGSVGElement>>> = {
@@ -79,14 +80,14 @@ export default async function Hero() {
 
         {/* BUTTONS */}
         <div className="flex gap-4">
-          <button className="border-3 border-orange-400 text-orange-400 px-6 py-3 rounded-md flex items-center gap-2 hover:bg-orange-400 hover:text-black transition bg-gray-300/10 cursor-pointer">
+          <Link href='/trekking' className="border-3 border-orange-400 text-orange-400 px-6 py-3 rounded-md flex items-center gap-2 hover:bg-orange-400 hover:text-black transition bg-gray-300/10 cursor-pointer">
             ▲ View Treks
-          </button>
+          </Link>
 
-          <button className="border-2 border-orange-400 text-orange-400 px-6 py-3 rounded-md flex items-center gap-2 hover:bg-orange-400 hover:text-black transition bg-gray-300/10 cursor-pointer">
+          <Link href='/send-inquiry' className="border-2 border-orange-400 text-orange-400 px-6 py-3 rounded-md flex items-center gap-2 hover:bg-orange-400 hover:text-black transition bg-gray-300/10 cursor-pointer">
             <Calendar className="w-5 h-5" />
             Book Now
-          </button>
+          </Link>
         </div>
 
         {/* TRUST BAR */}

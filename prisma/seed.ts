@@ -47,8 +47,11 @@ async function main() {
   });
 
   // 3. Seed Featured & Best Seller Treks
+ // Seed Treks for all regions
+  await prisma.trek.deleteMany().catch(() => {});
   await prisma.trek.createMany({
     data: [
+      // --- EVEREST REGION ---
       {
         title: 'Everest Base Camp Trek',
         description: 'Stand at the foot of the world’s highest peak on this legendary Himalayan journey.',
@@ -61,6 +64,30 @@ async function main() {
         order: 1,
       },
       {
+        title: 'Gokyo Lakes Trek',
+        description: 'Discover pristine turquoise glacial lakes and panoramic views from Gokyo Ri.',
+        heroImage: 'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?q=80&w=800&auto=format&fit=crop',
+        durationDays: '12 Days',
+        price: 1350,
+        region: 'everest',
+        difficulty: 'Moderate to Strenuous',
+        isBestSeller: false,
+        order: 2,
+      },
+      {
+        title: 'Everest Three Passes Trek',
+        description: 'The ultimate high-altitude adventure crossing Kongma La, Cho La, and Renjo La passes.',
+        heroImage: 'https://images.unsplash.com/photo-1512343879784-a960bf40e7f2?q=80&w=800&auto=format&fit=crop',
+        durationDays: '19 Days',
+        price: 1850,
+        region: 'everest',
+        difficulty: 'Strenuous',
+        isBestSeller: false,
+        order: 3,
+      },
+
+      // --- ANNAPURNA REGION ---
+      {
         title: 'Annapurna Circuit Trek',
         description: 'Diverse landscapes, deep gorges, and rich cultural encounters around the Annapurna massif.',
         heroImage: 'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?q=80&w=800&auto=format&fit=crop',
@@ -69,8 +96,56 @@ async function main() {
         region: 'annapurna',
         difficulty: 'Strenuous',
         isBestSeller: true,
-        order: 2,
+        order: 4,
       },
+      {
+        title: 'Annapurna Base Camp Trek',
+        description: 'Journey deep into a high alpine sanctuary surrounded by towering Himalayan giants.',
+        heroImage: 'https://images.unsplash.com/photo-1544735716-392fe2489ffa?q=80&w=800&auto=format&fit=crop',
+        durationDays: '11 Days',
+        price: 1150,
+        region: 'annapurna',
+        difficulty: 'Moderate',
+        isBestSeller: true,
+        order: 5,
+      },
+      {
+        title: 'Poon Hill Sunrise Trek',
+        description: 'Short and scenic trek featuring breathtaking panoramic sunrise views over the Annapurna range.',
+        heroImage: 'https://images.unsplash.com/photo-1512343879784-a960bf40e7f2?q=80&w=800&auto=format&fit=crop',
+        durationDays: '5 Days',
+        price: 650,
+        region: 'annapurna',
+        difficulty: 'Easy',
+        isBestSeller: false,
+        order: 6,
+      },
+
+      // --- MANASLU REGION ---
+      {
+        title: 'Manaslu Circuit Trek',
+        description: 'A spectacular remote trek encircling Mt. Manaslu, the eighth highest peak in the world.',
+        heroImage: 'https://images.unsplash.com/photo-1544735716-392fe2489ffa?q=80&w=800&auto=format&fit=crop',
+        durationDays: '14 Days',
+        price: 1400,
+        region: 'manaslu',
+        difficulty: 'Strenuous',
+        isBestSeller: true,
+        order: 7,
+      },
+      {
+        title: 'Tsum Valley Trek',
+        description: 'Explore a sacred Himalayan hidden valley rich in ancient Buddhist culture and tradition.',
+        heroImage: 'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?q=80&w=800&auto=format&fit=crop',
+        durationDays: '18 Days',
+        price: 1650,
+        region: 'manaslu',
+        difficulty: 'Strenuous',
+        isBestSeller: false,
+        order: 8,
+      },
+
+      // --- LANGTANG REGION ---
       {
         title: 'Langtang Valley Trek',
         description: 'Explore the valley of glaciers, friendly Tamang villages, and stunning alpine scenery.',
@@ -80,7 +155,70 @@ async function main() {
         region: 'langtang',
         difficulty: 'Easy to Moderate',
         isBestSeller: true,
-        order: 3,
+        order: 9,
+      },
+      {
+        title: 'Gosainkunda Lake Trek',
+        description: 'A spiritual pilgrimage trek to pristine alpine lakes nestled high in the Langtang region.',
+        heroImage: 'https://images.unsplash.com/photo-1544735716-392fe2489ffa?q=80&w=800&auto=format&fit=crop',
+        durationDays: '7 Days',
+        price: 800,
+        region: 'langtang',
+        difficulty: 'Moderate',
+        isBestSeller: false,
+        order: 10,
+      },
+
+      // --- MUSTANG REGION ---
+      {
+        title: 'Upper Mustang Trek',
+        description: 'Journey into the forbidden kingdom of Lo Manthang with its dramatic desert canyons and Tibetan culture.',
+        heroImage: 'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?q=80&w=800&auto=format&fit=crop',
+        durationDays: '15 Days',
+        price: 2100,
+        region: 'mustang',
+        difficulty: 'Moderate',
+        isBestSeller: true,
+        order: 11,
+      },
+
+      // --- KANCHENJUNGA REGION ---
+      {
+        title: 'Kanchenjunga Base Camp Trek',
+        description: 'An off-the-beaten-path wilderness expedition to the base of the world’s third highest peak.',
+        heroImage: 'https://images.unsplash.com/photo-1512343879784-a960bf40e7f2?q=80&w=800&auto=format&fit=crop',
+        durationDays: '21 Days',
+        price: 2400,
+        region: 'kanchenjunga-region-trekking',
+        difficulty: 'Strenuous',
+        isBestSeller: false,
+        order: 12,
+      },
+
+      // --- MAKALU REGION ---
+      {
+        title: 'Makalu Base Camp Trek',
+        description: 'A challenging and remote trek offering untouched natural beauty and grand mountain vistas.',
+        heroImage: 'https://images.unsplash.com/photo-1544735716-392fe2489ffa?q=80&w=800&auto=format&fit=crop',
+        durationDays: '19 Days',
+        price: 2200,
+        region: 'makalu-region-trekking',
+        difficulty: 'Strenuous',
+        isBestSeller: false,
+        order: 13,
+      },
+
+      // --- DOLPO REGION ---
+      {
+        title: 'Lower Dolpo Trek',
+        description: 'Discover remote trans-Himalayan landscapes, ancient Bon culture, and breathtaking Phoksundo Lake.',
+        heroImage: 'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?q=80&w=800&auto=format&fit=crop',
+        durationDays: '18 Days',
+        price: 2300,
+        region: 'dolpo',
+        difficulty: 'Strenuous',
+        isBestSeller: false,
+        order: 14,
       },
     ],
   });
@@ -225,14 +363,18 @@ async function main() {
   });
 
   // 9. Seed Popular Tours
+  // Seed Tours for Nepal, Bhutan, and Tibet
+  await prisma.tour.deleteMany().catch(() => {});
   await prisma.tour.createMany({
     data: [
+      // --- NEPAL TOURS ---
       {
         title: 'Kathmandu Valley Cultural Tour',
         slug: 'kathmandu-valley-cultural-tour',
         image: 'https://images.unsplash.com/photo-1544735716-392fe2489ffa?q=80&w=800&auto=format&fit=crop',
         duration: '5 Days',
         bestTime: 'Year-round',
+        destination: 'nepal',
         order: 1,
       },
       {
@@ -241,6 +383,7 @@ async function main() {
         image: 'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?q=80&w=800&auto=format&fit=crop',
         duration: '7 Days',
         bestTime: 'Sept–May',
+        destination: 'nepal',
         order: 2,
       },
       {
@@ -249,6 +392,7 @@ async function main() {
         image: 'https://images.unsplash.com/photo-1512343879784-a960bf40e7f2?q=80&w=800&auto=format&fit=crop',
         duration: '6 Days',
         bestTime: 'Oct–March',
+        destination: 'nepal',
         order: 3,
       },
       {
@@ -257,10 +401,70 @@ async function main() {
         image: 'https://images.unsplash.com/photo-1544644181-1484b3fdfc62?q=80&w=2000&auto=format&fit=crop',
         duration: '4 Days',
         bestTime: 'Sept–June',
+        destination: 'nepal',
         order: 4,
+      },
+      {
+        title: 'Everest Mountain Flight Tour',
+        slug: 'everest-mountain-flight-tour',
+        image: 'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?q=80&w=800&auto=format&fit=crop',
+        duration: '1 Day',
+        bestTime: 'Sept–May',
+        destination: 'nepal',
+        order: 5,
+      },
+
+      // --- BHUTAN TOURS ---
+      {
+        title: 'Bhutan Adventure Tour',
+        slug: 'bhutan-adventure-tour',
+        image: 'https://images.unsplash.com/photo-1544735716-392fe2489ffa?q=80&w=800&auto=format&fit=crop',
+        duration: '6 Days',
+        bestTime: 'Mar–May & Sept–Nov',
+        destination: 'bhutan',
+        order: 6,
+      },
+      {
+        title: 'Bhutan Honeymoon Tour',
+        slug: 'bhutan-honeymoon-tour',
+        image: 'https://images.unsplash.com/photo-1512343879784-a960bf40e7f2?q=80&w=800&auto=format&fit=crop',
+        duration: '7 Days',
+        bestTime: 'Year-round',
+        destination: 'bhutan',
+        order: 7,
+      },
+      {
+        title: 'Bhutan Spiritual & Meditation Tour',
+        slug: 'bhutan-spiritual-meditation-tour',
+        image: 'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?q=80&w=800&auto=format&fit=crop',
+        duration: '8 Days',
+        bestTime: 'Sept–May',
+        destination: 'bhutan',
+        order: 8,
+      },
+
+      // --- TIBET TOURS ---
+      {
+        title: 'Classic Lhasa & Potala Palace Tour',
+        slug: 'classic-lhasa-potala-palace-tour',
+        image: 'https://images.unsplash.com/photo-1544735716-392fe2489ffa?q=80&w=800&auto=format&fit=crop',
+        duration: '8 Days',
+        bestTime: 'Apr–Oct',
+        destination: 'tibet',
+        order: 9,
+      },
+      {
+        title: 'Tibet Everest Base Camp Overland Tour',
+        slug: 'tibet-everest-base-camp-overland-tour',
+        image: 'https://images.unsplash.com/photo-1512343879784-a960bf40e7f2?q=80&w=800&auto=format&fit=crop',
+        duration: '10 Days',
+        bestTime: 'May–Sept',
+        destination: 'tibet',
+        order: 10,
       },
     ],
   });
+  
 // Seed CTA Banner Content
   await prisma.ctaBannerContent.deleteMany().catch(() => {});
   await prisma.ctaBannerContent.create({
@@ -575,7 +779,164 @@ async function main() {
       mapUrl: 'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3532.246473636257!2d85.3150!3d27.7172!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zThe Kathmandu!5e0!3m2!1sen!2snp!4v1650000000000!5m2!1sen!2snp',
     },
   });
-  
+  // Seed Legal Documents & Registrations
+  await prisma.legalDocument.deleteMany().catch(() => {});
+  await prisma.legalDocument.createMany({
+    data: [
+      {
+        title: 'Company Registration Certificate',
+        image: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=600&auto=format&fit=crop',
+        documentUrl: 'https://everpeakadventures.com',
+        order: 1,
+      },
+      {
+        title: 'Department of Tourism License',
+        image: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=600&auto=format&fit=crop',
+        documentUrl: 'https://everpeakadventures.com',
+        order: 2,
+      },
+      {
+        title: 'Tax Clearance Certificate (PAN)',
+        image: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=600&auto=format&fit=crop',
+        documentUrl: 'https://everpeakadventures.com',
+        order: 3,
+      },
+      {
+        title: 'TAAN & NMA Membership Affiliation',
+        image: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=600&auto=format&fit=crop',
+        documentUrl: 'https://everpeakadventures.com',
+        order: 4,
+      },
+    ],
+  });
+  // Seed Privacy Policy Content
+  await prisma.privacyPolicyContent.deleteMany().catch(() => {});
+  await prisma.privacyPolicyContent.create({
+    data: {
+      title: 'Privacy Policy',
+      subtitle: 'Have questions or ready to plan your Himalayan adventure? Our friendly and experienced team is here to help you every step of the way.',
+      contentHtml: `
+        <p class="text-gray-700 font-medium">
+          <strong>Ever Peak Adventure</strong> values your privacy and is committed to protecting your personal information. This Privacy Policy explains how we collect, use, store, and safeguard your data when you visit our website, make inquiries, or book our services.
+        </p>
+        <p class="text-xs text-gray-500 italic">
+          By using our website and services, you agree to the practices described in this policy.
+        </p>
+
+        <div class="space-y-6 pt-4">
+          <div>
+            <h2 class="text-lg font-bold text-[#222222] oswald uppercase tracking-tight mb-3">
+              1. Information We Collect
+            </h2>
+            <p class="mb-2">We may collect the following types of information:</p>
+            <ul class="list-disc pl-5 space-y-2">
+              <li><strong>Personal Information:</strong> Name, email address, phone number, nationality, passport details (when required for permits), and other details you provide during inquiries or bookings.</li>
+              <li><strong>Booking & Travel Information:</strong> Trip preferences, emergency contact details, and special requirements.</li>
+              <li><strong>Payment Information:</strong> Limited payment-related details processed securely through trusted payment gateways (we do not store full card details).</li>
+              <li><strong>Technical Information:</strong> IP address, browser type, device information, and website usage data through cookies.</li>
+            </ul>
+          </div>
+
+          <div>
+            <h2 class="text-lg font-bold text-[#222222] oswald uppercase tracking-tight mb-3">
+              2. How We Use Your Information
+            </h2>
+            <p class="mb-2">Your information is used to:</p>
+            <ul class="list-disc pl-5 space-y-2">
+              <li>Respond to inquiries and provide requested services</li>
+              <li>Process bookings, permits, and travel arrangements</li>
+              <li>Communicate important updates and information</li>
+              <li>Improve our website, services, and customer experience</li>
+              <li>Comply with legal and regulatory requirements</li>
+            </ul>
+            <p class="text-xs text-gray-500 mt-2">We only collect information that is necessary for providing our services.</p>
+          </div>
+
+          <div>
+            <h2 class="text-lg font-bold text-[#222222] oswald uppercase tracking-tight mb-3">
+              3. Information Sharing & Disclosure
+            </h2>
+            <p class="font-semibold text-gray-800 mb-2">Ever Peak Adventure does not sell, rent, or trade your personal information.</p>
+            <p class="mb-2">We may share your information only with:</p>
+            <ul class="list-disc pl-5 space-y-2">
+              <li>Government authorities (for permits, visas, or legal requirements)</li>
+              <li>Trusted partners such as guides, hotels, transport providers, or insurance companies (only when necessary for your trip)</li>
+              <li>Payment processors for secure transactions</li>
+            </ul>
+            <p class="text-xs text-gray-500 mt-2">All third parties are required to protect your data and use it solely for service delivery.</p>
+          </div>
+
+          <div>
+            <h2 class="text-lg font-bold text-[#222222] oswald uppercase tracking-tight mb-3">
+              4. Data Security
+            </h2>
+            <p>
+              We take reasonable technical and organizational measures to protect your personal information from unauthorized access, misuse, loss, or disclosure. While no online system is completely secure, we continuously work to maintain strong data protection standards.
+            </p>
+          </div>
+
+          <div>
+            <h2 class="text-lg font-bold text-[#222222] oswald uppercase tracking-tight mb-3">
+              5. Cookies & Tracking Technologies
+            </h2>
+            <p class="mb-2">Our website may use cookies to:</p>
+            <ul class="list-disc pl-5 space-y-2">
+              <li>Enhance user experience</li>
+              <li>Analyze website traffic and performance</li>
+              <li>Remember user preferences</li>
+            </ul>
+            <p class="text-xs text-gray-500 mt-2">You can control or disable cookies through your browser settings, though this may affect some website features.</p>
+          </div>
+
+          <div>
+            <h2 class="text-lg font-bold text-[#222222] oswald uppercase tracking-tight mb-3">
+              6. Your Rights
+            </h2>
+            <p class="mb-2">You have the right to:</p>
+            <ul class="list-disc pl-5 space-y-2">
+              <li>Access your personal data</li>
+              <li>Request correction of inaccurate information</li>
+              <li>Request deletion of your data (subject to legal or operational requirements)</li>
+              <li>Withdraw consent for marketing communications at any time</li>
+            </ul>
+            <p class="text-xs text-gray-500 mt-2">To exercise these rights, please contact us directly.</p>
+          </div>
+
+          <div>
+            <h2 class="text-lg font-bold text-[#222222] oswald uppercase tracking-tight mb-3">
+              7. External Links
+            </h2>
+            <p>
+              Our website may contain links to third-party websites. Ever Peak Adventure is not responsible for the privacy practices or content of external sites. We encourage users to review their privacy policies separately.
+            </p>
+          </div>
+
+          <div>
+            <h2 class="text-lg font-bold text-[#222222] oswald uppercase tracking-tight mb-3">
+              8. Changes To This Privacy Policy
+            </h2>
+            <p>
+              We may update this Privacy Policy from time to time to reflect changes in laws or services. Any updates will be posted on this page with immediate effect.
+            </p>
+          </div>
+
+          <div>
+            <h2 class="text-lg font-bold text-[#222222] oswald uppercase tracking-tight mb-3">
+              9. Contact Us
+            </h2>
+            <p class="mb-4">
+              If you have any questions or concerns regarding this Privacy Policy or how we handle your data, please contact us at:
+            </p>
+            <div class="bg-[#f8faf9] p-5 rounded-2xl border border-gray-100 space-y-3">
+              <p class="font-bold text-gray-900 oswald">Ever Peak Adventure</p>
+              <p class="text-xs font-medium text-gray-700">Email: info@everpeakadventures.com</p>
+              <p class="text-xs font-medium text-gray-700">Location: Kathmandu, Nepal</p>
+            </div>
+          </div>
+        </div>
+      `,
+    },
+  });
   console.log('Database seeded successfully!');
 }
 

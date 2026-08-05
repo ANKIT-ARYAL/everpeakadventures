@@ -14,9 +14,11 @@ interface Trek {
 
 interface TrekkingPageProps {
   treks: Trek[];
+  currentPage: number;
+  totalPages: number;
 }
 
-export default function TrekkingPage({ treks = [] }: TrekkingPageProps) {
+export default function TrekkingPage({ treks = [], currentPage = 1, totalPages = 1 }: TrekkingPageProps) {
   return (
     <div className="min-h-screen bg-[#f7f9f7] font-sans text-gray-800">
       
@@ -46,7 +48,7 @@ export default function TrekkingPage({ treks = [] }: TrekkingPageProps) {
           
           {treks.length === 0 ? (
             <div className="text-center py-20 text-gray-500">
-              <p>No trekking packages found in the database.</p>
+              <p>No trekking packages found on this page.</p>
             </div>
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -80,7 +82,7 @@ export default function TrekkingPage({ treks = [] }: TrekkingPageProps) {
                     <div className="pt-4 border-t border-gray-100 flex items-center justify-between text-xs text-gray-500 font-medium">
                       <span>Duration : {trek.durationDays}</span>
                       <Link 
-                        href={`/trekking/${trek.id}`}
+                        href={`/treks/${trek.id}`}
                         className="text-[#24a0ed] hover:underline font-bold"
                       >
                         Explore →
@@ -93,13 +95,45 @@ export default function TrekkingPage({ treks = [] }: TrekkingPageProps) {
             </div>
           )}
 
-          {/* Pagination */}
-          <div className="flex items-center justify-center gap-2 mt-12">
-            <span className="w-8 h-8 rounded bg-[#24a0ed] text-white flex items-center justify-center font-bold text-xs">1</span>
-            <span className="w-8 h-8 rounded bg-white border border-gray-200 text-gray-600 hover:bg-gray-50 flex items-center justify-center font-bold text-xs cursor-pointer">2</span>
-            <span className="w-8 h-8 rounded bg-white border border-gray-200 text-gray-600 hover:bg-gray-50 flex items-center justify-center font-bold text-xs cursor-pointer">3</span>
-            <span className="px-3 py-1.5 rounded bg-white border border-gray-200 text-gray-600 hover:bg-gray-50 font-bold text-xs cursor-pointer">Next</span>
-          </div>
+          {/* Dynamic Pagination Controls */}
+          {totalPages > 1 && (
+            <div className="flex items-center justify-center gap-2 mt-12">
+              {/* Previous Button */}
+              {currentPage > 1 && (
+                <Link 
+                  href={`/trekking?page=${currentPage - 1}`}
+                  className="px-3 py-1.5 rounded bg-white border border-gray-200 text-gray-600 hover:bg-gray-50 font-bold text-xs transition-colors"
+                >
+                  ← Prev
+                </Link>
+              )}
+
+              {/* Numbered Page Links */}
+              {Array.from({ length: totalPages }, (_, i) => i + 1).map((pageNum) => (
+                <Link
+                  key={pageNum}
+                  href={`/trekking?page=${pageNum}`}
+                  className={`w-8 h-8 rounded flex items-center justify-center font-bold text-xs transition-colors ${
+                    currentPage === pageNum
+                      ? 'bg-[#24a0ed] text-white shadow-sm'
+                      : 'bg-white border border-gray-200 text-gray-600 hover:bg-gray-50'
+                  }`}
+                >
+                  {pageNum}
+                </Link>
+              ))}
+
+              {/* Next Button */}
+              {currentPage < totalPages && (
+                <Link 
+                  href={`/trekking?page=${currentPage + 1}`}
+                  className="px-3 py-1.5 rounded bg-white border border-gray-200 text-gray-600 hover:bg-gray-50 font-bold text-xs transition-colors"
+                >
+                  Next →
+                </Link>
+              )}
+            </div>
+          )}
 
         </div>
       </section>
