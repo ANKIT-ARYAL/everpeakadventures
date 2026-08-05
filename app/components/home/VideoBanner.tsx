@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { Play } from 'lucide-react';
 import Link from 'next/link';
+import { Reveal } from '../animations/Motion';
 
 export interface VideoBannerData {
   title: string;
@@ -56,7 +57,7 @@ export default function VideoBanner({ data }: VideoBannerProps) {
 
       <div className="absolute inset-0 bg-[#2d3a4b]/60 z-10" />
 
-      <div className="relative z-20 max-w-4xl mx-auto px-5 text-center flex flex-col items-center">
+      <Reveal className="relative z-20 max-w-4xl mx-auto px-5 text-center flex flex-col items-center">
         
         <a 
           href={data?.videoUrl || '#'}
@@ -88,7 +89,7 @@ export default function VideoBanner({ data }: VideoBannerProps) {
         >
           {data?.buttonText || 'START JOURNEY'}
         </Link>
-      </div>
+      </Reveal>
     </section>
   );
 }

@@ -3,6 +3,8 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { ChevronDown, Search } from 'lucide-react';
+import SubpageHero from './SubpageHero';
+import { Reveal, Stagger, StaggerItem } from '../animations/Motion';
 
 interface FAQItem {
   id: string;
@@ -12,9 +14,12 @@ interface FAQItem {
 
 interface FAQClientProps {
   faqs: FAQItem[];
+  heroTitle?: string;
+  heroSubtitle?: string;
+  heroImage?: string;
 }
 
-export default function FAQClientPage({ faqs = [] }: FAQClientProps) {
+export default function FAQClientPage({ faqs = [], heroTitle, heroSubtitle, heroImage }: FAQClientProps) {
   const [searchQuery, setSearchQuery] = useState('');
   const [openIndex, setOpenIndex] = useState<number | null>(0);
 
@@ -27,23 +32,11 @@ export default function FAQClientPage({ faqs = [] }: FAQClientProps) {
     <div className="min-h-screen bg-[#f7f9f7] font-sans text-gray-800">
       
       {/* HERO SECTION */}
-      <section className="relative py-32 bg-[#112233] text-white overflow-hidden text-center">
-        <div 
-          className="absolute inset-0 z-0 bg-[right_center] bg-cover opacity-60"
-          style={{
-            backgroundImage: 'url(https://images.unsplash.com/photo-1544644181-1484b3fdfc62?q=80&w=2000&auto=format&fit=crop)',
-          }}
-        />
-        
-        <div className="max-w-[1200px] mx-auto px-5 relative z-20">
-          <h1 className="text-4xl md:text-6xl font-black uppercase tracking-wider oswald mb-4">
-            FREQUENTLY ASKED QUESTIONS
-          </h1>
-          <p className="text-gray-200 text-sm md:text-base italic max-w-xl mx-auto">
-            Find clear and reliable answers to the most frequently asked questions about our trips and services.
-          </p>
-        </div>
-      </section>
+      <SubpageHero
+        title={heroTitle ?? "FREQUENTLY ASKED QUESTIONS"}
+        subtitle={heroSubtitle ?? "Find clear and reliable answers to the most frequently asked questions about our trips and services."}
+        image={heroImage ?? "https://images.unsplash.com/photo-1544644181-1484b3fdfc62?q=80&w=2000&auto=format&fit=crop"}
+      />
 
       {/* MAIN CONTENT GRID */}
       <section className="py-16">
@@ -51,7 +44,7 @@ export default function FAQClientPage({ faqs = [] }: FAQClientProps) {
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
             
             {/* LEFT: Accordion List */}
-            <div className="lg:col-span-8 space-y-4">
+            <Stagger className="lg:col-span-8 space-y-4">
               {filteredFaqs.length === 0 ? (
                 <div className="bg-white p-8 rounded-xl border border-gray-100 shadow-sm text-center text-gray-500">
                   No matching FAQs found.
@@ -60,7 +53,7 @@ export default function FAQClientPage({ faqs = [] }: FAQClientProps) {
                 filteredFaqs.map((faq, index) => {
                   const isOpen = openIndex === index;
                   return (
-                    <div 
+                    <StaggerItem
                       key={faq.id || index}
                       className="bg-white rounded-xl border border-gray-100 shadow-[0_2px_15px_rgba(0,0,0,0.03)] overflow-hidden transition-all"
                     >
@@ -77,16 +70,16 @@ export default function FAQClientPage({ faqs = [] }: FAQClientProps) {
                           {faq.answer}
                         </div>
                       )}
-                    </div>
+                    </StaggerItem>
                   );
                 })
               )}
-            </div>
+            </Stagger>
 
             {/* RIGHT: Sidebar */}
             <div className="lg:col-span-4 space-y-6">
               
-              <div className="bg-white rounded-2xl p-6 border border-gray-100 shadow-[0_4px_20px_rgba(0,0,0,0.04)]">
+              <Reveal delay={0.1} className="bg-white rounded-2xl p-6 border border-gray-100 shadow-[0_4px_20px_rgba(0,0,0,0.04)]">
                 <h3 className="bg-[#1c2e40] text-white font-bold text-xs uppercase tracking-widest py-2.5 px-4 rounded-lg text-center mb-4 oswald">
                   Searching.....
                 </h3>
@@ -100,15 +93,15 @@ export default function FAQClientPage({ faqs = [] }: FAQClientProps) {
                   />
                   <Search className="absolute right-3 top-3 w-4 h-4 text-gray-400" />
                 </div>
-              </div>
+              </Reveal>
 
-              <div className="bg-white rounded-2xl p-6 border border-gray-100 shadow-[0_4px_20px_rgba(0,0,0,0.04)]">
+              <Reveal delay={0.2} className="bg-white rounded-2xl p-6 border border-gray-100 shadow-[0_4px_20px_rgba(0,0,0,0.04)]">
                 <h3 className="bg-[#1c2e40] text-white font-bold text-xs uppercase tracking-widest py-2.5 px-4 rounded-lg text-center mb-4 oswald">
                   Useful Links
                 </h3>
                 <ul className="space-y-3 text-xs font-medium text-gray-700">
                   <li>
-                    <Link href="/contact" className="flex items-center gap-2 hover:text-[#24a0ed] transition-colors py-1 border-b border-gray-50">
+                    <Link href="/contact-us" className="flex items-center gap-2 hover:text-[#24a0ed] transition-colors py-1 border-b border-gray-50">
                       <span>➔</span> Contact Us
                     </Link>
                   </li>
@@ -123,12 +116,12 @@ export default function FAQClientPage({ faqs = [] }: FAQClientProps) {
                     </Link>
                   </li>
                   <li>
-                    <Link href="/our-team" className="flex items-center gap-2 hover:text-[#24a0ed] transition-colors py-1">
+                    <Link href="/our-team" className="flex items-center gap-2 hover:text-[#24a0ed] transition-colors py-1 border-b border-gray-50">
                       <span>➔</span> Our Team
                     </Link>
                   </li>
                 </ul>
-              </div>
+              </Reveal>
 
             </div>
 

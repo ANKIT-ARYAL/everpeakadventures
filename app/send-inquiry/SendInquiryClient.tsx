@@ -234,7 +234,7 @@ export default function SendInquiryClient({ trips }: Props) {
                 />
                 <button 
                   type="button" 
-                  onClick={() => window.open('https://wa.me/', '_blank')}
+                  onClick={() => window.open('https://wa.me/9851093960', '_blank')}
                   className="px-4 py-2.5 bg-white border border-gray-200 hover:bg-gray-50 font-bold text-gray-700 rounded-full flex items-center gap-2 shrink-0 transition-colors shadow-sm text-xs"
                 >
                   <span>Contact Us</span>

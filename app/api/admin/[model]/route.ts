@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { requireAdmin } from "@/app/lib/require-admin";
 
 // Map URL slugs to actual Prisma delegate models
 const modelMap: Record<string, any> = {
@@ -10,12 +11,19 @@ const modelMap: Record<string, any> = {
   faqs: prisma.fAQ,
   team: prisma.teamMember,
   'legal-documents': prisma.legalDocument,
+  'why-choose-us-items': prisma.whyChooseUsItem,
+  'why-choose-us-features': prisma.whyChooseUsFeature,
+  'welcome-features': prisma.welcomeFeature,
+  'subpage-heroes': prisma.subpageHero,
 };
 
 export async function GET(
   request: Request,
   { params }: { params: Promise<{ model: string }> }
 ) {
+  const unauthorized = await requireAdmin();
+  if (unauthorized) return unauthorized;
+
   const { model } = await params;
   const delegate = modelMap[model];
 
@@ -35,6 +43,9 @@ export async function POST(
   request: Request,
   { params }: { params: Promise<{ model: string }> }
 ) {
+  const unauthorized = await requireAdmin();
+  if (unauthorized) return unauthorized;
+
   const { model } = await params;
   const delegate = modelMap[model];
 

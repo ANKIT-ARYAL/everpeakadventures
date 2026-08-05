@@ -11,9 +11,10 @@ interface NavLinkItem {
 
 interface NavbarProps {
   trekkingLinks?: NavLinkItem[];
+  logoImage?: string;
 }
 
-export default function Navbar({ trekkingLinks = [] }: NavbarProps) {
+export default function Navbar({ trekkingLinks = [], logoImage }: NavbarProps) {
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
@@ -41,7 +42,7 @@ export default function Navbar({ trekkingLinks = [] }: NavbarProps) {
         {/* Brand Logo */}
         <Link href="/" className="flex items-center gap-2 group">
           <img 
-            src="https://ml978xhbpkuo.i.optimole.com/cb:t1g8.6c6/w:259/h:68/q:mauto/f:best/https://everpeakadventures.com/wp-content/uploads/2025/03/Untitled-design-123456-e1783511870519.png" 
+            src={logoImage || "https://ml978xhbpkuo.i.optimole.com/cb:t1g8.6c6/w:259/h:68/q:mauto/f:best/https://everpeakadventures.com/wp-content/uploads/2025/03/Untitled-design-123456-e1783511870519.png"} 
             alt="Ever Peak Adventures" 
             className="h-10 w-auto object-contain"
           />
@@ -197,9 +198,9 @@ export default function Navbar({ trekkingLinks = [] }: NavbarProps) {
 
           <div className="border-t border-white/10 pt-4 flex flex-col space-y-3 uppercase">
             <Link href="/faq" onClick={() => setMobileMenuOpen(false)}>FAQ</Link>
-            <Link href="/blogs" onClick={() => setMobileMenuOpen(false)}>Blogs</Link>
+            <Link href="/blog" onClick={() => setMobileMenuOpen(false)}>Blogs</Link>
             <Link href="/contact-us" onClick={() => setMobileMenuOpen(false)}>Contact Us</Link>
-            <Link href="about-us" onClick={() => setMobileMenuOpen(false)}>About Us</Link>
+            <Link href="/about-us" onClick={() => setMobileMenuOpen(false)}>About Us</Link>
           </div>
         </div>
       )}

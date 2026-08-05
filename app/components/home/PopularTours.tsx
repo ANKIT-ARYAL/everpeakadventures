@@ -1,5 +1,8 @@
+'use client';
+
 import React from 'react';
 import Link from 'next/link';
+import { Reveal, Stagger, StaggerItem } from '../animations/Motion';
 
 interface Tour {
   id: string;
@@ -12,34 +15,37 @@ interface Tour {
 
 interface PopularToursProps {
   tours: Tour[];
+  watermark?: string;
+  title?: string;
+  subtitle?: string;
 }
 
-export default function PopularTours({ tours = [] }: PopularToursProps) {
+export default function PopularTours({ tours = [], watermark, title, subtitle }: PopularToursProps) {
   return (
     <section className="py-20 bg-white relative overflow-hidden font-sans">
       <div className="max-w-[1200px] mx-auto px-5 relative z-10">
 
         {/* BACKGROUND WATERMARK TITLE */}
-        <div className="text-center relative mb-12">
+        <Reveal className="text-center relative mb-12">
           <h1 className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-[7rem] md:text-[9rem] font-black text-[#f0f0f0] pointer-events-none select-none tracking-widest uppercase z-0 oswald">
-            TOURS
+            {watermark ?? 'TOURS'}
           </h1>
           
           {/* FOREGROUND HEADER */}
           <div className="relative z-10 pt-8">
             <h2 className="text-3xl md:text-4xl font-extrabold text-[#222222] tracking-tight uppercase oswald mb-3">
-              Popular Tours
+              {title ?? 'Popular Tours'}
             </h2>
             <p className="text-gray-500 text-sm md:text-base italic">
-              &quot;Premium tour packages tailored for comfort, culture, and adventure.&quot;
+              {subtitle ?? '"Premium tour packages tailored for comfort, culture, and adventure."'}
             </p>
           </div>
-        </div>
+        </Reveal>
 
         {/* GRID CONTAINER */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <Stagger className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           {tours.slice(0, 8).map((tour) => (
-            <div 
+            <StaggerItem
               key={tour.id}
               className="bg-white rounded-2xl border border-gray-100 shadow-[0_4px_20px_rgba(0,0,0,0.04)] overflow-hidden flex flex-col justify-between hover:shadow-[0_10px_30px_rgba(0,0,0,0.08)] transition-all duration-300"
             >
@@ -90,16 +96,16 @@ export default function PopularTours({ tours = [] }: PopularToursProps) {
 
                 {/* View Details Button */}
                 <Link
-                  href={`/tours/${tour.slug}`}
+                  href={`/tour/${tour.slug}`}
                   className="w-full bg-[#1b2a47] hover:bg-[#121c2f] text-white font-medium text-xs py-2.5 rounded-lg text-center transition-colors duration-200 uppercase tracking-wider"
                 >
                   View Details
                 </Link>
               </div>
 
-            </div>
+            </StaggerItem>
           ))}
-        </div>
+        </Stagger>
 
       </div>
     </section>

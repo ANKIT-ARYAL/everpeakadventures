@@ -1,5 +1,8 @@
+'use client';
+
 import React from 'react';
 import Link from 'next/link';
+import { Reveal } from '../animations/Motion';
 
 interface BlueBannerData {
   title: string;
@@ -28,24 +31,24 @@ export default function BlueBanner({ data }: BlueBannerProps) {
       <div className="max-w-[1200px] mx-auto relative z-10 flex flex-col lg:flex-row items-center justify-between gap-8 text-center lg:text-left">
         
         {/* Left Text Content */}
-        <div className="max-w-2xl">
+        <Reveal className="max-w-2xl">
           <h2 className="text-2xl md:text-3xl font-bold text-white mb-3 tracking-tight">
             {data.title}
           </h2>
           <p className="text-white/90 text-xs md:text-sm leading-relaxed">
             {data.subtitle}
           </p>
-        </div>
+        </Reveal>
 
         {/* Right Button */}
-        <div>
+        <Reveal delay={0.15}>
           <Link
             href={data.buttonLink}
             className="bg-white hover:bg-gray-100 text-[#1a93e8] font-bold text-xs md:text-sm px-7 py-3.5 rounded-xl shadow-md transition-all duration-200 inline-block whitespace-nowrap"
           >
             {data.buttonText}
           </Link>
-        </div>
+        </Reveal>
 
       </div>
     </section>

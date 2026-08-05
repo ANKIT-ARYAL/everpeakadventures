@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import { MapPin, Phone, Mail } from 'lucide-react';
 import { submitContactForm } from '@/app/actions/contact';
+import SubpageHero from './SubpageHero';
 
 interface ContactInfoProps {
   info: {
@@ -11,9 +12,12 @@ interface ContactInfoProps {
     email: string;
     mapUrl: string;
   };
+  heroTitle?: string;
+  heroSubtitle?: string;
+  heroImage?: string;
 }
 
-export default function ContactUsClient({ info }: ContactInfoProps) {
+export default function ContactUsClient({ info, heroTitle, heroSubtitle, heroImage }: ContactInfoProps) {
   const [submitting, setSubmitting] = useState(false);
   const [feedback, setFeedback] = useState<{ success: boolean; message: string } | null>(null);
 
@@ -37,23 +41,11 @@ export default function ContactUsClient({ info }: ContactInfoProps) {
     <div className="min-h-screen bg-[#f7f9f7] font-sans text-gray-800">
       
       {/* HERO SECTION */}
-      <section className="relative py-32 bg-[#112233] text-white overflow-hidden text-center">
-        <div 
-          className="absolute inset-0 z-0 bg-center bg-cover opacity-40"
-          style={{
-            backgroundImage: 'url(https://images.unsplash.com/photo-1519681393784-d120267933ba?q=80&w=2000&auto=format&fit=crop)',
-          }}
-        />
-
-        <div className="max-w-[1200px] mx-auto px-5 relative z-20">
-          <h1 className="text-4xl md:text-6xl font-black uppercase tracking-wider oswald mb-4 drop-shadow-md">
-            CONTACT US
-          </h1>
-          <p className="text-white text-sm md:text-base italic max-w-xl mx-auto drop-shadow">
-            Have questions or ready to plan your Himalayan adventure? Our friendly and experienced team is here to help you every step of the way.
-          </p>
-        </div>
-      </section>
+      <SubpageHero
+        title={heroTitle ?? "CONTACT US"}
+        subtitle={heroSubtitle ?? "Have questions or ready to plan your Himalayan adventure? Our friendly and experienced team is here to help you every step of the way."}
+        image={heroImage ?? "https://images.unsplash.com/photo-1519681393784-d120267933ba?q=80&w=2000&auto=format&fit=crop"}
+      />
 
       {/* MAIN CONTACT SECTION */}
       <section className="py-20">

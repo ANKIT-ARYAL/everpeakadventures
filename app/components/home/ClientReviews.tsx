@@ -1,5 +1,8 @@
+'use client';
+
 import React from 'react';
 import { Star } from 'lucide-react';
+import { Reveal, Stagger, StaggerItem } from '../animations/Motion';
 
 interface Review {
   id: string;
@@ -9,39 +12,49 @@ interface Review {
   avatar: string;
 }
 
-interface ClientReviewsProps {
-  reviews: Review[];
+interface SectionContent {
+  title?: string;
+  subtitle?: string;
+  watermark?: string;
 }
 
-export default function ClientReviews({ reviews = [] }: ClientReviewsProps) {
+interface ClientReviewsProps {
+  reviews: Review[];
+  section?: SectionContent | null;
+  showAll?: boolean;
+}
+
+export default function ClientReviews({ reviews = [], section = null, showAll = false }: ClientReviewsProps) {
   if (!reviews || reviews.length === 0) {
     return null;
   }
+
+  const visibleReviews = showAll ? reviews : reviews.slice(0, 3);
 
   return (
     <section className="py-24 bg-[#fbfcfb] relative overflow-hidden font-sans">
       <div className="max-w-[1200px] mx-auto px-5 relative z-10">
 
         {/* BACKGROUND WATERMARK TITLE */}
-        <div className="text-center relative mb-16">
+        <Reveal className="text-center relative mb-16">
           <h1 className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-[4rem] md:text-[7.5rem] font-black text-[#edf0ed] pointer-events-none select-none tracking-widest uppercase z-0 oswald whitespace-nowrap">
-            CLIENTS REVIEWS
+            {section?.watermark || 'CLIENTS REVIEWS'}
           </h1>
           
           <div className="relative z-10 pt-6">
             <h2 className="text-3xl md:text-4xl font-extrabold text-[#222222] tracking-tight uppercase oswald mb-3">
-              WHAT OUR CLIENT SAY ABOUT US ?
+              {section?.title || 'WHAT OUR CLIENT SAY ABOUT US ?'}
             </h2>
             <p className="text-gray-500 text-sm md:text-base italic">
-              &quot;Real experiences shared by travelers who trusted us.&quot;
+              &quot;{section?.subtitle || 'Real experiences shared by travelers who trusted us.'}&quot;
             </p>
           </div>
-        </div>
+        </Reveal>
 
         {/* REVIEWS GRID */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
-          {reviews.slice(0, 3).map((review) => (
-            <div 
+        <Stagger className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
+          {visibleReviews.map((review) => (
+            <StaggerItem
               key={review.id}
               className="bg-white rounded-2xl border border-gray-100 shadow-[0_4px_25px_rgba(0,0,0,0.04)] p-8 flex flex-col justify-between"
             >
@@ -73,12 +86,12 @@ export default function ClientReviews({ reviews = [] }: ClientReviewsProps) {
                   )}
                 </div>
               </div>
-            </div>
+            </StaggerItem>
           ))}
-        </div>
+        </Stagger>
 
         {/* TRIPADVISOR BANNER */}
-        <div className="bg-[#0b221d] rounded-2xl p-6 md:p-8 flex flex-col lg:flex-row items-center justify-between gap-6 shadow-lg">
+        <Reveal className="bg-[#0b221d] rounded-2xl p-6 md:p-8 flex flex-col lg:flex-row items-center justify-between gap-6 shadow-lg">
           
           {/* Logo Section */}
           <div className="flex items-center gap-4 bg-[#071714] px-6 py-4 rounded-xl border border-white/5 w-full lg:w-auto justify-center">
@@ -122,7 +135,7 @@ export default function ClientReviews({ reviews = [] }: ClientReviewsProps) {
             </a>
           </div>
 
-        </div>
+        </Reveal>
 
       </div>
     </section>

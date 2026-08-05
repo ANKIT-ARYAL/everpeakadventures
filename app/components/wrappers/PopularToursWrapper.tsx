@@ -6,5 +6,14 @@ export default async function PopularToursWrapper() {
     orderBy: { order: 'asc' },
   });
 
-  return <PopularTours tours={tours} />;
+  const section = await prisma.homeSectionContent.findFirst();
+
+  return (
+    <PopularTours
+      tours={tours}
+      watermark={section?.popularToursWatermark}
+      title={section?.popularToursTitle}
+      subtitle={section?.popularToursSubtitle}
+    />
+  );
 }

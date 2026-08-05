@@ -1,6 +1,7 @@
 import React from 'react';
 import { prisma } from '@/lib/prisma';
 import Link from 'next/link';
+import { Reveal, Stagger, StaggerItem } from '@/app/components/animations/Motion';
 
 interface PageProps {
   params: Promise<{
@@ -58,7 +59,7 @@ export default async function TourDestinationPage({ params }: PageProps) {
 
       {/* Destination Content Overview Box */}
       <section className="max-w-[1200px] mx-auto px-5 -mt-10 relative z-20 mb-16">
-        <div className="bg-white rounded-2xl p-8 md:p-10 shadow-sm border border-gray-100">
+        <Reveal className="bg-white rounded-2xl p-8 md:p-10 shadow-sm border border-gray-100">
           <h2 className="text-xl md:text-2xl font-bold oswald uppercase mb-4 text-[#222222]">
             {destinationName}
           </h2>
@@ -68,14 +69,14 @@ export default async function TourDestinationPage({ params }: PageProps) {
               At Ever Peak Adventures, we design authentic and safe travel experiences that allow you to explore {destinationName}&apos;s natural beauty, cultural heritage, and adventurous spirit with confidence and comfort.
             </p>
           </div>
-        </div>
+        </Reveal>
       </section>
 
       {/* Tours Grid Section */}
       <section className="max-w-[1200px] mx-auto px-5">
-        <h2 className="text-2xl font-black oswald uppercase tracking-tight text-[#222222] mb-6">
+        <Reveal className="text-2xl font-black oswald uppercase tracking-tight text-[#222222] mb-6">
           {destinationName} Tours Packages
-        </h2>
+        </Reveal>
 
         {tours.length === 0 ? (
           <div className="bg-white rounded-2xl p-12 text-center border border-gray-100 shadow-sm">
@@ -83,9 +84,9 @@ export default async function TourDestinationPage({ params }: PageProps) {
             <p className="text-xs text-gray-400">We are currently updating our itineraries for this destination. Check back soon!</p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          <Stagger className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {tours.map((pkg) => (
-              <div 
+              <StaggerItem
                 key={pkg.id} 
                 className="bg-white rounded-xl overflow-hidden border border-gray-100 shadow-sm flex flex-col justify-between group hover:shadow-md transition-shadow"
               >
@@ -114,15 +115,15 @@ export default async function TourDestinationPage({ params }: PageProps) {
                   </div>
 
                   <Link 
-                    href={`/tours/${pkg.slug}`}
+                    href={`/tour/${pkg.slug}`}
                     className="w-full bg-[#1c2e40] hover:bg-[#24a0ed] text-white font-bold text-xs py-3 rounded-lg text-center transition-colors uppercase tracking-wider block shadow-sm"
                   >
                     View Details
                   </Link>
                 </div>
-              </div>
+              </StaggerItem>
             ))}
-          </div>
+          </Stagger>
         )}
       </section>
 

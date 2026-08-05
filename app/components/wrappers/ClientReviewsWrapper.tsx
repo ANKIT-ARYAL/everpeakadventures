@@ -6,5 +6,7 @@ export default async function ClientReviewsWrapper() {
     orderBy: { order: 'asc' },
   });
 
-  return <ClientReviews reviews={reviews} />;
+  const section = await prisma.testimonialSectionContent.findFirst();
+
+  return <ClientReviews reviews={reviews} section={section} />;
 }

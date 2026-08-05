@@ -1,6 +1,8 @@
 import React from 'react';
 import { prisma } from '@/lib/prisma';
 import { FileText, Download, ExternalLink } from 'lucide-react';
+import SubpageHeroContent from '@/app/components/pages/SubpageHeroContent';
+import { Stagger, StaggerItem } from '@/app/components/animations/Motion';
 
 export default async function LegalDocumentsPage() {
   // Fetch legal documents dynamically from the database
@@ -40,29 +42,18 @@ export default async function LegalDocumentsPage() {
     <div className="min-h-screen bg-[#f8faf9] font-sans text-gray-800 pb-20">
       
       {/* Hero Banner Section */}
-      <section className="relative h-[320px] bg-[#112233] flex items-center justify-center text-center overflow-hidden">
-        <div className="absolute inset-0 z-0">
-          <img 
-            src="https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?q=80&w=2000&auto=format&fit=crop" 
-            alt="Legal Documents" 
-            className="w-full h-full object-cover opacity-30"
-          />
-        </div>
-        <div className="relative z-10 max-w-3xl mx-auto px-5">
-          <h1 className="text-4xl md:text-5xl font-black text-white oswald uppercase tracking-wider mb-3">
-            Legal Document
-          </h1>
-          <p className="text-gray-300 text-sm md:text-base">
-            All essential travel documents and permits required for your Himalayan adventure.
-          </p>
-        </div>
-      </section>
+      <SubpageHeroContent
+        slug="legal-document"
+        fallbackTitle="Legal Document"
+        fallbackSubtitle="All essential travel documents and permits required for your Himalayan adventure."
+        fallbackImage="https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?q=80&w=2000&auto=format&fit=crop"
+      />
 
       {/* Content Grid Section */}
       <section className="max-w-[1200px] mx-auto px-5 pt-16">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+        <Stagger className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
           {displayDocuments.map((doc) => (
-            <div 
+            <StaggerItem
               key={doc.id}
               className="bg-white rounded-2xl overflow-hidden border border-gray-100 shadow-[0_4px_20px_rgba(0,0,0,0.03)] flex flex-col group hover:shadow-lg transition-all"
             >
@@ -105,9 +96,9 @@ export default async function LegalDocumentsPage() {
                   )}
                 </div>
               </div>
-            </div>
+            </StaggerItem>
           ))}
-        </div>
+        </Stagger>
       </section>
 
     </div>

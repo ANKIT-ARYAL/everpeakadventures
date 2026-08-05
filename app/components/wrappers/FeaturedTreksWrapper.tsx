@@ -7,5 +7,13 @@ export default async function FeaturedTreksWrapper() {
     take: 4,
   });
 
-  return <FeaturedTreks treks={treks} />;
+  const section = await prisma.homeSectionContent.findFirst();
+
+  return (
+    <FeaturedTreks
+      treks={treks}
+      label={section?.featuredTreksLabel}
+      title={section?.featuredTreksTitle}
+    />
+  );
 } 

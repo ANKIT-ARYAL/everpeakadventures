@@ -6,5 +6,7 @@ export default async function Page() {
     orderBy: { order: 'asc' },
   });
 
-  return <FAQClientPage faqs={faqs} />;
+  const hero = await prisma.subpageHero.findUnique({ where: { slug: 'faq' } });
+
+  return <FAQClientPage faqs={faqs} heroTitle={hero?.title} heroSubtitle={hero?.subtitle ?? undefined} heroImage={hero?.image ?? undefined} />;
 }

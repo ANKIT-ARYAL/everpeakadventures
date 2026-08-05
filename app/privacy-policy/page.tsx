@@ -1,6 +1,8 @@
 import React from 'react';
 import { prisma } from '@/lib/prisma';
 import { Shield, Mail, MapPin } from 'lucide-react';
+import SubpageHeroContent from '@/app/components/pages/SubpageHeroContent';
+import { Reveal } from '@/app/components/animations/Motion';
 
 export default async function PrivacyPolicyPage() {
   const pageData = await prisma.privacyPolicyContent.findFirst();
@@ -9,27 +11,16 @@ export default async function PrivacyPolicyPage() {
     <div className="min-h-screen bg-[#f8faf9] font-sans text-gray-800 pb-20">
       
       {/* Hero Banner Section */}
-      <section className="relative h-[320px] bg-[#112233] flex items-center justify-center text-center overflow-hidden">
-        <div className="absolute inset-0 z-0">
-          <img 
-            src="https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?q=80&w=2000&auto=format&fit=crop" 
-            alt="Privacy Policy" 
-            className="w-full h-full object-cover opacity-30"
-          />
-        </div>
-        <div className="relative z-10 max-w-3xl mx-auto px-5">
-          <h1 className="text-4xl md:text-5xl font-black text-white oswald uppercase tracking-wider mb-3">
-            {pageData?.title || 'Privacy Policy'}
-          </h1>
-          <p className="text-gray-300 text-xs md:text-sm max-w-xl mx-auto leading-relaxed">
-            {pageData?.subtitle || 'Have questions or ready to plan your Himalayan adventure? Our friendly and experienced team is here to help you every step of the way.'}
-          </p>
-        </div>
-      </section>
+      <SubpageHeroContent
+        slug="privacy-policy"
+        fallbackTitle="Privacy Policy"
+        fallbackSubtitle="Have questions or ready to plan your Himalayan adventure? Our friendly and experienced team is here to help you every step of the way."
+        fallbackImage="https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?q=80&w=2000&auto=format&fit=crop"
+      />
 
       {/* Main Content Box */}
       <section className="max-w-4xl mx-auto px-5 -mt-16 relative z-20">
-        <div className="bg-white rounded-[2rem] p-8 md:p-12 shadow-[0_10px_40px_rgba(0,0,0,0.04)] border border-gray-100 space-y-8 text-gray-600 text-[14px] leading-relaxed">
+        <Reveal className="bg-white rounded-[2rem] p-8 md:p-12 shadow-[0_10px_40px_rgba(0,0,0,0.04)] border border-gray-100 space-y-8 text-gray-600 text-[14px] leading-relaxed">
           
           {pageData?.contentHtml ? (
             <div 
@@ -165,7 +156,7 @@ export default async function PrivacyPolicyPage() {
             </>
           )}
 
-        </div>
+        </Reveal>
       </section>
 
     </div>

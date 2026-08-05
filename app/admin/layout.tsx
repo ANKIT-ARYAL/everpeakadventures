@@ -1,12 +1,26 @@
+'use client';
+
 import React from 'react';
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
+import LogoutButton from './components/LogoutButton';
 import { 
   LayoutDashboard, Compass, Layers, FileText, MessageSquare, 
   HelpCircle, Image as ImageIcon, Shield, Users, Database, 
-  Settings, ArrowLeft, Video, Mail, FileCheck, Layers3, Briefcase
+  Settings, ArrowLeft, Video, Mail, FileCheck, Layers3, Briefcase, Sparkles
 } from 'lucide-react';
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
+  const pathname = usePathname();
+
+  if (pathname === '/admin/login') {
+    return (
+      <div className="min-h-screen bg-[#f0f2f5] flex font-sans text-gray-800">
+        <main className="flex-1">{children}</main>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-[#f0f2f5] flex font-sans text-gray-800">
       
@@ -73,11 +87,20 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           <Link href="/admin/hero-content" className="flex items-center gap-3 px-4 py-2.5 hover:bg-white/5 hover:text-white transition-colors">
             <ImageIcon className="w-4 h-4 text-gray-400" /> Hero Banners
           </Link>
+          <Link href="/admin/subpage-hero" className="flex items-center gap-3 px-4 py-2.5 hover:bg-white/5 hover:text-white transition-colors">
+            <Layers3 className="w-4 h-4 text-gray-400" /> Subpage Heroes
+          </Link>
+          <Link href="/admin/home-section-content" className="flex items-center gap-3 px-4 py-2.5 hover:bg-white/5 hover:text-white transition-colors">
+            <ImageIcon className="w-4 h-4 text-gray-400" /> Home Sections
+          </Link>
           <Link href="/admin/video-banners" className="flex items-center gap-3 px-4 py-2.5 hover:bg-white/5 hover:text-white transition-colors">
             <Video className="w-4 h-4 text-gray-400" /> Video & CTA Banners
           </Link>
           <Link href="/admin/why-choose-us" className="flex items-center gap-3 px-4 py-2.5 hover:bg-white/5 hover:text-white transition-colors">
             <Layers3 className="w-4 h-4 text-gray-400" /> Why Choose Us
+          </Link>
+          <Link href="/admin/welcome-features" className="flex items-center gap-3 px-4 py-2.5 hover:bg-white/5 hover:text-white transition-colors">
+            <Sparkles className="w-4 h-4 text-gray-400" /> Welcome Features
           </Link>
           <Link href="/admin/trust-items" className="flex items-center gap-3 px-4 py-2.5 hover:bg-white/5 hover:text-white transition-colors">
             <Shield className="w-4 h-4 text-gray-400" /> Trust Items & Badges
@@ -89,8 +112,18 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             <Mail className="w-4 h-4 text-yellow-400" /> Contact Submissions
           </Link>
           <Link href="/admin/contact-info" className="flex items-center gap-3 px-4 py-2.5 hover:bg-white/5 hover:text-white transition-colors">
-            <Settings className="w-4 h-4 text-gray-400" /> Contact Info & Settings
+            <Settings className="w-4 h-4 text-gray-400" /> Contact Info
           </Link>
+          <Link href="/admin/site-settings" className="flex items-center gap-3 px-4 py-2.5 hover:bg-white/5 hover:text-white transition-colors">
+            <Settings className="w-4 h-4 text-gray-400" /> Site Settings
+          </Link>
+          <Link href="/admin/contact-widget" className="flex items-center gap-3 px-4 py-2.5 hover:bg-white/5 hover:text-white transition-colors">
+            <MessageSquare className="w-4 h-4 text-gray-400" /> Contact Widget
+          </Link>
+
+          <div className="pt-4 border-t border-white/10 mt-4">
+            <LogoutButton />
+          </div>
         </div>
       </aside>
 

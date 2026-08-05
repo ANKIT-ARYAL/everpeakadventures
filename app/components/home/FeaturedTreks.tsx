@@ -1,10 +1,13 @@
+'use client';
+
 import React from 'react';
 import Link from 'next/link';
 import { Clock } from 'lucide-react';
+import { Reveal, Stagger, StaggerItem } from '../animations/Motion';
 
 interface Trek {
   id: string;
-  slug: string | null; // Added from DB schema
+  slug: string | null;
   title: string;
   description: string;
   heroImage: string;
@@ -16,30 +19,32 @@ interface Trek {
 
 interface FeaturedTreksProps {
   treks?: Trek[];
+  label?: string;
+  title?: string;
 }
 
-export default function FeaturedTreks({ treks = [] }: FeaturedTreksProps) {
+export default function FeaturedTreks({ treks = [], label, title }: FeaturedTreksProps) {
   return (
     <section className="py-20 bg-[#f8faf9]">
       <div className="max-w-[1200px] mx-auto px-5">
-        <div className="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-4">
+        <Reveal className="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-4">
           <div>
-            <span className="text-xs font-bold uppercase tracking-widest text-[#24a0ed] mb-2 block">Top Rated Routes</span>
+            <span className="text-xs font-bold uppercase tracking-widest text-[#24a0ed] mb-2 block">{label ?? "Top Rated Routes"}</span>
             <h2 className="text-3xl md:text-4xl font-black text-[#222222] oswald uppercase">
-              Featured Trekking Packages
+              {title ?? "Featured Trekking Packages"}
             </h2>
           </div>          
-        </div>
+        </Reveal>
 
         {treks.length === 0 ? (
           <div className="text-center py-12 text-gray-500 text-sm bg-white rounded-2xl border border-gray-100">
             No trekking packages found.
           </div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          <Stagger className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {treks.map((trek) => (
-              <div 
-                key={trek.id} 
+              <StaggerItem
+                key={trek.id}
                 className="bg-white rounded-2xl overflow-hidden border border-gray-100 shadow-[0_4px_20px_rgba(0,0,0,0.03)] flex flex-col justify-between group hover:shadow-lg transition-all"
               >
                 <div className="relative h-52 overflow-hidden bg-gray-100">
@@ -74,16 +79,16 @@ export default function FeaturedTreks({ treks = [] }: FeaturedTreksProps) {
                       {trek.durationDays}
                     </span>
                     <Link 
-                      href={`/trekking/${trek.slug}`} 
+                      href={`/trekking/${trek.slug ? trek.slug : trek.id}`} 
                       className="text-[#24a0ed] hover:underline font-bold"
                     >
                       Explore →
                     </Link>
                   </div>
                 </div>
-              </div>
+              </StaggerItem>
             ))}
-          </div>
+          </Stagger>
         )}
       </div>
     </section>

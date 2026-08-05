@@ -1,5 +1,8 @@
+'use client';
+
 import React from 'react';
 import Link from 'next/link';
+import { Reveal } from '../animations/Motion';
 
 interface CtaBannerData {
   title: string;
@@ -32,7 +35,7 @@ export default function CtaBanner({ data }: CtaBannerProps) {
         <div className="absolute inset-0 bg-black/50 z-10" />
 
         {/* Content Container */}
-        <div className="relative z-20 max-w-2xl mx-auto flex flex-col items-center">
+        <Reveal className="relative z-20 max-w-2xl mx-auto flex flex-col items-center">
           
           <h2 className="text-3xl md:text-4xl font-extrabold text-white mb-3 tracking-tight oswald">
             {data.title}
@@ -45,21 +48,21 @@ export default function CtaBanner({ data }: CtaBannerProps) {
           {/* Buttons */}
           <div className="flex flex-wrap items-center justify-center gap-4">
             <Link
-              href={data.primaryLink}
+              href='/contact-us'
               className="bg-white hover:bg-gray-100 text-[#222222] font-bold text-xs md:text-sm px-8 py-3.5 rounded-full shadow-md transition-colors duration-200 uppercase tracking-wider"
             >
               Reserve Now
             </Link>
 
             <Link
-              href={data.secondaryLink}
+              href='/trekking'
               className="border-2 border-white hover:bg-white/10 text-white font-bold text-xs md:text-sm px-8 py-3 rounded-full transition-colors duration-200 uppercase tracking-wider backdrop-blur-xs"
             >
               Explore Trekking
             </Link>
           </div>
 
-        </div>
+        </Reveal>
 
       </div>
     </section>

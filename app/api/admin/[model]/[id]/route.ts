@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { requireAdmin } from "@/app/lib/require-admin";
 
 const modelMap: Record<string, any> = {
   treks: prisma.trek,
@@ -9,12 +10,19 @@ const modelMap: Record<string, any> = {
   faqs: prisma.fAQ,
   team: prisma.teamMember,
   'legal-documents': prisma.legalDocument,
+  'why-choose-us-items': prisma.whyChooseUsItem,
+  'why-choose-us-features': prisma.whyChooseUsFeature,
+  'welcome-features': prisma.welcomeFeature,
+  'subpage-heroes': prisma.subpageHero,
 };
 
 export async function PUT(
   request: Request,
   { params }: { params: Promise<{ model: string; id: string }> }
 ) {
+  const unauthorized = await requireAdmin();
+  if (unauthorized) return unauthorized;
+
   const { model, id } = await params;
   const delegate = modelMap[model];
 
@@ -37,6 +45,9 @@ export async function DELETE(
   request: Request,
   { params }: { params: Promise<{ model: string; id: string }> }
 ) {
+  const unauthorized = await requireAdmin();
+  if (unauthorized) return unauthorized;
+
   const { model, id } = await params;
   const delegate = modelMap[model];
 

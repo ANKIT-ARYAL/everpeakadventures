@@ -2,6 +2,7 @@ import { prisma } from "@/lib/prisma";
 import Navbar from "../layout/Navbar";
 
 export default async function NavbarWrapper() {
+  const settings = await prisma.siteSettings.findFirst();
   const trekkingRegions = [
     { name: 'Everest Region', href: '/trekking-types/everest-region' },
     { name: 'Manaslu Region', href: '/trekking-types/manaslu-region' },
@@ -13,5 +14,5 @@ export default async function NavbarWrapper() {
     { name: 'Dolpo Region', href: '/trekking-types/dolpo-region-trekking' },
   ];
 
-  return <Navbar trekkingLinks={trekkingRegions} />;
+  return <Navbar trekkingLinks={trekkingRegions} logoImage={settings?.logoImage ?? undefined} />;
 }

@@ -6,5 +6,14 @@ export default async function ExploreBlogsWrapper() {
     orderBy: { order: 'asc' },
   });
 
-  return <ExploreBlogs posts={posts} />;
+  const section = await prisma.homeSectionContent.findFirst();
+
+  return (
+    <ExploreBlogs
+      posts={posts}
+      watermark={section?.exploreBlogsWatermark}
+      title={section?.exploreBlogsTitle}
+      subtitle={section?.exploreBlogsSubtitle}
+    />
+  );
 }

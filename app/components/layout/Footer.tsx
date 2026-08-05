@@ -1,8 +1,11 @@
 import React from 'react';
 import Link from 'next/link';
 import { Phone, Mail, MapPin, ArrowRight } from 'lucide-react';
+import { prisma } from '@/lib/prisma';
 
-export default function Footer() {
+export default async function Footer() {
+  const settings = await prisma.siteSettings.findFirst();
+
   return (
     <footer className="relative bg-[#152331] text-white font-sans overflow-hidden">
       
@@ -10,7 +13,7 @@ export default function Footer() {
       <div 
         className="absolute inset-0 z-0 opacity-30"
         style={{
-          backgroundImage: 'url(https://images.unsplash.com/photo-1544644181-1484b3fdfc62?q=80&w=2000&auto=format&fit=crop)',
+          backgroundImage: `url(${settings?.footerBgImage || "https://images.unsplash.com/photo-1544644181-1484b3fdfc62?q=80&w=2000&auto=format&fit=crop"})`,
           backgroundSize: 'cover',
           backgroundPosition: 'center',
         }}
@@ -26,7 +29,7 @@ export default function Footer() {
           <div className="lg:col-span-3 pt-1">
             <Link href="/" className="inline-block">
               <img 
-                src="https://everpeakadventures.com/wp-content/uploads/2025/03/Untitled-design-123456-e1783511870519.png" 
+                src={settings?.logoImage || "https://everpeakadventures.com/wp-content/uploads/2025/03/Untitled-design-123456-e1783511870519.png"} 
                 alt="Ever Peak Adventures" 
                 className="h-[55px] w-auto object-contain"
               />
@@ -66,10 +69,10 @@ export default function Footer() {
             <div className="flex items-start gap-2.5">
               <Phone className="w-4 h-4 text-[#3bbae6] shrink-0 mt-0.5" />
               <div>
-                <p className="font-bold text-white text-[13px] mb-0.5">Emergency SOS (24/7):</p>
-                <p className="leading-relaxed">Landline: +977 98000000</p>
-                <p className="leading-relaxed"><a href="tel:9851093960" className="hover:text-white">Phone: 9851093960</a></p>
-                <p className="leading-relaxed"><a href="https://wa.me/9851093960" target="_blank" rel="noopener noreferrer" className="hover:text-white">Whatsapp: 9851093960</a></p>
+                <p className="font-bold text-white text-[13px] mb-0.5">{settings?.emergencyLabel || "Emergency SOS (24/7):"}</p>
+                <p className="leading-relaxed">Landline: {settings?.emergencyLandline || "+977 98000000"}</p>
+                <p className="leading-relaxed"><a href={`tel:${settings?.emergencyPhone || "9851093960"}`} className="hover:text-white">Phone: {settings?.emergencyPhone || "9851093960"}</a></p>
+                <p className="leading-relaxed"><a href={`https://wa.me/${settings?.whatsapp || "9851093960"}`} target="_blank" rel="noopener noreferrer" className="hover:text-white">Whatsapp: {settings?.whatsapp || "9851093960"}</a></p>
               </div>
             </div>
 
@@ -78,7 +81,7 @@ export default function Footer() {
               <Mail className="w-4 h-4 text-[#3bbae6] shrink-0 mt-0.5" />
               <div>
                 <p className="font-bold text-white text-[13px] mb-0.5">Email:</p>
-                <p><a href="mailto:info@everpeakadventures.com" className="hover:text-white">info@everpeakadventures.com</a></p>
+                <p><a href={`mailto:${settings?.email || "info@everpeakadventures.com"}`} className="hover:text-white">{settings?.email || "info@everpeakadventures.com"}</a></p>
               </div>
             </div>
 
@@ -87,8 +90,8 @@ export default function Footer() {
               <MapPin className="w-4 h-4 text-[#3bbae6] shrink-0 mt-0.5" />
               <div>
                 <p className="font-bold text-white text-[13px] mb-0.5">Address:</p>
-                <p className="leading-relaxed">Payutar Dhara</p>
-                <p><a href="https://maps.app.goo.gl/1vfJx36bEbCc7UAu9" target="_blank" rel="noopener noreferrer" className="hover:text-white">Kathmandu, Nepal</a></p>
+                <p className="leading-relaxed">{settings?.addressLine1 || "Payutar Dhara"}</p>
+                <p><a href={settings?.addressMapUrl || "https://maps.app.goo.gl/1vfJx36bEbCc7UAu9"} target="_blank" rel="noopener noreferrer" className="hover:text-white">{settings?.addressLine2 || "Kathmandu, Nepal"}</a></p>
               </div>
             </div>
 
@@ -182,7 +185,7 @@ export default function Footer() {
 
           {/* Copyright Notice */}
           <div className="text-center">
-            <p>Copyright © 2026 Everpeak Adventures | Design By Fly Up Technology</p>
+            <p>{settings?.copyrightText || "Copyright © 2026 Everpeak Adventures | Design By Fly Up Technology"}</p>
           </div>
 
           {/* Payment Badges */}

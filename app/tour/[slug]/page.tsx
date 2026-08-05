@@ -2,11 +2,12 @@ import React from 'react';
 import { prisma } from '@/lib/prisma';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
-import { 
+import {
   Calendar, Clock, MapPin, CheckCircle2, 
   XCircle, Utensils, Award, Mountain 
 } from 'lucide-react';
 import TourGallerySlider from './TourGallerySlider';
+import { Reveal, Stagger, StaggerItem } from '@/app/components/animations/Motion';
 
 export const dynamic = 'force-dynamic';
 
@@ -119,60 +120,60 @@ export default async function TourDetailPage({ params }: PageProps) {
             </div>
 
             {/* 6-Icon Metadata Bar */}
-            <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100 grid grid-cols-2 sm:grid-cols-3 gap-4 text-xs">
-              <div className="flex items-center gap-3 p-3 rounded-lg bg-gray-50 border border-gray-100">
+            <Stagger className="bg-white rounded-xl p-6 shadow-sm border border-gray-100 grid grid-cols-2 sm:grid-cols-3 gap-4 text-xs">
+              <StaggerItem className="flex items-center gap-3 p-3 rounded-lg bg-gray-50 border border-gray-100">
                 <Clock className="w-5 h-5 text-[#24a0ed]" />
                 <div>
                   <span className="text-[10px] text-gray-400 uppercase block font-bold">Duration</span>
                   <span className="font-bold text-gray-800">{tour.duration}</span>
                 </div>
-              </div>
-              <div className="flex items-center gap-3 p-3 rounded-lg bg-gray-50 border border-gray-100">
+              </StaggerItem>
+              <StaggerItem className="flex items-center gap-3 p-3 rounded-lg bg-gray-50 border border-gray-100">
                 <Calendar className="w-5 h-5 text-[#24a0ed]" />
                 <div>
                   <span className="text-[10px] text-gray-400 uppercase block font-bold">Best Time</span>
                   <span className="font-bold text-gray-800">{tour.bestTime}</span>
                 </div>
-              </div>
-              <div className="flex items-center gap-3 p-3 rounded-lg bg-gray-50 border border-gray-100">
+              </StaggerItem>
+              <StaggerItem className="flex items-center gap-3 p-3 rounded-lg bg-gray-50 border border-gray-100">
                 <Award className="w-5 h-5 text-[#24a0ed]" />
                 <div>
                   <span className="text-[10px] text-gray-400 uppercase block font-bold">Grade</span>
                   <span className="font-bold text-gray-800">{tour.grade}</span>
                 </div>
-              </div>
-              <div className="flex items-center gap-3 p-3 rounded-lg bg-gray-50 border border-gray-100">
+              </StaggerItem>
+              <StaggerItem className="flex items-center gap-3 p-3 rounded-lg bg-gray-50 border border-gray-100">
                 <Mountain className="w-5 h-5 text-[#24a0ed]" />
                 <div>
                   <span className="text-[10px] text-gray-400 uppercase block font-bold">Max Altitude</span>
                   <span className="font-bold text-gray-800">{tour.maxAltitude}</span>
                 </div>
-              </div>
-              <div className="flex items-center gap-3 p-3 rounded-lg bg-gray-50 border border-gray-100">
+              </StaggerItem>
+              <StaggerItem className="flex items-center gap-3 p-3 rounded-lg bg-gray-50 border border-gray-100">
                 <Utensils className="w-5 h-5 text-[#24a0ed]" />
                 <div>
                   <span className="text-[10px] text-gray-400 uppercase block font-bold">Meals</span>
                   <span className="font-bold text-gray-800">{tour.meals}</span>
                 </div>
-              </div>
-              <div className="flex items-center gap-3 p-3 rounded-lg bg-gray-50 border border-gray-100">
+              </StaggerItem>
+              <StaggerItem className="flex items-center gap-3 p-3 rounded-lg bg-gray-50 border border-gray-100">
                 <MapPin className="w-5 h-5 text-[#24a0ed]" />
                 <div>
                   <span className="text-[10px] text-gray-400 uppercase block font-bold">Start / End</span>
                   <span className="font-bold text-gray-800">{tour.startPoint}</span>
                 </div>
-              </div>
-            </div>
+              </StaggerItem>
+            </Stagger>
 
             {/* Overview */}
-            <div className="bg-white rounded-xl p-8 shadow-sm border border-gray-100 space-y-4">
+            <Reveal className="bg-white rounded-xl p-8 shadow-sm border border-gray-100 space-y-4">
               <h2 className="text-xl font-bold oswald uppercase text-[#112233] border-b pb-3">Trip Overview</h2>
               <p className="text-gray-600 text-xs md:text-sm leading-relaxed whitespace-pre-line">{tour.overview}</p>
-            </div>
+            </Reveal>
 
             {/* Highlights */}
             {tour.highlights?.length > 0 && (
-              <div className="bg-white rounded-xl p-8 shadow-sm border border-gray-100 space-y-4">
+              <Reveal className="bg-white rounded-xl p-8 shadow-sm border border-gray-100 space-y-4">
                 <h2 className="text-xl font-bold oswald uppercase text-[#112233] border-b pb-3">Highlights</h2>
                 <ul className="space-y-2.5">
                   {tour.highlights.map((h: string, i: number) => (
@@ -181,12 +182,12 @@ export default async function TourDetailPage({ params }: PageProps) {
                     </li>
                   ))}
                 </ul>
-              </div>
+              </Reveal>
             )}
 
             {/* Itinerary */}
             {itineraryDays.length > 0 && (
-              <div className="bg-white rounded-xl p-8 shadow-sm border border-gray-100 space-y-4">
+              <Reveal className="bg-white rounded-xl p-8 shadow-sm border border-gray-100 space-y-4">
                 <h2 className="text-xl font-bold oswald uppercase text-[#112233] border-b pb-3">Itinerary</h2>
                 <div className="space-y-3">
                   {itineraryDays.map((day: any, i: number) => (
@@ -199,12 +200,12 @@ export default async function TourDetailPage({ params }: PageProps) {
                     </details>
                   ))}
                 </div>
-              </div>
+              </Reveal>
             )}
 
             {/* Inclusions & Exclusions */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-              <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100 space-y-3">
+            <Stagger className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+              <StaggerItem className="bg-white rounded-xl p-6 shadow-sm border border-gray-100 space-y-3">
                 <h3 className="font-bold oswald uppercase text-emerald-700 border-b pb-2 flex items-center gap-2 text-xs">
                   <CheckCircle2 className="w-4 h-4" /> Package Include
                 </h3>
@@ -213,8 +214,8 @@ export default async function TourDetailPage({ params }: PageProps) {
                     <li key={i} className="flex items-start gap-2"><span className="text-emerald-600 font-bold">•</span> {inc}</li>
                   ))}
                 </ul>
-              </div>
-              <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100 space-y-3">
+              </StaggerItem>
+              <StaggerItem className="bg-white rounded-xl p-6 shadow-sm border border-gray-100 space-y-3">
                 <h3 className="font-bold oswald uppercase text-rose-700 border-b pb-2 flex items-center gap-2 text-xs">
                   <XCircle className="w-4 h-4" /> Package Exclude
                 </h3>
@@ -223,8 +224,8 @@ export default async function TourDetailPage({ params }: PageProps) {
                     <li key={i} className="flex items-start gap-2"><span className="text-rose-600 font-bold">•</span> {exc}</li>
                   ))}
                 </ul>
-              </div>
-            </div>
+              </StaggerItem>
+            </Stagger>
 
           </div>
 
@@ -234,10 +235,10 @@ export default async function TourDetailPage({ params }: PageProps) {
       {/* 3. RELATED TOURS */}
       {relatedTours.length > 0 && (
         <section className="max-w-[1200px] mx-auto px-5 mt-20">
-          <h2 className="text-2xl font-black oswald uppercase text-[#112233] mb-6">You May Also Like</h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          <Reveal className="text-2xl font-black oswald uppercase text-[#112233] mb-6">You May Also Like</Reveal>
+          <Stagger className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {relatedTours.map((item) => (
-              <div key={item.id} className="bg-white rounded-xl overflow-hidden border border-gray-100 shadow-sm flex flex-col justify-between group">
+              <StaggerItem key={item.id} className="bg-white rounded-xl overflow-hidden border border-gray-100 shadow-sm flex flex-col justify-between group">
                 <div className="h-44 overflow-hidden bg-gray-100">
                   <img src={item.image} alt={item.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
                 </div>
@@ -247,9 +248,9 @@ export default async function TourDetailPage({ params }: PageProps) {
                     View Details
                   </Link>
                 </div>
-              </div>
+              </StaggerItem>
             ))}
-          </div>
+          </Stagger>
         </section>
       )}
 

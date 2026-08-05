@@ -6,5 +6,15 @@ export default async function WhyChooseUsWrapper() {
     orderBy: { order: 'asc' },
   });
 
-  return <WhyChooseUs features={features} />;
+  const section = await prisma.homeSectionContent.findFirst();
+
+  return (
+    <WhyChooseUs
+      features={features}
+      badge={section?.whyChooseUsBadge}
+      title={section?.whyChooseUsTitle}
+      titleHighlight={section?.whyChooseUsTitleHighlight}
+      subtitle={section?.whyChooseUsSubtitle}
+    />
+  );
 }

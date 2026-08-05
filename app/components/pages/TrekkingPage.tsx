@@ -1,8 +1,11 @@
 import React from 'react';
 import Link from 'next/link';
+import SubpageHero from './SubpageHero';
+import { Stagger, StaggerItem } from '../animations/Motion';
 
 interface Trek {
   id: string;
+  slug: string | null;
   title: string;
   description: string;
   heroImage: string;
@@ -16,31 +19,21 @@ interface TrekkingPageProps {
   treks: Trek[];
   currentPage: number;
   totalPages: number;
+  heroTitle?: string;
+  heroSubtitle?: string;
+  heroImage?: string;
 }
 
-export default function TrekkingPage({ treks = [], currentPage = 1, totalPages = 1 }: TrekkingPageProps) {
+export default function TrekkingPage({ treks = [], currentPage = 1, totalPages = 1, heroTitle, heroSubtitle, heroImage }: TrekkingPageProps) {
   return (
     <div className="min-h-screen bg-[#f7f9f7] font-sans text-gray-800">
       
       {/* HERO SECTION */}
-      <section className="relative py-28 bg-[#112233] text-white overflow-hidden">
-        <div 
-          className="absolute inset-0 z-0 opacity-40"
-          style={{
-            backgroundImage: 'url(https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?q=80&w=2000&auto=format&fit=crop)',
-            backgroundSize: 'cover',
-            backgroundPosition: 'center',
-          }}
-        />
-        <div className="max-w-[1200px] mx-auto px-5 relative z-20 text-center">
-          <h1 className="text-4xl md:text-6xl font-black uppercase tracking-wider oswald mb-4">
-            TREKKING IN NEPAL
-          </h1>
-          <p className="text-gray-300 text-sm md:text-base italic max-w-xl mx-auto">
-            &quot;Experience the world&apos;s most iconic trekking routes through Nepal&apos;s breathtaking Himalayan landscapes.&quot;
-          </p>
-        </div>
-      </section>
+      <SubpageHero
+        title={heroTitle ?? "TREKKING IN NEPAL"}
+        subtitle={heroSubtitle ?? "\"Experience the world's most iconic trekking routes through Nepal's breathtaking Himalayan landscapes.\""}
+        image={heroImage ?? "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?q=80&w=2000&auto=format&fit=crop"}
+      />
 
       {/* TREKKING PACKAGES GRID */}
       <section className="py-16">
@@ -51,9 +44,9 @@ export default function TrekkingPage({ treks = [], currentPage = 1, totalPages =
               <p>No trekking packages found on this page.</p>
             </div>
           ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            <Stagger className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
               {treks.map((trek) => (
-                <div 
+                <StaggerItem
                   key={trek.id} 
                   className="bg-white rounded-xl overflow-hidden border border-gray-100 shadow-[0_4px_20px_rgba(0,0,0,0.04)] flex flex-col justify-between group hover:shadow-lg transition-shadow"
                 >
@@ -82,7 +75,7 @@ export default function TrekkingPage({ treks = [], currentPage = 1, totalPages =
                     <div className="pt-4 border-t border-gray-100 flex items-center justify-between text-xs text-gray-500 font-medium">
                       <span>Duration : {trek.durationDays}</span>
                       <Link 
-                        href={`/treks/${trek.id}`}
+                        href={`/trekking/${trek.slug ? trek.slug : trek.id}`}
                         className="text-[#24a0ed] hover:underline font-bold"
                       >
                         Explore →
@@ -90,9 +83,9 @@ export default function TrekkingPage({ treks = [], currentPage = 1, totalPages =
                     </div>
                   </div>
 
-                </div>
+                </StaggerItem>
               ))}
-            </div>
+            </Stagger>
           )}
 
           {/* Dynamic Pagination Controls */}

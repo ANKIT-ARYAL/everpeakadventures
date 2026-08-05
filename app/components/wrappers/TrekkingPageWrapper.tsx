@@ -23,11 +23,16 @@ export default async function TrekkingPageWrapper({ searchParams }: PageProps) {
   const startIndex = (currentPage - 1) * pageSize;
   const paginatedTreks = allTreks.slice(startIndex, startIndex + pageSize);
 
+  const hero = await prisma.subpageHero.findUnique({ where: { slug: 'trekking' } });
+
   return (
     <TrekkingPage 
       treks={paginatedTreks} 
       currentPage={currentPage} 
       totalPages={totalPages} 
+      heroTitle={hero?.title}
+      heroSubtitle={hero?.subtitle ?? undefined}
+      heroImage={hero?.image ?? undefined}
     />
   );
 }

@@ -2,6 +2,8 @@ import React from 'react';
 import Link from 'next/link';
 import { Calendar, ArrowRight } from 'lucide-react';
 import { prisma } from '@/lib/prisma';
+import SubpageHeroContent from '@/app/components/pages/SubpageHeroContent';
+import { Stagger, StaggerItem } from '@/app/components/animations/Motion';
 
 export default async function BlogPage() {
   const posts = await prisma.blogPost.findMany({
@@ -12,23 +14,12 @@ export default async function BlogPage() {
     <div className="min-h-screen bg-[#f7f9f7] font-sans text-gray-800">
       
       {/* HERO SECTION */}
-      <section className="relative py-32 bg-[#112233] text-white overflow-hidden text-center">
-        <div 
-          className="absolute inset-0 z-0 bg-center bg-cover opacity-40"
-          style={{
-            backgroundImage: 'url(https://images.unsplash.com/photo-1519681393784-d120267933ba?q=80&w=2000&auto=format&fit=crop)',
-          }}
-        />
-
-        <div className="max-w-[1200px] mx-auto px-5 relative z-20">
-          <h1 className="text-4xl md:text-6xl font-black uppercase tracking-wider oswald mb-4 drop-shadow-md">
-            OUR BLOGS
-          </h1>
-          <p className="text-white text-sm md:text-base italic max-w-xl mx-auto drop-shadow">
-            Explore inspiring stories, travel experiences, and insights from the heart of the Himalayas.
-          </p>
-        </div>
-      </section>
+      <SubpageHeroContent
+        slug="blog"
+        fallbackTitle="OUR BLOGS"
+        fallbackSubtitle="Explore inspiring stories, travel experiences, and insights from the heart of the Himalayas."
+        fallbackImage="https://images.unsplash.com/photo-1519681393784-d120267933ba?q=80&w=2000&auto=format&fit=crop"
+      />
 
       {/* BLOG GRID SECTION */}
       <section className="py-20">
@@ -39,9 +30,9 @@ export default async function BlogPage() {
               <p>No blog posts found in the database.</p>
             </div>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <Stagger className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
               {posts.map((post) => (
-                <article 
+                <StaggerItem
                   key={post.id}
                   className="bg-white rounded-2xl overflow-hidden border border-gray-100 shadow-[0_4px_25px_rgba(0,0,0,0.04)] flex flex-col justify-between group hover:shadow-lg transition-all"
                 >
@@ -83,9 +74,9 @@ export default async function BlogPage() {
 
                   </div>
 
-                </article>
+                </StaggerItem>
               ))}
-            </div>
+            </Stagger>
           )}
 
         </div>

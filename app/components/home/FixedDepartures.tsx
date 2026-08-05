@@ -2,12 +2,15 @@
 
 import React, { useState, useMemo } from 'react';
 import Link from 'next/link';
+import { Reveal, Stagger, StaggerItem } from '../animations/Motion';
 
 interface FixedDeparturesProps {
   data: any[];
+  label?: string;
+  title?: string;
 }
 
-export default function FixedDepartures({ data = [] }: FixedDeparturesProps) {
+export default function FixedDepartures({ data = [], label, title }: FixedDeparturesProps) {
   // State to track the currently selected month filter
   const [selectedMonth, setSelectedMonth] = useState<string>('All');
 
@@ -38,7 +41,7 @@ export default function FixedDepartures({ data = [] }: FixedDeparturesProps) {
       <div className="max-w-[1100px] mx-auto shadow-[0_10px_30px_rgba(0,0,0,0.05)] rounded-2xl overflow-hidden">
         
         {/* Header Section */}
-        <div className="relative bg-[#113255] px-8 py-10 flex flex-col md:flex-row justify-between items-start md:items-center overflow-hidden">
+        <Reveal className="relative bg-[#113255] px-8 py-10 flex flex-col md:flex-row justify-between items-start md:items-center overflow-hidden">
           <div 
             className="absolute top-0 left-0 w-1/2 h-full opacity-20 pointer-events-none"
             style={{ backgroundImage: 'repeating-linear-gradient(45deg, transparent, transparent 10px, #ffffff 10px, #ffffff 12px)' }}
@@ -49,11 +52,11 @@ export default function FixedDepartures({ data = [] }: FixedDeparturesProps) {
             <div className="flex items-center gap-3 mb-2">
               <div className="w-6 h-[2px] bg-[#6395c7]"></div>
               <span className="text-[#6395c7] text-xs font-bold tracking-widest uppercase">
-                Departure Dates
+                {label ?? 'Departure Dates'}
               </span>
             </div>
             <h2 className="text-3xl md:text-4xl font-bold text-white tracking-tight">
-              Join Fixed Departure Trips
+              {title ?? 'Join Fixed Departure Trips'}
             </h2>
           </div>
 
@@ -87,7 +90,7 @@ export default function FixedDepartures({ data = [] }: FixedDeparturesProps) {
               </div>
             </div>
           </div>
-        </div>
+        </Reveal>
 
         {/* Table Section */}
         <div className="bg-white px-8 pb-6">
@@ -99,14 +102,14 @@ export default function FixedDepartures({ data = [] }: FixedDeparturesProps) {
             <div className="w-[130px]"></div>
           </div>
 
-          <div className="flex flex-col">
+          <Stagger className="flex flex-col">
             {filteredData.length === 0 ? (
               <div className="py-12 text-center text-gray-500 font-medium">
                 No departures found for {selectedMonth}.
               </div>
             ) : (
               filteredData.map((trip, index) => (
-                <div 
+                <StaggerItem
                   key={trip.id} 
                   className={`grid grid-cols-1 md:grid-cols-[2fr_1.5fr_1fr_1fr_auto] gap-4 md:gap-4 items-center py-5 ${
                     index !== filteredData.length - 1 ? 'border-b border-gray-100' : ''
@@ -145,7 +148,7 @@ export default function FixedDepartures({ data = [] }: FixedDeparturesProps) {
                       </span>
                     </div>
                     <span className="text-[0.8rem] text-[#777777] mt-0.5">
-                      {trip.seatsLeft || 12} Seats Left
+                      {trip.seatsLeft ?? 12} Seats Left
                     </span>
                   </div>
 
@@ -168,10 +171,10 @@ export default function FixedDepartures({ data = [] }: FixedDeparturesProps) {
                       Join this trip
                     </Link>
                   </div>
-                </div>
+                </StaggerItem>
               ))
             )}
-          </div>
+          </Stagger>
         </div>
         
       </div>

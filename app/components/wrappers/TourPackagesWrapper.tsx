@@ -22,11 +22,16 @@ export default async function TourPackagesWrapper({ searchParams }: PageProps) {
   const startIndex = (currentPage - 1) * pageSize;
   const paginatedTours = allTours.slice(startIndex, startIndex + pageSize);
 
+  const hero = await prisma.subpageHero.findUnique({ where: { slug: 'tour' } });
+
   return (
     <TourPackagesPage 
       packages={paginatedTours} 
       currentPage={currentPage} 
       totalPages={totalPages} 
+      heroTitle={hero?.title}
+      heroSubtitle={hero?.subtitle ?? undefined}
+      heroImage={hero?.image ?? undefined}
     />
   );
 }

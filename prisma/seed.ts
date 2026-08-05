@@ -24,6 +24,11 @@ async function main() {
   await prisma.section.deleteMany().catch(() => {});
   await prisma.page.deleteMany().catch(() => {});
   await prisma.teamMember.deleteMany().catch(() => {});
+  await prisma.homeSectionContent.deleteMany().catch(() => {});
+  await prisma.siteSettings.deleteMany().catch(() => {});
+  await prisma.contactWidgetSettings.deleteMany().catch(() => {});
+  await prisma.welcomeFeature.deleteMany().catch(() => {});
+  await prisma.subpageHero.deleteMany().catch(() => {});
 
   // 1. Seed Hero Section Data
   await prisma.heroContent.create({
@@ -33,7 +38,80 @@ async function main() {
       subtext: 'Authentic treks, Trusted guides. Unforgettable experiences.',
       youtubeVideoId: 'gCRNEJxDJKM',
       searchPlaceholder: 'Search by trek name',
+      primaryButtonText: '▲ View Treks',
+      primaryButtonLink: '/trekking',
+      secondaryButtonText: 'Book Now',
+      secondaryButtonLink: '/send-inquiry',
     },
+  });
+
+  // 1b. Seed Homepage Section Headers
+  await prisma.homeSectionContent.create({
+    data: {
+      featuredTreksLabel: 'Top Rated Routes',
+      featuredTreksTitle: 'Featured Trekking Packages',
+      bestSellersWatermark: 'Trekking',
+      bestSellersTitle: 'Best Seller Trekking',
+      bestSellersSubtitle: '"Top-rated trekking journeys offering breathtaking views and authentic experiences."',
+      fixedDeparturesLabel: 'Departure Dates',
+      fixedDeparturesTitle: 'Join Fixed Departure Trips',
+      popularToursWatermark: 'TOURS',
+      popularToursTitle: 'Popular Tours',
+      popularToursSubtitle: '"Premium tour packages tailored for comfort, culture, and adventure."',
+      exploreBlogsWatermark: 'EXPLORE OUR BLOGS',
+      exploreBlogsTitle: 'Explore Our Blogs',
+      exploreBlogsSubtitle: "At Ever Peak Adventure, we believe that travel is not just about reaching a destination—it’s about creating stories.",
+      whyChooseUsBadge: 'Why Choose Us',
+      whyChooseUsTitle: 'Why Choose ',
+      whyChooseUsTitleHighlight: 'Ever Peak Adventures',
+      whyChooseUsSubtitle: 'We combine years of Himalayan expertise, personalized service, and a passion for adventure to deliver safe, authentic, and unforgettable trekking experiences throughout Nepal.',
+    },
+  });
+
+  // 1c. Seed Site-Wide Settings (Navbar + Footer)
+  await prisma.siteSettings.create({
+    data: {
+      logoImage: 'https://ml978xhbpkuo.i.optimole.com/cb:t1g8.6c6/w:259/h:68/q:mauto/f:best/https://everpeakadventures.com/wp-content/uploads/2025/03/Untitled-design-123456-e1783511870519.png',
+      emergencyLabel: 'Emergency SOS (24/7):',
+      emergencyLandline: '+977 98000000',
+      emergencyPhone: '9851093960',
+      whatsapp: '9851093960',
+      email: 'info@everpeakadventures.com',
+      addressLine1: 'Payutar Dhara',
+      addressLine2: 'Kathmandu, Nepal',
+      addressMapUrl: 'https://maps.app.goo.gl/1vfJx36bEbCc7UAu9',
+      footerBgImage: 'https://images.unsplash.com/photo-1544644181-1484b3fdfc62?q=80&w=2000&auto=format&fit=crop',
+      copyrightText: 'Copyright © 2026 Everpeak Adventures | Design By Fly Up Technology',
+    },
+  });
+
+  // 1d. Seed Contact Widget Settings
+  await prisma.contactWidgetSettings.create({
+    data: {
+      enabled: true,
+      whatsapp: '9851093960',
+      viber: '9851093960',
+      phone: '9851093960',
+      email: 'info@everpeakadventures.com',
+    },
+  });
+
+  // 1e. Seed Sub-Page Heroes
+  await prisma.subpageHero.createMany({
+    data: [
+      { slug: 'trekking', title: 'TREKKING IN NEPAL', subtitle: '"Experience the world’s most iconic trekking routes through Nepal’s breathtaking Himalayan landscapes."', image: 'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?q=80&w=2000&auto=format&fit=crop' },
+      { slug: 'tour', title: 'TOUR PACKAGES', subtitle: "Discover carefully crafted trekking, climbing, and cultural tour packages across Nepal's most iconic and hidden destinations.", image: 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?q=80&w=2000&auto=format&fit=crop' },
+      { slug: 'faq', title: 'FREQUENTLY ASKED QUESTIONS', subtitle: 'Find clear and reliable answers to the most frequently asked questions about our trips and services.', image: 'https://images.unsplash.com/photo-1544644181-1484b3fdfc62?q=80&w=2000&auto=format&fit=crop' },
+      { slug: 'contact-us', title: 'CONTACT US', subtitle: 'Have questions or ready to plan your Himalayan adventure? Our friendly and experienced team is here to help you every step of the way.', image: 'https://images.unsplash.com/photo-1519681393784-d120267933ba?q=80&w=2000&auto=format&fit=crop' },
+      { slug: 'blog', title: 'OUR BLOGS', subtitle: 'Explore inspiring stories, travel experiences, and insights from the heart of the Himalayas.', image: 'https://images.unsplash.com/photo-1519681393784-d120267933ba?q=80&w=2000&auto=format&fit=crop' },
+      { slug: 'our-team', title: 'OUR TEAM', subtitle: '"Passionate experts dedicated to delivering excellence and creating memorable experiences."', image: 'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?q=80&w=2000&auto=format&fit=crop' },
+      { slug: 'legal-document', title: 'Legal Document', subtitle: 'All essential travel documents and permits required for your Himalayan adventure.', image: 'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?q=80&w=2000&auto=format&fit=crop' },
+      { slug: 'testimonials', title: 'Testimonials', subtitle: 'Real stories and genuine feedback from adventurers who traveled with us.', image: 'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?q=80&w=2000&auto=format&fit=crop' },
+      { slug: 'why-ever-peak-adventures', title: 'Why Ever Peak Adventures', subtitle: 'Have questions or ready to plan your Himalayan adventure? Our friendly and experienced team is here to help you every step of the way.', image: 'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?q=80&w=2000&auto=format&fit=crop' },
+      { slug: 'responsible-travel', title: 'Responsible Travel', subtitle: 'Have questions or ready to plan your Himalayan adventure? Our friendly and experienced team is here to help you every step of the way.', image: 'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?q=80&w=2000&auto=format&fit=crop' },
+      { slug: 'terms-and-conditions', title: 'Terms and Conditions', subtitle: 'Have questions or ready to plan your Himalayan adventure? Our friendly and experienced team is here to help you every step of the way.', image: 'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?q=80&w=2000&auto=format&fit=crop' },
+      { slug: 'privacy-policy', title: 'Privacy Policy', subtitle: 'Have questions or ready to plan your Himalayan adventure? Our friendly and experienced team is here to help you every step of the way.', image: 'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?q=80&w=2000&auto=format&fit=crop' },
+    ],
   });
 
   // 2. Seed Trust Bar Items
@@ -54,6 +132,7 @@ async function main() {
       // --- EVEREST REGION ---
       {
         title: 'Everest Base Camp Trek',
+        slug: 'everest-base-camp-trek',
         description: 'Stand at the foot of the world’s highest peak on this legendary Himalayan journey.',
         heroImage: 'https://images.unsplash.com/photo-1544735716-392fe2489ffa?q=80&w=800&auto=format&fit=crop',
         durationDays: '14 Days',
@@ -65,6 +144,7 @@ async function main() {
       },
       {
         title: 'Gokyo Lakes Trek',
+        slug: 'gokyo-lakes-trek',
         description: 'Discover pristine turquoise glacial lakes and panoramic views from Gokyo Ri.',
         heroImage: 'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?q=80&w=800&auto=format&fit=crop',
         durationDays: '12 Days',
@@ -76,6 +156,7 @@ async function main() {
       },
       {
         title: 'Everest Three Passes Trek',
+        slug: 'everest-three-passes-trek',
         description: 'The ultimate high-altitude adventure crossing Kongma La, Cho La, and Renjo La passes.',
         heroImage: 'https://images.unsplash.com/photo-1512343879784-a960bf40e7f2?q=80&w=800&auto=format&fit=crop',
         durationDays: '19 Days',
@@ -89,6 +170,7 @@ async function main() {
       // --- ANNAPURNA REGION ---
       {
         title: 'Annapurna Circuit Trek',
+        slug: 'annapurna-circuit-trek',
         description: 'Diverse landscapes, deep gorges, and rich cultural encounters around the Annapurna massif.',
         heroImage: 'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?q=80&w=800&auto=format&fit=crop',
         durationDays: '16 Days',
@@ -100,6 +182,7 @@ async function main() {
       },
       {
         title: 'Annapurna Base Camp Trek',
+        slug: 'annapurna-base-camp-trek',
         description: 'Journey deep into a high alpine sanctuary surrounded by towering Himalayan giants.',
         heroImage: 'https://images.unsplash.com/photo-1544735716-392fe2489ffa?q=80&w=800&auto=format&fit=crop',
         durationDays: '11 Days',
@@ -111,6 +194,7 @@ async function main() {
       },
       {
         title: 'Poon Hill Sunrise Trek',
+        slug: 'poon-hill-sunrise-trek',
         description: 'Short and scenic trek featuring breathtaking panoramic sunrise views over the Annapurna range.',
         heroImage: 'https://images.unsplash.com/photo-1512343879784-a960bf40e7f2?q=80&w=800&auto=format&fit=crop',
         durationDays: '5 Days',
@@ -124,6 +208,7 @@ async function main() {
       // --- MANASLU REGION ---
       {
         title: 'Manaslu Circuit Trek',
+        slug: 'manaslu-circuit-trek',
         description: 'A spectacular remote trek encircling Mt. Manaslu, the eighth highest peak in the world.',
         heroImage: 'https://images.unsplash.com/photo-1544735716-392fe2489ffa?q=80&w=800&auto=format&fit=crop',
         durationDays: '14 Days',
@@ -135,6 +220,7 @@ async function main() {
       },
       {
         title: 'Tsum Valley Trek',
+        slug: 'tsum-valley-trek',
         description: 'Explore a sacred Himalayan hidden valley rich in ancient Buddhist culture and tradition.',
         heroImage: 'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?q=80&w=800&auto=format&fit=crop',
         durationDays: '18 Days',
@@ -148,6 +234,7 @@ async function main() {
       // --- LANGTANG REGION ---
       {
         title: 'Langtang Valley Trek',
+        slug: 'langtang-valley-trek',
         description: 'Explore the valley of glaciers, friendly Tamang villages, and stunning alpine scenery.',
         heroImage: 'https://images.unsplash.com/photo-1512343879784-a960bf40e7f2?q=80&w=800&auto=format&fit=crop',
         durationDays: '10 Days',
@@ -159,6 +246,7 @@ async function main() {
       },
       {
         title: 'Gosainkunda Lake Trek',
+        slug: 'gosainkunda-lake-trek',
         description: 'A spiritual pilgrimage trek to pristine alpine lakes nestled high in the Langtang region.',
         heroImage: 'https://images.unsplash.com/photo-1544735716-392fe2489ffa?q=80&w=800&auto=format&fit=crop',
         durationDays: '7 Days',
@@ -172,6 +260,7 @@ async function main() {
       // --- MUSTANG REGION ---
       {
         title: 'Upper Mustang Trek',
+        slug: 'upper-mustang-trek',
         description: 'Journey into the forbidden kingdom of Lo Manthang with its dramatic desert canyons and Tibetan culture.',
         heroImage: 'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?q=80&w=800&auto=format&fit=crop',
         durationDays: '15 Days',
@@ -185,6 +274,7 @@ async function main() {
       // --- KANCHENJUNGA REGION ---
       {
         title: 'Kanchenjunga Base Camp Trek',
+        slug: 'kanchenjunga-base-camp-trek',
         description: 'An off-the-beaten-path wilderness expedition to the base of the world’s third highest peak.',
         heroImage: 'https://images.unsplash.com/photo-1512343879784-a960bf40e7f2?q=80&w=800&auto=format&fit=crop',
         durationDays: '21 Days',
@@ -198,6 +288,7 @@ async function main() {
       // --- MAKALU REGION ---
       {
         title: 'Makalu Base Camp Trek',
+        slug: 'makalu-base-camp-trek',
         description: 'A challenging and remote trek offering untouched natural beauty and grand mountain vistas.',
         heroImage: 'https://images.unsplash.com/photo-1544735716-392fe2489ffa?q=80&w=800&auto=format&fit=crop',
         durationDays: '19 Days',
@@ -211,6 +302,7 @@ async function main() {
       // --- DOLPO REGION ---
       {
         title: 'Lower Dolpo Trek',
+        slug: 'lower-dolpo-trek',
         description: 'Discover remote trans-Himalayan landscapes, ancient Bon culture, and breathtaking Phoksundo Lake.',
         heroImage: 'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?q=80&w=800&auto=format&fit=crop',
         durationDays: '18 Days',
@@ -270,12 +362,24 @@ async function main() {
     data: {
       companyName: 'Ever Peak Adventure',
       description: 'Ever Peak Adventure is a trusted Nepal trekking company specializing in trekking, peak climbing, hiking, and customized Himalayan adventures. Our experienced local guides lead unforgettable journeys to Everest Base Camp, Annapurna Base Camp, Langtang Valley, Upper Mustang, Manaslu Circuit, and many other spectacular destinations across Nepal. We focus on safety, personalized service, and authentic mountain experiences for every traveler.',
+      buttonText: 'Know More About Us',
+      buttonLink: '/about-us',
       carouselImages: [
         'https://images.unsplash.com/photo-1544735716-392fe2489ffa?q=80&w=800&auto=format&fit=crop',
         'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?q=80&w=800&auto=format&fit=crop',
         'https://images.unsplash.com/photo-1512343879784-a960bf40e7f2?q=80&w=800&auto=format&fit=crop',
       ],
     },
+  });
+
+  // 5b. Seed Welcome Features
+  await prisma.welcomeFeature.createMany({
+    data: [
+      { title: 'Local Himalayan Experts', description: 'Experienced guides with deep regional knowledge', order: 1 },
+      { title: 'Safety First Approach', description: 'Certified guides and proven safety standards', order: 2 },
+      { title: 'Government Licensed', description: 'Authorized by Tourism Ministry, TAAN & NMA', order: 3 },
+      { title: 'Authentic Experiences', description: 'Connect with local communities and traditions', order: 4 },
+    ],
   });
 
   // 6. Seed Trusted Partner / Why Choose Us Data

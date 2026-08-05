@@ -1,5 +1,7 @@
 import React from 'react';
 import Link from 'next/link';
+import SubpageHero from './SubpageHero';
+import { Stagger, StaggerItem } from '../animations/Motion';
 
 interface TourPackage {
   id: string;
@@ -14,30 +16,21 @@ interface TourPackagesProps {
   packages: TourPackage[];
   currentPage: number;
   totalPages: number;
+  heroTitle?: string;
+  heroSubtitle?: string;
+  heroImage?: string;
 }
 
-export default function TourPackagesPage({ packages = [], currentPage = 1, totalPages = 1 }: TourPackagesProps) {
+export default function TourPackagesPage({ packages = [], currentPage = 1, totalPages = 1, heroTitle, heroSubtitle, heroImage }: TourPackagesProps) {
   return (
     <div className="min-h-screen bg-[#f7f9f7] font-sans text-gray-800">
       
       {/* HERO SECTION */}
-      <section className="relative py-32 bg-[#112233] text-white overflow-hidden text-center">
-        <div 
-          className="absolute inset-0 z-0 bg-center bg-cover opacity-40"
-          style={{
-            backgroundImage: 'url(https://images.unsplash.com/photo-1506744038136-46273834b3fb?q=80&w=2000&auto=format&fit=crop)',
-          }}
-        />
-
-        <div className="max-w-[1200px] mx-auto px-5 relative z-20">
-          <h1 className="text-4xl md:text-6xl font-black uppercase tracking-wider oswald mb-4 drop-shadow-md">
-            TOUR PACKAGES
-          </h1>
-          <p className="text-white text-sm md:text-base italic max-w-xl mx-auto drop-shadow">
-            Discover carefully crafted trekking, climbing, and cultural tour packages across Nepal&apos;s most iconic and hidden destinations.
-          </p>
-        </div>
-      </section>
+      <SubpageHero
+        title={heroTitle ?? "TOUR PACKAGES"}
+        subtitle={heroSubtitle ?? "Discover carefully crafted trekking, climbing, and cultural tour packages across Nepal's most iconic and hidden destinations."}
+        image={heroImage ?? "https://images.unsplash.com/photo-1506744038136-46273834b3fb?q=80&w=2000&auto=format&fit=crop"}
+      />
 
       {/* TOUR PACKAGES GRID */}
       <section className="py-16">
@@ -48,9 +41,9 @@ export default function TourPackagesPage({ packages = [], currentPage = 1, total
               <p>No tour packages found on this page.</p>
             </div>
           ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            <Stagger className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
               {packages.map((pkg) => (
-                <div 
+                <StaggerItem
                   key={pkg.id} 
                   className="bg-white rounded-lg overflow-hidden border border-gray-100 shadow-[0_4px_25px_rgba(0,0,0,0.04)] flex flex-col justify-between group hover:shadow-lg transition-shadow"
                 >
@@ -92,9 +85,9 @@ export default function TourPackagesPage({ packages = [], currentPage = 1, total
                     </Link>
                   </div>
 
-                </div>
+                </StaggerItem>
               ))}
-            </div>
+            </Stagger>
           )}
 
           {/* Dynamic Pagination Controls */}

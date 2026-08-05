@@ -2,6 +2,7 @@ import React from 'react';
 import { prisma } from '@/lib/prisma';
 import { Clock, Tag, ArrowRight } from 'lucide-react';
 import Link from 'next/link';
+import { Reveal, Stagger, StaggerItem } from '@/app/components/animations/Motion';
 
 interface PageProps {
   params: Promise<{
@@ -56,7 +57,7 @@ export default async function TrekkingRegionPage({ params }: PageProps) {
 
       {/* Region Overview Box */}
       <section className="max-w-[1200px] mx-auto px-5 -mt-14 relative z-20 mb-16">
-        <div className="bg-white rounded-[2rem] p-8 md:p-10 shadow-[0_10px_40px_rgba(0,0,0,0.04)] border border-gray-100">
+        <Reveal className="bg-white rounded-[2rem] p-8 md:p-10 shadow-[0_10px_40px_rgba(0,0,0,0.04)] border border-gray-100">
           <h2 className="text-xl md:text-2xl font-black text-[#222222] oswald uppercase tracking-tight mb-4">
             {regionTitle}
           </h2>
@@ -66,7 +67,7 @@ export default async function TrekkingRegionPage({ params }: PageProps) {
               At Ever Peak Adventures, we carefully design every itinerary for safety, comfort, and excitement. Our experienced local guides ensure proper acclimatization throughout the trek, providing quality accommodation and personalized service.
             </p>
           </div>
-        </div>
+        </Reveal>
       </section>
 
       {/* Treks Grid Section */}
@@ -77,9 +78,9 @@ export default async function TrekkingRegionPage({ params }: PageProps) {
             <p className="text-xs text-gray-400">We are currently updating our packages for this region. Check back soon!</p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <Stagger className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             {treks.map((trek) => (
-              <div 
+              <StaggerItem
                 key={trek.id}
                 className="bg-white rounded-2xl overflow-hidden border border-gray-100 shadow-[0_4px_20px_rgba(0,0,0,0.03)] flex flex-col justify-between group hover:shadow-xl transition-all duration-300"
               >
@@ -119,16 +120,16 @@ export default async function TrekkingRegionPage({ params }: PageProps) {
                 {/* Action Footer */}
                 <div className="p-5 pt-0">
                   <Link 
-                    href={`/treks/${trek.id}`}
+                    href={`/trekking/${trek.slug ? trek.slug : trek.id}`}
                     className="w-full bg-[#f8faf9] hover:bg-[#f59e0b] hover:text-[#112233] text-gray-800 border border-gray-200 text-xs font-bold py-2.5 px-4 rounded-xl transition-all flex items-center justify-between group/btn"
                   >
                     <span>START JOURNEY</span>
                     <ArrowRight className="w-3.5 h-3.5 group-hover/btn:translate-x-1 transition-transform" />
                   </Link>
                 </div>
-              </div>
+              </StaggerItem>
             ))}
-          </div>
+          </Stagger>
         )}
       </section>
 

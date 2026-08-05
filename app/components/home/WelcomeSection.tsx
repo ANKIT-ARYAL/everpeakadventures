@@ -2,28 +2,36 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { Reveal, Stagger, StaggerItem } from '../animations/Motion';
 
 // 1. Define the props interface
 interface WelcomeSectionProps {
   companyName?: string;
   carouselImages: string[];
+  description?: string;
+  buttonText?: string;
+  buttonLink?: string;
+  features?: { id: string; title: string; description: string }[];
 }
 
-// Keep the features static if they aren't managed in a specific WordPress post type
-const features = [
+const defaultFeatures = [
   {
+    id: '1',
     title: 'Local Himalayan Experts',
     description: 'Experienced guides with deep regional knowledge',
   },
   {
+    id: '2',
     title: 'Safety First Approach',
     description: 'Certified guides and proven safety standards',
   },
   {
+    id: '3',
     title: 'Government Licensed',
     description: 'Authorized by Tourism Ministry, TAAN & NMA',
   },
   {
+    id: '4',
     title: 'Authentic Experiences',
     description: 'Connect with local communities and traditions',
   },
@@ -31,9 +39,14 @@ const features = [
 
 export default function WelcomeSection({ 
   companyName = 'Ever Peak Adventure', // Fallback name
-  carouselImages = [] 
+  carouselImages = [],
+  description,
+  buttonText,
+  buttonLink,
+  features,
 }: WelcomeSectionProps) {
   const [currentIndex, setCurrentIndex] = useState(0);
+  const displayFeatures = features && features.length > 0 ? features : defaultFeatures;
 
   useEffect(() => {
     // Only run the interval if we have more than 1 image
@@ -53,7 +66,7 @@ export default function WelcomeSection({
       <div className="max-w-[1200px] mx-auto bg-[#f8fafc] rounded-2xl p-8 md:p-12 shadow-sm border border-slate-100 flex flex-col md:flex-row gap-10 lg:gap-12 items-stretch">
         
         {/* Left Side: Auto-swiping Image Carousel */}
-        <div className="w-full md:w-5/12 min-h-[380px] md:min-h-[480px] relative rounded-xl overflow-hidden shadow-md">
+        <Reveal className="w-full md:w-5/12 min-h-[380px] md:min-h-[480px] relative rounded-xl overflow-hidden shadow-md">
           {carouselImages.length > 0 ? (
             <>
               <div 
@@ -91,27 +104,26 @@ export default function WelcomeSection({
               <span className="text-slate-400">No images available</span>
             </div>
           )}
-        </div>
+        </Reveal>
 
         {/* Right Side: Content */}
         <div className="w-full md:w-7/12 flex flex-col justify-center">
-          <h2 className="text-2xl md:text-3xl font-bold text-[#113255] mb-4">
-            Welcome To {companyName}
-          </h2>
+          <Reveal>
+            <h2 className="text-2xl md:text-3xl font-bold text-[#113255] mb-4">
+              Welcome To {companyName}
+            </h2>
+          </Reveal>
 
-          <p className="text-[#555555] text-sm md:text-base leading-relaxed mb-8">
-            {companyName} is a trusted Nepal trekking company specializing in trekking,
-            peak climbing, hiking, and customized Himalayan adventures. Our experienced
-            local guides lead unforgettable journeys to Everest Base Camp, Annapurna Base
-            Camp, Langtang Valley, Upper Mustang, Manaslu Circuit, and many other
-            spectacular destinations across Nepal. We focus on safety, personalized service,
-            and authentic mountain experiences for every traveler.
-          </p>
+          <Reveal delay={0.15}>
+            <p className="text-[#555555] text-sm md:text-base leading-relaxed mb-8">
+              {description}
+            </p>
+          </Reveal>
 
           {/* Features Grid */}
-          <div className="py-10 mb-8 ">
-            {features.map((feature, idx) => (
-              <div key={idx} className="flex items-center gap-3">
+          <Stagger className="py-10 mb-8 ">
+            {displayFeatures.map((feature, idx) => (
+              <StaggerItem key={feature.id || idx} className="flex items-center gap-3">
                 {/* Checkmark Icon Container */}
                 <div className="w-6 h-6 rounded-full bg-[#1a73e8] text-white flex items-center justify-center shrink-0 mt-0.5 shadow-sm">
                   <svg
@@ -133,20 +145,20 @@ export default function WelcomeSection({
                     {feature.description}
                   </p>
                 </div>
-              </div>
+              </StaggerItem>
             ))}
-          </div>
+          </Stagger>
 
           {/* Call to Action Button */}
-          <div>
+          <Reveal delay={0.2}>
             <Link
-              href="/about"
+              href={buttonLink ?? "/about"}
               className="inline-flex items-center gap-2 bg-[#1a73e8] hover:bg-[#1557b0] text-white font-medium text-sm px-6 py-3 rounded-lg shadow-md hover:shadow-lg transition-all duration-200"
             >
-              Know More About Us
+              {buttonText ?? "Know More About Us"}
               <span className="text-base">→</span>
             </Link>
-          </div>
+          </Reveal>
         </div>
 
       </div>

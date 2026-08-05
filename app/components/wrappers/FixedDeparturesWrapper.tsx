@@ -7,5 +7,13 @@ export default async function FixedDeparturesWrapper() {
     orderBy: { order: 'asc' },
   });
 
-  return <FixedDepartures data={departures} />;
+  const section = await prisma.homeSectionContent.findFirst();
+
+  return (
+    <FixedDepartures
+      data={departures}
+      label={section?.fixedDeparturesLabel}
+      title={section?.fixedDeparturesTitle}
+    />
+  );
 }

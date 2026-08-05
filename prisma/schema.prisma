@@ -17,6 +17,10 @@ model HeroContent {
   subtext           String?
   youtubeVideoId    String?
   searchPlaceholder String?
+  primaryButtonText   String? @default("▲ View Treks")
+  primaryButtonLink   String? @default("/trekking")
+  secondaryButtonText String? @default("Book Now")
+  secondaryButtonLink String? @default("/send-inquiry")
   createdAt         DateTime @default(now())
   updatedAt         DateTime @updatedAt
 }
@@ -117,6 +121,14 @@ model ClientReview {
   avatar    String
   order     Int      @default(0)
   createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model TestimonialSectionContent {
+  id        String   @id @default(uuid())
+  title     String   @default("WHAT OUR CLIENT SAY ABOUT US ?")
+  subtitle  String   @default("Real experiences shared by travelers who trusted us.")
+  watermark String   @default("CLIENTS REVIEWS")
   updatedAt DateTime @updatedAt
 }
 
@@ -294,7 +306,79 @@ model WelcomeContent {
   companyName  String   @default("Ever Peak Adventure")
   description  String
   carouselImages String[] // Array of image URLs
+  buttonText   String   @default("Know More About Us")
+  buttonLink   String   @default("/about-us")
   updatedAt    DateTime @updatedAt
+}
+
+model WelcomeFeature {
+  id          String   @id @default(uuid())
+  title       String
+  description String
+  order       Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+// Homepage section headers / watermarks (single editable record)
+model HomeSectionContent {
+  id                       String   @id @default(uuid())
+  featuredTreksLabel       String   @default("Top Rated Routes")
+  featuredTreksTitle       String   @default("Featured Trekking Packages")
+  bestSellersWatermark     String   @default("Trekking")
+  bestSellersTitle         String   @default("Best Seller Trekking")
+  bestSellersSubtitle      String   @default("\"Top-rated trekking journeys offering breathtaking views and authentic experiences.\"")
+  fixedDeparturesLabel     String   @default("Departure Dates")
+  fixedDeparturesTitle     String   @default("Join Fixed Departure Trips")
+  popularToursWatermark    String   @default("TOURS")
+  popularToursTitle        String   @default("Popular Tours")
+  popularToursSubtitle     String   @default("\"Premium tour packages tailored for comfort, culture, and adventure.\"")
+  exploreBlogsWatermark    String   @default("EXPLORE OUR BLOGS")
+  exploreBlogsTitle        String   @default("Explore Our Blogs")
+  exploreBlogsSubtitle     String   @default("At Ever Peak Adventure, we believe that travel is not just about reaching a destination—it’s about creating stories.")
+  whyChooseUsBadge         String   @default("Why Choose Us")
+  whyChooseUsTitle         String   @default("Why Choose ")
+  whyChooseUsTitleHighlight String  @default("Ever Peak Adventures")
+  whyChooseUsSubtitle      String   @default("We combine years of Himalayan expertise, personalized service, and a passion for adventure to deliver safe, authentic, and unforgettable trekking experiences throughout Nepal.")
+  updatedAt                DateTime @updatedAt
+}
+
+// Floating Contact Widget settings (single record)
+model ContactWidgetSettings {
+  id        String   @id @default(uuid())
+  enabled   Boolean  @default(true)
+  whatsapp  String   @default("9851093960")
+  viber     String   @default("9851093960")
+  phone     String   @default("9851093960")
+  email     String   @default("info@everpeakadventures.com")
+  updatedAt DateTime @updatedAt
+}
+
+// Navbar + Footer editable site-wide settings (single record)
+model SiteSettings {
+  id               String   @id @default(uuid())
+  logoImage        String   @default("https://ml978xhbpkuo.i.optimole.com/cb:t1g8.6c6/w:259/h:68/q:mauto/f:best/https://everpeakadventures.com/wp-content/uploads/2025/03/Untitled-design-123456-e1783511870519.png")
+  emergencyLabel   String   @default("Emergency SOS (24/7):")
+  emergencyLandline String  @default("+977 98000000")
+  emergencyPhone   String   @default("9851093960")
+  whatsapp         String   @default("9851093960")
+  email            String   @default("info@everpeakadventures.com")
+  addressLine1     String   @default("Payutar Dhara")
+  addressLine2     String   @default("Kathmandu, Nepal")
+  addressMapUrl    String   @default("https://maps.app.goo.gl/1vfJx36bEbCc7UAu9")
+  footerBgImage    String   @default("https://images.unsplash.com/photo-1544644181-1484b3fdfc62?q=80&w=2000&auto=format&fit=crop")
+  copyrightText    String   @default("Copyright © 2026 Everpeak Adventures | Design By Fly Up Technology")
+  updatedAt        DateTime @updatedAt
+}
+
+// Sub-page hero banners keyed by page slug
+model SubpageHero {
+  id        String   @id @default(uuid())
+  slug      String   @unique
+  title     String
+  subtitle  String?
+  image     String?
+  updatedAt DateTime @updatedAt
 }
 // Dynamic Trusted Partner / Why Choose Us Section
 model TrustedPartnerContent {
