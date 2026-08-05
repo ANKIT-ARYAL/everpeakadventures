@@ -1,8 +1,38 @@
+'use client';
+
+import React, { useState, useMemo } from 'react';
+import Link from 'next/link';
+
 interface FixedDeparturesProps {
   data: any[];
 }
 
 export default function FixedDepartures({ data = [] }: FixedDeparturesProps) {
+  // State to track the currently selected month filter
+  const [selectedMonth, setSelectedMonth] = useState<string>('All');
+
+  // Helper function to extract "Month Year" (e.g., "September 2026") from a date string
+  const getMonthYear = (dateStr: string) => {
+    const d = new Date(dateStr);
+    if (isNaN(d.getTime())) return null;
+    return d.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+  };
+
+  // Generate a unique list of months based on the actual data provided
+  const availableMonths = useMemo(() => {
+    const months = data
+      .map(trip => getMonthYear(trip.startDate))
+      .filter((month): month is string => month !== null);
+    
+    return Array.from(new Set(months));
+  }, [data]);
+
+  // Filter the table data based on the selected month
+  const filteredData = useMemo(() => {
+    if (selectedMonth === 'All') return data;
+    return data.filter(trip => getMonthYear(trip.startDate) === selectedMonth);
+  }, [data, selectedMonth]);
+
   return (
     <section className="py-12 px-5 bg-[#f5f7f9] font-sans">
       <div className="max-w-[1100px] mx-auto shadow-[0_10px_30px_rgba(0,0,0,0.05)] rounded-2xl overflow-hidden">
@@ -28,14 +58,29 @@ export default function FixedDepartures({ data = [] }: FixedDeparturesProps) {
           </div>
 
           <div className="relative z-10 flex items-center gap-3 w-full md:w-auto">
-            <button className="bg-[#eef5fa] text-[#113255] px-5 py-2.5 rounded-md text-sm font-bold shadow-sm hover:bg-white transition-colors whitespace-nowrap">
+            {/* Changed from Link to Button to reset the filter */}
+            <button 
+              onClick={() => setSelectedMonth('All')}
+              className={`px-5 py-2.5 rounded-md text-sm font-bold shadow-sm transition-colors whitespace-nowrap block text-center ${
+                selectedMonth === 'All' 
+                  ? 'bg-white text-[#113255]' 
+                  : 'bg-[#eef5fa] text-[#113255] hover:bg-white'
+              }`}
+            >
               All Departures
             </button>
+            
             <div className="relative w-full md:w-auto">
-              <select className="appearance-none bg-white text-[#333333] px-5 py-2.5 pr-10 rounded-md text-sm font-medium shadow-sm w-full md:w-auto outline-none cursor-pointer">
-                <option>Select Month, Year</option>
-                <option>September 2026</option>
-                <option>October 2026</option>
+              {/* Added value and onChange to control the filter state */}
+              <select 
+                value={selectedMonth}
+                onChange={(e) => setSelectedMonth(e.target.value)}
+                className="appearance-none bg-white text-[#333333] px-5 py-2.5 pr-10 rounded-md text-sm font-medium shadow-sm w-full md:w-auto outline-none cursor-pointer"
+              >
+                <option value="All">Select Month, Year</option>
+                {availableMonths.map((month) => (
+                  <option key={month} value={month}>{month}</option>
+                ))}
               </select>
               <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400">
                 <svg viewBox="0 0 24 24" className="w-4 h-4 fill-current"><path d="M7 10l5 5 5-5z"/></svg>
@@ -51,72 +96,81 @@ export default function FixedDepartures({ data = [] }: FixedDeparturesProps) {
             <div>Departure Date</div>
             <div>Status</div>
             <div>Price</div>
-            <div className="w-[120px]"></div>
+            <div className="w-[130px]"></div>
           </div>
 
           <div className="flex flex-col">
-            {data.map((trip, index) => (
-              <div 
-                key={trip.id} 
-                className={`grid grid-cols-1 md:grid-cols-[2fr_1.5fr_1fr_1fr_auto] gap-4 md:gap-4 items-center py-5 ${
-                  index !== data.length - 1 ? 'border-b border-gray-100' : ''
-                }`}
-              >
-                <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 rounded-lg overflow-hidden shrink-0">
-                    <img 
-                      src={trip.heroImage} 
-                      alt={trip.title || "Trek image"} 
-                      className="w-full h-full object-cover"
-                    />
-                  </div>
-                  <h3 className="text-[0.95rem] font-bold text-[#222222]">
-                    {trip.title}
-                  </h3>
-                </div>
-
-                <div className="flex flex-col">
-                  <span className="text-sm font-bold text-[#222222]">
-                    {trip.durationDays}
-                  </span>
-                  <span className="text-[0.8rem] text-[#777777] mt-0.5">
-                    From {trip.startDate} {trip.endDate ? `To ${trip.endDate}` : ''}
-                  </span>
-                </div>
-
-                <div className="flex flex-col">
-                  <div className="flex items-center gap-1.5">
-                    <svg viewBox="0 0 24 24" className="w-4 h-4 fill-none stroke-[#1a5b88] stroke-2" strokeLinecap="round" strokeLinejoin="round">
-                      <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
-                      <polyline points="22 4 12 14.01 9 11.01"></polyline>
-                    </svg>
-                    <span className="text-sm font-bold text-[#1a5b88]">
-                      {trip.status || "Guaranteed"}
-                    </span>
-                  </div>
-                  <span className="text-[0.8rem] text-[#777777] mt-0.5">
-                    {trip.seatsLeft} Seats Left
-                  </span>
-                </div>
-
-                <div className="flex flex-col">
-                  <span className="text-[0.95rem] font-bold text-[#1a5b88]">
-                    US$ {trip.price}
-                  </span>
-                  {trip.originalPrice && (
-                    <span className="text-[0.8rem] text-[#777777] line-through mt-0.5">
-                      US$ {trip.originalPrice}
-                    </span>
-                  )}
-                </div>
-
-                <div className="flex justify-start md:justify-end mt-2 md:mt-0">
-                  <button className="border border-[#1a5b88] text-[#1a5b88] hover:bg-[#1a5b88] hover:text-white transition-colors duration-200 px-4 py-2 rounded text-sm font-bold w-full md:w-[120px] cursor-pointer">
-                    Join this trip
-                  </button>
-                </div>
+            {filteredData.length === 0 ? (
+              <div className="py-12 text-center text-gray-500 font-medium">
+                No departures found for {selectedMonth}.
               </div>
-            ))}
+            ) : (
+              filteredData.map((trip, index) => (
+                <div 
+                  key={trip.id} 
+                  className={`grid grid-cols-1 md:grid-cols-[2fr_1.5fr_1fr_1fr_auto] gap-4 md:gap-4 items-center py-5 ${
+                    index !== filteredData.length - 1 ? 'border-b border-gray-100' : ''
+                  }`}
+                >
+                  <div className="flex items-center gap-4">
+                    <div className="w-12 h-12 rounded-lg overflow-hidden shrink-0">
+                      <img 
+                        src={trip.heroImage} 
+                        alt={trip.title || "Trek image"} 
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+                    <h3 className="text-[0.95rem] font-bold text-[#222222]">
+                      {trip.title}
+                    </h3>
+                  </div>
+
+                  <div className="flex flex-col">
+                    <span className="text-sm font-bold text-[#222222]">
+                      {trip.durationDays}
+                    </span>
+                    <span className="text-[0.8rem] text-[#777777] mt-0.5">
+                      From {trip.startDate} {trip.endDate ? `To ${trip.endDate}` : ''}
+                    </span>
+                  </div>
+
+                  <div className="flex flex-col">
+                    <div className="flex items-center gap-1.5">
+                      <svg viewBox="0 0 24 24" className="w-4 h-4 fill-none stroke-[#1a5b88] stroke-2" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                        <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                      </svg>
+                      <span className="text-sm font-bold text-[#1a5b88]">
+                        {trip.status || "Guaranteed"}
+                      </span>
+                    </div>
+                    <span className="text-[0.8rem] text-[#777777] mt-0.5">
+                      {trip.seatsLeft || 12} Seats Left
+                    </span>
+                  </div>
+
+                  <div className="flex flex-col">
+                    <span className="text-[0.95rem] font-bold text-[#1a5b88]">
+                      US$ {trip.price}
+                    </span>
+                    {trip.originalPrice && (
+                      <span className="text-[0.8rem] text-[#777777] line-through mt-0.5">
+                        US$ {trip.originalPrice}
+                      </span>
+                    )}
+                  </div>
+
+                  <div className="flex justify-start md:justify-end mt-2 md:mt-0">
+                    <Link 
+                      href={`/booking-form/?trip_id=${trip.id}&departure_id=${trip.departureId || `dep_${trip.id}`}&departure_start=${trip.startDate}&pp=${trip.price}`}
+                      className="border border-[#1a5b88] text-[#1a5b88] hover:bg-[#1a5b88] hover:text-white text-center transition-colors duration-200 px-4 py-2.5 rounded text-sm font-bold w-full md:w-[130px] cursor-pointer block"
+                    >
+                      Join this trip
+                    </Link>
+                  </div>
+                </div>
+              ))
+            )}
           </div>
         </div>
         

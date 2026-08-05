@@ -2,6 +2,8 @@
 
 import NavItem from "./NavItem";
 
+
+
 const menu = [
   { label: "Home", href: "/" },
   {

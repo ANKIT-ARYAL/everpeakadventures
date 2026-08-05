@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { useSearchParams } from 'next/navigation';
 import toast, { Toaster } from 'react-hot-toast';
-import { CheckCircle2 } from 'lucide-react';
+import { CheckCircle2, Info } from 'lucide-react';
 import Select from 'react-select';
 import { getCountries, getCountryCallingCode, isValidPhoneNumber, AsYouType } from 'libphonenumber-js';
 
@@ -32,8 +32,14 @@ interface Props {
 
 export default function BookingFormClient({ trips }: Props) {
   const searchParams = useSearchParams();
+  
+  // URL Parameters
   const tripIdParam = searchParams.get('trip_id');
+  const departureIdParam = searchParams.get('departure_id');
+  const departureStartParam = searchParams.get('departure_start');
+  const pricePerPersonParam = Number(searchParams.get('pp'));
 
+  // Find selected trip
   const selectedTrip = trips.find(t => t.id === tripIdParam) || trips[0] || {
     id: 'default',
     title: 'Nepal Heritage, Wildlife & Himalayan Discovery Tour',
@@ -42,14 +48,16 @@ export default function BookingFormClient({ trips }: Props) {
     image: 'https://images.unsplash.com/photo-1544644181-1484b3fdfc62?q=80&w=600&auto=format&fit=crop'
   };
 
+  // Determine the actual base price (URL override for Fixed Departures vs Standard Price)
+  const basePrice = pricePerPersonParam > 0 ? pricePerPersonParam : selectedTrip.price;
+
   const [form, setForm] = useState({
     tripTitle: selectedTrip.title,
-    groupSize: '1 Pax - Solo Traveller',
     fullName: '',
     email: '',
     phone: '',
     country: '',
-    travelDate: '',
+    travelDate: departureStartParam || '', // Pre-fill if fixed departure
     adultMale: 1,
     adultFemale: 0,
     childMale: 0,
@@ -63,20 +71,9 @@ export default function BookingFormClient({ trips }: Props) {
   const [success, setSuccess] = useState(false);
 
   const totalTravellers = form.adultMale + form.adultFemale + form.childMale + form.childFemale;
-
-  useEffect(() => {
-    let tier = '1 Pax - Solo Traveller';
-    if (totalTravellers >= 5) {
-      tier = `5+ Pax - Group Discount (US$ ${selectedTrip.price} PP)`;
-    } else if (totalTravellers >= 2) {
-      tier = `2-4 Pax - Small Group (US$ ${selectedTrip.price} PP)`;
-    } else {
-      tier = `1 Pax - Solo Traveller (US$ ${selectedTrip.price} PP)`;
-    }
-    setForm(prev => ({ ...prev, groupSize: tier }));
-  }, [totalTravellers, selectedTrip.price]);
-
-  const estimatedTotalNum = selectedTrip.price * (totalTravellers || 1);
+  
+  // Calculate total price based on active base price and travelers
+  const estimatedTotalNum = basePrice * (totalTravellers || 1);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     const { name, value, type } = e.target;
@@ -87,6 +84,16 @@ export default function BookingFormClient({ trips }: Props) {
       setForm(prev => ({ ...prev, [name]: Math.max(0, Number(value)) }));
     } else {
       setForm(prev => ({ ...prev, [name]: value }));
+    }
+  };
+
+  // Handle generic trip selection change
+  const handleTripChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const newTrip = trips.find(t => t.title === e.target.value);
+    if (newTrip) {
+      setForm(prev => ({ ...prev, tripTitle: newTrip.title }));
+      // We don't change URL params dynamically here to keep it simple, 
+      // but it correctly updates the local state form value.
     }
   };
 
@@ -114,13 +121,6 @@ export default function BookingFormClient({ trips }: Props) {
       return;
     }
 
-    const todayStr = new Date().toISOString().split('T')[0];
-    if (form.travelDate < todayStr) {
-      toast.error('Travel date cannot be in the past.');
-      setSubmitting(false);
-      return;
-    }
-
     if (!isValidPhoneNumber(form.phone)) {
       toast.error('Enter a valid phone number.');
       setSubmitting(false);
@@ -130,6 +130,8 @@ export default function BookingFormClient({ trips }: Props) {
     try {
       const payload = {
         ...form,
+        isFixedDeparture: !!departureStartParam,
+        departureId: departureIdParam,
         estimatedTotal: `US$ ${estimatedTotalNum}`,
       };
 
@@ -169,10 +171,9 @@ export default function BookingFormClient({ trips }: Props) {
               setSuccess(false); 
               setSelectedCountryOption(null);
               setForm({ 
-                tripTitle: selectedTrip.title, groupSize: '1 Pax - Solo Traveller',
-                fullName: '', email: '', phone: '', country: '', travelDate: '',
-                adultMale: 1, adultFemale: 0, childMale: 0, childFemale: 0,
-                notes: '', agreed: false 
+                tripTitle: selectedTrip.title, fullName: '', email: '', phone: '', country: '', 
+                travelDate: departureStartParam || '', 
+                adultMale: 1, adultFemale: 0, childMale: 0, childFemale: 0, notes: '', agreed: false 
               }); 
             }} 
             className="w-full bg-[#112233] text-white font-bold text-xs py-3 rounded-xl uppercase tracking-wider mt-4"
@@ -187,244 +188,201 @@ export default function BookingFormClient({ trips }: Props) {
   return (
     <div className="min-h-screen bg-[#f0f4f8] py-12 px-4 font-sans text-xs text-gray-800">
       <Toaster position="top-center" />
-      <div className="max-w-3xl mx-auto bg-white rounded-2xl shadow-sm border border-gray-100 p-6 md:p-10 space-y-8">
+      <div className="max-w-4xl mx-auto bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
         
-        <div className="space-y-1">
-          <div className="flex items-center gap-2">
-            <span className="w-2.5 h-2.5 rounded-full bg-[#24a0ed]"></span>
-            <h1 className="text-xl md:text-2xl font-black uppercase tracking-wide oswald text-[#112233]">Book Your Trek</h1>
+        {/* Top Header Block */}
+        <div className="p-8 border-b border-gray-100 flex items-center gap-4">
+          <div className="w-12 h-12 bg-orange-50 rounded-xl flex items-center justify-center text-orange-500">
+            <svg viewBox="0 0 24 24" className="w-6 h-6 fill-current"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 9h-2V7h-2v5H6v2h2v5h2v-5h2v-2z"/></svg>
           </div>
-          <p className="text-gray-400 text-xs">Send your trek booking request. Our team will review and contact you shortly.</p>
-        </div>
-
-        {/* Selected Trip Banner */}
-        <div className="p-4 rounded-xl border border-blue-100 bg-[#f8fbff] flex flex-col sm:flex-row items-center justify-between gap-4">
-          <div className="flex items-center gap-3.5 w-full sm:w-auto">
-            <img 
-              src={selectedTrip.image} 
-              alt={selectedTrip.title} 
-              className="w-16 h-12 object-cover rounded-lg border border-gray-200 shadow-sm"
-            />
-            <div>
-              <span className="text-[10px] text-gray-400 uppercase font-bold block">Selected Trip</span>
-              <h3 className="font-bold text-sm text-[#112233]">{selectedTrip.title}</h3>
-            </div>
-          </div>
-          <div className="flex items-center gap-6 text-right w-full sm:w-auto justify-between sm:justify-end border-t sm:border-t-0 pt-2 sm:pt-0 border-blue-100">
-            <div>
-              <span className="text-[10px] text-gray-400 uppercase font-bold block">Duration</span>
-              <span className="font-bold text-gray-700">{selectedTrip.duration}</span>
-            </div>
-            <div>
-              <span className="text-[10px] text-gray-400 uppercase font-bold block">From</span>
-              <span className="font-bold text-[#24a0ed] text-sm">US$ {selectedTrip.price} PP</span>
-            </div>
+          <div>
+            <h1 className="text-2xl font-black text-[#112233]">Book Your Trek</h1>
+            <p className="text-gray-500 text-sm mt-1">Send your trek booking request. Our team will review and contact you shortly.</p>
           </div>
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-6">
-          
-          <div className="space-y-1.5">
-            <label className="font-bold text-gray-700 uppercase tracking-wider block">Choose Trek / Tour *</label>
-            <select 
-              name="tripTitle"
-              value={form.tripTitle}
-              onChange={handleChange}
-              className="w-full px-4 py-3 rounded-xl border border-gray-200 bg-white font-medium text-xs focus:outline-none focus:border-[#24a0ed]"
-            >
-              {trips.map(t => (
-                <option key={t.id} value={t.title}>{t.title}</option>
-              ))}
-            </select>
+        <form onSubmit={handleSubmit} className="p-8 space-y-8">
+
+          {/* Selected Trip Overview */}
+          <div className="bg-gray-50/50 p-4 rounded-xl border border-gray-100 grid grid-cols-1 md:grid-cols-[auto_1fr_auto_auto] gap-6 items-center">
+            <img src={selectedTrip.image} alt={selectedTrip.title} className="w-16 h-12 rounded-lg object-cover" />
+            <div>
+              <span className="block text-[10px] text-gray-400 font-bold uppercase tracking-wider mb-0.5">Selected Trip</span>
+              <span className="font-bold text-[#112233]">{selectedTrip.title}</span>
+            </div>
+            <div>
+              <span className="block text-[10px] text-gray-400 font-bold uppercase tracking-wider mb-0.5">Duration</span>
+              <span className="font-bold text-[#112233]">{selectedTrip.duration}</span>
+            </div>
+            <div>
+              <span className="block text-[10px] text-gray-400 font-bold uppercase tracking-wider mb-0.5">From</span>
+              <span className="font-bold text-[#112233]">US$ {basePrice} PP</span>
+            </div>
           </div>
 
-          <div className="space-y-1.5">
-            <label className="font-bold text-gray-700 uppercase tracking-wider block">No. of Persons / Price (Auto-calculated) *</label>
-            <input 
-              type="text" 
-              readOnly
-              value={form.groupSize}
-              className="w-full px-4 py-3 rounded-xl border border-gray-200 bg-gray-50 font-bold text-xs text-[#24a0ed] focus:outline-none"
-            />
+          {/* Core Selection Fields */}
+          <div className="space-y-5">
+            <div>
+              <label className="block text-xs font-bold text-gray-700 mb-2">Choose Trek / Tour <span className="text-red-500">*</span></label>
+              <select 
+                name="tripTitle"
+                value={form.tripTitle}
+                onChange={handleTripChange}
+                className="w-full p-3 border border-gray-200 rounded-lg text-sm bg-white focus:border-[#1a5b88] focus:outline-none"
+              >
+                {trips.map(t => (
+                  <option key={t.id} value={t.title}>{t.title}</option>
+                ))}
+              </select>
+              <p className="text-[10px] text-gray-400 mt-1.5">Direct booking URL includes this trek/tour automatically.</p>
+            </div>
+
+            {/* CONDITIONAL: Fixed Departure Logic vs Standard Logic */}
+            {departureStartParam ? (
+              <>
+                <div>
+                  <label className="block text-xs font-bold text-gray-700 mb-2">Selected Travel Date <span className="text-red-500">*</span></label>
+                  <select disabled className="w-full p-3 border border-gray-200 rounded-lg text-sm bg-gray-50 text-gray-600 focus:outline-none cursor-not-allowed">
+                    <option>Guaranteed - From {departureStartParam} - US$ {basePrice} PP</option>
+                  </select>
+                  <p className="text-[10px] text-gray-400 mt-1.5">Available fixed departure dates for selected trek/tour. Start and end dates are saved with the booking.</p>
+                </div>
+
+                <div className="bg-[#f0f7fb] border border-[#d2eaf7] p-4 rounded-xl">
+                  <span className="block text-[10px] text-[#1a5b88] font-bold uppercase tracking-wider mb-1">Selected Fixed Departure</span>
+                  <h4 className="font-bold text-[#112233] text-lg">Guaranteed - From {departureStartParam}</h4>
+                  <p className="text-[#1a5b88] text-sm font-bold mt-1">US$ {basePrice} PP</p>
+                </div>
+              </>
+            ) : (
+              <div>
+                <label className="block text-xs font-bold text-gray-700 mb-2">Preferred Travel Date <span className="text-red-500">*</span></label>
+                <input 
+                  type="date" 
+                  name="travelDate"
+                  required
+                  min={new Date().toISOString().split('T')[0]}
+                  value={form.travelDate}
+                  onChange={handleChange}
+                  className="w-full p-3 border border-gray-200 rounded-lg text-sm bg-white focus:border-[#1a5b88] focus:outline-none"
+                />
+              </div>
+            )}
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div className="space-y-1.5">
-              <label className="font-bold text-gray-700 uppercase tracking-wider block">Full Name *</label>
-              <input 
-                type="text" 
-                name="fullName"
-                required
-                value={form.fullName}
-                onChange={handleChange}
-                placeholder="Your full name"
-                className="w-full px-4 py-3 rounded-xl border border-gray-200 bg-white text-xs focus:outline-none focus:border-[#24a0ed]"
-              />
+          {/* Personal Information */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 pt-4">
+            <div>
+              <label className="block text-xs font-bold text-gray-700 mb-2">Full Name <span className="text-red-500">*</span></label>
+              <input type="text" name="fullName" required value={form.fullName} onChange={handleChange} placeholder="Your full name" className="w-full p-3 border border-gray-200 rounded-lg text-sm focus:border-[#1a5b88] focus:outline-none" />
             </div>
-
-            <div className="space-y-1.5">
-              <label className="font-bold text-gray-700 uppercase tracking-wider block">Email Address *</label>
-              <input 
-                type="email" 
-                name="email"
-                required
-                value={form.email}
-                onChange={handleChange}
-                placeholder="you@example.com"
-                className="w-full px-4 py-3 rounded-xl border border-gray-200 bg-white text-xs focus:outline-none focus:border-[#24a0ed]"
-              />
+            <div>
+              <label className="block text-xs font-bold text-gray-700 mb-2">Email Address <span className="text-red-500">*</span></label>
+              <input type="email" name="email" required value={form.email} onChange={handleChange} placeholder="you@example.com" className="w-full p-3 border border-gray-200 rounded-lg text-sm focus:border-[#1a5b88] focus:outline-none" />
             </div>
-
-            <div className="space-y-1.5">
-              <label className="font-bold text-gray-700 uppercase tracking-wider block">Country (Quick Search) *</label>
+            <div>
+              <label className="block text-xs font-bold text-gray-700 mb-2">Country <span className="text-red-500">*</span></label>
               <Select
                 options={countryOptions}
                 value={selectedCountryOption}
                 onChange={handleCountryChange}
-                placeholder="Select or type country..."
+                placeholder="Select country..."
                 required
                 styles={{
                   control: (base) => ({
                     ...base,
-                    borderRadius: '0.75rem',
+                    borderRadius: '0.5rem',
                     padding: '2px',
                     borderColor: '#e5e7eb',
-                    fontSize: '0.75rem',
+                    fontSize: '0.875rem',
                     boxShadow: 'none',
-                    '&:hover': { borderColor: '#24a0ed' }
+                    '&:hover': { borderColor: '#1a5b88' }
                   }),
                 }}
               />
             </div>
-
-            <div className="space-y-1.5">
-              <label className="font-bold text-gray-700 uppercase tracking-wider block">Phone / WhatsApp *</label>
-              <input 
-                type="tel" 
-                name="phone"
-                required
-                value={form.phone}
-                onChange={handlePhoneChange}
-                placeholder="Select country first"
-                className="w-full px-4 py-3 rounded-xl border border-gray-200 bg-white text-xs focus:outline-none focus:border-[#24a0ed]"
-              />
+            <div>
+              <label className="block text-xs font-bold text-gray-700 mb-2">Phone / WhatsApp <span className="text-red-500">*</span></label>
+              <input type="tel" name="phone" required value={form.phone} onChange={handlePhoneChange} placeholder="Select country first" className="w-full p-3 border border-gray-200 rounded-lg text-sm focus:border-[#1a5b88] focus:outline-none" />
             </div>
           </div>
 
-          <div className="space-y-1.5">
-            <label className="font-bold text-gray-700 uppercase tracking-wider block">Preferred Travel Date *</label>
-            <input 
-              type="date" 
-              name="travelDate"
-              required
-              min={new Date().toISOString().split('T')[0]}
-              value={form.travelDate}
-              onChange={handleChange}
-              className="w-full px-4 py-3 rounded-xl border border-gray-200 bg-white text-xs focus:outline-none focus:border-[#24a0ed]"
-            />
-          </div>
-
-          <div className="space-y-2">
-            <label className="font-bold text-gray-700 uppercase tracking-wider block">Traveller Details *</label>
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-              <div className="p-3 rounded-xl border border-gray-200 bg-gray-50/50 space-y-1">
-                <span className="text-[10px] text-gray-400 font-bold block">Adult Male</span>
-                <input 
-                  type="number" 
-                  min={0}
-                  name="adultMale"
-                  value={form.adultMale}
-                  onChange={handleChange}
-                  className="w-full font-bold text-sm bg-white border border-gray-200 rounded-lg px-3 py-1.5"
-                />
+          {/* Traveler Details */}
+          <div>
+            <label className="block text-xs font-bold text-gray-700 mb-3">Traveller Details <span className="text-red-500">*</span></label>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 bg-gray-50/50 p-4 border border-gray-100 rounded-xl">
+              <div>
+                <span className="block text-[10px] text-gray-500 font-bold mb-1">Adult Male</span>
+                <input type="number" min="0" name="adultMale" value={form.adultMale} onChange={handleChange} className="w-full p-2.5 border border-gray-200 rounded-lg text-sm focus:border-[#1a5b88] focus:outline-none" />
               </div>
-
-              <div className="p-3 rounded-xl border border-gray-200 bg-gray-50/50 space-y-1">
-                <span className="text-[10px] text-gray-400 font-bold block">Adult Female</span>
-                <input 
-                  type="number" 
-                  min={0}
-                  name="adultFemale"
-                  value={form.adultFemale}
-                  onChange={handleChange}
-                  className="w-full font-bold text-sm bg-white border border-gray-200 rounded-lg px-3 py-1.5"
-                />
+              <div>
+                <span className="block text-[10px] text-gray-500 font-bold mb-1">Adult Female</span>
+                <input type="number" min="0" name="adultFemale" value={form.adultFemale} onChange={handleChange} className="w-full p-2.5 border border-gray-200 rounded-lg text-sm focus:border-[#1a5b88] focus:outline-none" />
               </div>
-
-              <div className="p-3 rounded-xl border border-gray-200 bg-gray-50/50 space-y-1">
-                <span className="text-[10px] text-gray-400 font-bold block">Child Male</span>
-                <input 
-                  type="number" 
-                  min={0}
-                  name="childMale"
-                  value={form.childMale}
-                  onChange={handleChange}
-                  className="w-full font-bold text-sm bg-white border border-gray-200 rounded-lg px-3 py-1.5"
-                />
+              <div>
+                <span className="block text-[10px] text-gray-500 font-bold mb-1">Child Male</span>
+                <input type="number" min="0" name="childMale" value={form.childMale} onChange={handleChange} className="w-full p-2.5 border border-gray-200 rounded-lg text-sm focus:border-[#1a5b88] focus:outline-none" />
               </div>
-
-              <div className="p-3 rounded-xl border border-gray-200 bg-gray-50/50 space-y-1">
-                <span className="text-[10px] text-gray-400 font-bold block">Child Female</span>
-                <input 
-                  type="number" 
-                  min={0}
-                  name="childFemale"
-                  value={form.childFemale}
-                  onChange={handleChange}
-                  className="w-full font-bold text-sm bg-white border border-gray-200 rounded-lg px-3 py-1.5"
-                />
+              <div>
+                <span className="block text-[10px] text-gray-500 font-bold mb-1">Child Female</span>
+                <input type="number" min="0" name="childFemale" value={form.childFemale} onChange={handleChange} className="w-full p-2.5 border border-gray-200 rounded-lg text-sm focus:border-[#1a5b88] focus:outline-none" />
               </div>
             </div>
-            <p className="text-[10px] text-gray-400">Total travellers: <strong className="text-gray-700">{totalTravellers}</strong></p>
+            <p className="text-[10px] text-gray-400 mt-2 flex items-center gap-1">
+              <Info className="w-3 h-3" /> Total travellers: <strong className="text-gray-700">{totalTravellers}</strong>.
+            </p>
           </div>
 
-          <div className="space-y-1.5">
-            <label className="font-bold text-gray-700 uppercase tracking-wider block">Notes / Special Request</label>
+          {/* Notes */}
+          <div>
+            <label className="block text-xs font-bold text-gray-700 mb-2">Notes / Special Request</label>
             <textarea 
-              rows={4}
               name="notes"
               value={form.notes}
               onChange={handleChange}
+              rows={4} 
               placeholder="Tell us about your travel plan, arrival date, hotel, or any custom request."
-              className="w-full px-4 py-3 rounded-xl border border-gray-200 bg-white text-xs focus:outline-none focus:border-[#24a0ed]"
-            />
+              className="w-full p-3 border border-gray-200 rounded-xl text-sm focus:border-[#1a5b88] focus:outline-none resize-none"
+            ></textarea>
           </div>
 
-          <div className="p-5 rounded-xl bg-gray-50 border border-gray-200 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+          {/* Estimated Total Block */}
+          <div className="bg-gray-50 border border-gray-200 p-6 rounded-xl flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
             <div>
-              <span className="text-[10px] text-gray-400 uppercase font-bold block">Estimated Total</span>
-              <span className="text-2xl font-black text-[#112233] oswald">US$ {estimatedTotalNum.toLocaleString()}</span>
+              <span className="block text-xs text-gray-500 font-bold uppercase tracking-wider mb-1">Estimated Total</span>
+              <div className="text-3xl font-black text-[#112233]">
+                US$ {estimatedTotalNum.toLocaleString()}
+              </div>
             </div>
-            <span className="text-[11px] text-gray-500 max-w-xs text-right">
-              US$ {selectedTrip.price} × {totalTravellers || 1} traveller(s).
-            </span>
+            <div className="text-xs text-gray-500 md:text-right md:max-w-[300px]">
+              US$ {basePrice} × {totalTravellers} traveller(s). Final price may change after confirmation, availability, and custom requests.
+            </div>
           </div>
 
-          <div className="flex items-center gap-3">
-            <input 
-              type="checkbox" 
-              name="agreed"
-              id="agreed"
-              required
-              checked={form.agreed}
-              onChange={handleChange}
-              className="w-4 h-4 rounded border-gray-300 text-[#24a0ed] focus:ring-[#24a0ed]"
-            />
-            <label htmlFor="agreed" className="text-gray-600 font-medium">
-              I agree to be contacted about this booking request. *
+          {/* Terms & Submit */}
+          <div className="pt-2">
+            <label className="flex items-center gap-3 cursor-pointer mb-6">
+              <input 
+                type="checkbox" 
+                name="agreed"
+                checked={form.agreed}
+                onChange={handleChange}
+                required
+                className="w-4 h-4 text-[#1a5b88] border-gray-300 rounded focus:ring-[#1a5b88]"
+              />
+              <span className="text-sm text-gray-600 font-medium">I agree to be contacted about this booking request.</span>
             </label>
-          </div>
 
-          <button 
-            type="submit"
-            disabled={submitting}
-            className="w-full bg-[#112233] hover:bg-[#24a0ed] text-white font-bold py-4 rounded-xl uppercase tracking-wider text-xs transition-colors shadow-sm disabled:opacity-50"
-          >
-            {submitting ? 'Submitting Request...' : 'Submit Booking Request'}
-          </button>
+            <button 
+              type="submit" 
+              disabled={submitting}
+              className="bg-[#113255] hover:bg-[#1a5b88] text-white px-8 py-3.5 rounded-lg font-bold text-sm shadow-md transition-colors disabled:opacity-50"
+            >
+              {submitting ? 'Submitting...' : 'Submit Booking Request'}
+            </button>
+          </div>
 
         </form>
-
       </div>
     </div>
   );

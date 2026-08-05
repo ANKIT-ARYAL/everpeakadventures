@@ -40,7 +40,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           <Link href="/admin/tours" className="flex items-center gap-3 px-4 py-2.5 hover:bg-white/5 hover:text-white transition-colors">
             <Layers className="w-4 h-4 text-[#24a0ed]" /> Tours
           </Link>
-          <Link href="/admin/fixed-departures" className="flex items-center gap-3 px-4 py-2.5 hover:bg-white/5 hover:text-white transition-colors">
+          <Link href="/admin/departures" className="flex items-center gap-3 px-4 py-2.5 hover:bg-white/5 hover:text-white transition-colors">
             <Briefcase className="w-4 h-4 text-[#24a0ed]" /> Fixed Departures
           </Link>
 

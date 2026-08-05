@@ -1,0 +1,70 @@
+import { NextResponse } from 'next/server';
+import { prisma } from '@/lib/prisma';
+
+export async function PUT(
+  request: Request,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  try {
+    const { id } = await params;
+    const body = await request.json();
+
+    const updatedTrek = await prisma.trek.update({
+      where: { id },
+      data: {
+        title: body.title,
+        slug: body.slug,
+        description: body.description,
+        overview: body.overview,
+        heroImage: body.heroImage,
+        gallery: body.gallery,
+        durationDays: body.durationDays,
+        price: Number(body.price),
+        region: body.region,
+        difficulty: body.difficulty,
+        maxAltitude: body.maxAltitude,
+        bestSeason: body.bestSeason,
+        accommodation: body.accommodation,
+        meals: body.meals,
+        groupSize: body.groupSize,
+        transport: body.transport,
+        highlights: body.highlights,
+        inclusions: body.inclusions,
+        exclusions: body.exclusions,
+        packingList: body.packingList,
+        itinerary: body.itinerary,
+        mapUrl: body.mapUrl,
+        order: Number(body.order),
+      },
+    });
+
+    return NextResponse.json({ success: true, trek: updatedTrek });
+  } catch (error: any) {
+    console.error("Failed to update trek:", error);
+    return NextResponse.json(
+      { success: false, error: error.message || 'Internal Server Error' },
+      { status: 500 }
+    );
+  }
+}
+
+export async function DELETE(
+  request: Request,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  try {
+    const { id } = await params;
+
+    await prisma.trek.delete({
+      where: { id },
+    });
+
+    return NextResponse.json({ success: true, message: 'Trek deleted successfully' });
+  } catch (error: any) {
+    console.error("Failed to delete trek:", error);
+    return NextResponse.json(
+      { success: false, error: error.message || 'Internal Server Error' },
+      { status: 500 }
+    );
+  }
+}

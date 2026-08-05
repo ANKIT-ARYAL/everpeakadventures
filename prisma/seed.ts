@@ -483,6 +483,7 @@ async function main() {
       {
         title: 'Essential Guide to Packing for Everest Base Camp Trek',
         slug: 'essential-guide-to-packing-for-everest-base-camp',
+        content: '',
         excerpt: 'Discover everything you need to pack for your journey to the roof of the world, from proper layering to high-altitude gear essentials.',
         image: 'https://images.unsplash.com/photo-1544735716-392fe2489ffa?q=80&w=800&auto=format&fit=crop',
         category: 'Everest Region',
@@ -492,6 +493,7 @@ async function main() {
       {
         title: 'Understanding Altitude Sickness: Prevention and Tips',
         slug: 'understanding-altitude-sickness-prevention-and-tips',
+        content: '',
         excerpt: 'Learn the symptoms of acute mountain sickness and how proper acclimatization can keep your Himalayan adventure safe and enjoyable.',
         image: 'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?q=80&w=800&auto=format&fit=crop',
         category: 'Safety & Health',
@@ -501,6 +503,7 @@ async function main() {
       {
         title: 'Culture and Traditions of the Sherpa People',
         slug: 'culture-and-traditions-of-the-sherpa-people',
+        content: '',
         excerpt: 'Immerse yourself in the rich Buddhist heritage, warm hospitality, and unique mountain lifestyle of the Sherpa communities.',
         image: 'https://images.unsplash.com/photo-1512343879784-a960bf40e7f2?q=80&w=800&auto=format&fit=crop',
         category: 'Local Culture',
@@ -743,6 +746,7 @@ async function main() {
       {
         title: 'Essential Guide to Packing for Everest Base Camp Trek',
         slug: 'essential-guide-to-packing-for-everest-base-camp',
+        content: '',
         excerpt: 'Discover everything you need to pack for your journey to the roof of the world, from proper layering to high-altitude gear essentials.',
         image: 'https://images.unsplash.com/photo-1544735716-392fe2489ffa?q=80&w=800&auto=format&fit=crop',
         category: 'Everest Region',
@@ -752,6 +756,7 @@ async function main() {
       {
         title: 'Understanding Altitude Sickness: Prevention and Tips',
         slug: 'understanding-altitude-sickness-prevention-and-tips',
+        content: '',
         excerpt: 'Learn the symptoms of acute mountain sickness and how proper acclimatization can keep your Himalayan adventure safe and enjoyable.',
         image: 'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?q=80&w=800&auto=format&fit=crop',
         category: 'Safety & Health',
@@ -761,6 +766,7 @@ async function main() {
       {
         title: 'Culture and Traditions of the Sherpa People',
         slug: 'culture-and-traditions-of-the-sherpa-people',
+        content: '',
         excerpt: 'Immerse yourself in the rich Buddhist heritage, warm hospitality, and unique mountain lifestyle of the Sherpa communities.',
         image: 'https://images.unsplash.com/photo-1512343879784-a960bf40e7f2?q=80&w=800&auto=format&fit=crop',
         category: 'Local Culture',

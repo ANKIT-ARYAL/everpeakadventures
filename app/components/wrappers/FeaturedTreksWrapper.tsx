@@ -8,4 +8,4 @@ export default async function FeaturedTreksWrapper() {
   });
 
   return <FeaturedTreks treks={treks} />;
-}
+} 

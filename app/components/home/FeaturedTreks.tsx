@@ -1,9 +1,10 @@
 import React from 'react';
 import Link from 'next/link';
-import { Clock, ArrowRight } from 'lucide-react';
+import { Clock } from 'lucide-react';
 
 interface Trek {
   id: string;
+  slug: string | null; // Added from DB schema
   title: string;
   description: string;
   heroImage: string;
@@ -27,14 +28,7 @@ export default function FeaturedTreks({ treks = [] }: FeaturedTreksProps) {
             <h2 className="text-3xl md:text-4xl font-black text-[#222222] oswald uppercase">
               Featured Trekking Packages
             </h2>
-          </div>
-          <Link 
-            href="/trekking" 
-            className="text-xs font-bold uppercase tracking-wider text-[#112233] hover:text-[#24a0ed] transition-colors inline-flex items-center gap-1.5"
-          >
-            <span>View All Treks</span>
-            <ArrowRight className="w-4 h-4" />
-          </Link>
+          </div>          
         </div>
 
         {treks.length === 0 ? (
@@ -80,7 +74,7 @@ export default function FeaturedTreks({ treks = [] }: FeaturedTreksProps) {
                       {trek.durationDays}
                     </span>
                     <Link 
-                      href={`/trekking/${trek.id}`}
+                      href={`/trekking/${trek.slug}`} 
                       className="text-[#24a0ed] hover:underline font-bold"
                     >
                       Explore →

@@ -48,7 +48,10 @@ export default function ExploreBlogs({ posts = [] }: ExploreBlogsProps) {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
           
           {/* Left: Large Featured Blog Card */}
-          <div className="lg:col-span-7 bg-white rounded-2xl border border-gray-100 shadow-[0_4px_25px_rgba(0,0,0,0.05)] overflow-hidden flex flex-col justify-between group">
+          <Link 
+            href={`/blogs/${mainBlog.slug}`}
+            className="lg:col-span-7 bg-white rounded-2xl border border-gray-100 shadow-[0_4px_25px_rgba(0,0,0,0.05)] overflow-hidden flex flex-col justify-between group block"
+          >
             <div className="relative w-full h-[380px] md:h-[440px] overflow-hidden bg-gray-100">
               {mainBlog.image && (
                 <img 
@@ -65,12 +68,12 @@ export default function ExploreBlogs({ posts = [] }: ExploreBlogsProps) {
                   <MapPin className="w-3.5 h-3.5 text-[#3bbae6]" />
                   <span>{mainBlog.category}</span>
                 </div>
-                <h3 className="text-xl md:text-2xl font-bold leading-snug">
+                <h3 className="text-xl md:text-2xl font-bold leading-snug group-hover:text-[#3bbae6] transition-colors">
                   {mainBlog.title}
                 </h3>
               </div>
             </div>
-          </div>
+          </Link>
 
           {/* Right: Two Stacked Blog Cards */}
           <div className="lg:col-span-5 flex flex-col gap-6">
@@ -94,7 +97,7 @@ export default function ExploreBlogs({ posts = [] }: ExploreBlogsProps) {
                     href={`/blogs/${blog.slug}`}
                     className="text-xs font-bold text-[#222222] hover:text-[#3bbae6] transition-colors inline-flex items-center gap-1 uppercase tracking-wider"
                   >
-                    Read More
+                    Read More →
                   </Link>
                 </div>
 

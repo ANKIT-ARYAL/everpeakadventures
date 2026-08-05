@@ -42,6 +42,7 @@ export default function SendInquiryClient({ trips }: Props) {
     image: 'https://images.unsplash.com/photo-1544644181-1484b3fdfc62?q=80&w=600&auto=format&fit=crop'
   };
 
+  const [mounted, setMounted] = useState(false);
   const [form, setForm] = useState({
     tripTitle: selectedTrip.title,
     groupSize: '1 Pax - Solo Traveller',
@@ -61,6 +62,10 @@ export default function SendInquiryClient({ trips }: Props) {
   const [selectedCountryOption, setSelectedCountryOption] = useState<any>(null);
   const [submitting, setSubmitting] = useState(false);
   const [success, setSuccess] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const totalTravellers = form.adultMale + form.adultFemale + form.childMale + form.childFemale;
 
@@ -156,7 +161,7 @@ export default function SendInquiryClient({ trips }: Props) {
 
   if (success) {
     return (
-      <div className="min-h-[70vh] flex items-center justify-center px-5 bg-[#112233]">
+      <div className="min-h-[70vh] flex items-center justify-center px-5 bg-white">
         <Toaster position="top-center" />
         <div className="bg-white p-10 rounded-2xl shadow-sm border border-gray-100 max-w-md w-full text-center space-y-4">
           <CheckCircle2 className="w-16 h-16 text-emerald-500 mx-auto" />
@@ -189,13 +194,13 @@ export default function SendInquiryClient({ trips }: Props) {
       <Toaster position="top-center" />
       
       {/* Hero Header Section */}
-      <section className="relative py-24 text-white text-center bg-[#112233]">
+      <section className="relative py-24 bg-[#112233] text-white text-center">
         <h1 className="text-3xl md:text-4xl font-black uppercase tracking-wider oswald">Send Inquiry</h1>
       </section>
 
-      {/* Main Container Card matching screenshot */}
+      {/* Main Container Card */}
       <div className="max-w-4xl mx-auto px-4 -mt-10 pb-24 relative z-20">
-        <div className="bg-white rounded-2xl shadow-2xl p-8 md:p-10 space-y-8 border border-gray-100">
+        <div className="bg-white rounded-2xl shadow-2xl p-8 md:p-12 space-y-8 border border-gray-100">
           
           <div className="space-y-1">
             <h2 className="text-xl font-black uppercase tracking-tight text-[#112233]">Book Your Trek</h2>
@@ -280,24 +285,30 @@ export default function SendInquiryClient({ trips }: Props) {
 
               <div className="space-y-1.5">
                 <label className="font-bold text-gray-700 uppercase tracking-wider text-[11px] block">Country *</label>
-                <Select
-                  options={countryOptions}
-                  value={selectedCountryOption}
-                  onChange={handleCountryChange}
-                  placeholder="Select or type country..."
-                  required
-                  styles={{
-                    control: (base) => ({
-                      ...base,
-                      borderRadius: '0.5rem',
-                      padding: '2px',
-                      borderColor: '#e5e7eb',
-                      fontSize: '0.75rem',
-                      boxShadow: 'none',
-                      '&:hover': { borderColor: '#24a0ed' }
-                    }),
-                  }}
-                />
+                {mounted ? (
+                  <Select
+                    options={countryOptions}
+                    value={selectedCountryOption}
+                    onChange={handleCountryChange}
+                    placeholder="Select or type country..."
+                    required
+                    styles={{
+                      control: (base) => ({
+                        ...base,
+                        borderRadius: '0.5rem',
+                        padding: '2px',
+                        borderColor: '#e5e7eb',
+                        fontSize: '0.75rem',
+                        boxShadow: 'none',
+                        '&:hover': { borderColor: '#24a0ed' }
+                      }),
+                    }}
+                  />
+                ) : (
+                  <div className="w-full px-4 py-3 rounded-lg border border-gray-200 bg-gray-50 text-gray-400 text-xs">
+                    Loading countries...
+                  </div>
+                )}
               </div>
             </div>
 

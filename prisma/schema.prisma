@@ -22,18 +22,40 @@ model HeroContent {
 }
 
 model Trek {
-  id           String   @id @default(uuid())
-  title        String
-  description  String
-  heroImage    String
-  durationDays String
-  price        Float
-  region       String
-  difficulty   String
-  isBestSeller Boolean  @default(false)
-  order        Int      @default(0)
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  id             String   @id @default(cuid())
+  slug           String?   @unique
+  title          String
+  description    String   @db.Text // Short description for cards
+  overview       String?  @db.Text // Full overview content
+  heroImage      String
+  gallery        String[] // Array of image URLs
+
+  // Quick Facts (Trip Meta)
+  durationDays   String
+  price          Float
+  region         String
+  difficulty     String   // e.g., Moderate, Strenuous
+  maxAltitude    String?
+  bestSeason     String?
+  accommodation  String?
+  meals          String?
+  groupSize      String?
+  transport      String?
+
+  // Detailed Data (Arrays & JSON)
+  highlights     String[]
+  inclusions     String[]
+  exclusions     String[]
+  packingList    String[]
+  itinerary      Json?    // Stores array of { day: number, title: string, desc: string }
+  
+  // Meta & Sorting
+  mapUrl         String?  // For elevation map images
+  isBestSeller   Boolean  @default(false)
+  order          Int      @default(0)
+
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
 }
 
 model Tour {
@@ -64,16 +86,27 @@ model Tour {
   updatedAt       DateTime @updatedAt
 }
 model BlogPost {
-  id        String   @id @default(uuid())
-  title     String
-  slug      String   @unique
-  excerpt   String
-  image     String
-  category  String   @default("Trekking / Hiking")
-  date      String   // E.g., 'September 15, 2026'
-  order     Int      @default(0)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id           String   @id @default(uuid())
+  title        String
+  slug         String   @unique
+  content      String?   @db.Text // Full HTML/Rich text body from the main editor
+  excerpt      String   @db.Text // Short description for cards
+  image        String   // Featured image URL
+  category     String   @default("Trekking / Hiking")
+  tags         String[] // Array of tags
+  date         String   // E.g., 'September 15, 2026'
+  
+  // Yoast SEO Meta Fields
+  seoTitle     String?
+  metaDescription String? @db.Text
+  focusKeyphrase String?
+
+  // Related FAQs (Repeater from WordPress bottom section)
+  faqs         Json?    // Stores array of { question: string, answer: string }
+
+  order        Int      @default(0)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
 }
 
 model ClientReview {
@@ -254,6 +287,8 @@ model FixedDeparture {
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
 }
+
+
 model WelcomeContent {
   id           String   @id @default(uuid())
   companyName  String   @default("Ever Peak Adventure")
