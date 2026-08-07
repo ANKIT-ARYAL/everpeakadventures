@@ -4,11 +4,14 @@ import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import {
   Calendar, Clock, CheckCircle2, XCircle, Utensils, Award, 
-  Mountain, Home, Users, Bus, Share2 
+  Mountain, Home, Share2, MapPin, Activity as ActivityIcon, Flag
 } from 'lucide-react';
 import TrekGallerySlider from '../TrekGallerySlider';
+import StickySectionNav from '@/app/components/trek/StickySectionNav';
+import RouteMap from '@/app/components/trek/RouteMap';
+import GallerySection from '@/app/components/trek/GallerySection';
 import { Reveal, Stagger, StaggerItem } from '@/app/components/animations/Motion';
-
+import { toHtml } from '@/app/lib/html';
 
 export const dynamic = 'force-dynamic';
 
@@ -21,14 +24,16 @@ interface PageProps {
 export default async function TrekDetailPage({ params }: PageProps) {
   const { slug } = await params;
 
-  // Query database for trek matching slug
   const trek = await prisma.trek.findUnique({
     where: { slug },
+    include: {
+      groupPrices: true,
+      fixedSchedules: true,
+    }
   });
 
   if (!trek) notFound();
 
-  // Related treks query
   const relatedTreks = await prisma.trek.findMany({
     where: { id: { not: trek.id } },
     take: 3,
@@ -38,8 +43,19 @@ export default async function TrekDetailPage({ params }: PageProps) {
   const galleryImages = (trek.gallery || []).filter(Boolean);
   const itineraryDays = Array.isArray(trek.itinerary) ? (trek.itinerary as any[]) : [];
   const packingItems = trek.packingList || [];
-
   const shareUrl = `https://everpeakadventures.com/trekking/${trek.slug ?? trek.id}`;
+
+  const parsePrice = (s?: string | null) => {
+    const n = Number(String(s ?? '').replace(/[^0-9.]/g, ''));
+    return Number.isFinite(n) && n > 0 ? n : 0;
+  };
+  const groupPricesArr = (trek.groupPrices || []) as any[];
+  const minPrice = groupPricesArr.length
+    ? Math.min(...groupPricesArr.map((g: any) => parsePrice(g.price)).filter((n: number) => n > 0))
+    : (trek.discountedPrice ?? trek.price);
+  const regularPrice = (trek.originalPrice ?? trek.price) > minPrice ? (trek.originalPrice ?? trek.price) : minPrice;
+  const saveAmount = regularPrice - minPrice;
+  const minPriceDisplay = minPrice > 0 ? minPrice : (trek.discountedPrice ?? trek.price);
 
   return (
     <div className="min-h-screen bg-[#f4f6f8] font-sans text-gray-800 pb-24">
@@ -56,48 +72,112 @@ export default async function TrekDetailPage({ params }: PageProps) {
         </div>
       </section>
 
+      <StickySectionNav />
+
       {/* 2. MAIN GRID LAYOUT */}
       <section className="max-w-[1200px] mx-auto px-5 -mt-8 relative z-20">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           
-          {/* LEFT SIDEBAR: BOOKING CARD & INQUIRY HELP */}
+          {/* LEFT SIDEBAR: EXACT MATCH BOOKING & GROUP PRICE TABLE */}
           <div className="space-y-6">
-            
-            {/* Price & Booking Box */}
-            <div className="bg-white rounded-xl shadow-[0_4px_20px_rgba(0,0,0,0.06)] border border-gray-100 p-6 sticky top-6 space-y-5">
-              <div className="flex items-center justify-between border-b pb-4">
-                <div>
-                  <span className="text-[10px] text-gray-400 font-bold uppercase block">Price From</span>
-                  <span className="text-3xl font-black text-[#112233] oswald">
-                    ${trek.price ? trek.price.toLocaleString() : '1,790'}
-                  </span>
+            <div className="bg-white rounded-xl shadow-lg border border-gray-100 p-6 sticky top-6 space-y-5">
+              
+              {/* Header Price display */}
+              <div className="border-b pb-5">
+                <div className="flex items-start justify-between gap-3">
+                  <div>
+                    <span className="text-[10px] text-gray-400 font-bold uppercase block tracking-wider">Price From</span>
+                    <div className="flex items-baseline flex-wrap gap-x-1.5 mt-1">
+                      <span className="text-[1.75rem] leading-none font-black text-[#112233] oswald">US$ {minPriceDisplay.toLocaleString()}</span>
+                      <span className="text-sm font-bold text-gray-500">PP</span>
+                    </div>
+                    <div className="mt-2 space-y-1 text-[11px] text-gray-500 font-medium">
+                      {regularPrice > minPrice && (
+                        <div>Regular price: <span className="line-through text-gray-400">US$ {regularPrice.toLocaleString()}</span></div>
+                      )}
+                      {trek.priceRange && <div>Range: {trek.priceRange}</div>}
+                      <div>Duration: {trek.durationDays}</div>
+                    </div>
+                  </div>
+
+                  {saveAmount > 0 && (
+                    <div className="shrink-0 flex flex-col items-center bg-amber-400 text-[#112233] rounded-xl px-3 py-2 shadow-sm text-center">
+                      <span className="text-[9px] font-black uppercase tracking-wider">Save</span>
+                      <span className="text-sm font-black leading-tight">US$ {saveAmount.toLocaleString()}</span>
+                      <span className="text-[8px] font-bold uppercase tracking-wide opacity-80">per person</span>
+                    </div>
+                  )}
                 </div>
-                <span className="bg-amber-50 text-amber-700 font-bold text-[10px] px-2.5 py-1 rounded border border-amber-200">
-                  Best Price
-                </span>
               </div>
 
-              <div className="space-y-3 text-xs">
-                <div className="flex justify-between py-1.5 border-b border-gray-50">
-                  <span className="text-gray-400 font-medium">Destination</span>
-                  <span className="font-bold uppercase text-[#112233]">{trek.region}</span>
+              {/* Group-Size Discounts */}
+              {trek.groupPrices && trek.groupPrices.length > 0 && (
+                <div className="space-y-2">
+                  <h4 className="font-bold text-gray-800 uppercase tracking-wider text-xs">Group-Size Discounts</h4>
+                  <p className="text-[10px] text-gray-400">Your group is private - we do not add others to your group.</p>
+                  <div className="border border-gray-200 rounded-lg overflow-hidden text-[11px]">
+                    <div className="grid grid-cols-4 bg-gray-100 font-bold text-gray-600 p-2 border-b border-gray-200 text-center uppercase tracking-wide">
+                      <span>No. of Persons</span>
+                      <span>Group Type</span>
+                      <span>Price / Person</span>
+                      <span></span>
+                    </div>
+                    {trek.groupPrices.map((gp: any, i: number) => (
+                      <div key={gp.id} className={`grid grid-cols-4 p-2 text-center text-gray-600 items-center ${i !== trek.groupPrices.length - 1 ? 'border-b border-gray-100' : ''}`}>
+                        <span className="font-semibold">{gp.groupSize}</span>
+                        <span>{gp.groupType}</span>
+                        <span className="text-[#24a0ed] font-bold">{gp.price}</span>
+                        <span>
+                          <Link href={`/booking-form/?trip_id=${trek.id}`} className="text-[#24a0ed] hover:text-[#112233] font-bold underline">
+                            Book
+                          </Link>
+                        </span>
+                      </div>
+                    ))}
+                  </div>
                 </div>
-                <div className="flex justify-between py-1.5 border-b border-gray-50">
-                  <span className="text-gray-400 font-medium">Duration</span>
-                  <span className="font-bold text-[#112233]">{trek.durationDays}</span>
+              )}
+
+              {/* Group Schedule / Departures Box */}
+              {trek.fixedSchedules && trek.fixedSchedules.length > 0 && (
+                <div className="space-y-2 pt-2">
+                  <span className="text-[11px] font-bold uppercase text-gray-500 block">Group Date Schedule</span>
+                  <div className="space-y-1.5">
+                    {trek.fixedSchedules.map((sch: any) => (
+                      <div key={sch.id} className="flex items-center justify-between bg-gray-50 p-2 rounded border border-gray-200 text-[11px]">
+                        <span className="font-medium text-gray-700">{sch.dateRange}</span>
+                        <Link href={`/booking-form/?trip_id=${trek.id}`} className="bg-[#24a0ed] text-white px-3 py-1 rounded font-bold hover:bg-[#112233] transition-colors">
+                          {sch.status}
+                        </Link>
+                      </div>
+                    ))}
+                  </div>
                 </div>
-                <div className="flex justify-between py-1.5 border-b border-gray-50">
-                  <span className="text-gray-400 font-medium">Best Season</span>
-                  <span className="font-bold text-[#112233]">{trek.bestSeason}</span>
+              )}
+
+              {/* All Inclusive Section */}
+              {trek.isAllInclusive && (
+                <div className="bg-[#112233] text-white p-4 rounded-lg text-xs space-y-2">
+                  <h4 className="font-bold uppercase tracking-wider mb-2">All Inclusive Price</h4>
+                  <div className="flex items-center gap-2">✓ Entire Booking</div>
+                  <div className="flex items-center gap-2">✓ Secure Processing</div>
+                  <div className="flex items-center gap-2">✓ No Hidden Costs</div>
                 </div>
-              </div>
+              )}
 
               <Link 
                 href={`/booking-form/?trip_id=${trek.id}`}
                 className="w-full bg-[#112233] hover:bg-[#24a0ed] text-white font-bold py-3.5 rounded-lg text-center transition-colors uppercase tracking-wider block text-xs shadow-sm"
               >
-                Book This Trek Now
+                Book Now
               </Link>
+              <Link 
+                href="/send-inquiry"
+                className="w-full bg-white border-2 border-[#24a0ed] text-[#24a0ed] hover:bg-[#24a0ed] hover:text-white font-bold py-3.5 rounded-lg text-center transition-colors uppercase tracking-wider block text-xs"
+              >
+                Enquire
+              </Link>
+              <p className="text-center text-[9px] text-gray-400">Dates & discounts are applied in the next step.</p>
             </div>
 
             {/* Quick Inquiry Options */}
@@ -112,9 +192,6 @@ export default async function TrekDetailPage({ params }: PageProps) {
                 <a href="https://wa.me/9851093960" target="_blank" rel="noopener noreferrer" className="p-3 bg-[#1c2e40] hover:bg-[#24a0ed] transition-colors rounded-lg font-medium flex items-center justify-between">
                   <span>Instant WhatsApp</span><span>→</span>
                 </a>
-                <Link href="/send-inquiry" className="p-3 bg-[#1c2e40] hover:bg-[#24a0ed] transition-colors rounded-lg font-medium flex items-center justify-between">
-                  <span>Customize Trip</span><span>→</span>
-                </Link>
               </div>
             </div>
 
@@ -122,15 +199,20 @@ export default async function TrekDetailPage({ params }: PageProps) {
 
           {/* RIGHT COLUMN: MAIN CONTENT */}
           <div className="lg:col-span-2 space-y-6">
-            
-            {/* Top Auto-Swiping Image Slider */}
             <div className="w-full">
               <TrekGallerySlider mainImage={trek.heroImage} galleryImages={galleryImages} />
             </div>
 
-            {/* 8-Grid Quick Facts Box */}
-            <Stagger className="bg-white rounded-xl p-6 shadow-sm border border-gray-100 grid grid-cols-2 sm:grid-cols-4 gap-4 text-xs">
-              
+            {/* Quick Facts Grid */}
+            <div id="key-points" className="scroll-mt-[118px]" />
+            <Stagger className="bg-white rounded-xl p-6 shadow-sm border border-gray-100 grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 text-xs">
+              <StaggerItem className="flex items-center gap-3 p-3 rounded-lg bg-gray-50 border border-gray-100">
+                <MapPin className="w-5 h-5 text-[#24a0ed]" />
+                <div>
+                  <span className="text-[10px] text-gray-400 uppercase block font-bold">Start at</span>
+                  <span className="font-bold text-gray-800">Kathmandu</span>
+                </div>
+              </StaggerItem>
               <StaggerItem className="flex items-center gap-3 p-3 rounded-lg bg-gray-50 border border-gray-100">
                 <Clock className="w-5 h-5 text-[#24a0ed]" />
                 <div>
@@ -138,31 +220,13 @@ export default async function TrekDetailPage({ params }: PageProps) {
                   <span className="font-bold text-gray-800">{trek.durationDays}</span>
                 </div>
               </StaggerItem>
-
-              <StaggerItem className="flex items-center gap-3 p-3 rounded-lg bg-gray-50 border border-gray-100">
-                <Mountain className="w-5 h-5 text-[#24a0ed]" />
-                <div>
-                  <span className="text-[10px] text-gray-400 uppercase block font-bold">Max Altitude</span>
-                  <span className="font-bold text-gray-800">{trek.maxAltitude}</span>
-                </div>
-              </StaggerItem>
-
               <StaggerItem className="flex items-center gap-3 p-3 rounded-lg bg-gray-50 border border-gray-100">
                 <Award className="w-5 h-5 text-[#24a0ed]" />
                 <div>
-                  <span className="text-[10px] text-gray-400 uppercase block font-bold">Trek Grade</span>
+                  <span className="text-[10px] text-gray-400 uppercase block font-bold">Trekking Grade</span>
                   <span className="font-bold text-gray-800">{trek.difficulty}</span>
                 </div>
               </StaggerItem>
-
-              <StaggerItem className="flex items-center gap-3 p-3 rounded-lg bg-gray-50 border border-gray-100">
-                <Calendar className="w-5 h-5 text-[#24a0ed]" />
-                <div>
-                  <span className="text-[10px] text-gray-400 uppercase block font-bold">Best Season</span>
-                  <span className="font-bold text-gray-800">{trek.bestSeason}</span>
-                </div>
-              </StaggerItem>
-
               <StaggerItem className="flex items-center gap-3 p-3 rounded-lg bg-gray-50 border border-gray-100">
                 <Home className="w-5 h-5 text-[#24a0ed]" />
                 <div>
@@ -170,7 +234,27 @@ export default async function TrekDetailPage({ params }: PageProps) {
                   <span className="font-bold text-gray-800">{trek.accommodation || 'Teahouse / Lodge'}</span>
                 </div>
               </StaggerItem>
-
+              <StaggerItem className="flex items-center gap-3 p-3 rounded-lg bg-gray-50 border border-gray-100">
+                <Mountain className="w-5 h-5 text-[#24a0ed]" />
+                <div>
+                  <span className="text-[10px] text-gray-400 uppercase block font-bold">Max Altitude</span>
+                  <span className="font-bold text-gray-800">{trek.maxAltitude}</span>
+                </div>
+              </StaggerItem>
+              <StaggerItem className="flex items-center gap-3 p-3 rounded-lg bg-gray-50 border border-gray-100">
+                <ActivityIcon className="w-5 h-5 text-[#24a0ed]" />
+                <div>
+                  <span className="text-[10px] text-gray-400 uppercase block font-bold">Activity</span>
+                  <span className="font-bold text-gray-800">{trek.activity || 'Trekking'}</span>
+                </div>
+              </StaggerItem>
+              <StaggerItem className="flex items-center gap-3 p-3 rounded-lg bg-gray-50 border border-gray-100">
+                <Calendar className="w-5 h-5 text-[#24a0ed]" />
+                <div>
+                  <span className="text-[10px] text-gray-400 uppercase block font-bold">Best Season</span>
+                  <span className="font-bold text-gray-800">{trek.bestSeason}</span>
+                </div>
+              </StaggerItem>
               <StaggerItem className="flex items-center gap-3 p-3 rounded-lg bg-gray-50 border border-gray-100">
                 <Utensils className="w-5 h-5 text-[#24a0ed]" />
                 <div>
@@ -178,48 +262,30 @@ export default async function TrekDetailPage({ params }: PageProps) {
                   <span className="font-bold text-gray-800">{trek.meals || 'BLD'}</span>
                 </div>
               </StaggerItem>
-
               <StaggerItem className="flex items-center gap-3 p-3 rounded-lg bg-gray-50 border border-gray-100">
-                <Users className="w-5 h-5 text-[#24a0ed]" />
+                <Flag className="w-5 h-5 text-[#24a0ed]" />
                 <div>
-                  <span className="text-[10px] text-gray-400 uppercase block font-bold">Group Size</span>
-                  <span className="font-bold text-gray-800">{trek.groupSize || '1 - 12 Pax'}</span>
+                  <span className="text-[10px] text-gray-400 uppercase block font-bold">End at</span>
+                  <span className="font-bold text-gray-800">Kathmandu</span>
                 </div>
               </StaggerItem>
-
-              <StaggerItem className="flex items-center gap-3 p-3 rounded-lg bg-gray-50 border border-gray-100">
-                <Bus className="w-5 h-5 text-[#24a0ed]" />
-                <div>
-                  <span className="text-[10px] text-gray-400 uppercase block font-bold">Transport</span>
-                  <span className="font-bold text-gray-800">{trek.transport || 'Flight / Flight'}</span>
-                </div>
-              </StaggerItem>
-
             </Stagger>
 
             {/* Trip Overview */}
+            <div id="trip-overview" className="scroll-mt-[118px]" />
             <Reveal className="bg-white rounded-xl p-8 shadow-sm border border-gray-100 space-y-4">
               <h2 className="text-xl font-bold oswald uppercase text-[#112233] border-b pb-3">
                 Trip Overview
               </h2>
-              <p className="text-gray-600 text-xs md:text-sm leading-relaxed whitespace-pre-line">
-                {trek.overview || "Experience one of Nepal's most breathtaking trekking adventures."}
-              </p>
-              
-              {/* Social Share Bar */}
-              <div className="pt-4 flex items-center gap-2 border-t border-gray-100">
-                <span className="text-xs font-bold text-gray-400 flex items-center gap-1 mr-2">
-                  <Share2 className="w-3.5 h-3.5" /> Share:
-                </span>
-                <a href="https://wa.me/9851093960" target="_blank" rel="noopener noreferrer" className="px-3 py-1 bg-emerald-600 text-white rounded text-[10px] font-bold">WhatsApp</a>
-                <a href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}`} target="_blank" rel="noopener noreferrer" className="px-3 py-1 bg-blue-600 text-white rounded text-[10px] font-bold">Facebook</a>
-                <a href={`https://twitter.com/intent/tweet?url=${encodeURIComponent(shareUrl)}&text=${encodeURIComponent(trek.title)}`} target="_blank" rel="noopener noreferrer" className="px-3 py-1 bg-sky-500 text-white rounded text-[10px] font-bold">Twitter</a>
-                <a href={`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(shareUrl)}`} target="_blank" rel="noopener noreferrer" className="px-3 py-1 bg-blue-700 text-white rounded text-[10px] font-bold">LinkedIn</a>
-              </div>
+              <div
+                className="text-gray-600 text-xs md:text-sm leading-relaxed rich-content"
+                dangerouslySetInnerHTML={{ __html: toHtml(trek.overview) }}
+              />
             </Reveal>
 
             {/* Highlights */}
-            {trek.highlights && trek.highlights.length > 0 && (
+            {trek.highlights && trek.highlights.length > 0 && (<>
+              <div id="highlights" className="scroll-mt-[118px]" />
               <Reveal className="bg-white rounded-xl p-8 shadow-sm border border-gray-100 space-y-4">
                 <h2 className="text-xl font-bold oswald uppercase text-[#112233] border-b pb-3">
                   Highlights
@@ -227,120 +293,125 @@ export default async function TrekDetailPage({ params }: PageProps) {
                 <ul className="space-y-2.5">
                   {trek.highlights.map((h: string, i: number) => (
                     <li key={i} className="flex items-start gap-2.5 text-xs text-gray-700 font-medium">
-                      <span className="text-[#24a0ed] font-bold">✓</span> {h}
+                      <span className="text-[#24a0ed] font-bold shrink-0">✓</span>
+                      <span dangerouslySetInnerHTML={{ __html: toHtml(h) }} />
                     </li>
                   ))}
                 </ul>
               </Reveal>
-            )}
+            </>)}
 
             {/* Itinerary */}
-            {itineraryDays.length > 0 && (
+            {itineraryDays.length > 0 && (<>
+              <div id="itinerary" className="scroll-mt-[118px]" />
               <Reveal className="bg-white rounded-xl p-8 shadow-sm border border-gray-100 space-y-4">
                 <h2 className="text-xl font-bold oswald uppercase text-[#112233] border-b pb-3">
                   Itinerary
                 </h2>
                 <div className="space-y-3">
                   {itineraryDays.map((day: any, i: number) => (
-                    <details key={i} className="group p-4 rounded-xl bg-gray-50 border border-gray-200">
-                      <summary className="font-bold text-xs text-[#112233] cursor-pointer flex items-center justify-between">
+                    <details key={i} className="group rounded-xl bg-gray-50 border border-gray-200 overflow-hidden">
+                      <summary className="list-none font-bold text-xs text-[#112233] cursor-pointer flex items-center justify-between gap-2 px-4 py-3.5 transition-colors hover:bg-gray-100">
                         <span>Day {day.day || i + 1}: {day.title}</span>
-                        <span className="text-gray-400 group-open:rotate-180 transition-transform">▼</span>
+                        <span className="text-gray-400 group-open:rotate-180 transition-transform shrink-0">▼</span>
                       </summary>
-                      <p className="text-xs text-gray-600 mt-3 pt-3 border-t border-gray-200 leading-relaxed">
-                        {day.desc}
-                      </p>
+                      <div className="text-xs text-gray-600 px-4 py-3.5 pt-3 border-t border-gray-200 leading-relaxed" dangerouslySetInnerHTML={{ __html: toHtml(day.desc) }} />
                     </details>
                   ))}
                 </div>
               </Reveal>
-            )}
+            </>)}
 
             {/* Includes & Excludes */}
-            <Stagger className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+            <div id="include" className="scroll-mt-[118px]" />
+            <Stagger className="grid grid-cols-2 gap-6">
               <StaggerItem className="bg-white rounded-xl p-6 shadow-sm border border-gray-100 space-y-3">
                 <h3 className="font-bold oswald uppercase text-emerald-700 border-b pb-2 flex items-center gap-2 text-xs">
                   <CheckCircle2 className="w-4 h-4" /> Package Includes
                 </h3>
                 <ul className="space-y-2 text-xs text-gray-600">
                   {trek.inclusions?.map((inc: string, i: number) => (
-                    <li key={i} className="flex items-start gap-2"><span className="text-emerald-600 font-bold">•</span> {inc}</li>
+                    <li key={i} className="flex items-start gap-2"><span className="text-emerald-600 font-bold shrink-0">•</span><span dangerouslySetInnerHTML={{ __html: toHtml(inc) }} /></li>
                   ))}
                 </ul>
               </StaggerItem>
-              <StaggerItem className="bg-white rounded-xl p-6 shadow-sm border border-gray-100 space-y-3">
+              <StaggerItem id="exclude" className="bg-white rounded-xl p-6 shadow-sm border border-gray-100 space-y-3 scroll-mt-[118px]">
                 <h3 className="font-bold oswald uppercase text-rose-700 border-b pb-2 flex items-center gap-2 text-xs">
                   <XCircle className="w-4 h-4" /> Package Excludes
                 </h3>
                 <ul className="space-y-2 text-xs text-gray-600">
                   {trek.exclusions?.map((exc: string, i: number) => (
-                    <li key={i} className="flex items-start gap-2"><span className="text-rose-600 font-bold">•</span> {exc}</li>
+                    <li key={i} className="flex items-start gap-2"><span className="text-rose-600 font-bold shrink-0">•</span><span dangerouslySetInnerHTML={{ __html: toHtml(exc) }} /></li>
                   ))}
                 </ul>
               </StaggerItem>
             </Stagger>
 
-            {/* Equipment & Packing Checklist */}
-            <Reveal className="bg-white rounded-xl p-8 shadow-sm border border-gray-100 space-y-4">
-              <h2 className="text-xl font-bold oswald uppercase text-[#112233] border-b pb-3">
-                Equipment List / Checklist
-              </h2>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs text-gray-600">
-                {(packingItems.length > 0 ? packingItems : [
-                  'Trekking boots & spare laces',
-                  'Down jacket & waterproof shell jacket',
-                  'Thermal innerwear (top & bottom)',
-                  'Trekking poles & gloves',
-                  'Sleeping bag (-10°C rating)',
-                  'Water purification tablets & bottle'
-                ]).map((item, idx) => (
-                  <div key={idx} className="flex items-center gap-2 p-2 bg-gray-50 rounded border border-gray-100">
-                    <span className="text-[#24a0ed]">✓</span> {item}
-                  </div>
-                ))}
-              </div>
-            </Reveal>
-
-            {/* Elevation Profile Chart Placeholder */}
-            <Reveal className="bg-white rounded-xl p-8 shadow-sm border border-gray-100 space-y-4">
-              <h2 className="text-xl font-bold oswald uppercase text-[#112233] border-b pb-3">
-                Elevation Map
-              </h2>
-              {trek.mapUrl ? (
-                <div className="bg-gray-50 border border-gray-200 rounded-xl p-6 text-center space-y-3">
-                  <img 
-                    src={trek.mapUrl} 
-                    alt={`${trek.title} elevation profile`} 
-                    className="w-full h-44 object-contain rounded-lg"
-                  />
-                  <div className="flex justify-between text-[10px] text-gray-400 font-bold">
-                    <span>Elevation Profile</span>
-                    <span>Max: {trek.maxAltitude || '5,357m'}</span>
-                  </div>
-                </div>
-              ) : (
-                <div className="bg-gray-50 border border-gray-200 rounded-xl p-6 text-center space-y-3">
-                  <div className="h-44 w-full bg-emerald-50/50 rounded-lg flex items-end justify-between px-6 pb-4 border-b border-emerald-200">
-                    <div className="w-6 bg-emerald-400 rounded-t h-[30%]" title="Lukla (2,860m)"></div>
-                    <div className="w-6 bg-emerald-500 rounded-t h-[55%]" title="Namche (3,440m)"></div>
-                    <div className="w-6 bg-emerald-600 rounded-t h-[75%]" title="Dole (4,200m)"></div>
-                    <div className="w-6 bg-emerald-700 rounded-t h-[90%]" title="Gokyo (4,790m)"></div>
-                    <div className="w-6 bg-emerald-800 rounded-t h-full" title="Gokyo Ri (5,357m)"></div>
-                  </div>
-                  <div className="flex justify-between text-[10px] text-gray-400 font-bold">
-                    <span>Start: 2,860m</span>
-                    <span>Max: {trek.maxAltitude || '5,357m'}</span>
-                  </div>
-                </div>
-              )}
-            </Reveal>
-
           </div>
-
         </div>
       </section>
 
-      {/* 3. RELATED TREKS SECTION */}
+      {/* EQUIPMENT & GEARS */}
+      {packingItems.length > 0 && (<>
+        <div id="equipment" className="scroll-mt-[118px]" />
+        <section className="max-w-[1200px] mx-auto px-5 mt-10">
+          <Reveal className="bg-white rounded-xl p-8 shadow-sm border border-gray-100">
+            <h2 className="text-xl font-bold oswald uppercase text-[#112233] border-b pb-3 mb-6">
+              Equipment & Trekking Gears
+            </h2>
+            <Stagger className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+              {packingItems.map((item: string, i: number) => (
+                <StaggerItem key={i} className="flex items-start gap-2.5 text-xs text-gray-700 font-medium p-3 rounded-lg bg-gray-50 border border-gray-100">
+                  <CheckCircle2 className="w-4 h-4 text-[#24a0ed] shrink-0 mt-0.5" />
+                  <span dangerouslySetInnerHTML={{ __html: toHtml(item) }} />
+                </StaggerItem>
+              ))}
+            </Stagger>
+          </Reveal>
+        </section>
+      </>)}
+
+      {/* ROUTE MAP & ELEVATION */}
+      {itineraryDays.length > 0 && (
+        <section className="max-w-[1200px] mx-auto px-5 mt-10">
+          <RouteMap itinerary={itineraryDays} chartTitle={trek.title} />
+        </section>
+      )}
+
+      {/* TREK VIDEO */}
+      {trek.videoUrl && trek.videoType ? (
+        <section className="max-w-[1200px] mx-auto px-5 mt-10">
+          <Reveal className="bg-white rounded-2xl p-5 md:p-8 shadow-sm border border-gray-100">
+            <h2 className="text-lg md:text-xl font-bold oswald uppercase text-[#112233] border-b pb-3 mb-6">
+              Trek Video
+            </h2>
+            {trek.videoType === 'youtube' ? (
+              <div className="aspect-video rounded-xl overflow-hidden border border-gray-100 bg-black">
+                <iframe
+                  src={trek.videoUrl.replace('watch?v=', 'embed/').replace('youtu.be/', 'youtube.com/embed/')}
+                  className="w-full h-full"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  allowFullScreen
+                  title={`${trek.title} video`}
+                />
+              </div>
+            ) : (
+              <video src={trek.videoUrl} controls className="w-full aspect-video rounded-xl border border-gray-100 bg-black object-contain" />
+            )}
+          </Reveal>
+        </section>
+      ) : null}
+
+      {/* GALLERY */}
+      {galleryImages.length > 0 && (
+        <section className="max-w-[1200px] mx-auto px-5 mt-10">
+          <GallerySection photos={galleryImages.map((src: string, i: number) => ({
+            src, caption: `Day ${i + 1} snapshot - ${trek.title}`,
+          }))} />
+        </section>
+      )}
+
+      {/* RELATED TREKS */}
       {relatedTreks.length > 0 && (
         <section className="max-w-[1200px] mx-auto px-5 mt-20">
           <Reveal className="text-2xl font-black oswald uppercase text-[#112233] mb-6">
@@ -349,18 +420,31 @@ export default async function TrekDetailPage({ params }: PageProps) {
           <Stagger className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {relatedTreks.map((item) => (
               <StaggerItem key={item.id} className="bg-white rounded-xl overflow-hidden border border-gray-100 shadow-sm flex flex-col justify-between group">
-                <div className="h-44 overflow-hidden bg-gray-100">
+                <div className="h-44 overflow-hidden bg-gray-100 relative">
                   <img src={item.heroImage} alt={item.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                  <span className="absolute top-2 left-2 bg-white/95 text-[#112233] text-[9px] font-black uppercase tracking-wider px-2 py-1 rounded-full shadow-sm">
+                    {item.durationDays}
+                  </span>
                 </div>
                 <div className="p-4 flex flex-col flex-1 justify-between space-y-4">
                   <h3 className="font-bold text-xs text-[#112233] line-clamp-2 group-hover:text-[#24a0ed] transition-colors">
                     {item.title}
                   </h3>
+                  <div className="flex items-center justify-between">
+                    <span className="text-[#24a0ed] font-black text-sm">
+                      US$ {(item.discountedPrice ?? item.price).toLocaleString()}
+                    </span>
+                    {item.originalPrice && (item.originalPrice > (item.discountedPrice ?? 0)) && (
+                      <span className="text-[10px] text-gray-400 line-through font-medium">
+                        US$ {item.originalPrice.toLocaleString()}
+                      </span>
+                    )}
+                  </div>
                   <Link 
                     href={`/trekking/${item.slug ? item.slug : item.id}`}
                     className="w-full bg-[#112233] hover:bg-[#24a0ed] text-white font-bold py-2 rounded-lg text-center uppercase tracking-wider text-[11px] block transition-colors"
                   >
-                    View Details
+                    Start Journey
                   </Link>
                 </div>
               </StaggerItem>

@@ -54,6 +54,8 @@ export default async function AdminTreksPage() {
                 <th className="py-3 px-4">Title</th>
                 <th className="py-3 px-4">Region</th>
                 <th className="py-3 px-4">Duration</th>
+                <th className="py-3 px-4">Price</th>
+                <th className="py-3 px-4">Activity</th>
                 <th className="py-3 px-4">Best Season</th>
                 <th className="py-3 px-4 text-center">Order</th>
                 <th className="py-3 px-4 text-right">Actions</th>
@@ -87,6 +89,11 @@ export default async function AdminTreksPage() {
                       {trek.region}
                     </td>
                     <td className="py-3 px-4 text-gray-600 font-medium">{trek.durationDays}</td>
+                    <td className="py-3 px-4 font-bold text-gray-700">
+                      ${trek.discountedPrice ?? trek.price}
+                      {trek.originalPrice && <span className="block text-[10px] text-gray-400 line-through font-normal">${trek.originalPrice}</span>}
+                    </td>
+                    <td className="py-3 px-4 text-gray-600">{trek.activity || 'N/A'}</td>
                     <td className="py-3 px-4 text-gray-600">{trek.bestSeason || 'N/A'}</td>
                     <td className="py-3 px-4 text-center font-bold text-gray-700">{trek.order}</td>
                     <td className="py-3 px-4 text-right">

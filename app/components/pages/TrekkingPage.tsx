@@ -11,6 +11,7 @@ interface Trek {
   heroImage: string;
   durationDays: string;
   price: number;
+  discountedPrice?: number | null;
   region: string;
   difficulty: string;
 }
@@ -48,8 +49,10 @@ export default function TrekkingPage({ treks = [], currentPage = 1, totalPages =
               {treks.map((trek) => (
                 <StaggerItem
                   key={trek.id} 
-                  className="bg-white rounded-xl overflow-hidden border border-gray-100 shadow-[0_4px_20px_rgba(0,0,0,0.04)] flex flex-col justify-between group hover:shadow-lg transition-shadow"
+                  className="bg-white rounded-xl overflow-hidden border border-gray-100 shadow-[0_4px_20px_rgba(0,0,0,0.04)] flex flex-col justify-between group hover:shadow-lg transition-all hover:scale-105"
                 >
+                  <Link 
+                        href={`/trekking/${trek.slug ? trek.slug : trek.id}`}>
                   {/* Image & Price Ribbon */}
                   <div className="relative h-48 overflow-hidden bg-gray-100">
                     <img 
@@ -59,7 +62,7 @@ export default function TrekkingPage({ treks = [], currentPage = 1, totalPages =
                     />
                     {trek.price && (
                       <div className="absolute top-0 left-0 bg-[#d93838] text-white font-bold text-xs px-3 py-1.5 rounded-br-lg shadow-sm oswald">
-                        ${trek.price}
+                        ${(trek.discountedPrice ?? trek.price).toLocaleString()}
                       </div>
                     )}
                   </div>
@@ -74,16 +77,16 @@ export default function TrekkingPage({ treks = [], currentPage = 1, totalPages =
 
                     <div className="pt-4 border-t border-gray-100 flex items-center justify-between text-xs text-gray-500 font-medium">
                       <span>Duration : {trek.durationDays}</span>
-                      <Link 
-                        href={`/trekking/${trek.slug ? trek.slug : trek.id}`}
+                      <button
                         className="text-[#24a0ed] hover:underline font-bold"
                       >
                         Explore →
-                      </Link>
+                      </button>
                     </div>
                   </div>
-
+                    </Link>
                 </StaggerItem>
+                
               ))}
             </Stagger>
           )}

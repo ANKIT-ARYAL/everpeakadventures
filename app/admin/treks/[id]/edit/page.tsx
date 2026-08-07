@@ -13,6 +13,10 @@ export default async function EditTrekPage({ params }: PageProps) {
 
   const trek = await prisma.trek.findUnique({
     where: { id },
+    include: {
+      groupPrices: { orderBy: { id: 'asc' } },
+      fixedSchedules: { orderBy: { id: 'asc' } },
+    },
   });
 
   if (!trek) notFound();

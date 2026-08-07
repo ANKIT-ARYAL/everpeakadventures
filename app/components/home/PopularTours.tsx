@@ -47,10 +47,12 @@ export default function PopularTours({ tours = [], watermark, title, subtitle }:
           {tours.slice(0, 8).map((tour) => (
             <StaggerItem
               key={tour.id}
-              className="bg-white rounded-2xl border border-gray-100 shadow-[0_4px_20px_rgba(0,0,0,0.04)] overflow-hidden flex flex-col justify-between hover:shadow-[0_10px_30px_rgba(0,0,0,0.08)] transition-all duration-300"
+              className="bg-white rounded-2xl border border-gray-100 shadow-[0_4px_20px_rgba(0,0,0,0.04)] overflow-hidden flex flex-col justify-between hover:shadow-[0_10px_30px_rgba(0,0,0,0.08)] transition-all duration-300 hover:scale-110"
             >
               {/* Tour Image Container */}
               <div className="relative w-full h-[200px] bg-gray-100 overflow-hidden">
+                <Link
+                  href={`/tour/${tour.slug}`}>
                 {tour.image ? (
                   <img
                     src={tour.image}
@@ -64,10 +66,13 @@ export default function PopularTours({ tours = [], watermark, title, subtitle }:
                     </div>
                   </div>
                 )}
+                </Link>
               </div>
 
               {/* Card Body */}
               <div className="p-6 flex flex-col flex-grow justify-between">
+                <Link
+                  href={`/tour/${tour.slug}`}>
                 <div>
                   <h3 className="font-bold text-[#222222] text-[1.05rem] mb-6 text-center line-clamp-2">
                     {tour.title}
@@ -95,11 +100,11 @@ export default function PopularTours({ tours = [], watermark, title, subtitle }:
                 </div>
 
                 {/* View Details Button */}
-                <Link
-                  href={`/tour/${tour.slug}`}
+                <button
                   className="w-full bg-[#1b2a47] hover:bg-[#121c2f] text-white font-medium text-xs py-2.5 rounded-lg text-center transition-colors duration-200 uppercase tracking-wider"
                 >
                   View Details
+                </button>
                 </Link>
               </div>
 

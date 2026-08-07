@@ -30,8 +30,8 @@ export default async function Hero() {
       <iframe
         className="
           absolute top-1/2 left-1/2
-          w-[177.77vh] h-[100vh]
-          min-w-full min-h-full
+          w-[177.77vh] h-[56.25vw]
+          min-h-screen min-w-full
           -translate-x-1/2 -translate-y-1/2
           pointer-events-none
         "

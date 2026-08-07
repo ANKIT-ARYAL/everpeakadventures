@@ -4,6 +4,7 @@ import React from 'react';
 import Link from 'next/link';
 import { Clock } from 'lucide-react';
 import { Reveal, Stagger, StaggerItem } from '../animations/Motion';
+import { stripHtml } from '@/app/lib/html';
 
 interface Trek {
   id: string;
@@ -13,6 +14,7 @@ interface Trek {
   heroImage: string;
   durationDays: string;
   price: number;
+  discountedPrice?: number | null;
   region: string;
   difficulty: string;
 }
@@ -48,6 +50,8 @@ export default function FeaturedTreks({ treks = [], label, title }: FeaturedTrek
                 className="bg-white rounded-2xl overflow-hidden border border-gray-100 shadow-[0_4px_20px_rgba(0,0,0,0.03)] flex flex-col justify-between group hover:shadow-lg transition-all"
               >
                 <div className="relative h-52 overflow-hidden bg-gray-100">
+                  <Link 
+                      href={`/trekking/${trek.slug ? trek.slug : trek.id}`} >
                   <img 
                     src={trek.heroImage} 
                     alt={trek.title}
@@ -55,22 +59,26 @@ export default function FeaturedTreks({ treks = [], label, title }: FeaturedTrek
                   />
                   {trek.price && (
                     <div className="absolute top-3 left-3 bg-[#d93838] text-white font-bold text-xs px-3 py-1.5 rounded-lg shadow-sm oswald">
-                      ${trek.price}
+                      ${(trek.discountedPrice ?? trek.price).toLocaleString()}
                     </div>
                   )}
                   <div className="absolute bottom-3 right-3 bg-black/60 backdrop-blur-xs text-white text-[10px] font-bold px-2.5 py-1 rounded-md">
                     {trek.region}
                   </div>
+                  </Link>
                 </div>
 
                 <div className="p-5 flex flex-col flex-1 justify-between">
                   <div>
+                    <Link 
+                      href={`/trekking/${trek.slug ? trek.slug : trek.id}`} >
                     <h3 className="font-bold text-[#222222] text-sm md:text-base line-clamp-2 mb-2 group-hover:text-[#24a0ed] transition-colors">
                       {trek.title}
                     </h3>
                     <p className="text-gray-500 text-xs line-clamp-2 mb-4 leading-relaxed">
-                      {trek.description}
+                      {stripHtml(trek.description)}
                     </p>
+                    </Link>
                   </div>
 
                   <div className="pt-4 border-t border-gray-100 flex items-center justify-between text-xs text-gray-500 font-medium">

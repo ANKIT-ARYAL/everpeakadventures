@@ -26,48 +26,81 @@ model HeroContent {
 }
 
 model Trek {
-  id             String   @id @default(cuid())
-  slug           String?   @unique
-  title          String
-  description    String   @db.Text // Short description for cards
-  overview       String?  @db.Text // Full overview content
-  heroImage      String
-  gallery        String[] // Array of image URLs
+  id              String           @id @default(cuid())
+  slug            String?          @unique
+  title           String
+  description     String           @db.Text
+  overview        String?          @db.Text
+  heroImage       String
+  gallery         String[]
+  discountedPrice Float?            // Current price, e.g. US$ 2,499
+  originalPrice   Float?            // Regular price (strikethrough), e.g. US$ 2,975
+  priceRange      String?           // e.g. "US$ 2,499 - US$ 2,975"
+  isAllInclusive  Boolean          @default(false)
 
-  // Quick Facts (Trip Meta)
-  durationDays   String
-  price          Float
-  region         String
-  difficulty     String   // e.g., Moderate, Strenuous
-  maxAltitude    String?
-  bestSeason     String?
-  accommodation  String?
-  meals          String?
-  groupSize      String?
-  transport      String?
+  // Quick Facts
+  durationDays    String
+  price           Float
+  region          String
+  difficulty      String
+  maxAltitude     String?
+  bestSeason      String?
+  accommodation   String?
+  meals           String?
+  groupSize       String?
+  transport       String?
+  activity        String?          // e.g. Trekking/Peak Climbing
 
-  // Detailed Data (Arrays & JSON)
-  highlights     String[]
-  inclusions     String[]
-  exclusions     String[]
-  packingList    String[]
-  itinerary      Json?    // Stores array of { day: number, title: string, desc: string }
+  // Region Taxonomy (checkboxes) - includes 'All Trekking Packages'
+  regions         String[]
+
+  // Relational sections mirroring the WordPress admin metaboxes
+  groupPrices     TrekGroupPrice[]
+  fixedSchedules  TrekSchedule[]
+
+  highlights      String[]
+  inclusions      String[]
+  exclusions      String[]
+  packingList     String[]
+  itinerary       Json?
   
-  // Meta & Sorting
-  mapUrl         String?  // For elevation map images
-  isBestSeller   Boolean  @default(false)
-  order          Int      @default(0)
+  videoUrl        String?          // Trek video (uploaded file path or YouTube URL)
+  videoType       String?          // "upload" | "youtube"
 
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
+  mapUrl          String?
+  isBestSeller    Boolean          @default(false)
+  order           Int              @default(0)
+
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+}
+
+// Group Pricing Repeater Box (e.g., Pax 1-2, 3-5, etc.)
+model TrekGroupPrice {
+  id        String @id @default(uuid())
+  groupSize String // e.g., "2 - 4"
+  groupType String @default("Best Value") // e.g., "Small Group", "Best Value", "Super Group"
+  price     String // e.g., "US$ 2,599"
+  trekId    String
+  trek      Trek   @relation(fields: [trekId], references: [id], onDelete: Cascade)
+}
+
+// Fixed Departure Schedule Box (Group Size, Dates, Status)
+model TrekSchedule {
+  id         String @id @default(uuid())
+  groupSize  String // e.g., "2-12 Pax"
+  dateRange  String // e.g., "15 Sep - 28 Sep"
+  status     String // e.g., "Book"
+  trekId     String
+  trek       Trek   @relation(fields: [trekId], references: [id], onDelete: Cascade)
 }
 
 model Tour {
   id              String   @id @default(uuid())
   title           String
   slug            String   @unique
-  image           String   // Hero / Featured Image
-  gallery         String[] // Additional gallery images
+  image           String
+  gallery         String[]
   duration        String
   bestTime        String
   destination     String   @default("nepal")
@@ -89,28 +122,24 @@ model Tour {
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
 }
+
 model BlogPost {
-  id           String   @id @default(uuid())
-  title        String
-  slug         String   @unique
-  content      String?   @db.Text // Full HTML/Rich text body from the main editor
-  excerpt      String   @db.Text // Short description for cards
-  image        String   // Featured image URL
-  category     String   @default("Trekking / Hiking")
-  tags         String[] // Array of tags
-  date         String   // E.g., 'September 15, 2026'
-  
-  // Yoast SEO Meta Fields
-  seoTitle     String?
-  metaDescription String? @db.Text
-  focusKeyphrase String?
-
-  // Related FAQs (Repeater from WordPress bottom section)
-  faqs         Json?    // Stores array of { question: string, answer: string }
-
-  order        Int      @default(0)
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  id              String   @id @default(uuid())
+  title           String
+  slug            String   @unique
+  content         String?  @db.Text
+  excerpt         String   @db.Text
+  image           String
+  category        String   @default("Trekking / Hiking")
+  tags            String[]
+  date            String
+  seoTitle        String?
+  metaDescription String?  @db.Text
+  focusKeyphrase  String?
+  faqs            Json?
+  order           Int      @default(0)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
 }
 
 model ClientReview {
@@ -140,36 +169,24 @@ model BlueBannerContent {
   buttonLink  String   @default("/tours")
   updatedAt   DateTime @updatedAt
 }
-// ----------------------------------------
-// STATIC & SUB-PAGE MODELS
-// ----------------------------------------
 
 model AboutPageContent {
   id               String   @id @default(uuid())
   title            String   @default("About Us")
   featuredImage    String   @default("https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?q=80&w=1000&auto=format&fit=crop")
-  
-  // Statistics Grid
   happyTravelers   String   @default("1,000+")
   yearsExperience  String   @default("10+")
   successfulTrips  String   @default("100+")
   expertGuides     String   @default("20+")
-
-  // Main Story Content (Paragraphs)
-  paragraph1       String   @default("Ever Peak Adventure is a leading Nepal-based adventure travel company dedicated to delivering authentic, safe, and unforgettable Himalayan experiences. Established by a team of passionate mountaineers and experienced travel professionals, our company was founded with a clear vision—to share the true spirit of the Himalayas through responsible, well-organized, and meaningful adventures.")
-  paragraph2       String   @default("We specialize in trekking, hiking, peak climbing, mountaineering, and cultural tours across Nepal's most breathtaking and diverse landscapes. Fully licensed by the Ministry of Tourism, Government of Nepal, and proud members of the Trekking Agencies Association of Nepal (TAAN) and the Nepal Mountaineering Association (NMA), Ever Peak Adventure operates with the highest standards of professionalism, safety, and ethical responsibility.")
-  paragraph3       String   @default("We strictly follow government regulations and international safety guidelines to ensure every journey is conducted with care, transparency, and respect for both travelers and local communities. With more than a decade of hands-on experience, our expert guides, climbing leaders, and support team have successfully guided travelers from around the world through iconic regions such as Everest, Annapurna, Langtang, Manaslu, and beyond.")
-  paragraph4       String   @default("Our guides are highly trained, knowledgeable, and deeply familiar with the terrain, culture, and challenges of high-altitude travel, ensuring both safety and enriching experiences throughout. At Ever Peak Adventure, we believe that travel is more than just reaching a destination—it is about meaningful connections, cultural discovery, and personal achievement. From world-famous trekking routes to hidden valleys and culturally rich destinations, every journey we design is carefully customized to match your interests, schedule, fitness level, and sense of adventure.")
-
-  // Culture Banner
+  paragraph1       String   @default("Ever Peak Adventure is a leading Nepal-based adventure travel company dedicated to delivering authentic, safe, and unforgettable Himalayan experiences.")
+  paragraph2       String   @default("We specialize in trekking, hiking, peak climbing, mountaineering, and cultural tours across Nepal.")
+  paragraph3       String   @default("We strictly follow government regulations and international safety guidelines.")
+  paragraph4       String   @default("Our guides are highly trained, knowledgeable, and deeply familiar with high-altitude travel.")
   cultureTitle     String   @default("Our Company Culture")
-  cultureText      String   @default("Driven by passion, integrity, and respect, we foster a safety-first, team-oriented culture that values authentic experiences, responsible tourism, and genuine care for every traveler and community we serve.")
-
-  // Mission, Vision & Goals
-  missionText      String   @default("To deliver safe, authentic, and enriching Himalayan adventure experiences while promoting responsible tourism, cultural respect, and environmental sustainability, ensuring every journey creates meaningful memories and positive impact for travelers and local communities alike.")
-  visionText       String   @default("To become a globally trusted adventure travel company recognized for excellence, integrity, and innovation showcasing Nepal as a premier destination for trekking, mountaineering, and cultural exploration while preserving its natural beauty and heritage for future generations.")
-  goalsText        String   @default("To design and operate high-quality, personalized adventure journeys that inspire confidence, challenge limits, and foster genuine connections while upholding the highest standards of safety, professionalism, and ethical responsibility in the Himalayas.")
-
+  cultureText      String   @default("Driven by passion, integrity, and respect.")
+  missionText      String   @default("To deliver safe, authentic, and enriching Himalayan adventure experiences.")
+  visionText       String   @default("To become a globally trusted adventure travel company recognized for excellence.")
+  goalsText        String   @default("To design and operate high-quality, personalized adventure journeys.")
   updatedAt        DateTime @updatedAt
 }
 
@@ -197,24 +214,24 @@ model TeamMember {
 model WhyPageContent {
   id           String   @id @default(uuid())
   title        String   @default("Why Ever Peak Adventures")
-  subtitle     String   @default("Have questions or ready to plan your Himalayan adventure? Our friendly and experienced team is here to help you every step of the way.")
-  contentHtml  String   // Stores the main HTML text body
+  subtitle     String   @default("Have questions or ready to plan your Himalayan adventure?")
+  contentHtml  String
   updatedAt    DateTime @updatedAt
 }
 
 model ResponsibleTravelContent {
   id           String   @id @default(uuid())
   title        String   @default("Responsible Travel")
-  subtitle     String   @default("Have questions or ready to plan your Himalayan adventure? Our friendly and experienced team is here to help you every step of the way.")
-  contentHtml  String   // Stores the rich HTML text body
+  subtitle     String   @default("Have questions or ready to plan your Himalayan adventure?")
+  contentHtml  String
   updatedAt    DateTime @updatedAt
 }
 
 model TermsPageContent {
   id           String   @id @default(uuid())
   title        String   @default("Terms and Conditions")
-  subtitle     String   @default("Have questions or ready to plan your Himalayan adventure? Our friendly and experienced team is here to help you every step of the way.")
-  contentHtml  String   // Stores the rich HTML text body
+  subtitle     String   @default("Have questions or ready to plan your Himalayan adventure?")
+  contentHtml  String
   updatedAt    DateTime @updatedAt
 }
 
@@ -226,7 +243,6 @@ model FAQ {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
-
 
 model ContactInfo {
   id        String   @id @default(uuid())
@@ -251,12 +267,12 @@ model ContactSubmission {
 
 model Page {
   id          String    @id @default(uuid())
-  slug        String    @unique // e.g., 'about-us', 'our-team', 'responsible-travel'
+  slug        String    @unique
   title       String
   subtitle    String?
   heroImage   String?
-  content     String?   // Rich text or HTML content
-  sections    Section[] // Dynamic page sections
+  content     String?
+  sections    Section[]
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
 }
@@ -288,10 +304,10 @@ model FixedDeparture {
   id            String   @id @default(uuid())
   title         String
   heroImage     String
-  durationDays  String   // e.g. '14 Days'
-  startDate     String   // e.g. '15 Sep 2026'
-  endDate       String?  // e.g. '28 Sep 2026'
-  status        String   @default("Guaranteed") // 'Guaranteed', 'Filling Fast'
+  durationDays  String
+  startDate     String
+  endDate       String?
+  status        String   @default("Guaranteed")
   seatsLeft     Int      @default(6)
   price         Float
   originalPrice Float?
@@ -300,15 +316,14 @@ model FixedDeparture {
   updatedAt     DateTime @updatedAt
 }
 
-
 model WelcomeContent {
-  id           String   @id @default(uuid())
-  companyName  String   @default("Ever Peak Adventure")
-  description  String
-  carouselImages String[] // Array of image URLs
-  buttonText   String   @default("Know More About Us")
-  buttonLink   String   @default("/about-us")
-  updatedAt    DateTime @updatedAt
+  id             String   @id @default(uuid())
+  companyName    String   @default("Ever Peak Adventure")
+  description    String
+  carouselImages String[]
+  buttonText     String   @default("Know More About Us")
+  buttonLink     String   @default("/about-us")
+  updatedAt      DateTime @updatedAt
 }
 
 model WelcomeFeature {
@@ -320,30 +335,28 @@ model WelcomeFeature {
   updatedAt   DateTime @updatedAt
 }
 
-// Homepage section headers / watermarks (single editable record)
 model HomeSectionContent {
-  id                       String   @id @default(uuid())
-  featuredTreksLabel       String   @default("Top Rated Routes")
-  featuredTreksTitle       String   @default("Featured Trekking Packages")
-  bestSellersWatermark     String   @default("Trekking")
-  bestSellersTitle         String   @default("Best Seller Trekking")
-  bestSellersSubtitle      String   @default("\"Top-rated trekking journeys offering breathtaking views and authentic experiences.\"")
-  fixedDeparturesLabel     String   @default("Departure Dates")
-  fixedDeparturesTitle     String   @default("Join Fixed Departure Trips")
-  popularToursWatermark    String   @default("TOURS")
-  popularToursTitle        String   @default("Popular Tours")
-  popularToursSubtitle     String   @default("\"Premium tour packages tailored for comfort, culture, and adventure.\"")
-  exploreBlogsWatermark    String   @default("EXPLORE OUR BLOGS")
-  exploreBlogsTitle        String   @default("Explore Our Blogs")
-  exploreBlogsSubtitle     String   @default("At Ever Peak Adventure, we believe that travel is not just about reaching a destination—it’s about creating stories.")
-  whyChooseUsBadge         String   @default("Why Choose Us")
-  whyChooseUsTitle         String   @default("Why Choose ")
-  whyChooseUsTitleHighlight String  @default("Ever Peak Adventures")
-  whyChooseUsSubtitle      String   @default("We combine years of Himalayan expertise, personalized service, and a passion for adventure to deliver safe, authentic, and unforgettable trekking experiences throughout Nepal.")
-  updatedAt                DateTime @updatedAt
+  id                        String   @id @default(uuid())
+  featuredTreksLabel        String   @default("Top Rated Routes")
+  featuredTreksTitle        String   @default("Featured Trekking Packages")
+  bestSellersWatermark      String   @default("Trekking")
+  bestSellersTitle          String   @default("Best Seller Trekking")
+  bestSellersSubtitle       String   @default("\"Top-rated trekking journeys offering breathtaking views and authentic experiences.\"")
+  fixedDeparturesLabel      String   @default("Departure Dates")
+  fixedDeparturesTitle      String   @default("Join Fixed Departure Trips")
+  popularToursWatermark     String   @default("TOURS")
+  popularToursTitle         String   @default("Popular Tours")
+  popularToursSubtitle      String   @default("\"Premium tour packages tailored for comfort, culture, and adventure.\"")
+  exploreBlogsWatermark     String   @default("EXPLORE OUR BLOGS")
+  exploreBlogsTitle         String   @default("Explore Our Blogs")
+  exploreBlogsSubtitle      String   @default("At Ever Peak Adventure, we believe that travel is not just about reaching a destination—it’s about creating stories.")
+  whyChooseUsBadge          String   @default("Why Choose Us")
+  whyChooseUsTitle          String   @default("Why Choose ")
+  whyChooseUsTitleHighlight String   @default("Ever Peak Adventures")
+  whyChooseUsSubtitle       String   @default("We combine years of Himalayan expertise, personalized service, and a passion for adventure.")
+  updatedAt                 DateTime @updatedAt
 }
 
-// Floating Contact Widget settings (single record)
 model ContactWidgetSettings {
   id        String   @id @default(uuid())
   enabled   Boolean  @default(true)
@@ -354,24 +367,22 @@ model ContactWidgetSettings {
   updatedAt DateTime @updatedAt
 }
 
-// Navbar + Footer editable site-wide settings (single record)
 model SiteSettings {
-  id               String   @id @default(uuid())
-  logoImage        String   @default("https://ml978xhbpkuo.i.optimole.com/cb:t1g8.6c6/w:259/h:68/q:mauto/f:best/https://everpeakadventures.com/wp-content/uploads/2025/03/Untitled-design-123456-e1783511870519.png")
-  emergencyLabel   String   @default("Emergency SOS (24/7):")
-  emergencyLandline String  @default("+977 98000000")
-  emergencyPhone   String   @default("9851093960")
-  whatsapp         String   @default("9851093960")
-  email            String   @default("info@everpeakadventures.com")
-  addressLine1     String   @default("Payutar Dhara")
-  addressLine2     String   @default("Kathmandu, Nepal")
-  addressMapUrl    String   @default("https://maps.app.goo.gl/1vfJx36bEbCc7UAu9")
-  footerBgImage    String   @default("https://images.unsplash.com/photo-1544644181-1484b3fdfc62?q=80&w=2000&auto=format&fit=crop")
-  copyrightText    String   @default("Copyright © 2026 Everpeak Adventures | Design By Fly Up Technology")
-  updatedAt        DateTime @updatedAt
+  id                String   @id @default(uuid())
+  logoImage         String   @default("https://ml978xhbpkuo.i.optimole.com/cb:t1g8.6c6/w:259/h:68/q:mauto/f:best/https://everpeakadventures.com/wp-content/uploads/2025/03/Untitled-design-123456-e1783511870519.png")
+  emergencyLabel    String   @default("Emergency SOS (24/7):")
+  emergencyLandline String   @default("+977 98000000")
+  emergencyPhone    String   @default("9851093960")
+  whatsapp          String   @default("9851093960")
+  email             String   @default("info@everpeakadventures.com")
+  addressLine1      String   @default("Payutar Dhara")
+  addressLine2      String   @default("Kathmandu, Nepal")
+  addressMapUrl     String   @default("https://maps.app.goo.gl/1vfJx36bEbCc7UAu9")
+  footerBgImage     String   @default("https://images.unsplash.com/photo-1544644181-1484b3fdfc62?q=80&w=2000&auto=format&fit=crop")
+  copyrightText     String   @default("Copyright © 2026 Everpeak Adventures | Design By Fly Up Technology")
+  updatedAt         DateTime @updatedAt
 }
 
-// Sub-page hero banners keyed by page slug
 model SubpageHero {
   id        String   @id @default(uuid())
   slug      String   @unique
@@ -380,37 +391,39 @@ model SubpageHero {
   image     String?
   updatedAt DateTime @updatedAt
 }
-// Dynamic Trusted Partner / Why Choose Us Section
+
 model TrustedPartnerContent {
-  id                   String   @id @default(uuid())
-  mainTitle            String   @default("Your Trusted Partner For Himalayan Adventures")
-  description          String
-  badgeTitle           String   @default("Traveler's Choice")
-  badgeSubtitle        String   @default("Ever Peak Adventures Trip Advisor Traveler's Choice 2005. Carrying on a Legacy - Our badge of excellence")
-  reviewCountText      String   @default("Reviews 5/5")
-  storyTitle           String   @default("Traveler Story")
-  storyDescription     String   @default("Based on 100+ trusted Reviews on TripAdvisor. Your journey with us is built on a foundation of proven quality and memorable experiences.")
-  storyImage           String   @default("https://images.unsplash.com/photo-1522199755839-a2bacb67c546?w=200&h=200&fit=crop")
-  bgHeroImage          String   @default("https://images.unsplash.com/photo-1544644181-1484b3fdfc62?q=80&w=2000&auto=format&fit=crop")
-  updatedAt            DateTime @updatedAt
+  id              String   @id @default(uuid())
+  mainTitle       String   @default("Your Trusted Partner For Himalayan Adventures")
+  description     String
+  badgeTitle      String   @default("Traveler's Choice")
+  badgeSubtitle   String   @default("Ever Peak Adventures Trip Advisor Traveler's Choice.")
+  reviewCountText String   @default("Reviews 5/5")
+  storyTitle      String   @default("Traveler Story")
+  storyDescription String  @default("Based on 100+ trusted Reviews on TripAdvisor.")
+  storyImage      String   @default("https://images.unsplash.com/photo-1522199755839-a2bacb67c546?w=200&h=200&fit=crop")
+  bgHeroImage     String   @default("https://images.unsplash.com/photo-1544644181-1484b3fdfc62?q=80&w=2000&auto=format&fit=crop")
+  updatedAt       DateTime @updatedAt
 }
 
 model WhyChooseUsItem {
   id        String   @id @default(uuid())
   title     String
   desc      String
-  iconName  String   // 'Map', 'Award', 'ShieldCheck', 'MapPin', 'Smile', 'Leaf'
+  iconName  String
   order     Int      @default(0)
   updatedAt DateTime @updatedAt
 }
+
 model WhyChooseUsFeature {
   id          String   @id @default(uuid())
-  icon        String   // E.g., '🏔️' or an identifier
+  icon        String
   title       String
   description String
   order       Int      @default(0)
   updatedAt   DateTime @updatedAt
 }
+
 model VideoBannerContent {
   id               String   @id @default(uuid())
   title            String   @default("Explore Full Itineraries & Trip Ideas For Trekking")
@@ -418,9 +431,10 @@ model VideoBannerContent {
   buttonText       String   @default("START JOURNEY")
   buttonLink       String   @default("/tours")
   videoUrl         String   @default("https://www.youtube.com/watch?v=gCRNEJxDJKM")
-  backgroundImages String[] // Array of image URLs
+  backgroundImages String[]
   updatedAt        DateTime @updatedAt
 }
+
 model CtaBannerContent {
   id            String   @id @default(uuid())
   title         String   @default("Experience nature in a new way. Visit Us.")
@@ -430,6 +444,7 @@ model CtaBannerContent {
   secondaryLink String   @default("/tours")
   updatedAt     DateTime @updatedAt
 }
+
 model LegalDocument {
   id          String   @id @default(uuid())
   title       String
@@ -439,35 +454,38 @@ model LegalDocument {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 }
+
 model PrivacyPolicyContent {
   id          String   @id @default(uuid())
   title       String   @default("Privacy Policy")
-  subtitle    String   @default("Have questions or ready to plan your Himalayan adventure? Our friendly and experienced team is here to help you every step of the way.")
+  subtitle    String   @default("Have questions or ready to plan your Himalayan adventure?")
   contentHtml String   @db.Text
   updatedAt   DateTime @updatedAt
 }
+
 model SystemSetting {
-  id              String   @id @default(uuid())
-  clientExpiry    String   @default("16 Dec, 2026")
-  packageType     String   @default("Advanced CMS Platform")
-  databaseStatus  String   @default("Optimized (PostgreSQL)")
-  daysLeft        String   @default("133 days remaining")
-  updatedAt       DateTime @updatedAt
+  id             String   @id @default(uuid())
+  clientExpiry   String   @default("16 Dec, 2026")
+  packageType    String   @default("Advanced CMS Platform")
+  databaseStatus String   @default("Optimized (PostgreSQL)")
+  daysLeft       String   @default("133 days remaining")
+  updatedAt      DateTime @updatedAt
 }
+
 model BookingSubmission {
-  id              String   @id @default(uuid())
-  tripTitle       String
-  groupSize       String
-  fullName        String
-  email           String
-  phone           String
-  country         String
-  travelDate      String
-  adultMale       Int      @default(0)
-  adultFemale     Int      @default(0)
-  childMale       Int      @default(0)
-  childFemale     Int      @default(0)
-  notes           String?
-  estimatedTotal  String
-  createdAt       DateTime @default(now())
+  id             String   @id @default(uuid())
+  tripTitle      String
+  groupSize      String
+  fullName       String
+  email          String
+  phone          String
+  country        String
+  travelDate     String
+  adultMale      Int      @default(0)
+  adultFemale    Int      @default(0)
+  childMale      Int      @default(0)
+  childFemale    Int      @default(0)
+  notes          String?
+  estimatedTotal String
+  createdAt      DateTime @default(now())
 }

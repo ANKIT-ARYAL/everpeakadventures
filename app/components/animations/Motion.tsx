@@ -64,9 +64,9 @@ export function Stagger({ children, className, amount = 0.15 }: StaggerProps) {
   );
 }
 
-export function StaggerItem({ children, className }: { children: React.ReactNode; className?: string }) {
+export function StaggerItem({ children, className, id }: { children: React.ReactNode; className?: string; id?: string }) {
   return (
-    <motion.div className={className} variants={fadeUp}>
+    <motion.div id={id} className={className} variants={fadeUp}>
       {children}
     </motion.div>
   );

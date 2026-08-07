@@ -84,14 +84,18 @@ export default function ExploreBlogs({ posts = [], watermark, title, subtitle }:
           </StaggerItem>
 
           {/* Right: Two Stacked Blog Cards */}
-          <div className="lg:col-span-5 flex flex-col gap-6">
+          <div className="lg:col-span-5 flex flex-col gap-6">            
             {sideBlogs.map((blog) => (
               <StaggerItem
                 key={blog.id}
-                className="bg-white rounded-2xl border border-gray-100 shadow-[0_4px_20px_rgba(0,0,0,0.04)] overflow-hidden flex flex-col sm:flex-row items-center p-4 gap-4 hover:shadow-[0_8px_25px_rgba(0,0,0,0.08)] transition-all duration-300"
+                className="bg-white rounded-2xl border border-gray-100 shadow-[0_4px_20px_rgba(0,0,0,0.04)] overflow-hidden flex flex-col sm:flex-row items-center p-4 gap-4 hover:shadow-[0_8px_25px_rgba(0,0,0,0.08)] transition-all duration-300 hover:scale-110"
               >
+                <Link
+                    href={`/blog/${blog.slug}`}
+                    className="flex flex-col sm:flex-row items-center gap-4 w-full">
                 {/* Text Content */}
                 <div className="flex-1 flex flex-col justify-between py-2">
+                  
                   <div>
                     <h3 className="font-bold text-[#222222] text-sm md:text-[0.95rem] mb-2 line-clamp-2 leading-snug">
                       {blog.title}
@@ -101,12 +105,12 @@ export default function ExploreBlogs({ posts = [], watermark, title, subtitle }:
                     </p>
                   </div>
 
-                  <Link
-                    href={`/blog/${blog.slug}`}
+                  <button
                     className="text-xs font-bold text-[#222222] hover:text-[#3bbae6] transition-colors inline-flex items-center gap-1 uppercase tracking-wider"
                   >
                     Read More →
-                  </Link>
+                    </button>
+                  
                 </div>
 
                 {/* Thumbnail Image */}
@@ -119,8 +123,10 @@ export default function ExploreBlogs({ posts = [], watermark, title, subtitle }:
                     />
                   )}
                 </div>
+                </Link>
               </StaggerItem>
             ))}
+            
           </div>
 
         </Stagger>
