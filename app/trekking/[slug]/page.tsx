@@ -9,6 +9,7 @@ import {
 import TrekGallerySlider from '../TrekGallerySlider';
 import StickySectionNav from '@/app/components/trek/StickySectionNav';
 import RouteMap from '@/app/components/trek/RouteMap';
+import RouteMapImage from '@/app/components/trek/RouteMapImage';
 import GallerySection from '@/app/components/trek/GallerySection';
 import { Reveal, Stagger, StaggerItem } from '@/app/components/animations/Motion';
 import { toHtml } from '@/app/lib/html';
@@ -362,9 +363,14 @@ export default async function TrekDetailPage({ params }: PageProps) {
       </>)}
 
       {/* ROUTE MAP & ELEVATION */}
-      {itineraryDays.length > 0 && (
+      {((trek.mapImage) || itineraryDays.length > 0) && (
         <section className="max-w-[1200px] mx-auto px-5 mt-10">
-          <RouteMap itinerary={itineraryDays} chartTitle={trek.title} />
+          <RouteMapImage src={trek.mapImage} alt={`${trek.title} route map`} />
+          {itineraryDays.length > 0 && (
+            <div className="mt-6">
+              <RouteMap itinerary={itineraryDays} chartTitle={trek.title} />
+            </div>
+          )}
         </section>
       )}
 
