@@ -92,6 +92,7 @@ model Trek {
   videoType       String?          // "upload" | "youtube"
 
   mapUrl          String?
+  mapImage        String?
   isBestSeller    Boolean          @default(false)
   order           Int              @default(0)
 
@@ -150,7 +151,8 @@ model Tour {
   groupSize       String?                           // e.g., "1 - 10"
   transport       String?
   mapUrl          String?                           // Route map / elevation chart URL
-  
+  mapImage        String?                           // Uploaded route-map graphic
+
   // Regions taxonomy (checkboxes)
   regions         String[]
   
