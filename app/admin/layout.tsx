@@ -19,6 +19,20 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
   useEffect(() => setMounted(true), []);
 
+  // Handle sidebar collapse persistence
+  useEffect(() => {
+    const saved = localStorage.getItem('admin-sidebar-collapsed');
+    if (saved !== null) {
+      setCollapsed(saved === 'true');
+    }
+  }, []);
+
+  useEffect(() => {
+    if (mounted) {
+      localStorage.setItem('admin-sidebar-collapsed', String(collapsed));
+    }
+  }, [collapsed, mounted]);
+
   if (pathname === '/admin/login') {
     return (
       <div className="min-h-screen bg-[#f0f2f5] flex font-sans text-gray-800">
@@ -105,26 +119,30 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     },
   ];
 
+  const [groupCollapsed, setGroupCollapsed] = useState<Record<string, boolean>>({});
+
+  const toggleGroup = (label: string) => {
+    setGroupCollapsed(prev => ({ ...prev, [label]: !prev[label] }));
+  };
+
   const renderNav = () => (
     <>
       {/* Brand Header */}
       <div className="p-4 bg-[#0b131a] border-b border-white/10 flex items-center justify-between sticky top-0 z-10 bg-[#101b25]">
         <Link href="/admin" className="font-bold text-white tracking-wider flex items-center gap-2">
           <span className="bg-[#f59e0b] text-[#112233] px-2 py-0.5 rounded text-[10px]">ADMIN</span>
-          {mounted && !collapsed && <span>Ever Peak CMS</span>}
+          {!collapsed && <span className={mounted ? '' : 'invisible'}>Ever Peak CMS</span>}
         </Link>
         <div className="flex items-center gap-1">
-          {mounted && (
-            <button 
-              type="button"
-              onClick={() => setCollapsed(!collapsed)}
-              className="p-2 text-gray-400 hover:text-white hover:bg-white/5 rounded-lg transition-colors"
-              aria-label={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
-              title={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
-            >
-              {collapsed ? <ChevronRight className="w-5 h-5" /> : <ChevronLeft className="w-5 h-5" />}
-            </button>
-          )}
+          <button 
+            type="button"
+            onClick={() => setCollapsed(!collapsed)}
+            className="p-2 text-gray-400 hover:text-white hover:bg-white/5 rounded-lg transition-colors"
+            aria-label={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+            title={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+          >
+            {collapsed ? <ChevronRight className="w-5 h-5" /> : <ChevronLeft className="w-5 h-5" />}
+          </button>
           <button 
             type="button"
             onClick={() => setSidebarOpen(false)}
@@ -144,25 +162,26 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             <div className="pt-4 px-4 pb-1">
               <button
                 type="button"
-                className={`w-full flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-gray-500 hover:text-gray-300 transition-colors ${mounted && collapsed ? 'justify-center px-2' : ''}`}
-                onClick={() => !collapsed && console.log('group click')}
+                onClick={() => !collapsed && toggleGroup(group.label)}
+                className={`w-full flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-gray-500 hover:text-gray-300 transition-colors ${collapsed ? 'justify-center px-2' : ''}`}
+                disabled={collapsed}
               >
                 {!collapsed && <group.icon className="w-3.5 h-3.5 text-gray-400" />}
                 {!collapsed && <span>{group.label}</span>}
-                {mounted && !collapsed && (
-                  <ChevronDown className="w-3 h-3 ml-auto text-gray-400 transition-transform" />
+                {!collapsed && (
+                  <ChevronDown className={`w-3 h-3 ml-auto text-gray-400 transition-transform ${groupCollapsed[group.label] ? '-rotate-90' : ''}`} />
                 )}
               </button>
             </div>
             
             {/* Group Items */}
-            <div className={`overflow-hidden transition-all duration-200 ${!collapsed ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0 pointer-events-none'}`}>
+            <div className={`overflow-hidden transition-all duration-200 ${!collapsed && !groupCollapsed[group.label] ? 'max-h-[500px] opacity-100' : 'max-h-0 opacity-0 pointer-events-none'}`}>
               {group.items.map((item) => (
                 <Link 
                   key={item.href}
                   href={item.href} 
                   onClick={() => setSidebarOpen(false)} 
-                  className={`flex items-center gap-3 px-4 py-2.5 hover:bg-white/5 hover:text-white transition-colors ${pathname === item.href ? 'bg-white/10 text-white' : ''} ${mounted && collapsed ? 'justify-center px-2' : ''}`}
+                  className={`flex items-center gap-3 px-4 py-2.5 hover:bg-white/5 hover:text-white transition-colors ${pathname === item.href ? 'bg-white/10 text-white' : ''} ${collapsed ? 'justify-center px-2' : ''}`}
                   title={collapsed ? item.label : undefined}
                 >
                   <item.icon className={`w-4 h-4 ${item.color}`} />
@@ -189,7 +208,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     <div className="min-h-screen bg-[#f0f2f5] flex font-sans text-gray-800">
       
       {/* Sidebar - fixed on desktop, drawer on mobile */}
-      <aside className={`w-64 bg-[#101b25] text-gray-300 flex-col fixed inset-y-0 left-0 z-50 overflow-y-auto text-xs pb-10 hidden lg:flex transition-all duration-300 ${mounted && collapsed ? 'w-16' : ''}`}>
+      <aside className={`w-64 bg-[#101b25] text-gray-300 flex-col fixed inset-y-0 left-0 z-50 overflow-y-auto text-xs pb-10 hidden lg:flex transition-all duration-300 ${collapsed ? 'w-16' : ''}`}>
         {renderNav()}
       </aside>
 
@@ -208,7 +227,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       </aside>
 
       {/* Main Content Viewport */}
-      <main className={`flex-1 p-4 md:p-8 transition-all duration-300 ${mounted && collapsed ? 'lg:ml-16' : 'lg:ml-64'}`}>
+      <main className={`flex-1 p-4 md:p-8 transition-all duration-300 ${collapsed ? 'lg:ml-16' : 'lg:ml-64'}`}>
         {/* Mobile top bar */}
         <div className="lg:hidden flex items-center gap-3 mb-4">
           <button 

@@ -10,6 +10,7 @@ import TrekGallerySlider from '../TrekGallerySlider';
 import StickySectionNav from '@/app/components/trek/StickySectionNav';
 import RouteMap from '@/app/components/trek/RouteMap';
 import RouteMapImage from '@/app/components/trek/RouteMapImage';
+import DetailedRouteMap, { RoutePoint, RouteSegment, Peak, ElevationDay } from '@/app/components/trek/DetailedRouteMap';
 import GallerySection from '@/app/components/trek/GallerySection';
 import { Reveal, Stagger, StaggerItem } from '@/app/components/animations/Motion';
 import { toHtml } from '@/app/lib/html';
@@ -371,6 +372,92 @@ export default async function TrekDetailPage({ params }: PageProps) {
               <RouteMap itinerary={itineraryDays} chartTitle={trek.title} />
             </div>
           )}
+          
+          {/* Detailed Interactive Route Map (EBC with Gokyo Lake example) */}
+          <div className="mt-10">
+            <DetailedRouteMap
+              title="EBC WITH GOKYO LAKE HELI SHUTTLE TREK"
+              subtitle="Detailed route map with elevation profile"
+              brandName="NEPAL HIKING TEAM"
+              brandTagline="Walk, Explore and Discover"
+              maxAltitude={5545}
+              peaks={[
+                { name: 'Mt. Everest', elevation: 8848, x: 720, y: 180 },
+                { name: 'Lhotse', elevation: 8481, x: 750, y: 200 },
+                { name: 'Nuptse', elevation: 7879, x: 700, y: 220 },
+                { name: 'Everest Base Camp', elevation: 5364, x: 680, y: 260 },
+                { name: 'Kala Patthar', elevation: 5545, x: 690, y: 275 },
+                { name: 'Chhukung Ri', elevation: 5546, x: 780, y: 280 },
+                { name: 'Island Peak', elevation: 6189, x: 800, y: 290 },
+                { name: 'Kongma La Pass', elevation: 5535, x: 760, y: 300 },
+                { name: 'Nangkar Tshang', elevation: 5083, x: 740, y: 285 },
+                { name: 'Chhukung', elevation: 4730, x: 770, y: 310 },
+                { name: 'Imja Tsho', elevation: 5010, x: 790, y: 320 },
+              ]}
+              routePoints={[
+                { id: 'kathmandu', name: 'Kathmandu', elevation: 1335, x: 100, y: 520, type: 'start', day: 1 },
+                { id: 'lukla', name: 'Lukla', elevation: 2860, x: 280, y: 380, type: 'airport', day: 3 },
+                { id: 'phakding', name: 'Phakding', elevation: 2652, x: 320, y: 360, type: 'trek', day: 3 },
+                { id: 'namche', name: 'Namche Bazaar', elevation: 3440, x: 380, y: 330, type: 'acclimatization', day: 4 },
+                { id: 'tengboche', name: 'Tengboche', elevation: 3860, x: 440, y: 300, type: 'trek', day: 6 },
+                { id: 'dingboche', name: 'Dingboche', elevation: 4410, x: 500, y: 280, type: 'acclimatization', day: 7 },
+                { id: 'lobuche', name: 'Lobuche', elevation: 4910, x: 560, y: 260, type: 'trek', day: 9 },
+                { id: 'gorakshep', name: 'Gorakshep', elevation: 5164, x: 600, y: 250, type: 'trek', day: 10 },
+                { id: 'ebc', name: 'EBC', elevation: 5364, x: 630, y: 245, type: 'end', day: 10 },
+                { id: 'kalapathar', name: 'Kala Patthar', elevation: 5545, x: 640, y: 240, type: 'peak', day: 11 },
+                { id: 'dzongla', name: 'Dzongla', elevation: 4830, x: 620, y: 280, type: 'trek', day: 11 },
+                { id: 'cho_la', name: 'Cho La Pass', elevation: 5420, x: 660, y: 295, type: 'pass', day: 12 },
+                { id: 'dragnag', name: 'Dragnag', elevation: 4700, x: 700, y: 310, type: 'trek', day: 12 },
+                { id: 'gokyo', name: 'Gokyo', elevation: 4790, x: 740, y: 320, type: 'lake', day: 13 },
+                { id: 'gokyo_ri', name: 'Gokyo Ri', elevation: 5360, x: 760, y: 300, type: 'peak', day: 14 },
+                { id: 'renjo_la', name: 'Renjo La Pass', elevation: 5360, x: 780, y: 270, type: 'pass' },
+                { id: 'thame', name: 'Thame', elevation: 3800, x: 420, y: 290, type: 'helipad' },
+                { id: 'lukla_end', name: 'Lukla', elevation: 2860, x: 280, y: 380, type: 'airport', day: 14 },
+                { id: 'kathmandu_end', name: 'Kathmandu', elevation: 1335, x: 100, y: 520, type: 'end', day: 17 },
+              ]}
+              routeSegments={[
+                { from: 'kathmandu', to: 'lukla', type: 'flight' },
+                { from: 'lukla', to: 'phakding', type: 'trekking' },
+                { from: 'phakding', to: 'namche', type: 'trekking' },
+                { from: 'namche', to: 'tengboche', type: 'trekking' },
+                { from: 'tengboche', to: 'dingboche', type: 'trekking' },
+                { from: 'dingboche', to: 'lobuche', type: 'trekking' },
+                { from: 'lobuche', to: 'gorakshep', type: 'trekking' },
+                { from: 'gorakshep', to: 'ebc', type: 'trekking' },
+                { from: 'gorakshep', to: 'kalapathar', type: 'secondary' },
+                { from: 'dingboche', to: 'dzongla', type: 'secondary' },
+                { from: 'dzongla', to: 'cho_la', type: 'trekking' },
+                { from: 'cho_la', to: 'dragnag', type: 'trekking' },
+                { from: 'dragnag', to: 'gokyo', type: 'trekking' },
+                { from: 'gokyo', to: 'gokyo_ri', type: 'secondary' },
+                { from: 'gokyo', to: 'renjo_la', type: 'secondary' },
+                { from: 'renjo_la', to: 'thame', type: 'trekking' },
+                { from: 'thame', to: 'namche', type: 'secondary' },
+                { from: 'gokyo', to: 'lukla_end', type: 'flight' },
+                { from: 'lukla_end', to: 'kathmandu_end', type: 'flight' },
+              ]}
+              elevationData={[
+                { day: 1, location: 'Kathmandu', elevation: 1335 },
+                { day: 2, location: 'Kathmandu', elevation: 1335 },
+                { day: 3, location: 'Phakding', elevation: 2652, distance: '8km' },
+                { day: 4, location: 'Namche Bazaar', elevation: 3440, distance: '12km' },
+                { day: 5, location: 'Namche / Everest View Hotel', elevation: 3880, distance: '4km / 11km' },
+                { day: 6, location: 'Tengboche', elevation: 3860, distance: '12km' },
+                { day: 7, location: 'Dingboche', elevation: 4410, distance: '12km' },
+                { day: 8, location: 'Dingboche / Nangkartsang Peak', elevation: 5083, distance: '6km / 4410m' },
+                { day: 9, location: 'Lobuche', elevation: 4910, distance: '15km' },
+                { day: 10, location: 'Gorakshep / EBC', elevation: 5364, distance: '14km' },
+                { day: 11, location: 'Dzongla / Kala Patthar', elevation: 5545, distance: '' },
+                { day: 12, location: 'Thangnak / Cho La Pass', elevation: 5420, distance: '9km' },
+                { day: 13, location: 'Gokyo', elevation: 4790, distance: '5km' },
+                { day: 14, location: 'Gokyo Ri / Lukla', elevation: 2860, distance: '4km' },
+                { day: 15, location: 'Kathmandu', elevation: 1335 },
+                { day: 16, location: 'Kathmandu', elevation: 1335 },
+                { day: 17, location: 'Departure', elevation: 1335 },
+              ]}
+              footerUrl="www.nepalhikingteam.com"
+            />
+          </div>
         </section>
       )}
 
