@@ -64,6 +64,7 @@ export async function POST(request: Request) {
         packingList: body.packingList || null,
         itinerary: body.itinerary || [],
         mapUrl: body.mapUrl,
+        mapImage: body.mapImage || null,
         videoUrl: body.videoUrl || null,
         videoType: body.videoType || null,
         isBestSeller: body.isBestSeller || false,

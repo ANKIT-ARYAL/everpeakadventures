@@ -67,6 +67,7 @@ export async function PUT(
           groupSize: body.groupSize || null,
           transport: body.transport || null,
           mapUrl: body.mapUrl || null,
+          mapImage: body.mapImage || null,
           regions: body.regions || [],
           videoUrl: body.videoUrl || null,
           videoType: body.videoType || null,

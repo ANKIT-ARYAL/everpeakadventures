@@ -77,6 +77,7 @@ export default function TourForm({ initialData, isEditing = false }: TourFormPro
     groupSize: initialData?.groupSize || '1 - 10',
     transport: initialData?.transport || '',
     mapUrl: initialData?.mapUrl || '',
+    mapImage: initialData?.mapImage || '',
     videoUrl: initialData?.videoUrl || '',
     videoType: initialData?.videoType || 'youtube',
     order: initialData?.order || 0,
@@ -686,6 +687,18 @@ export default function TourForm({ initialData, isEditing = false }: TourFormPro
             <div>
               <label className="block font-bold text-gray-700 mb-1">Elevation Map URL</label>
               <input type="url" name="mapUrl" value={formData.mapUrl} onChange={handleChange} placeholder="https://..." className="w-full px-3 py-2 border border-gray-200 rounded-lg" />
+            </div>
+
+            <div>
+              <label className="block font-bold text-gray-600 mb-1 text-[10px] uppercase tracking-wider">Route Map Image</label>
+              <p className="text-[10px] text-gray-400 mb-2">Upload a map graphic (JPG/PNG/WebP). Shown above the elevation chart on the tour page.</p>
+              <MediaUploader
+                type="image"
+                value={formData.mapImage}
+                onChange={(url) => setFormData(prev => ({ ...prev, mapImage: url }))}
+                label="Upload Route Map Image"
+                heightClass="h-48"
+              />
             </div>
           </div>
 

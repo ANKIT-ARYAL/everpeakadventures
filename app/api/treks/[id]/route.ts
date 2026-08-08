@@ -48,6 +48,7 @@ export async function PUT(
           packingList: body.packingList,
           itinerary: body.itinerary,
           mapUrl: body.mapUrl,
+          mapImage: body.mapImage || null,
           videoUrl: body.videoUrl || null,
           videoType: body.videoType || null,
           order: Number(body.order),
