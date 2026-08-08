@@ -330,7 +330,7 @@ export default async function TrekDetailPage({ params }: PageProps) {
 
             {/* Includes & Excludes */}
             <div id="include" className="scroll-mt-[118px]" />
-            <Stagger className="grid grid-cols-2 gap-6">
+            <Stagger className="flex flex-col gap-6">
               <StaggerItem className="bg-white rounded-xl p-6 shadow-sm border border-gray-100 space-y-3">
                 <h3 className="font-bold oswald uppercase text-emerald-700 border-b pb-2 flex items-center gap-2 text-xs">
                   <CheckCircle2 className="w-4 h-4" /> Package Includes
