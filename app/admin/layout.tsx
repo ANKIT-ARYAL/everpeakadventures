@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import LogoutButton from './components/LogoutButton';
@@ -8,12 +8,16 @@ import BookingsNotification from './components/BookingsNotification';
 import { 
   LayoutDashboard, Compass, Layers, FileText, MessageSquare, 
   HelpCircle, Image as ImageIcon, Shield, Users, Database, 
-  Settings, ArrowLeft, Video, Mail, FileCheck, Layers3, Briefcase, Sparkles, Menu, X
+  Settings, ArrowLeft, Video, Mail, FileCheck, Layers3, Briefcase, Sparkles, Menu, X, ChevronLeft, ChevronRight, Home, Info, MapPin, Package, BookOpen, MessageCircle, ChevronUp, ChevronDown
 } from 'lucide-react';
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [collapsed, setCollapsed] = useState(false);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => setMounted(true), []);
 
   if (pathname === '/admin/login') {
     return (
@@ -23,107 +27,156 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     );
   }
 
-  const nav = (
+  const navGroups = [
+    {
+      label: 'Home',
+      icon: Home,
+      items: [
+        { href: '/admin', label: 'Dashboard', icon: LayoutDashboard, color: 'text-[#f59e0b]' },
+        { href: '/admin/hero-content', label: 'Hero Banners', icon: ImageIcon, color: 'text-gray-400' },
+        { href: '/admin/home-section-content', label: 'Home Sections', icon: ImageIcon, color: 'text-gray-400' },
+        { href: '/admin/video-banners', label: 'Video & CTA Banners', icon: Video, color: 'text-gray-400' },
+        { href: '/admin/welcome-features', label: 'Welcome Features', icon: Sparkles, color: 'text-gray-400' },
+      ]
+    },
+    {
+      label: 'About Us',
+      icon: Info,
+      items: [
+        { href: '/admin/about-content', label: 'About Page Content', icon: FileText, color: 'text-blue-400' },
+        { href: '/admin/director-message', label: 'Message From Founder', icon: MessageSquare, color: 'text-blue-400' },
+        { href: '/admin/why-page', label: 'Why Ever Peak', icon: HelpCircle, color: 'text-blue-400' },
+        { href: '/admin/responsible-travel', label: 'Responsible Travel', icon: Shield, color: 'text-emerald-400' },
+        { href: '/admin/why-choose-us', label: 'Why Choose Us', icon: Layers3, color: 'text-gray-400' },
+        { href: '/admin/trust-items', label: 'Trust Items & Badges', icon: Shield, color: 'text-gray-400' },
+        { href: '/admin/team', label: 'Team Members', icon: Users, color: 'text-cyan-400' },
+        { href: '/admin/testimonials', label: 'Testimonials (Reviews)', icon: MessageSquare, color: 'text-purple-400' },
+      ]
+    },
+    {
+      label: 'Trekking In Nepal',
+      icon: MapPin,
+      items: [
+        { href: '/admin/treks', label: 'Treks', icon: Compass, color: 'text-[#24a0ed]' },
+        { href: '/admin/faqs', label: 'Trekking FAQs', icon: HelpCircle, color: 'text-rose-400' },
+      ]
+    },
+    {
+      label: 'Tour Packages',
+      icon: Package,
+      items: [
+        { href: '/admin/tours', label: 'Tours', icon: Layers, color: 'text-[#24a0ed]' },
+        { href: '/admin/departures', label: 'Fixed Departures', icon: Briefcase, color: 'text-[#24a0ed]' },
+      ]
+    },
+    {
+      label: 'FAQ',
+      icon: HelpCircle,
+      items: [
+        { href: '/admin/faqs', label: 'All FAQs', icon: HelpCircle, color: 'text-rose-400' },
+      ]
+    },
+    {
+      label: 'Blogs',
+      icon: BookOpen,
+      items: [
+        { href: '/admin/blogs', label: 'Blog Posts', icon: FileText, color: 'text-emerald-400' },
+      ]
+    },
+    {
+      label: 'Contact Us',
+      icon: MessageCircle,
+      items: [
+        { href: '/admin/contact-info', label: 'Contact Info', icon: Settings, color: 'text-gray-400' },
+        { href: '/admin/contact-widget', label: 'Contact Widget', icon: MessageSquare, color: 'text-gray-400' },
+        { href: '/admin/contact-submissions', label: 'Contact Submissions', icon: Mail, color: 'text-yellow-400' },
+      ]
+    },
+    {
+      label: 'System',
+      icon: Database,
+      items: [
+        { href: '/admin/site-settings', label: 'Site Settings', icon: Settings, color: 'text-gray-400' },
+        { href: '/admin/subpage-hero', label: 'Subpage Heroes', icon: Layers3, color: 'text-gray-400' },
+        { href: '/admin/terms-page', label: 'Terms & Conditions', icon: FileCheck, color: 'text-indigo-400' },
+        { href: '/admin/privacy-policy', label: 'Privacy Policy', icon: FileCheck, color: 'text-indigo-400' },
+        { href: '/admin/legal-documents', label: 'Legal Documents', icon: Shield, color: 'text-indigo-400' },
+      ]
+    },
+  ];
+
+  const renderNav = () => (
     <>
       {/* Brand Header */}
       <div className="p-4 bg-[#0b131a] border-b border-white/10 flex items-center justify-between sticky top-0 z-10 bg-[#101b25]">
         <Link href="/admin" className="font-bold text-white tracking-wider flex items-center gap-2">
           <span className="bg-[#f59e0b] text-[#112233] px-2 py-0.5 rounded text-[10px]">ADMIN</span>
-          Ever Peak CMS
+          {mounted && !collapsed && <span>Ever Peak CMS</span>}
         </Link>
-        <button 
-          type="button"
-          onClick={() => setSidebarOpen(false)}
-          className="lg:hidden text-gray-400 hover:text-white"
-          aria-label="Close sidebar"
-        >
-          <X className="w-5 h-5" />
-        </button>
+        <div className="flex items-center gap-1">
+          {mounted && (
+            <button 
+              type="button"
+              onClick={() => setCollapsed(!collapsed)}
+              className="p-2 text-gray-400 hover:text-white hover:bg-white/5 rounded-lg transition-colors"
+              aria-label={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+              title={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+            >
+              {collapsed ? <ChevronRight className="w-5 h-5" /> : <ChevronLeft className="w-5 h-5" />}
+            </button>
+          )}
+          <button 
+            type="button"
+            onClick={() => setSidebarOpen(false)}
+            className="lg:hidden text-gray-400 hover:text-white"
+            aria-label="Close sidebar"
+          >
+            <X className="w-5 h-5" />
+          </button>
+        </div>
       </div>
 
       {/* Navigation Links Grouped */}
       <div className="flex-1 py-4 space-y-1">
-        
-        {/* DASHBOARD */}
-        <Link href="/admin" onClick={() => setSidebarOpen(false)} className="flex items-center gap-3 px-4 py-2.5 hover:bg-white/5 hover:text-white transition-colors">
-          <LayoutDashboard className="w-4 h-4 text-[#f59e0b]" /> Dashboard
-        </Link>
+        {navGroups.map((group, groupIdx) => (
+          <div key={group.label} className="group">
+            {/* Group Header with Collapsible */}
+            <div className="pt-4 px-4 pb-1">
+              <button
+                type="button"
+                className={`w-full flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-gray-500 hover:text-gray-300 transition-colors ${mounted && collapsed ? 'justify-center px-2' : ''}`}
+                onClick={() => !collapsed && console.log('group click')}
+              >
+                {!collapsed && <group.icon className="w-3.5 h-3.5 text-gray-400" />}
+                {!collapsed && <span>{group.label}</span>}
+                {mounted && !collapsed && (
+                  <ChevronDown className="w-3 h-3 ml-auto text-gray-400 transition-transform" />
+                )}
+              </button>
+            </div>
+            
+            {/* Group Items */}
+            <div className={`overflow-hidden transition-all duration-200 ${!collapsed ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0 pointer-events-none'}`}>
+              {group.items.map((item) => (
+                <Link 
+                  key={item.href}
+                  href={item.href} 
+                  onClick={() => setSidebarOpen(false)} 
+                  className={`flex items-center gap-3 px-4 py-2.5 hover:bg-white/5 hover:text-white transition-colors ${pathname === item.href ? 'bg-white/10 text-white' : ''} ${mounted && collapsed ? 'justify-center px-2' : ''}`}
+                  title={collapsed ? item.label : undefined}
+                >
+                  <item.icon className={`w-4 h-4 ${item.color}`} />
+                  {!collapsed && <span className="text-xs">{item.label}</span>}
+                </Link>
+              ))}
+            </div>
+          </div>
+        ))}
 
-        {/* CORE PACKAGES */}
-        <div className="pt-4 px-4 pb-1 text-[10px] font-bold text-gray-500 uppercase tracking-widest">Core Packages</div>
-        <Link href="/admin/treks" onClick={() => setSidebarOpen(false)} className="flex items-center gap-3 px-4 py-2.5 hover:bg-white/5 hover:text-white transition-colors">
-          <Compass className="w-4 h-4 text-[#24a0ed]" /> Treks
-        </Link>
-        <Link href="/admin/tours" onClick={() => setSidebarOpen(false)} className="flex items-center gap-3 px-4 py-2.5 hover:bg-white/5 hover:text-white transition-colors">
-          <Layers className="w-4 h-4 text-[#24a0ed]" /> Tours
-        </Link>
-        <Link href="/admin/departures" onClick={() => setSidebarOpen(false)} className="flex items-center gap-3 px-4 py-2.5 hover:bg-white/5 hover:text-white transition-colors">
-          <Briefcase className="w-4 h-4 text-[#24a0ed]" /> Fixed Departures
-        </Link>
-
-        {/* CONTENT & ENGAGEMENT */}
-        <div className="pt-4 px-4 pb-1 text-[10px] font-bold text-gray-500 uppercase tracking-widest">Content & Stories</div>
-        <Link href="/admin/blogs" onClick={() => setSidebarOpen(false)} className="flex items-center gap-3 px-4 py-2.5 hover:bg-white/5 hover:text-white transition-colors">
-          <FileText className="w-4 h-4 text-emerald-400" /> Blog Posts
-        </Link>
-        <Link href="/admin/testimonials" onClick={() => setSidebarOpen(false)} className="flex items-center gap-3 px-4 py-2.5 hover:bg-white/5 hover:text-white transition-colors">
-          <MessageSquare className="w-4 h-4 text-purple-400" /> Testimonials (Reviews)
-        </Link>
-        <Link href="/admin/faqs" onClick={() => setSidebarOpen(false)} className="flex items-center gap-3 px-4 py-2.5 hover:bg-white/5 hover:text-white transition-colors">
-          <HelpCircle className="w-4 h-4 text-rose-400" /> FAQs
-        </Link>
-        <Link href="/admin/team" onClick={() => setSidebarOpen(false)} className="flex items-center gap-3 px-4 py-2.5 hover:bg-white/5 hover:text-white transition-colors">
-          <Users className="w-4 h-4 text-cyan-400" /> Team Members
-        </Link>
-
-        {/* PAGES & LEGAL */}
-        <div className="pt-4 px-4 pb-1 text-[10px] font-bold text-gray-500 uppercase tracking-widest">Pages & Legal</div>
-        <Link href="/admin/pages" onClick={() => setSidebarOpen(false)} className="flex items-center gap-3 px-4 py-2.5 hover:bg-white/5 hover:text-white transition-colors">
-          <FileCheck className="w-4 h-4 text-amber-400" /> Dynamic Pages
-        </Link>
-        <Link href="/admin/legal-documents" onClick={() => setSidebarOpen(false)} className="flex items-center gap-3 px-4 py-2.5 hover:bg-white/5 hover:text-white transition-colors">
-          <Shield className="w-4 h-4 text-indigo-400" /> Legal Documents
-        </Link>
-
-        {/* BANNERS & SECTIONS */}
-        <div className="pt-4 px-4 pb-1 text-[10px] font-bold text-gray-500 uppercase tracking-widest">Banners & Layouts</div>
-        <Link href="/admin/hero-content" onClick={() => setSidebarOpen(false)} className="flex items-center gap-3 px-4 py-2.5 hover:bg-white/5 hover:text-white transition-colors">
-          <ImageIcon className="w-4 h-4 text-gray-400" /> Hero Banners
-        </Link>
-        <Link href="/admin/subpage-hero" onClick={() => setSidebarOpen(false)} className="flex items-center gap-3 px-4 py-2.5 hover:bg-white/5 hover:text-white transition-colors">
-          <Layers3 className="w-4 h-4 text-gray-400" /> Subpage Heroes
-        </Link>
-        <Link href="/admin/home-section-content" onClick={() => setSidebarOpen(false)} className="flex items-center gap-3 px-4 py-2.5 hover:bg-white/5 hover:text-white transition-colors">
-          <ImageIcon className="w-4 h-4 text-gray-400" /> Home Sections
-        </Link>
-        <Link href="/admin/video-banners" onClick={() => setSidebarOpen(false)} className="flex items-center gap-3 px-4 py-2.5 hover:bg-white/5 hover:text-white transition-colors">
-          <Video className="w-4 h-4 text-gray-400" /> Video & CTA Banners
-        </Link>
-        <Link href="/admin/why-choose-us" onClick={() => setSidebarOpen(false)} className="flex items-center gap-3 px-4 py-2.5 hover:bg-white/5 hover:text-white transition-colors">
-          <Layers3 className="w-4 h-4 text-gray-400" /> Why Choose Us
-        </Link>
-        <Link href="/admin/welcome-features" onClick={() => setSidebarOpen(false)} className="flex items-center gap-3 px-4 py-2.5 hover:bg-white/5 hover:text-white transition-colors">
-          <Sparkles className="w-4 h-4 text-gray-400" /> Welcome Features
-        </Link>
-        <Link href="/admin/trust-items" onClick={() => setSidebarOpen(false)} className="flex items-center gap-3 px-4 py-2.5 hover:bg-white/5 hover:text-white transition-colors">
-          <Shield className="w-4 h-4 text-gray-400" /> Trust Items & Badges
-        </Link>
-
-        {/* SUBMISSIONS & CONFIG */}
-        <div className="pt-4 px-4 pb-1 text-[10px] font-bold text-gray-500 uppercase tracking-widest">System & Inquiries</div>
-        <BookingsNotification />
-        <Link href="/admin/contact-submissions" onClick={() => setSidebarOpen(false)} className="flex items-center gap-3 px-4 py-2.5 hover:bg-white/5 hover:text-white transition-colors">
-          <Mail className="w-4 h-4 text-yellow-400" /> Contact Submissions
-        </Link>
-        <Link href="/admin/contact-info" onClick={() => setSidebarOpen(false)} className="flex items-center gap-3 px-4 py-2.5 hover:bg-white/5 hover:text-white transition-colors">
-          <Settings className="w-4 h-4 text-gray-400" /> Contact Info
-        </Link>
-        <Link href="/admin/site-settings" onClick={() => setSidebarOpen(false)} className="flex items-center gap-3 px-4 py-2.5 hover:bg-white/5 hover:text-white transition-colors">
-          <Settings className="w-4 h-4 text-gray-400" /> Site Settings
-        </Link>
-        <Link href="/admin/contact-widget" onClick={() => setSidebarOpen(false)} className="flex items-center gap-3 px-4 py-2.5 hover:bg-white/5 hover:text-white transition-colors">
-          <MessageSquare className="w-4 h-4 text-gray-400" /> Contact Widget
-        </Link>
+        {/* Bookings Notification */}
+        <div className="pt-4 px-4 pb-1">
+          <BookingsNotification />
+        </div>
 
         <div className="pt-4 border-t border-white/10 mt-4">
           <LogoutButton />
@@ -136,8 +189,8 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     <div className="min-h-screen bg-[#f0f2f5] flex font-sans text-gray-800">
       
       {/* Sidebar - fixed on desktop, drawer on mobile */}
-      <aside className="w-64 bg-[#101b25] text-gray-300 flex-col fixed inset-y-0 left-0 z-50 overflow-y-auto text-xs pb-10 hidden lg:flex">
-        {nav}
+      <aside className={`w-64 bg-[#101b25] text-gray-300 flex-col fixed inset-y-0 left-0 z-50 overflow-y-auto text-xs pb-10 hidden lg:flex transition-all duration-300 ${mounted && collapsed ? 'w-16' : ''}`}>
+        {renderNav()}
       </aside>
 
       {/* Mobile drawer backdrop */}
@@ -151,11 +204,11 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
       {/* Mobile sidebar drawer */}
       <aside className={`w-64 bg-[#101b25] text-gray-300 flex-col inset-y-0 left-0 z-50 overflow-y-auto text-xs pb-10 fixed transition-transform duration-300 lg:hidden ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}`}>
-        {nav}
+        {renderNav()}
       </aside>
 
       {/* Main Content Viewport */}
-      <main className="flex-1 lg:ml-64 p-4 md:p-8">
+      <main className={`flex-1 p-4 md:p-8 transition-all duration-300 ${mounted && collapsed ? 'lg:ml-16' : 'lg:ml-64'}`}>
         {/* Mobile top bar */}
         <div className="lg:hidden flex items-center gap-3 mb-4">
           <button 
