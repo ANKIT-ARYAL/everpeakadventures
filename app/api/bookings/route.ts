@@ -30,9 +30,12 @@ export async function POST(request: Request) {
 
     const validationResult = bookingSchema.safeParse(body);
     if (!validationResult.success) {
-      // Fixed from .errors to .issues
-      const firstError = validationResult.error.issues[0]?.message || 'Validation failed';
-      return NextResponse.json({ error: firstError }, { status: 400 });
+      // Return all issues so the user sees exactly which fields are wrong
+      const errorMessages = validationResult.error.issues.map((issue) => issue.message);
+      const message = errorMessages.length > 1
+        ? `Please fix the following: ${errorMessages.join('; ')}`
+        : errorMessages[0] || 'Validation failed';
+      return NextResponse.json({ error: message }, { status: 400 });
     }
 
     const data = validationResult.data;

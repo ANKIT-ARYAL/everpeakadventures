@@ -60,7 +60,7 @@ export default function VideoBanner({ data }: VideoBannerProps) {
       <Reveal className="relative z-20 max-w-4xl mx-auto px-5 text-center flex flex-col items-center">
         
         <a 
-          href={data?.videoUrl || '#'}
+          href={data?.videoUrl || data?.buttonLink || '/tour'}
           target="_blank"
           rel="noopener noreferrer"
           className="relative group mb-6 flex items-center justify-center"
@@ -84,7 +84,7 @@ export default function VideoBanner({ data }: VideoBannerProps) {
         </p>
 
         <Link 
-          href={data?.buttonLink || '/tours'}
+          href={data?.buttonLink || '/tour'}
           className="bg-[#3bbae6] hover:bg-[#2da1c9] text-white font-semibold text-xs md:text-sm px-7 py-3 rounded shadow-lg transition-colors duration-200 uppercase tracking-wider"
         >
           {data?.buttonText || 'START JOURNEY'}

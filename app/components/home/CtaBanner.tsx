@@ -48,14 +48,14 @@ export default function CtaBanner({ data }: CtaBannerProps) {
           {/* Buttons */}
           <div className="flex flex-wrap items-center justify-center gap-4">
             <Link
-              href='/contact-us'
+              href={data.primaryLink || '/contact-us'}
               className="bg-white hover:bg-gray-100 text-[#222222] font-bold text-xs md:text-sm px-8 py-3.5 rounded-full shadow-md transition-colors duration-200 uppercase tracking-wider"
             >
               Reserve Now
             </Link>
 
             <Link
-              href='/trekking'
+              href={data.secondaryLink || '/tour'}
               className="border-2 border-white hover:bg-white/10 text-white font-bold text-xs md:text-sm px-8 py-3 rounded-full transition-colors duration-200 uppercase tracking-wider backdrop-blur-xs"
             >
               Explore Trekking

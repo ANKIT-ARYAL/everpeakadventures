@@ -21,29 +21,46 @@ const countryOptions = getCountries().map((countryCode) => {
 interface TripOption {
   id: string;
   title: string;
+  type: 'trek' | 'tour';
   duration: string;
   price: number;
-  image: string;
+  heroImage: string;
 }
 
 interface Props {
   trips: TripOption[];
+  logoImage?: string;
 }
 
-export default function SendInquiryClient({ trips }: Props) {
+export default function SendInquiryClient({ trips, logoImage }: Props) {
   const searchParams = useSearchParams();
   const tripIdParam = searchParams.get('trip_id');
 
   const selectedTrip = trips.find(t => t.id === tripIdParam) || trips[0] || {
     id: 'default',
     title: 'Nepal Heritage, Wildlife & Himalayan Discovery Tour',
+    type: 'tour' as const,
     duration: '9 days',
     price: 1199,
-    image: 'https://images.unsplash.com/photo-1544644181-1484b3fdfc62?q=80&w=600&auto=format&fit=crop'
+    heroImage: 'https://images.unsplash.com/photo-1544644181-1484b3fdfc62?q=80&w=600&auto=format&fit=crop'
   };
 
   const [mounted, setMounted] = useState(false);
-  const [form, setForm] = useState({
+  const [form, setForm] = useState<{
+    tripTitle: string;
+    groupSize: string;
+    fullName: string;
+    email: string;
+    phone: string;
+    country: string;
+    travelDate: string;
+    adultMale: number | string;
+    adultFemale: number | string;
+    childMale: number | string;
+    childFemale: number | string;
+    notes: string;
+    agreed: boolean;
+  }>({
     tripTitle: selectedTrip.title,
     groupSize: '1 Pax - Solo Traveller',
     fullName: '',
@@ -63,11 +80,14 @@ export default function SendInquiryClient({ trips }: Props) {
   const [submitting, setSubmitting] = useState(false);
   const [success, setSuccess] = useState(false);
 
+  // Determine the trip type from the currently selected trip in the dropdown
+  const selectedTripType = trips.find(t => t.title === form.tripTitle)?.type || selectedTrip.type;
+
   useEffect(() => {
     setMounted(true);
   }, []);
 
-  const totalTravellers = form.adultMale + form.adultFemale + form.childMale + form.childFemale;
+  const totalTravellers = Number(form.adultMale || 0) + Number(form.adultFemale || 0) + Number(form.childMale || 0) + Number(form.childFemale || 0);
 
   useEffect(() => {
     let tier = '1 Pax - Solo Traveller';
@@ -89,14 +109,15 @@ export default function SendInquiryClient({ trips }: Props) {
       const { checked } = e.target as HTMLInputElement;
       setForm(prev => ({ ...prev, [name]: checked }));
     } else if (type === 'number') {
-      setForm(prev => ({ ...prev, [name]: Math.max(0, Number(value)) }));
+      const parsed = value === '' ? '' : Math.max(0, Number(value));
+      setForm(prev => ({ ...prev, [name]: parsed }));
     } else {
       setForm(prev => ({ ...prev, [name]: value }));
     }
   };
 
   const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const formatted = new AsYouType().input(e.target.value);
+    const formatted = new AsYouType(selectedCountryOption?.value).input(e.target.value);
     setForm(prev => ({ ...prev, phone: formatted }));
   };
 
@@ -105,7 +126,7 @@ export default function SendInquiryClient({ trips }: Props) {
     setForm(prev => ({
       ...prev,
       country: option.name,
-      phone: option.dialCode + ' '
+      phone: ''
     }));
   };
 
@@ -126,7 +147,7 @@ export default function SendInquiryClient({ trips }: Props) {
       return;
     }
 
-    if (!isValidPhoneNumber(form.phone)) {
+    if (!isValidPhoneNumber(form.phone, selectedCountryOption?.value)) {
       toast.error('Enter a valid phone number.');
       setSubmitting(false);
       return;
@@ -135,6 +156,11 @@ export default function SendInquiryClient({ trips }: Props) {
     try {
       const payload = {
         ...form,
+        phone: `${selectedCountryOption?.dialCode || ''} ${form.phone}`.trim(),
+        adultMale: Number(form.adultMale) || 0,
+        adultFemale: Number(form.adultFemale) || 0,
+        childMale: Number(form.childMale) || 0,
+        childFemale: Number(form.childFemale) || 0,
         estimatedTotal: `US$ ${estimatedTotalNum}`,
       };
 
@@ -202,9 +228,22 @@ export default function SendInquiryClient({ trips }: Props) {
       <div className="max-w-4xl mx-auto px-4 -mt-10 pb-24 relative z-20">
         <div className="bg-white rounded-2xl shadow-2xl p-8 md:p-12 space-y-8 border border-gray-100">
           
-          <div className="space-y-1">
-            <h2 className="text-xl font-black uppercase tracking-tight text-[#112233]">Book Your Trek</h2>
-            <p className="text-gray-400 text-[11px]">Send your trek booking request. Our team will review and contact you shortly.</p>
+          <div className="flex items-center gap-4">
+            <img
+              src={logoImage || "https://everpeakadventures.com/wp-content/uploads/2025/03/Untitled-design-123456-e1783511870519.png"}
+              alt="Ever Peak Adventures"
+              className="w-14 h-14 object-contain"
+            />
+            <div className="space-y-1">
+              <h2 className="text-xl font-black uppercase tracking-tight text-[#112233]">
+                {selectedTripType === 'tour' ? 'Book Your Tour' : 'Book Your Trek'}
+              </h2>
+              <p className="text-gray-400 text-[11px]">
+                {selectedTripType === 'tour'
+                  ? 'Send your tour booking request. Our team will review and contact you shortly.'
+                  : 'Send your trek booking request. Our team will review and contact you shortly.'}
+              </p>
+            </div>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-5">

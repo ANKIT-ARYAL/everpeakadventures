@@ -7,7 +7,7 @@ interface TourPackage {
   id: string;
   title: string;
   slug: string;
-  image: string;
+  heroImage: string;
   duration: string;
   bestTime: string;
 }
@@ -47,10 +47,12 @@ export default function TourPackagesPage({ packages = [], currentPage = 1, total
                   key={pkg.id} 
                   className="bg-white rounded-lg overflow-hidden border border-gray-100 shadow-[0_4px_25px_rgba(0,0,0,0.04)] flex flex-col justify-between group hover:shadow-lg transition-shadow"
                 >
+                  <Link 
+                      href={`/tour/${pkg.slug}`}>
                   {/* Image Container */}
                   <div className="relative h-48 overflow-hidden bg-gray-100">
                     <img 
-                      src={pkg.image} 
+                      src={pkg.heroImage} 
                       alt={pkg.title}
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                     />
@@ -77,14 +79,13 @@ export default function TourPackagesPage({ packages = [], currentPage = 1, total
                     </div>
 
                     {/* Action Button */}
-                    <Link 
-                      href={`/tour/${pkg.slug}`}
+                    <span                      
                       className="w-full bg-[#1c2e40] hover:bg-[#24a0ed] text-white font-bold text-xs py-2.5 rounded-lg text-center transition-colors uppercase tracking-wider block"
                     >
                       View Details
-                    </Link>
+                    </span>
                   </div>
-
+                </Link>
                 </StaggerItem>
               ))}
             </Stagger>

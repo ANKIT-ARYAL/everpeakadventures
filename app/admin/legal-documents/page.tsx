@@ -4,6 +4,7 @@ import { Search } from 'lucide-react';
 import AddNewButton from "../components/AddNewButton";
 import EditButton from "../components/EditButton";
 import DeleteButton from "../components/DeleteButton";
+import ViewButton from "../components/ViewButton";
 
 export const dynamic = 'force-dynamic';
 
@@ -94,6 +95,7 @@ export default async function AdminLegalDocumentsPage() {
                     <td className="py-3 px-4 text-right">
                       <div className="flex items-center justify-end gap-2">
                         <EditButton href={`/admin/legal-documents/${document.id}/edit`} />
+                        <ViewButton href="/legal-document" />
                         <DeleteButton id={document.id} model="legal-documents" title={document.title} />
                       </div>
                     </td>

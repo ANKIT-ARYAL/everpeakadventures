@@ -77,11 +77,9 @@ export default function TrekkingPage({ treks = [], currentPage = 1, totalPages =
 
                     <div className="pt-4 border-t border-gray-100 flex items-center justify-between text-xs text-gray-500 font-medium">
                       <span>Duration : {trek.durationDays}</span>
-                      <button
-                        className="text-[#24a0ed] hover:underline font-bold"
-                      >
+                      <span className="text-[#24a0ed] hover:underline font-bold">
                         Explore →
-                      </button>
+                      </span>
                     </div>
                   </div>
                     </Link>

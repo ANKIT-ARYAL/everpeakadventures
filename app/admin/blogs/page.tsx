@@ -4,6 +4,7 @@ import { Search } from 'lucide-react';
 import AddNewButton from "../components/AddNewButton";
 import EditButton from "../components/EditButton";
 import DeleteButton from "../components/DeleteButton";
+import ViewButton from "../components/ViewButton";
 
 export const dynamic = 'force-dynamic';
 
@@ -102,6 +103,7 @@ export default async function AdminBlogsPage() {
                     <td className="py-3 px-4 text-right">
                       <div className="flex items-center justify-end gap-2">
                         <EditButton href={`/admin/blogs/${post.id}/edit`} />
+                        <ViewButton href={`/blog/${post.slug}`} />
                         <DeleteButton id={post.id} model="blogs" title={post.title} />
                       </div>
                     </td>

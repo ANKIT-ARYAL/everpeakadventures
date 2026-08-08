@@ -1,0 +1,115 @@
+/* FlyUp Trekking Booking Manager admin styles — ported from WordPress reference */
+
+.ftb-admin-wrap{max-width:1280px}
+.ftb-list-header{display:flex;align-items:center;justify-content:space-between;gap:18px;margin:0 0 16px;padding:20px 22px;border-radius:22px;background:#fff;border:1px solid #e2e8f0;box-shadow:0 12px 32px rgba(15,23,42,.06)}
+.ftb-list-header h1{margin:3px 0 5px;font-size:27px;line-height:1.15;font-weight:650;color:#0f2747}
+.ftb-list-header p{margin:0;max-width:760px;color:#64748b;font-size:14px}
+.ftb-kicker-dark{display:block;text-transform:uppercase;letter-spacing:.09em;font-size:11px;font-weight:750;color:#0b79d0}
+.ftb-admin-btn{display:inline-flex;align-items:center;justify-content:center;padding:11px 16px;border-radius:14px;background:#fff;color:#0b79d0;text-decoration:none;font-weight:700;border:1px solid transparent}
+.ftb-admin-btn.ghost{background:#f8fbff;border-color:#dbeafe;color:#0b5cab}
+.ftb-admin-btn:hover{color:#0b5cab}
+.ftb-quick-cards{display:grid;grid-template-columns:repeat(6,1fr);gap:12px;margin:0 0 14px}
+.ftb-quick-card{display:block;width:100%;text-align:left;font-family:inherit;background:#fff;border:1px solid #e2e8f0;border-radius:16px;padding:13px 14px;text-decoration:none;box-shadow:0 10px 24px rgba(15,23,42,.045);position:relative;overflow:hidden;cursor:pointer}
+.ftb-quick-card:before{content:"";position:absolute;inset:0 0 auto 0;height:3px;background:#0ea5e9}
+.ftb-quick-card:hover:not(.value){border-color:#bfdbfe}
+.ftb-quick-card.warn:before{background:#f59e0b}
+.ftb-quick-card.good:before{background:#22c55e}
+.ftb-quick-card.done:before{background:#2563eb}
+.ftb-quick-card.today:before{background:#8b5cf6}
+.ftb-quick-card.value:before{background:#f97316}
+.ftb-quick-card span{display:block;font-size:11.5px;color:#64748b;margin-bottom:5px}
+.ftb-quick-card strong{display:block;font-size:22px;line-height:1.05;color:#0f2747}
+.ftb-tool-row{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 12px}
+.ftb-tool-pill{display:inline-flex;align-items:center;padding:7px 11px;border-radius:999px;background:#f8fafc;border:1px solid #dbe5f0;color:#334155;text-decoration:none;font-size:12px;font-weight:650;cursor:pointer;font-family:inherit}
+.ftb-tool-pill:hover{background:#edf7ff;color:#0b5cab;border-color:#bfdbfe}
+.ftb-tool-pill.is-active,.ftb-tool-pill.active{background:#0b79d0;border-color:#0b79d0;color:#fff}
+.ftb-filter-bar{display:grid;grid-template-columns:minmax(220px,1.35fr) minmax(150px,.6fr) minmax(310px,1.35fr) minmax(140px,.55fr) minmax(140px,.55fr) 96px;gap:10px;align-items:center;margin:0 0 14px;padding:14px;background:#fff;border:1px solid #d7e4f3;border-radius:16px;box-shadow:0 10px 24px rgba(15,23,42,.045)}
+.ftb-filter-bar input,.ftb-filter-bar select,.ftb-filter-bar .button{width:100%;height:40px;box-sizing:border-box}
+.ftb-filter-bar input[type=search],.ftb-filter-bar input[type=date],.ftb-filter-bar select{border:1px solid #d9e2ec;border-radius:10px;padding:8px 11px;font-size:13px;background:#fff;color:#243b57;outline:none}
+.ftb-filter-bar input:focus,.ftb-filter-bar select:focus{border-color:#0b79d0;box-shadow:0 0 0 3px rgba(11,121,208,.12)}
+.ftb-filter-bar .button{display:inline-flex;align-items:center;justify-content:center;border-radius:10px;font-weight:650;border:1px solid transparent;cursor:pointer}
+.ftb-filter-bar .button-primary{background:#3155f4;border-color:#3155f4;color:#fff;font-family:inherit}
+.ftb-filter-bar .button-primary:hover{background:#2648df}
+.ftb-filter-bar a.button{background:#fff;border-color:#3155f4;color:#3155f4;text-decoration:none}
+.ftb-filter-bar a.button{background:#fff;border-color:#3155f4;color:#3155f4;text-decoration:none}
+.ftb-filter-bar a.button:hover{background:#f8fbff}
+.ftb-admin-panel{background:#fff;border:1px solid #e1e8f1;border-radius:18px;padding:16px;margin-bottom:18px;box-shadow:0 12px 24px rgba(15,23,42,.04)}
+.ftb-panel-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+.ftb-panel-head.slim{margin-bottom:10px}
+.ftb-panel-head h2{margin:0;font-size:18px;color:#0f2747}
+.ftb-panel-head span{color:#64748b;font-size:12px;font-weight:650}
+.ftb-table-wrap{overflow:auto;border:1px solid #d7e4f3;border-radius:14px;background:#fff;box-shadow:0 12px 30px rgba(15,23,42,.05)}
+.ftb-booking-table{width:100%;border-collapse:separate;border-spacing:0}
+.ftb-booking-table thead th{background:linear-gradient(180deg,#f8fbff,#edf5ff);color:#0c2747;font-size:13px;letter-spacing:.01em;padding:13px 14px;text-align:left;border-bottom:1px solid #e2e8f0;font-weight:650;white-space:nowrap}
+.ftb-booking-table td{color:#243b57;vertical-align:top;padding:13px 14px;border-bottom:1px solid #eef2f7;font-size:13px}
+.ftb-booking-table tbody tr:nth-child(odd) td{background:#ffffff}
+.ftb-booking-table tbody tr:nth-child(even) td{background:#fbfdff}
+.ftb-booking-table tbody tr:hover td{background:#f2f8ff}
+.ftb-booking-table td.col-id strong{color:#2563eb}
+.ftb-booking-table td.col-id small{color:#64748b}
+.ftb-booking-table td:nth-child(2) strong{color:#0f766e}
+.ftb-booking-table td:nth-child(2) small{color:#547085}
+.ftb-booking-table td:nth-child(3) strong{color:#1e3a8a}
+.ftb-booking-table td:nth-child(3) small{color:#7c3aed}
+.ftb-booking-table td:nth-child(4){color:#9a3412}
+.ftb-booking-table td:nth-child(5) strong{color:#0f766e}
+.ftb-booking-table td:nth-child(5) small{color:#0369a1;font-weight:650}
+.ftb-table-departure{display:inline-flex;margin-bottom:3px;color:#0b79d0;font-weight:750}
+.ftb-status{display:inline-flex;border-radius:999px;padding:5px 10px;font-size:12px;font-weight:650;white-space:nowrap;box-shadow:inset 0 0 0 1px rgba(255,255,255,.65)}
+.ftb-status-new{background:#eef2ff;color:#3730a3}
+.ftb-status-pending{background:#fff4d6;color:#9a5b00}
+.ftb-status-confirmed{background:#dcfce7;color:#166534}
+.ftb-status-cancelled{background:#fee2e2;color:#991b1b}
+.ftb-status-completed{background:#dbeafe;color:#1d4ed8}
+.ftb-view-booking{border:1px solid #3155f4;color:#3155f4;background:#fff;border-radius:12px;min-width:66px;font-weight:650;padding:7px 14px;font-size:13px;cursor:pointer;transition:all .15s ease}
+.ftb-view-booking:hover{background:#3155f4;color:#fff}
+
+/* Modal */
+.ftb-modal-open{position:relative}
+.ftb-modal{display:none;position:fixed;inset:0;z-index:100000;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:19px 0}
+.ftb-modal.is-open{display:block}
+.ftb-modal-backdrop{position:fixed;inset:0;background:rgba(15,23,42,.55);backdrop-filter:blur(3px)}
+.ftb-modal-card{position:relative;width:min(920px,calc(100vw - 28px));margin:0 auto;background:#fff;border-radius:24px;box-shadow:0 28px 90px rgba(15,23,42,.35);border:1px solid rgba(255,255,255,.7)}
+.ftb-modal-close{position:absolute;right:16px;top:14px;width:38px;height:38px;border:1px solid rgba(15,39,71,.12);border-radius:999px;background:#fff;color:#0f2747;font-size:22px;line-height:1;font-weight:700;cursor:pointer;z-index:5;box-shadow:0 10px 24px rgba(15,23,42,.16)}
+.ftb-modal-close:hover{background:#f8fbff;color:#0b79d0;transform:translateY(-1px)}
+.ftb-modal-head{display:flex;justify-content:space-between;align-items:flex-start;gap:20px;padding:24px 26px;padding-right:72px;background:linear-gradient(135deg,#0b79d0,#0ea5e9);color:#fff}
+.ftb-modal-head span:not(.ftb-status){display:block;text-transform:uppercase;letter-spacing:.08em;font-size:11px;font-weight:700;opacity:.82}
+.ftb-modal-head h2{margin:5px 0 0;color:#fff;font-size:24px;font-weight:650;line-height:1.25}
+.ftb-modal-body{padding:22px}
+.ftb-detail-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px}
+.ftb-detail-item{padding:12px;border:1px solid #e3eaf3;border-radius:15px;background:#fbfdff}
+.ftb-detail-item span{display:block;color:#64748b;font-size:11.5px;margin-bottom:5px}
+.ftb-detail-item strong{display:block;color:#0f2747;font-weight:650;word-break:break-word}
+.ftb-detail-item a{color:#3155f4;font-weight:750}
+.ftb-modal-note-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:14px}
+.ftb-note-box{border:1px solid #e3eaf3;border-radius:16px;padding:14px;background:#fff}
+.ftb-note-box.soft{background:#f8fafc}
+.ftb-note-box h3{margin:0 0 8px;font-size:14px;color:#0f2747}
+.ftb-note-box p{margin:0;color:#475569;font-size:13px;line-height:1.5}
+.ftb-modal-update-form{display:grid;grid-template-columns:180px 1fr auto;gap:12px;align-items:end;margin-top:14px;padding:14px;border:1px solid #dbeafe;background:#f8fbff;border-radius:16px}
+.ftb-modal-update-form label{display:block;font-weight:650;color:#334155;margin-bottom:6px}
+.ftb-modal-update-form select,.ftb-modal-update-form textarea{width:100%;border:1px solid #d8e2ee;border-radius:10px;padding:8px 10px;font-size:13px;background:#fff;color:#243b57}
+.ftb-modal-update-form .button{height:42px;padding:0 18px;border:1px solid #3155f4;background:#3155f4;color:#fff;border-radius:12px;font-weight:750;font-size:13px;cursor:pointer}
+.ftb-modal-update-form .button:hover{background:#2648df}
+.ftb-modal-update-form .button:disabled{opacity:.6;cursor:not-allowed}
+.ftb-modal-delete-form{margin-top:10px;text-align:right}
+.ftb-modal-delete-form .button-link-delete{border:0;background:none;color:#b42318;font-size:13px;font-weight:700;cursor:pointer;padding:6px 10px;border-radius:8px}
+.ftb-modal-delete-form .button-link-delete:hover{background:#fef2f2;color:#991b1b}
+
+@media (max-width:1180px){
+  .ftb-filter-bar{grid-template-columns:1fr 160px 1fr 150px 150px}
+  .ftb-filter-bar .button{min-width:100px}
+  .ftb-filter-bar input[type=date]:last-of-type{grid-column:span 1}
+}
+@media (max-width:782px){
+  .ftb-filter-bar{grid-template-columns:1fr;overflow:visible}
+  .ftb-quick-cards{grid-template-columns:repeat(2,1fr)}
+  .ftb-list-header{display:block}
+  .ftb-list-header .ftb-admin-btn{margin-top:12px}
+  .ftb-modal-note-grid,.ftb-modal-update-form{grid-template-columns:1fr}
+  .ftb-modal{padding:12px 0}
+  .ftb-modal-card{border-radius:18px}
+  .ftb-modal-head{display:block;padding:22px 20px}
+  .ftb-modal-head .ftb-status{margin-top:12px}
+  .ftb-modal-body{padding:16px}
+}

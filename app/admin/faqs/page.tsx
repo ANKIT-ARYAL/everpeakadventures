@@ -4,8 +4,15 @@ import { Search } from 'lucide-react';
 import AddNewButton from "../components/AddNewButton";
 import EditButton from "../components/EditButton";
 import DeleteButton from "../components/DeleteButton";
+import ViewButton from "../components/ViewButton";
 
 export const dynamic = 'force-dynamic';
+
+const relatedTypeLabels: Record<string, string> = {
+  trek: 'Trek page',
+  tour: 'Tour page',
+  blog: 'Blog post',
+};
 
 export default async function AdminFaqsPage() {
   const faqs = await prisma.fAQ.findMany({
@@ -53,13 +60,14 @@ export default async function AdminFaqsPage() {
                 <th className="py-3 px-4">Question</th>
                 <th className="py-3 px-4">Answer</th>
                 <th className="py-3 px-4 text-center">Order</th>
+                <th className="py-3 px-4">Show On Page</th>
                 <th className="py-3 px-4 text-right">Actions</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100">
               {faqs.length === 0 ? (
                 <tr>
-                  <td colSpan={5} className="py-12 text-center text-gray-400 font-medium">
+                  <td colSpan={6} className="py-12 text-center text-gray-400 font-medium">
                     No FAQs found.
                   </td>
                 </tr>
@@ -81,10 +89,30 @@ export default async function AdminFaqsPage() {
                     <td className="py-3 px-4 text-center font-bold text-gray-700">
                       {faq.order}
                     </td>
+
+                    <td className="py-3 px-4">
+                      {faq.relatedType ? (
+                        <a
+                          href={faq.relatedType === 'trek'
+                            ? `/trekking/${faq.relatedSlug}`
+                            : faq.relatedType === 'tour'
+                              ? `/tour/${faq.relatedSlug}`
+                              : `/blog/${faq.relatedSlug}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-[11px] font-bold text-[#24a0ed] hover:text-[#112233]"
+                        >
+                          {relatedTypeLabels[faq.relatedType] ?? faq.relatedType}
+                        </a>
+                      ) : (
+                        <span className="text-gray-400 text-[11px]">—</span>
+                      )}
+                    </td>
                     
                     <td className="py-3 px-4 text-right">
                       <div className="flex items-center justify-end gap-2">
                         <EditButton href={`/admin/faqs/${faq.id}/edit`} />
+                        <ViewButton href="/faq" />
                         <DeleteButton id={faq.id} model="faqs" title={faq.question} />
                       </div>
                     </td>

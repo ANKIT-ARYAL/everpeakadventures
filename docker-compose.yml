@@ -10,7 +10,9 @@ services:
       POSTGRES_PASSWORD: password
       POSTGRES_DB: everpeak_db
     ports:
-      - "5432:5432"
+      # 5434 on host avoids the native Homebrew Postgres (5432) and the
+      # unrelated ag-everpeak-db-1 container (5433). Container stays on 5432.
+      - "5434:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
 

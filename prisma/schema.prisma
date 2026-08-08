@@ -7,6 +7,30 @@ generator client {
 }
 
 // ----------------------------------------
+// TOUR PACKAGES MODELS
+// ----------------------------------------
+
+// Group Pricing Repeater Box (e.g., Pax 1-2, 3-5, etc.)
+model TourGroupPrice {
+  id        String @id @default(uuid())
+  groupSize String // e.g., "2 - 4"
+  groupType String @default("Best Value") // e.g., "Small Group", "Best Value", "Super Group"
+  price     String // e.g., "US$ 2,599"
+  tourId    String
+  tour      Tour   @relation(fields: [tourId], references: [id], onDelete: Cascade)
+}
+
+// Fixed Departure Schedule Box (Group Size, Dates, Status)
+model TourSchedule {
+  id         String @id @default(uuid())
+  groupSize  String // e.g., "2-12 Pax"
+  dateRange  String // e.g., "15 Sep - 28 Sep"
+  status     String // e.g., "Book"
+  tourId     String
+  tour       Tour   @relation(fields: [tourId], references: [id], onDelete: Cascade)
+}
+
+// ----------------------------------------
 // HOMEPAGE & GENERAL MODELS
 // ----------------------------------------
 
@@ -58,10 +82,10 @@ model Trek {
   groupPrices     TrekGroupPrice[]
   fixedSchedules  TrekSchedule[]
 
-  highlights      String[]
-  inclusions      String[]
-  exclusions      String[]
-  packingList     String[]
+  highlights      String?  @db.Text
+  inclusions      String?  @db.Text
+  exclusions      String?  @db.Text
+  packingList     String?  @db.Text
   itinerary       Json?
   
   videoUrl        String?          // Trek video (uploaded file path or YouTube URL)
@@ -99,26 +123,59 @@ model Tour {
   id              String   @id @default(uuid())
   title           String
   slug            String   @unique
-  image           String
+  description     String?  @db.Text       // Short card description (excerpt)
+  overview        String?  @db.Text       // Full trip overview/description
+  heroImage       String
   gallery         String[]
+  
+  // Pricing
+  price           Float    @default(0)             // Current price (discounted)
+  discountedPrice Float?                            // Alias for current price
+  originalPrice   Float?                            // Regular/cross-out price
+  priceRange      String?                           // e.g., "US$ 1,199 - US$ 1,399"
+  isAllInclusive  Boolean  @default(false)
+  
+  // Quick Facts
   duration        String
   bestTime        String
-  destination     String   @default("nepal")
+  destination     String   @default("nepal")        // e.g., nepal, bhutan, tibet
+  primaryDestination String?                      // Primary destination (Nepal/Bhutan/Tibet)
   
   grade           String   @default("Easy / Moderate")
   maxAltitude     String   @default("1,350 m")
   startPoint      String   @default("Kathmandu")
   endPoint        String   @default("Kathmandu")
   meals           String   @default("B.B.")
-  overview        String   @default("")
+  activity        String?                           // e.g., "Sightseeing / Tour", "Trekking"
+  groupSize       String?                           // e.g., "1 - 10"
+  transport       String?
+  mapUrl          String?                           // Route map / elevation chart URL
   
-  highlights      String[]
+  // Regions taxonomy (checkboxes)
+  regions         String[]
+  
+  // Video
+  videoUrl        String?
+  videoType       String?          // "upload" | "youtube"
+  
+  // SEO
+  focusKeyphrase  String?
+  seoTitle        String?
+  metaDescription String?  @db.Text
+  
+  // Relational sections
+  groupPrices     TourGroupPrice[]
+  fixedSchedules  TourSchedule[]
+  
+  highlights      String?  @db.Text
+  inclusions      String?  @db.Text
+  exclusions      String?  @db.Text
+  packingList     String?  @db.Text
   itinerary       Json?
-  inclusions      String[]
-  exclusions      String[]
   
-  price           Float    @default(0)
+  isBestSeller    Boolean  @default(false)
   order           Int      @default(0)
+
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
 }
@@ -236,12 +293,14 @@ model TermsPageContent {
 }
 
 model FAQ {
-  id        String   @id @default(uuid())
-  question  String
-  answer    String
-  order     Int      @default(0)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id           String   @id @default(uuid())
+  question     String
+  answer       String
+  order        Int      @default(0)
+  relatedType  String?
+  relatedSlug  String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
 }
 
 model ContactInfo {
@@ -263,6 +322,14 @@ model ContactSubmission {
   bestTime      String
   message       String
   createdAt     DateTime @default(now())
+}
+
+model NewsletterSubscriber {
+  id        String   @id @default(uuid())
+  name      String
+  email     String   @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model Page {
@@ -487,5 +554,7 @@ model BookingSubmission {
   childFemale    Int      @default(0)
   notes          String?
   estimatedTotal String
+  status         String   @default("new") // new | pending | confirmed | cancelled | completed
+  adminNotes     String?  @db.Text
   createdAt      DateTime @default(now())
 }

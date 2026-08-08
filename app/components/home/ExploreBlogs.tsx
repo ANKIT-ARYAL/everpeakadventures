@@ -105,11 +105,11 @@ export default function ExploreBlogs({ posts = [], watermark, title, subtitle }:
                     </p>
                   </div>
 
-                  <button
+                  <span
                     className="text-xs font-bold text-[#222222] hover:text-[#3bbae6] transition-colors inline-flex items-center gap-1 uppercase tracking-wider"
                   >
                     Read More →
-                    </button>
+                    </span>
                   
                 </div>
 

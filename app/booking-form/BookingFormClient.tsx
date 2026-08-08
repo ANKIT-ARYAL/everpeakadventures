@@ -21,6 +21,7 @@ const countryOptions = getCountries().map((countryCode) => {
 interface TripOption {
   id: string;
   title: string;
+  type: 'trek' | 'tour';
   duration: string;
   price: number;
   image: string;
@@ -28,9 +29,10 @@ interface TripOption {
 
 interface Props {
   trips: TripOption[];
+  logoImage?: string;
 }
 
-export default function BookingFormClient({ trips }: Props) {
+export default function BookingFormClient({ trips, logoImage }: Props) {
   const searchParams = useSearchParams();
   
   // URL Parameters
@@ -43,6 +45,7 @@ export default function BookingFormClient({ trips }: Props) {
   const selectedTrip = trips.find(t => t.id === tripIdParam) || trips[0] || {
     id: 'default',
     title: 'Nepal Heritage, Wildlife & Himalayan Discovery Tour',
+    type: 'tour' as const,
     duration: '9 days',
     price: 1199,
     image: 'https://images.unsplash.com/photo-1544644181-1484b3fdfc62?q=80&w=600&auto=format&fit=crop'
@@ -51,7 +54,20 @@ export default function BookingFormClient({ trips }: Props) {
   // Determine the actual base price (URL override for Fixed Departures vs Standard Price)
   const basePrice = pricePerPersonParam > 0 ? pricePerPersonParam : selectedTrip.price;
 
-  const [form, setForm] = useState({
+  const [form, setForm] = useState<{
+    tripTitle: string;
+    fullName: string;
+    email: string;
+    phone: string;
+    country: string;
+    travelDate: string;
+    adultMale: number | string;
+    adultFemale: number | string;
+    childMale: number | string;
+    childFemale: number | string;
+    notes: string;
+    agreed: boolean;
+  }>({
     tripTitle: selectedTrip.title,
     fullName: '',
     email: '',
@@ -70,7 +86,18 @@ export default function BookingFormClient({ trips }: Props) {
   const [submitting, setSubmitting] = useState(false);
   const [success, setSuccess] = useState(false);
 
-  const totalTravellers = form.adultMale + form.adultFemale + form.childMale + form.childFemale;
+  // Determine the trip type from the currently selected trip in the dropdown
+  const selectedTripType = trips.find(t => t.title === form.tripTitle)?.type || selectedTrip.type;
+
+  const totalTravellers = Number(form.adultMale || 0) + Number(form.adultFemale || 0) + Number(form.childMale || 0) + Number(form.childFemale || 0);
+
+  // Derive group size tier from traveller count (aligns with how Admin displays bookings)
+  const derivedGroupSize =
+    totalTravellers >= 5
+      ? `5+ Pax - Group Discount (${totalTravellers} travellers)`
+      : totalTravellers >= 2
+        ? `2-4 Pax - Small Group (${totalTravellers} travellers)`
+        : `1 Pax - Solo Traveller`;
   
   // Calculate total price based on active base price and travelers
   const estimatedTotalNum = basePrice * (totalTravellers || 1);
@@ -81,7 +108,8 @@ export default function BookingFormClient({ trips }: Props) {
       const { checked } = e.target as HTMLInputElement;
       setForm(prev => ({ ...prev, [name]: checked }));
     } else if (type === 'number') {
-      setForm(prev => ({ ...prev, [name]: Math.max(0, Number(value)) }));
+      const parsed = value === '' ? '' : Math.max(0, Number(value));
+      setForm(prev => ({ ...prev, [name]: parsed }));
     } else {
       setForm(prev => ({ ...prev, [name]: value }));
     }
@@ -98,7 +126,7 @@ export default function BookingFormClient({ trips }: Props) {
   };
 
   const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const formatted = new AsYouType().input(e.target.value);
+    const formatted = new AsYouType(selectedCountryOption?.value).input(e.target.value);
     setForm(prev => ({ ...prev, phone: formatted }));
   };
 
@@ -107,7 +135,7 @@ export default function BookingFormClient({ trips }: Props) {
     setForm(prev => ({
       ...prev,
       country: option.name,
-      phone: option.dialCode + ' '
+      phone: ''
     }));
   };
 
@@ -121,7 +149,7 @@ export default function BookingFormClient({ trips }: Props) {
       return;
     }
 
-    if (!isValidPhoneNumber(form.phone)) {
+    if (!isValidPhoneNumber(form.phone, selectedCountryOption?.value)) {
       toast.error('Enter a valid phone number.');
       setSubmitting(false);
       return;
@@ -129,7 +157,19 @@ export default function BookingFormClient({ trips }: Props) {
 
     try {
       const payload = {
-        ...form,
+        tripTitle: form.tripTitle,
+        groupSize: derivedGroupSize,
+        fullName: form.fullName,
+        email: form.email,
+        phone: `${selectedCountryOption?.dialCode || ''} ${form.phone}`.trim(),
+        country: form.country,
+        travelDate: form.travelDate,
+        adultMale: Number(form.adultMale) || 0,
+        adultFemale: Number(form.adultFemale) || 0,
+        childMale: Number(form.childMale) || 0,
+        childFemale: Number(form.childFemale) || 0,
+        notes: form.notes,
+        agreed: form.agreed,
         isFixedDeparture: !!departureStartParam,
         departureId: departureIdParam,
         estimatedTotal: `US$ ${estimatedTotalNum}`,
@@ -192,12 +232,20 @@ export default function BookingFormClient({ trips }: Props) {
         
         {/* Top Header Block */}
         <div className="p-8 border-b border-gray-100 flex items-center gap-4">
-          <div className="w-12 h-12 bg-orange-50 rounded-xl flex items-center justify-center text-orange-500">
-            <svg viewBox="0 0 24 24" className="w-6 h-6 fill-current"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 9h-2V7h-2v5H6v2h2v5h2v-5h2v-2z"/></svg>
-          </div>
+          <img
+            src={logoImage || "https://everpeakadventures.com/wp-content/uploads/2025/03/Untitled-design-123456-e1783511870519.png"}
+            alt="Ever Peak Adventures"
+            className="w-14 h-14 object-contain"
+          />
           <div>
-            <h1 className="text-2xl font-black text-[#112233]">Book Your Trek</h1>
-            <p className="text-gray-500 text-sm mt-1">Send your trek booking request. Our team will review and contact you shortly.</p>
+            <h1 className="text-2xl font-black text-[#112233]">
+              {selectedTripType === 'tour' ? 'Book Your Tour' : 'Book Your Trek'}
+            </h1>
+            <p className="text-gray-500 text-sm mt-1">
+              {selectedTripType === 'tour'
+                ? 'Send your tour booking request. Our team will review and contact you shortly.'
+                : 'Send your trek booking request. Our team will review and contact you shortly.'}
+            </p>
           </div>
         </div>
 

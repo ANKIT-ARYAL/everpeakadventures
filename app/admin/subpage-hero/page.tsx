@@ -1,6 +1,7 @@
 import { prisma } from "@/lib/prisma";
 import Link from 'next/link';
 import AddNewButton from "../components/AddNewButton";
+import ViewButton from "../components/ViewButton";
 import EditButton from "../components/EditButton";
 import DeleteButton from "../components/DeleteButton";
 
@@ -71,6 +72,7 @@ export default async function AdminSubpageHeroPage() {
                     <td className="py-3 px-4 text-right">
                       <div className="flex items-center justify-end gap-2">
                         <EditButton href={`/admin/subpage-hero/${hero.id}/edit`} />
+                        <ViewButton href={`/${hero.slug}`} />
                         <DeleteButton id={hero.id} model="subpage-heroes" title={hero.slug} />
                       </div>
                     </td>

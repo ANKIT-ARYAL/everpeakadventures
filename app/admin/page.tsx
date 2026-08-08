@@ -18,6 +18,11 @@ export default async function AdminDashboardPage() {
   const legalCount = await prisma.legalDocument.count();
   const fixedCount = await prisma.fixedDeparture.count();
   const submissionCount = await prisma.contactSubmission.count();
+  const bookingCount = await prisma.bookingSubmission.count();
+  const recentBookings = await prisma.bookingSubmission.findMany({
+    orderBy: { createdAt: 'desc' },
+    take: 5,
+  });
   const pageCount = await prisma.page.count();
 
   // Fetch or fallback to default dynamic system summary settings
@@ -40,10 +45,11 @@ export default async function AdminDashboardPage() {
     { title: 'Tour Packages', count: tourCount, href: '/admin/tours', icon: Layers, color: 'text-amber-500', desc: 'View all tour packages' },
     { title: 'Testimonials', count: reviewCount, href: '/admin/testimonials', icon: MessageSquare, color: 'text-purple-500', desc: 'View all client reviews' },
     { title: 'FAQs', count: faqCount, href: '/admin/faqs', icon: HelpCircle, color: 'text-rose-500', desc: 'View all FAQs' },
-    { title: 'Fixed Departures', count: fixedCount, href: '/admin/fixed-departures', icon: Briefcase, color: 'text-indigo-500', desc: 'View scheduled departures' },
+    { title: 'Fixed Departures', count: fixedCount, href: '/admin/departures', icon: Briefcase, color: 'text-indigo-500', desc: 'View scheduled departures' },
     { title: 'Team Members', count: teamCount, href: '/admin/team', icon: Users, color: 'text-cyan-500', desc: 'View company staff & guides' },
     { title: 'Legal Documents', count: legalCount, href: '/admin/legal-documents', icon: Shield, color: 'text-indigo-600', desc: 'View legal files & licenses' },
     { title: 'Contact Leads', count: submissionCount, href: '/admin/contact-submissions', icon: Mail, color: 'text-yellow-500', desc: 'View customer inquiries' },
+    { title: 'Booking Requests', count: bookingCount, href: '/admin/bookings', icon: Briefcase, color: 'text-orange-500', desc: 'View booking requests' },
   ];
 
   return (
@@ -137,6 +143,47 @@ export default async function AdminDashboardPage() {
             );
           })}
         </div>
+      </div>
+
+    {/* Recent Booking Requests Notification */}
+      <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="font-bold text-gray-800 uppercase tracking-wider flex items-center gap-2">
+            <Briefcase className="w-4 h-4 text-orange-500" /> Recent Booking Requests
+          </h2>
+          <Link href="/admin/bookings" className="text-[11px] font-bold text-[#24a0ed] hover:underline">
+            View all →
+          </Link>
+        </div>
+        {recentBookings.length === 0 ? (
+          <p className="py-6 text-center text-gray-400 font-medium">No booking requests yet.</p>
+        ) : (
+          <div className="divide-y divide-gray-50">
+            {recentBookings.map((b) => (
+              <Link
+                key={b.id}
+                href={`/admin/bookings`}
+                className="flex items-center justify-between gap-4 py-3 hover:bg-gray-50 rounded-lg px-2 -mx-2 transition-colors"
+              >
+                <div className="flex items-center gap-3 min-w-0">
+                  <div className="w-2 h-2 rounded-full bg-orange-500 shrink-0"></div>
+                  <div className="min-w-0">
+                    <span className="block font-bold text-[#112233] truncate">{b.fullName} — {b.tripTitle}</span>
+                    <span className="block text-[11px] text-gray-400 mt-0.5">
+                      {b.phone} · {b.travelDate}
+                    </span>
+                  </div>
+                </div>
+                <div className="text-right shrink-0">
+                  <span className="block font-black text-[#112233]">{b.estimatedTotal}</span>
+                  <span className="block text-[10px] text-gray-400 mt-0.5">
+                    {new Date(b.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+                  </span>
+                </div>
+              </Link>
+            ))}
+          </div>
+        )}
       </div>
 
     </div>

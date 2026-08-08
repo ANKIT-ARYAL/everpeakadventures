@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { LayoutDashboard, Award, Layers, ArrowRight } from 'lucide-react';
+import ViewButton from "../components/ViewButton";
 
 export const dynamic = 'force-dynamic';
 
@@ -29,9 +30,12 @@ export default async function AdminWhyChooseUsPage() {
     <div className="space-y-6 max-w-[1400px] mx-auto text-xs">
       
       {/* Top Header Bar */}
-      <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
-        <h1 className="text-2xl font-black text-[#112233] oswald uppercase tracking-wide">Why Choose Us</h1>
-        <p className="text-gray-500 mt-1">Manage the Why Choose Us section content, items, and features grid.</p>
+      <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 flex items-center justify-between">
+        <div>
+          <h1 className="text-2xl font-black text-[#112233] oswald uppercase tracking-wide">Why Choose Us</h1>
+          <p className="text-gray-500 mt-1">Manage the Why Choose Us section content, items, and features grid.</p>
+        </div>
+        <ViewButton href="/why-ever-peak-adventures" title="View section on site" />
       </div>
 
       {/* Cards Grid */}

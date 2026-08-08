@@ -65,11 +65,21 @@ export default function HeroContent({ hero, trustItems }: HeroContentProps) {
         </motion.p>
 
         <motion.div variants={item} className="w-full max-w-2xl mb-6">
-          <input
-            type="text"
-            placeholder={hero.searchPlaceholder ?? undefined}
-            className="w-full px-6 py-4 rounded-full text-black bg-white outline-none"
-          />
+          <form action="/trekking" className="relative">
+            <input
+              type="text"
+              name="q"
+              placeholder={hero.searchPlaceholder ?? "Search by trek name"}
+              className="w-full px-6 py-4 rounded-full text-black bg-white outline-none"
+            />
+            <button
+              type="submit"
+              className="absolute top-1/2 right-2 -translate-y-1/2 bg-orange-400 text-black px-5 py-2.5 rounded-full font-bold text-sm hover:bg-orange-300 transition cursor-pointer"
+              aria-label="Search treks"
+            >
+              Search
+            </button>
+          </form>
         </motion.div>
 
         <motion.div variants={item} className="flex gap-4">

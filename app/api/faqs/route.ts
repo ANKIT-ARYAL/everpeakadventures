@@ -28,6 +28,8 @@ export async function POST(request: Request) {
         question: body.question,
         answer: body.answer,
         order: Number(body.order) || 0,
+        relatedType: body.relatedType || null,
+        relatedSlug: body.relatedSlug || null,
       }
     });
 

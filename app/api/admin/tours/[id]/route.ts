@@ -10,6 +10,10 @@ export async function GET(
   try {
     const tour = await prisma.tour.findUnique({
       where: { id },
+      include: {
+        groupPrices: true,
+        fixedSchedules: true,
+      },
     });
 
     if (!tour) {
@@ -32,29 +36,66 @@ export async function PUT(
     const body = await request.json();
     delete body.id; // Prevent updating ID field
 
-    const updatedTour = await prisma.tour.update({
-      where: { id },
-      data: {
-        title: body.title,
-        slug: body.slug,
-        image: body.image,
-        duration: body.duration,
-        bestTime: body.bestTime,
-        destination: body.destination,
-        grade: body.grade,
-        gallery: body.gallery || [],
-        maxAltitude: body.maxAltitude,
-        startPoint: body.startPoint,
-        endPoint: body.endPoint,
-        meals: body.meals,
-        overview: body.overview,
-        highlights: body.highlights || [],
-        itinerary: body.itinerary || [],
-        inclusions: body.inclusions || [],
-        exclusions: body.exclusions || [],
-        price: Number(body.price) || 0,
-        order: Number(body.order) || 0,
-      },
+    const updatedTour = await prisma.$transaction(async (tx) => {
+      await tx.tourGroupPrice.deleteMany({ where: { tourId: id } });
+      await tx.tourSchedule.deleteMany({ where: { tourId: id } });
+
+      return tx.tour.update({
+        where: { id },
+        data: {
+          title: body.title,
+          slug: body.slug,
+          description: body.description,
+          overview: body.overview,
+          heroImage: body.heroImage || body.image,
+          gallery: body.gallery || [],
+          duration: body.duration,
+          price: Number(body.price) || 0,
+          discountedPrice: body.discountedPrice ? Number(body.discountedPrice) : null,
+          originalPrice: body.originalPrice ? Number(body.originalPrice) : null,
+          priceRange: body.priceRange || null,
+          isAllInclusive: body.isAllInclusive ?? false,
+          bestTime: body.bestTime,
+          destination: body.destination,
+          primaryDestination: body.primaryDestination || null,
+          grade: body.grade,
+          maxAltitude: body.maxAltitude,
+          startPoint: body.startPoint,
+          endPoint: body.endPoint,
+          meals: body.meals,
+          activity: body.activity || null,
+          groupSize: body.groupSize || null,
+          transport: body.transport || null,
+          mapUrl: body.mapUrl || null,
+          regions: body.regions || [],
+          videoUrl: body.videoUrl || null,
+          videoType: body.videoType || null,
+          focusKeyphrase: body.focusKeyphrase || null,
+          seoTitle: body.seoTitle || null,
+          metaDescription: body.metaDescription || null,
+          highlights: body.highlights,
+          inclusions: body.inclusions,
+          exclusions: body.exclusions,
+          packingList: body.packingList,
+          itinerary: body.itinerary || [],
+          isBestSeller: body.isBestSeller || false,
+          order: Number(body.order) || 0,
+          groupPrices: {
+            create: (body.groupPrices || []).map((g: any) => ({
+              groupSize: g.groupSize,
+              groupType: g.groupType,
+              price: g.price,
+            })),
+          },
+          fixedSchedules: {
+            create: (body.fixedSchedules || []).map((s: any) => ({
+              groupSize: s.groupSize,
+              dateRange: s.dateRange,
+              status: s.status,
+            })),
+          },
+        },
+      });
     });
 
     return NextResponse.json(updatedTour);

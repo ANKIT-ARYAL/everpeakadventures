@@ -12,6 +12,7 @@ import RouteMap from '@/app/components/trek/RouteMap';
 import GallerySection from '@/app/components/trek/GallerySection';
 import { Reveal, Stagger, StaggerItem } from '@/app/components/animations/Motion';
 import { toHtml } from '@/app/lib/html';
+import FAQAccordion from '@/app/components/FAQAccordion';
 
 export const dynamic = 'force-dynamic';
 
@@ -40,9 +41,16 @@ export default async function TrekDetailPage({ params }: PageProps) {
     orderBy: { order: 'asc' },
   });
 
+  const linkedFaqs = trek.slug
+    ? await prisma.fAQ.findMany({
+        where: { relatedType: 'trek', relatedSlug: trek.slug },
+        orderBy: { order: 'asc' },
+      })
+    : [];
+
   const galleryImages = (trek.gallery || []).filter(Boolean);
   const itineraryDays = Array.isArray(trek.itinerary) ? (trek.itinerary as any[]) : [];
-  const packingItems = trek.packingList || [];
+  const packingItems = trek.packingList || '';
   const shareUrl = `https://everpeakadventures.com/trekking/${trek.slug ?? trek.id}`;
 
   const parsePrice = (s?: string | null) => {
@@ -55,6 +63,7 @@ export default async function TrekDetailPage({ params }: PageProps) {
     : (trek.discountedPrice ?? trek.price);
   const regularPrice = (trek.originalPrice ?? trek.price) > minPrice ? (trek.originalPrice ?? trek.price) : minPrice;
   const saveAmount = regularPrice - minPrice;
+  const savePercent = Math.round((saveAmount / regularPrice) * 100);
   const minPriceDisplay = minPrice > 0 ? minPrice : (trek.discountedPrice ?? trek.price);
 
   return (
@@ -104,6 +113,7 @@ export default async function TrekDetailPage({ params }: PageProps) {
                     <div className="shrink-0 flex flex-col items-center bg-amber-400 text-[#112233] rounded-xl px-3 py-2 shadow-sm text-center">
                       <span className="text-[9px] font-black uppercase tracking-wider">Save</span>
                       <span className="text-sm font-black leading-tight">US$ {saveAmount.toLocaleString()}</span>
+                      <span className="text-[10px] font-black leading-tight">-{savePercent}%</span>
                       <span className="text-[8px] font-bold uppercase tracking-wide opacity-80">per person</span>
                     </div>
                   )}
@@ -115,7 +125,8 @@ export default async function TrekDetailPage({ params }: PageProps) {
                 <div className="space-y-2">
                   <h4 className="font-bold text-gray-800 uppercase tracking-wider text-xs">Group-Size Discounts</h4>
                   <p className="text-[10px] text-gray-400">Your group is private - we do not add others to your group.</p>
-                  <div className="border border-gray-200 rounded-lg overflow-hidden text-[11px]">
+                  <div className="overflow-x-auto">
+                  <div className="min-w-[420px] border border-gray-200 rounded-lg overflow-hidden text-[11px]">
                     <div className="grid grid-cols-4 bg-gray-100 font-bold text-gray-600 p-2 border-b border-gray-200 text-center uppercase tracking-wide">
                       <span>No. of Persons</span>
                       <span>Group Type</span>
@@ -131,9 +142,10 @@ export default async function TrekDetailPage({ params }: PageProps) {
                           <Link href={`/booking-form/?trip_id=${trek.id}`} className="text-[#24a0ed] hover:text-[#112233] font-bold underline">
                             Book
                           </Link>
-                        </span>
-                      </div>
+                          </span>
+                        </div>
                     ))}
+                    </div>
                   </div>
                 </div>
               )}
@@ -284,20 +296,13 @@ export default async function TrekDetailPage({ params }: PageProps) {
             </Reveal>
 
             {/* Highlights */}
-            {trek.highlights && trek.highlights.length > 0 && (<>
+            {trek.highlights && (<>
               <div id="highlights" className="scroll-mt-[118px]" />
               <Reveal className="bg-white rounded-xl p-8 shadow-sm border border-gray-100 space-y-4">
                 <h2 className="text-xl font-bold oswald uppercase text-[#112233] border-b pb-3">
                   Highlights
                 </h2>
-                <ul className="space-y-2.5">
-                  {trek.highlights.map((h: string, i: number) => (
-                    <li key={i} className="flex items-start gap-2.5 text-xs text-gray-700 font-medium">
-                      <span className="text-[#24a0ed] font-bold shrink-0">✓</span>
-                      <span dangerouslySetInnerHTML={{ __html: toHtml(h) }} />
-                    </li>
-                  ))}
-                </ul>
+                <div className="rich-content text-xs text-gray-700 font-medium" dangerouslySetInnerHTML={{ __html: toHtml(trek.highlights) }} />
               </Reveal>
             </>)}
 
@@ -329,21 +334,13 @@ export default async function TrekDetailPage({ params }: PageProps) {
                 <h3 className="font-bold oswald uppercase text-emerald-700 border-b pb-2 flex items-center gap-2 text-xs">
                   <CheckCircle2 className="w-4 h-4" /> Package Includes
                 </h3>
-                <ul className="space-y-2 text-xs text-gray-600">
-                  {trek.inclusions?.map((inc: string, i: number) => (
-                    <li key={i} className="flex items-start gap-2"><span className="text-emerald-600 font-bold shrink-0">•</span><span dangerouslySetInnerHTML={{ __html: toHtml(inc) }} /></li>
-                  ))}
-                </ul>
+                {trek.inclusions && <div className="rich-content text-xs text-gray-600" dangerouslySetInnerHTML={{ __html: toHtml(trek.inclusions) }} />}
               </StaggerItem>
               <StaggerItem id="exclude" className="bg-white rounded-xl p-6 shadow-sm border border-gray-100 space-y-3 scroll-mt-[118px]">
                 <h3 className="font-bold oswald uppercase text-rose-700 border-b pb-2 flex items-center gap-2 text-xs">
                   <XCircle className="w-4 h-4" /> Package Excludes
                 </h3>
-                <ul className="space-y-2 text-xs text-gray-600">
-                  {trek.exclusions?.map((exc: string, i: number) => (
-                    <li key={i} className="flex items-start gap-2"><span className="text-rose-600 font-bold shrink-0">•</span><span dangerouslySetInnerHTML={{ __html: toHtml(exc) }} /></li>
-                  ))}
-                </ul>
+                {trek.exclusions && <div className="rich-content text-xs text-gray-600" dangerouslySetInnerHTML={{ __html: toHtml(trek.exclusions) }} />}
               </StaggerItem>
             </Stagger>
 
@@ -352,21 +349,14 @@ export default async function TrekDetailPage({ params }: PageProps) {
       </section>
 
       {/* EQUIPMENT & GEARS */}
-      {packingItems.length > 0 && (<>
+      {packingItems && (<>
         <div id="equipment" className="scroll-mt-[118px]" />
         <section className="max-w-[1200px] mx-auto px-5 mt-10">
           <Reveal className="bg-white rounded-xl p-8 shadow-sm border border-gray-100">
             <h2 className="text-xl font-bold oswald uppercase text-[#112233] border-b pb-3 mb-6">
               Equipment & Trekking Gears
             </h2>
-            <Stagger className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-              {packingItems.map((item: string, i: number) => (
-                <StaggerItem key={i} className="flex items-start gap-2.5 text-xs text-gray-700 font-medium p-3 rounded-lg bg-gray-50 border border-gray-100">
-                  <CheckCircle2 className="w-4 h-4 text-[#24a0ed] shrink-0 mt-0.5" />
-                  <span dangerouslySetInnerHTML={{ __html: toHtml(item) }} />
-                </StaggerItem>
-              ))}
-            </Stagger>
+            <div className="rich-content text-xs text-gray-700 font-medium" dangerouslySetInnerHTML={{ __html: toHtml(packingItems) }} />
           </Reveal>
         </section>
       </>)}
@@ -408,6 +398,13 @@ export default async function TrekDetailPage({ params }: PageProps) {
           <GallerySection photos={galleryImages.map((src: string, i: number) => ({
             src, caption: `Day ${i + 1} snapshot - ${trek.title}`,
           }))} />
+        </section>
+      )}
+
+      {/* FAQS */}
+      {linkedFaqs.length > 0 && (
+        <section className="max-w-[1200px] mx-auto px-5 mt-10">
+          <FAQAccordion faqs={linkedFaqs} />
         </section>
       )}
 

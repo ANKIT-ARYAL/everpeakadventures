@@ -6,12 +6,19 @@ import { Save, ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
 import toast, { Toaster } from 'react-hot-toast';
 
+interface RelatedPage {
+  type: 'trek' | 'tour' | 'blog';
+  slug: string;
+  title: string;
+}
+
 interface Props {
   initialData?: any;
   isEditing?: boolean;
+  relatedPages?: RelatedPage[];
 }
 
-export default function FaqForm({ initialData, isEditing = false }: Props) {
+export default function FaqForm({ initialData, isEditing = false, relatedPages = [] }: Props) {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
 
@@ -19,11 +26,27 @@ export default function FaqForm({ initialData, isEditing = false }: Props) {
     question: initialData?.question || '',
     answer: initialData?.answer || '',
     order: initialData?.order || 0,
+    relatedType: initialData?.relatedType || '',
+    relatedSlug: initialData?.relatedSlug || '',
   });
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const relatedTypeOptions = [
+    { value: 'trek', label: 'Trek page' },
+    { value: 'tour', label: 'Tour page' },
+    { value: 'blog', label: 'Blog post' },
+  ];
+
+  const pagesOfType = relatedPages
+    .filter(p => p.type === form.relatedType)
+    .sort((a, b) => a.title.localeCompare(b.title));
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
-    setForm(prev => ({ ...prev, [name]: value }));
+    if (name === 'relatedType') {
+      setForm(prev => ({ ...prev, [name]: value, relatedSlug: '' }));
+    } else {
+      setForm(prev => ({ ...prev, [name]: value }));
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -34,6 +57,8 @@ export default function FaqForm({ initialData, isEditing = false }: Props) {
       const payload = {
         ...form,
         order: Number(form.order) || 0,
+        relatedType: form.relatedType || null,
+        relatedSlug: form.relatedSlug || null,
       };
 
       const url = isEditing ? `/api/faqs/${initialData?.id}` : '/api/faqs';
@@ -110,6 +135,35 @@ export default function FaqForm({ initialData, isEditing = false }: Props) {
               <label className="block font-bold mb-1">Display Order</label>
               <input type="number" name="order" value={form.order} onChange={handleChange} className="w-full p-2.5 border rounded-lg outline-none bg-gray-50" />
             </div>
+          </div>
+
+          <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 space-y-4">
+            <h3 className="font-bold text-gray-800 uppercase tracking-wider border-b pb-2">Show On Page</h3>
+            <p className="text-[10px] text-gray-500 leading-relaxed">
+              Optionally feature this FAQ on a related trek, tour, or blog page. Leave unset to only appear on the FAQ listing.
+            </p>
+
+            <div>
+              <label className="block font-bold mb-1">Page Type</label>
+              <select name="relatedType" value={form.relatedType} onChange={handleChange} className="w-full p-2.5 border rounded-lg outline-none bg-gray-50">
+                <option value="">None (FAQ page only)</option>
+                {relatedTypeOptions.map(opt => (
+                  <option key={opt.value} value={opt.value}>{opt.label}</option>
+                ))}
+              </select>
+            </div>
+
+            {form.relatedType && (
+              <div>
+                <label className="block font-bold mb-1">Select {relatedTypeOptions.find(o => o.value === form.relatedType)?.label}</label>
+                <select name="relatedSlug" value={form.relatedSlug} onChange={handleChange} className="w-full p-2.5 border rounded-lg outline-none bg-gray-50">
+                  <option value="">Select a page...</option>
+                  {pagesOfType.map(p => (
+                    <option key={p.slug} value={p.slug}>{p.title}</option>
+                  ))}
+                </select>
+              </div>
+            )}
           </div>
 
         </div>

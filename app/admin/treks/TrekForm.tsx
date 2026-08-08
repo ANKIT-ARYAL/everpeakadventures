@@ -1,8 +1,8 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Save, ArrowLeft, Plus, Trash2, Image as ImageIcon, Video } from 'lucide-react';
+import { Save, ArrowLeft, Plus, Trash2, Image as ImageIcon, Video, ExternalLink } from 'lucide-react';
 import Link from 'next/link';
 import RichTextEditor from '@/app/components/admin/RichTextEditor';
 import MediaUploader from '@/app/components/admin/MediaUploader';
@@ -99,10 +99,10 @@ export default function TrekForm({ initialData, isEditing = false }: TrekFormPro
           }))
         : [{ groupSize: '2 - 12 Pax', dateRange: '', status: 'Book' }],
 
-    highlights: initialData?.highlights || [''],
-    inclusions: initialData?.inclusions || [''],
-    exclusions: initialData?.exclusions || [''],
-    packingList: initialData?.packingList || [''],
+    highlights: initialData?.highlights || '',
+    inclusions: initialData?.inclusions || '',
+    exclusions: initialData?.exclusions || '',
+    packingList: initialData?.packingList || '',
     itinerary:
       Array.isArray(initialData?.itinerary) && initialData.itinerary.length > 0
         ? initialData.itinerary
@@ -234,12 +234,14 @@ export default function TrekForm({ initialData, isEditing = false }: TrekFormPro
       const payload = {
         ...formData,
         gallery: formData.gallery.filter((i: string) => i.trim() !== ''),
-        highlights: formData.highlights.filter((i: string) => i.trim() !== ''),
-        inclusions: formData.inclusions.filter((i: string) => i.trim() !== ''),
-        exclusions: formData.exclusions.filter((i: string) => i.trim() !== ''),
-        packingList: formData.packingList.filter((i: string) => i.trim() !== ''),
         groupPrices: cleanGroupPrices,
         fixedSchedules: cleanSchedules,
+        price: derived.priceFrom || Number(formData.price) || 0,
+        originalPrice: derived.originalPrice || Number(formData.price) || 0,
+        priceRange: derived.range,
+        durationDays: derived.durationDays ? `${derived.durationDays}` : formData.durationDays || '0 Days',
+        groupSize: derived.groupSize,
+        maxAltitude: derived.maxAltitude,
       };
 
       const url = isEditing ? `/api/treks/${initialData?.id}` : '/api/treks';
@@ -262,6 +264,53 @@ export default function TrekForm({ initialData, isEditing = false }: TrekFormPro
     }
   };
 
+  // ---- Live-derived preview computation ----
+  const parseUsd = (s?: string | null): number => {
+    const n = Number(String(s ?? '').replace(/[^0-9.]/g, ''));
+    return Number.isFinite(n) && n > 0 ? n : 0;
+  };
+  const parsePax = (s?: string): { min: number; max: number } => {
+    const nums = (String(s ?? '').match(/\d+/g) || []).map(Number);
+    if (nums.length === 0) return { min: 0, max: 0 };
+    return { min: Math.min(...nums), max: Math.max(...nums) };
+  };
+  const fmtUsd = (n: number): string => (n > 0 ? 'US$ ' + n.toLocaleString('en-US') : '—');
+
+  const derived = useMemo(() => {
+    const groupPrices = (formData.groupPrices || []).filter((g: any) => parseUsd(g.price) > 0);
+    const prices = groupPrices.map((g: any) => parseUsd(g.price));
+    const paxes = (formData.groupPrices || []).map((g: any) => parsePax(g.groupSize));
+    const paxMins = paxes.map((p: { min: number; max: number }) => p.min).filter((n: number) => n > 0);
+    const paxMaxs = paxes.map((p: { min: number; max: number }) => p.max).filter((n: number) => n > 0);
+    const itineraryDays = Array.isArray(formData.itinerary) ? formData.itinerary.filter((d: any) => d && (d.title || d.desc || d.elev)).length : 0;
+    const altitudes = (Array.isArray(formData.itinerary) ? formData.itinerary : [])
+      .map((d: any) => Number(d.elev || 0))
+      .filter((n: number) => n > 0);
+    const priceFrom = prices.length ? Math.min(...prices) : (parseUsd(String(formData.discountedPrice)) || Number(formData.price) || 0);
+    const original = parseUsd(String(formData.originalPrice));
+    const range =
+      prices.length > 1
+        ? `US$ ${Math.min(...prices).toLocaleString('en-US')} - US$ ${Math.max(...prices).toLocaleString('en-US')}`
+        : prices.length === 1
+          ? `US$ ${priceFrom.toLocaleString('en-US')}`
+          : formData.priceRange;
+
+    return {
+      priceFrom,
+      originalPrice: original,
+      saveAmount: original > priceFrom ? original - priceFrom : 0,
+      range,
+      groupSize:
+        paxMins.length && paxMaxs.length
+          ? (Math.min(...paxMins) === Math.max(...paxMaxs)
+              ? `${Math.min(...paxMins)} Pax`
+              : `${Math.min(...paxMins)} - ${Math.max(...paxMaxs)} Pax`)
+          : '—',
+      durationDays: itineraryDays,
+      maxAltitude: altitudes.length ? `${Math.max(...altitudes).toLocaleString('en-US')} M` : '—',
+    };
+  }, [formData]);
+
   return (
     <form onSubmit={handleSubmit} className="max-w-[1200px] mx-auto space-y-6 pb-20 text-xs font-sans text-gray-800">
 
@@ -276,13 +325,25 @@ export default function TrekForm({ initialData, isEditing = false }: TrekFormPro
           </h1>
         </div>
 
-        <button
-          type="submit"
-          disabled={loading}
-          className="bg-[#24a0ed] hover:bg-[#1a85c6] text-white font-bold px-6 py-2.5 rounded-lg shadow-sm flex items-center gap-2 transition-colors uppercase tracking-wider disabled:opacity-50"
-        >
-          <Save className="w-4 h-4" /> {loading ? 'Saving...' : (isEditing ? 'Update Trek' : 'Publish Trek')}
-        </button>
+        <div className="flex items-center gap-2">
+          {isEditing && formData.slug && (
+            <Link
+              href={`/trekking/${formData.slug}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="bg-emerald-50 hover:bg-emerald-100 text-emerald-700 font-bold px-4 py-2.5 rounded-lg flex items-center gap-2 transition-colors uppercase tracking-wider"
+            >
+              <ExternalLink className="w-4 h-4" /> View Live
+            </Link>
+          )}
+          <button
+            type="submit"
+            disabled={loading}
+            className="bg-[#24a0ed] hover:bg-[#1a85c6] text-white font-bold px-6 py-2.5 rounded-lg shadow-sm flex items-center gap-2 transition-colors uppercase tracking-wider disabled:opacity-50"
+          >
+            <Save className="w-4 h-4" /> {loading ? 'Saving...' : (isEditing ? 'Update Trek' : 'Publish Trek')}
+          </button>
+        </div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -397,16 +458,9 @@ export default function TrekForm({ initialData, isEditing = false }: TrekFormPro
           <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 space-y-4">
             <div className="flex items-center justify-between border-b pb-2">
               <h2 className="font-bold text-gray-800 uppercase tracking-wider">Highlights</h2>
-              <button type="button" onClick={() => addListItem('highlights')} className="text-[#24a0ed] font-bold flex items-center gap-1">
-                <Plus className="w-3.5 h-3.5" /> Add
-              </button>
             </div>
-            {formData.highlights.map((item: string, idx: number) => (
-              <div key={idx} className="flex items-start gap-2">
-                <RichTextEditor value={item} onChange={(html) => handleListChange(idx, html, 'highlights')} minHeight="60px" />
-                <button type="button" onClick={() => removeListItem(idx, 'highlights')} className="text-red-500 p-2 hover:bg-red-50 rounded"><Trash2 className="w-4 h-4" /></button>
-              </div>
-            ))}
+            <RichTextEditor value={formData.highlights} onChange={(html) => setFormData(prev => ({ ...prev, highlights: html }))} placeholder="Enter trek highlights..." minHeight="120px" />
+            <p className="text-[10px] text-gray-400">Use the bullet list button for each highlight.</p>
           </div>
 
           {/* Itinerary */}
@@ -444,31 +498,17 @@ export default function TrekForm({ initialData, isEditing = false }: TrekFormPro
             <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 space-y-4">
               <div className="flex items-center justify-between border-b pb-2">
                 <h2 className="font-bold text-emerald-700 uppercase tracking-wider">Package Inclusions</h2>
-                <button type="button" onClick={() => addListItem('inclusions')} className="text-emerald-600 font-bold flex items-center gap-1">
-                  <Plus className="w-3.5 h-3.5" /> Add
-                </button>
               </div>
-              {formData.inclusions.map((item: string, idx: number) => (
-                <div key={idx} className="flex items-start gap-2">
-                  <RichTextEditor value={item} onChange={(html) => handleListChange(idx, html, 'inclusions')} minHeight="60px" />
-                  <button type="button" onClick={() => removeListItem(idx, 'inclusions')} className="text-red-500 p-2"><Trash2 className="w-4 h-4" /></button>
-                </div>
-              ))}
+              <RichTextEditor value={formData.inclusions} onChange={(html) => setFormData(prev => ({ ...prev, inclusions: html }))} placeholder="Enter what is included in the package..." minHeight="150px" />
+              <p className="text-[10px] text-gray-400">Use the bullet list button for each inclusion.</p>
             </div>
 
             <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 space-y-4">
               <div className="flex items-center justify-between border-b pb-2">
                 <h2 className="font-bold text-rose-700 uppercase tracking-wider">Package Exclusions</h2>
-                <button type="button" onClick={() => addListItem('exclusions')} className="text-rose-600 font-bold flex items-center gap-1">
-                  <Plus className="w-3.5 h-3.5" /> Add
-                </button>
               </div>
-              {formData.exclusions.map((item: string, idx: number) => (
-                <div key={idx} className="flex items-start gap-2">
-                  <RichTextEditor value={item} onChange={(html) => handleListChange(idx, html, 'exclusions')} minHeight="60px" />
-                  <button type="button" onClick={() => removeListItem(idx, 'exclusions')} className="text-red-500 p-2"><Trash2 className="w-4 h-4" /></button>
-                </div>
-              ))}
+              <RichTextEditor value={formData.exclusions} onChange={(html) => setFormData(prev => ({ ...prev, exclusions: html }))} placeholder="Enter what is excluded from the package..." minHeight="150px" />
+              <p className="text-[10px] text-gray-400">Use the bullet list button for each exclusion.</p>
             </div>
           </div>
 
@@ -476,16 +516,9 @@ export default function TrekForm({ initialData, isEditing = false }: TrekFormPro
           <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 space-y-4">
             <div className="flex items-center justify-between border-b pb-2">
               <h2 className="font-bold text-gray-800 uppercase tracking-wider">Equipment &amp; Trekking Gears</h2>
-              <button type="button" onClick={() => addListItem('packingList')} className="text-[#24a0ed] font-bold flex items-center gap-1">
-                <Plus className="w-3.5 h-3.5" /> Add
-              </button>
             </div>
-            {formData.packingList.map((item: string, idx: number) => (
-              <div key={idx} className="flex items-start gap-2">
-                <RichTextEditor value={item} onChange={(html) => handleListChange(idx, html, 'packingList')} minHeight="60px" />
-                <button type="button" onClick={() => removeListItem(idx, 'packingList')} className="text-red-500 p-2 hover:bg-red-50 rounded"><Trash2 className="w-4 h-4" /></button>
-              </div>
-            ))}
+            <RichTextEditor value={formData.packingList} onChange={(html) => setFormData(prev => ({ ...prev, packingList: html }))} placeholder="Enter required equipment & packing list..." minHeight="150px" />
+            <p className="text-[10px] text-gray-400">Use the bullet list button for each gear item.</p>
           </div>
 
           {/* Gallery */}
@@ -525,29 +558,54 @@ export default function TrekForm({ initialData, isEditing = false }: TrekFormPro
           </div>
 
           {/* Pricing, Tour - Quick Fact Meta-Fields */}
-          <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 space-y-4">
+          <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-200 space-y-4">
             <h3 className="font-bold text-gray-800 uppercase tracking-wider border-b pb-2">Pricing &amp; Quick Facts</h3>
+
+            {/* On-Page Preview (live-derived) */}
+            <div className="bg-emerald-50 border border-emerald-200 rounded-xl p-4 space-y-3">
+              <div className="flex items-center justify-between">
+                <span className="font-bold text-emerald-800 uppercase tracking-wider text-[11px]">On-Page Preview</span>
+                <span className="text-[10px] font-semibold text-emerald-700 bg-emerald-100 px-2 py-0.5 rounded-full uppercase">Auto from Itinerary &amp; Pricing</span>
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                <div className="p-3 bg-white rounded-lg border border-emerald-100">
+                  <div className="text-[10px] font-bold text-gray-500 uppercase mb-0.5">Price / Person</div>
+                  <div className="text-base font-extrabold text-[#24a0ed]">{fmtUsd(derived.priceFrom)}</div>
+                </div>
+                <div className="p-3 bg-white rounded-lg border border-emerald-100">
+                  <div className="text-[10px] font-bold text-gray-500 uppercase mb-0.5">You Save</div>
+                  <div className="text-base font-extrabold text-emerald-600">
+                    {derived.saveAmount > 0 ? fmtUsd(derived.saveAmount) : '—'}
+                  </div>
+                </div>
+                <div className="p-3 bg-white rounded-lg border border-emerald-100">
+                  <div className="text-[10px] font-bold text-gray-500 uppercase mb-0.5">Price Range</div>
+                  <div className="font-bold text-emerald-800 truncate">{derived.range || '—'}</div>
+                </div>
+                <div className="p-3 bg-white rounded-lg border border-emerald-100">
+                  <div className="text-[10px] font-bold text-gray-500 uppercase mb-0.5">Group Size</div>
+                  <div className="font-bold text-emerald-800">{derived.groupSize}</div>
+                </div>
+                <div className="p-3 bg-white rounded-lg border border-emerald-100">
+                  <div className="text-[10px] font-bold text-gray-500 uppercase mb-0.5">Duration</div>
+                  <div className="font-bold text-emerald-800">
+                    {derived.durationDays > 0 ? `${derived.durationDays} Days` : '—'}
+                  </div>
+                </div>
+                <div className="p-3 bg-white rounded-lg border border-emerald-100">
+                  <div className="text-[10px] font-bold text-gray-500 uppercase mb-0.5">Max Altitude</div>
+                  <div className="font-bold text-emerald-800">{derived.maxAltitude}</div>
+                </div>
+              </div>
+              <p className="text-[10px] text-emerald-700 leading-snug">
+                Computed live from the Pricing Matrix below and itinerary days/elevations. Regular (strikethrough) price below is manual.
+              </p>
+            </div>
 
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <label className="block font-bold text-gray-700 mb-1">Price (USD)</label>
-                <input type="number" name="price" value={formData.price} onChange={handleChange} className="w-full px-3 py-2 border border-gray-200 rounded-lg font-bold text-[#24a0ed]" />
-              </div>
-              <div>
                 <label className="block font-bold text-gray-700 mb-1">Regular Price</label>
                 <input type="number" name="originalPrice" value={formData.originalPrice} onChange={handleChange} placeholder="2975" className="w-full px-3 py-2 border border-gray-200 rounded-lg font-bold text-gray-400" />
-              </div>
-              <div className="col-span-2">
-                <label className="block font-bold text-gray-700 mb-1">Price Range</label>
-                <input type="text" name="priceRange" value={formData.priceRange} onChange={handleChange} placeholder="US$ 2,499 - US$ 2,975" className="w-full px-3 py-2 border border-gray-200 rounded-lg" />
-              </div>
-              <div>
-                <label className="block font-bold text-gray-700 mb-1">Duration *</label>
-                <input type="text" name="durationDays" required value={formData.durationDays} onChange={handleChange} placeholder="e.g. 19 Days" className="w-full px-3 py-2 border border-gray-200 rounded-lg" />
-              </div>
-              <div>
-                <label className="block font-bold text-gray-700 mb-1">Max Altitude (Maxl)</label>
-                <input type="text" name="maxAltitude" value={formData.maxAltitude} onChange={handleChange} placeholder="6,189 m" className="w-full px-3 py-2 border border-gray-200 rounded-lg" />
               </div>
               <div>
                 <label className="block font-bold text-gray-700 mb-1">Destination</label>
@@ -572,10 +630,6 @@ export default function TrekForm({ initialData, isEditing = false }: TrekFormPro
               <div>
                 <label className="block font-bold text-gray-700 mb-1">Activity</label>
                 <input type="text" name="activity" value={formData.activity} onChange={handleChange} placeholder="Trekking/Peak Climbing" className="w-full px-3 py-2 border border-gray-200 rounded-lg" />
-              </div>
-              <div>
-                <label className="block font-bold text-gray-700 mb-1">Group (Size)</label>
-                <input type="text" name="groupSize" value={formData.groupSize} onChange={handleChange} placeholder="1 - 10" className="w-full px-3 py-2 border border-gray-200 rounded-lg" />
               </div>
               <div>
                 <label className="block font-bold text-gray-700 mb-1">Transport</label>

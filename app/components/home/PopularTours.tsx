@@ -8,7 +8,7 @@ interface Tour {
   id: string;
   title: string;
   slug: string;
-  image: string;
+  heroImage: string;
   duration: string;
   bestTime: string;
 }
@@ -53,9 +53,9 @@ export default function PopularTours({ tours = [], watermark, title, subtitle }:
               <div className="relative w-full h-[200px] bg-gray-100 overflow-hidden">
                 <Link
                   href={`/tour/${tour.slug}`}>
-                {tour.image ? (
+                {tour.heroImage ? (
                   <img
-                    src={tour.image}
+                    src={tour.heroImage}
                     alt={tour.title}
                     className="absolute inset-0 w-full h-full object-cover"
                   />

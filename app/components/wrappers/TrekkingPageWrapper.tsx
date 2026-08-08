@@ -6,29 +6,41 @@ export const dynamic = 'force-dynamic'; // Forces Next.js to re-evaluate searchP
 interface PageProps {
   searchParams: Promise<{
     page?: string;
+    q?: string;
   }>;
 }
 
 export default async function TrekkingPageWrapper({ searchParams }: PageProps) {
   const resolvedParams = await searchParams;
   const currentPage = Number(resolvedParams?.page) || 1;
+  const query = (resolvedParams?.q || '').trim().toLowerCase();
   const pageSize = 12;
 
   const allTreks = await prisma.trek.findMany({
     orderBy: { order: 'asc' },
   });
 
-  const totalPages = Math.ceil(allTreks.length / pageSize) || 1;
+  const filteredTreks = query
+    ? allTreks.filter(
+        (t) =>
+          t.title.toLowerCase().includes(query) ||
+          (t.description || '').toLowerCase().includes(query) ||
+          (t.region || '').toLowerCase().includes(query)
+      )
+    : allTreks;
 
-  const startIndex = (currentPage - 1) * pageSize;
-  const paginatedTreks = allTreks.slice(startIndex, startIndex + pageSize);
+  const totalPages = Math.ceil(filteredTreks.length / pageSize) || 1;
+  const safePage = Math.min(currentPage, totalPages);
+
+  const startIndex = (safePage - 1) * pageSize;
+  const paginatedTreks = filteredTreks.slice(startIndex, startIndex + pageSize);
 
   const hero = await prisma.subpageHero.findUnique({ where: { slug: 'trekking' } });
 
   return (
     <TrekkingPage 
       treks={paginatedTreks} 
-      currentPage={currentPage} 
+      currentPage={safePage} 
       totalPages={totalPages} 
       heroTitle={hero?.title}
       heroSubtitle={hero?.subtitle ?? undefined}

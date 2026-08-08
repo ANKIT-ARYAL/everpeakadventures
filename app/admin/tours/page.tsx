@@ -4,6 +4,7 @@ import { Search } from 'lucide-react';
 import AddNewButton from "../components/AddNewButton";
 import EditButton from "../components/EditButton";
 import DeleteButton from "../components/DeleteButton";
+import ViewButton from "../components/ViewButton";
 
 export const dynamic = 'force-dynamic';
 
@@ -72,7 +73,7 @@ export default async function AdminToursPage() {
                     <td className="py-3 px-4 text-center text-gray-400 font-medium">{index + 1}</td>
                     <td className="py-3 px-4">
                       <img 
-                        src={tour.image} 
+                        src={tour.heroImage} 
                         alt={tour.title} 
                         className="w-10 h-10 object-cover rounded-lg border border-gray-200 shadow-sm"
                       />
@@ -93,6 +94,7 @@ export default async function AdminToursPage() {
                       <div className="flex items-center justify-end gap-2">
                         {/* Reusable Edit & Delete Action Buttons */}
                         <EditButton href={`/admin/tours/${tour.id}/edit`} />
+                        {tour.slug && <ViewButton href={`/tour/${tour.slug}`} />}
                         <DeleteButton id={tour.id} model="tours" title={tour.title} />
                       </div>
                     </td>

@@ -4,6 +4,7 @@ import { Search } from 'lucide-react';
 import AddNewButton from "../components/AddNewButton";
 import EditButton from "../components/EditButton";
 import DeleteButton from "../components/DeleteButton";
+import ViewButton from "../components/ViewButton";
 
 export const dynamic = 'force-dynamic';
 
@@ -100,6 +101,7 @@ export default async function AdminTreksPage() {
                       <div className="flex items-center justify-end gap-2">
                         {/* Reusable Edit & Delete Action Buttons */}
                         <EditButton href={`/admin/treks/${trek.id}/edit`} />
+                        {trek.slug && <ViewButton href={`/trekking/${trek.slug}`} />}
                         <DeleteButton id={trek.id} model="treks" title={trek.title} />
                       </div>
                     </td>

@@ -1,7 +1,11 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { requireAdmin } from "@/app/lib/require-admin";
 
 export async function GET() {
+  const unauthorized = await requireAdmin();
+  if (unauthorized) return unauthorized;
+
   try {
     const treks = await prisma.trek.findMany({
       orderBy: { order: 'asc' },
@@ -18,6 +22,9 @@ export async function GET() {
 }
 
 export async function POST(request: Request) {
+  const unauthorized = await requireAdmin();
+  if (unauthorized) return unauthorized;
+
   try {
     const body = await request.json();
 
@@ -51,10 +58,10 @@ export async function POST(request: Request) {
         groupSize: body.groupSize,
         transport: body.transport,
         activity: body.activity,
-        highlights: body.highlights || [],
-        inclusions: body.inclusions || [],
-        exclusions: body.exclusions || [],
-        packingList: body.packingList || [],
+        highlights: body.highlights || null,
+        inclusions: body.inclusions || null,
+        exclusions: body.exclusions || null,
+        packingList: body.packingList || null,
         itinerary: body.itinerary || [],
         mapUrl: body.mapUrl,
         videoUrl: body.videoUrl || null,

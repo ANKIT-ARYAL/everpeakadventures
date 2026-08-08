@@ -4,6 +4,7 @@ import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import { Calendar, FolderOpen, ArrowRight } from 'lucide-react';
 import { Reveal, Stagger, StaggerItem } from '@/app/components/animations/Motion';
+import FAQAccordion from '@/app/components/FAQAccordion';
 
 export const dynamic = 'force-dynamic';
 
@@ -32,6 +33,13 @@ export default async function BlogPostDetailPage({ params }: PageProps) {
 
   // Safe cast for faqs Json field
   const faqs = Array.isArray(post.faqs) ? (post.faqs as any[]) : [];
+
+  // Linked FAQs from the FAQ manager (related blog)
+  const linkedFaqs = await prisma.fAQ.findMany({
+    where: { relatedType: 'blog', relatedSlug: post.slug },
+    orderBy: { order: 'asc' },
+  });
+  const mergedFaqs = [...linkedFaqs, ...faqs];
 
   return (
     <div className="min-h-screen bg-[#f4f6f8] font-sans text-gray-800 pb-24">
@@ -122,25 +130,8 @@ export default async function BlogPostDetailPage({ params }: PageProps) {
             </Reveal>
 
             {/* FAQs */}
-            {faqs.length > 0 && (
-              <Reveal className="bg-white rounded-xl p-8 shadow-sm border border-gray-100 space-y-4">
-                <h2 className="text-xl font-bold oswald uppercase text-[#112233] border-b pb-3">
-                  FAQs
-                </h2>
-                <div className="space-y-3">
-                  {faqs.map((faq: any, i: number) => (
-                    <details key={i} className="group p-4 rounded-xl bg-gray-50 border border-gray-200">
-                      <summary className="font-bold text-xs text-[#112233] cursor-pointer flex items-center justify-between">
-                        <span>{faq.question}</span>
-                        <span className="text-gray-400 group-open:rotate-180 transition-transform">▼</span>
-                      </summary>
-                      <p className="text-xs text-gray-600 mt-3 pt-3 border-t border-gray-200 leading-relaxed">
-                        {faq.answer}
-                      </p>
-                    </details>
-                  ))}
-                </div>
-              </Reveal>
+            {mergedFaqs.length > 0 && (
+              <FAQAccordion faqs={mergedFaqs} />
             )}
 
           </div>

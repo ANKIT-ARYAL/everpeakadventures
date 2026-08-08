@@ -92,7 +92,7 @@ export default async function TourDestinationPage({ params }: PageProps) {
               >
                 <div className="relative h-52 overflow-hidden bg-gray-100">
                   <img 
-                    src={pkg.image} 
+                    src={pkg.heroImage} 
                     alt={pkg.title}
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                   />

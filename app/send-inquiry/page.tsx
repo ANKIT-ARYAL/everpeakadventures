@@ -12,10 +12,13 @@ export default async function SendInquiryPage() {
       title: true,
       duration: true,
       price: true,
-      image: true,
+      heroImage: true,
     },
     orderBy: { order: 'asc' },
   });
+  const siteSettings = await prisma.siteSettings.findFirst();
 
-  return <SendInquiryClient trips={tours} />;
+  const trips = tours.map(t => ({ ...t, type: 'tour' as const }));
+
+  return <SendInquiryClient trips={trips} logoImage={siteSettings?.logoImage ?? undefined} />;
 }

@@ -37,7 +37,7 @@ export default function FixedDepartures({ data = [], label, title }: FixedDepart
   }, [data, selectedMonth]);
 
   return (
-    <section className="py-12 px-5 bg-[#f5f7f9] font-sans">
+    <section id="departures" className="py-12 px-5 bg-[#f5f7f9] font-sans">
       <div className="max-w-[1100px] mx-auto shadow-[0_10px_30px_rgba(0,0,0,0.05)] rounded-2xl overflow-hidden">
         
         {/* Header Section */}

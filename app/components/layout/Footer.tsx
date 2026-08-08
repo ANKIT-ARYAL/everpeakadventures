@@ -1,7 +1,8 @@
 import React from 'react';
 import Link from 'next/link';
-import { Phone, Mail, MapPin, ArrowRight } from 'lucide-react';
+import { Phone, Mail, MapPin } from 'lucide-react';
 import { prisma } from '@/lib/prisma';
+import NewsletterForm from './NewsletterForm';
 
 export default async function Footer() {
   const settings = await prisma.siteSettings.findFirst();
@@ -41,25 +42,7 @@ export default async function Footer() {
             <h4 className="text-sm font-bold uppercase tracking-wider mb-3 text-white">
               Subscribe our Newsletter
             </h4>
-            <form className="flex items-center gap-2 max-w-md">
-              <input 
-                type="text" 
-                placeholder="Name" 
-                className="bg-[#243545] border border-white/10 rounded-md px-3.5 py-2 text-xs text-white placeholder-gray-400 focus:outline-none focus:border-white/30 w-full"
-              />
-              <input 
-                type="email" 
-                placeholder="Email" 
-                className="bg-[#243545] border border-white/10 rounded-md px-3.5 py-2 text-xs text-white placeholder-gray-400 focus:outline-none focus:border-white/30 w-full"
-              />
-              <button 
-                type="submit"
-                className="bg-[#243545] hover:bg-[#2f4356] border border-white/10 px-3.5 py-2 rounded-md text-white transition-colors flex items-center justify-center shrink-0"
-                aria-label="Subscribe"
-              >
-                <ArrowRight className="w-4 h-4" />
-              </button>
-            </form>
+            <NewsletterForm />
           </div>
 
           {/* Contact Information Column */}
@@ -108,8 +91,8 @@ export default async function Footer() {
               Popular Trekking
             </h4>
             <ul className="space-y-2.5 text-gray-400">
-              <li><Link href="/?taxonomy=trekking-types&term=everest-region" className="hover:text-white transition-colors">Everest Region</Link></li>
-              <li><Link href="/?taxonomy=trekking-types&term=adventure-trek" className="hover:text-white transition-colors">Manaslu Region</Link></li>
+              <li><Link href="/trekking-types/everest-region/" className="hover:text-white transition-colors">Everest Region</Link></li>
+              <li><Link href="/trekking-types/manaslu-region/" className="hover:text-white transition-colors">Manaslu Region</Link></li>
               <li><Link href="/trekking-types/annapurna-region/" className="hover:text-white transition-colors">Annapurna Region</Link></li>
               <li><Link href="/trekking-types/langtang-region/" className="hover:text-white transition-colors">Langtang Region</Link></li>
               <li><Link href="/trekking-types/mustang-region/" className="hover:text-white transition-colors">Mustang Region</Link></li>
@@ -123,10 +106,10 @@ export default async function Footer() {
               Tour Categories
             </h4>
             <ul className="space-y-2.5 text-gray-400">
-              <li><Link href="/?taxonomy=tour-types&term=adventure-tours" className="hover:text-white transition-colors">Adventure Sports</Link></li>
-              <li><Link href="/?taxonomy=tour-types&term=culture-nature-tours" className="hover:text-white transition-colors">Culture + Nature Tours</Link></li>
-              <li><Link href="/?taxonomy=tour-types&term=day-tours-in-nepal" className="hover:text-white transition-colors">Day Tours</Link></li>
-              <li><Link href="/?taxonomy=tour-types&term=multi-country" className="hover:text-white transition-colors">Multi Country Tours</Link></li>
+              <li><Link href="/tour" className="hover:text-white transition-colors">Adventure Sports</Link></li>
+              <li><Link href="/tour" className="hover:text-white transition-colors">Culture + Nature Tours</Link></li>
+              <li><Link href="/tour" className="hover:text-white transition-colors">Day Tours</Link></li>
+              <li><Link href="/tour-destination/nepal/" className="hover:text-white transition-colors">Nepal Tours</Link></li>
             </ul>
           </div>
 
@@ -136,10 +119,10 @@ export default async function Footer() {
               Popular Tours
             </h4>
             <ul className="space-y-2.5 text-gray-400">
-              <li><Link href="/?taxonomy=tour-types&term=spiritual-tours" className="hover:text-white transition-colors">Spiritual Tours</Link></li>
-              <li><Link href="/?taxonomy=tour-types&term=village-tours" className="hover:text-white transition-colors">Village Tours</Link></li>
-              <li><Link href="/?taxonomy=tour-types&term=wildlife-safari-tours" className="hover:text-white transition-colors">Wildlife Safari Tours</Link></li>
-              <li><Link href="/?taxonomy=tour-types&term=cultural-tours-4-tours" className="hover:text-white transition-colors">Cultural Tours</Link></li>
+              <li><Link href="/tour-destination/nepal/" className="hover:text-white transition-colors">Spiritual Tours</Link></li>
+              <li><Link href="/tour-destination/nepal/" className="hover:text-white transition-colors">Village Tours</Link></li>
+              <li><Link href="/tour-destination/nepal/" className="hover:text-white transition-colors">Wildlife Safari Tours</Link></li>
+              <li><Link href="/tour" className="hover:text-white transition-colors">Cultural Tours</Link></li>
             </ul>
           </div>
 
@@ -149,10 +132,10 @@ export default async function Footer() {
               Company
             </h4>
             <ul className="space-y-2.5 text-gray-400">
-              <li><Link href="/?page_id=7551" className="hover:text-white transition-colors">About us</Link></li>
-              <li><Link href="/?post_type=our-team" className="hover:text-white transition-colors">Our Team</Link></li>
-              <li><Link href="/?page_id=5760" className="hover:text-white transition-colors">Responsible Tourism</Link></li>
-              <li><Link href="/?post_type=legal-document" className="hover:text-white transition-colors">Registrations & Affiliations</Link></li>
+              <li><Link href="/about-us" className="hover:text-white transition-colors">About us</Link></li>
+              <li><Link href="/our-team" className="hover:text-white transition-colors">Our Team</Link></li>
+              <li><Link href="/responsible-travel" className="hover:text-white transition-colors">Responsible Tourism</Link></li>
+              <li><Link href="/legal-document" className="hover:text-white transition-colors">Registrations & Affiliations</Link></li>
             </ul>
           </div>
 
@@ -162,10 +145,10 @@ export default async function Footer() {
               Useful Links
             </h4>
             <ul className="space-y-2.5 text-gray-400">
-              <li><Link href="/?page_id=4326" className="hover:text-white transition-colors">Privacy Policy</Link></li>
-              <li><Link href="/?page_id=4320" className="hover:text-white transition-colors">Terms & Conditions</Link></li>
-              <li><Link href="/?page_id=5142" className="hover:text-white transition-colors">B2B Partner</Link></li>
-              <li><Link href="/?taxonomy=gallery-types&term=photos-gallery" className="hover:text-white transition-colors">Gallery</Link></li>
+              <li><Link href="/privacy-policy" className="hover:text-white transition-colors">Privacy Policy</Link></li>
+              <li><Link href="/terms-and-conditions" className="hover:text-white transition-colors">Terms & Conditions</Link></li>
+              <li><Link href="/contact-us" className="hover:text-white transition-colors">B2B Partner</Link></li>
+              <li><Link href="/trekking" className="hover:text-white transition-colors">Gallery</Link></li>
             </ul>
           </div>
 
