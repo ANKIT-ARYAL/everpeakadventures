@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { Save, ArrowLeft, Plus, Trash2 } from 'lucide-react';
 import Link from 'next/link';
 import toast, { Toaster } from 'react-hot-toast';
+import TipTapEditor from '@/app/components/admin/TipTapEditor';
 
 interface Props {
   initialData?: any;
@@ -128,12 +129,12 @@ export default function BlogForm({ initialData, isEditing = false }: Props) {
 
             <div>
               <label className="block font-bold mb-1">Short Excerpt (Card text)</label>
-              <textarea name="excerpt" rows={3} value={form.excerpt} onChange={handleChange} className="w-full p-3 border rounded-lg focus:border-[#24a0ed] outline-none" placeholder="Brief summary..." />
+              <TipTapEditor value={form.excerpt} onChange={(html) => setForm(prev => ({ ...prev, excerpt: html }))} placeholder="Brief summary..." />
             </div>
 
             <div>
               <label className="block font-bold mb-1">Full HTML Content (Blog Body)</label>
-              <textarea name="content" rows={10} value={form.content} onChange={handleChange} className="w-full p-3 border rounded-lg font-mono text-xs focus:border-[#24a0ed] outline-none" placeholder="Write full article here..." />
+              <TipTapEditor value={form.content} onChange={(html) => setForm(prev => ({ ...prev, content: html }))} placeholder="Write full article here..." minHeight="240px" />
             </div>
           </div>
 

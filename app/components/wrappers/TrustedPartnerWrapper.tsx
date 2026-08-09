@@ -5,8 +5,11 @@ import TrustedPartner from "../home/TrustedPartner";
 export default async function TrustedPartnerWrapper() {
   const content = await prisma.trustedPartnerContent.findFirst();
   const features = await prisma.whyChooseUsItem.findMany({
+    where: { published: true },
     orderBy: { order: 'asc' },
   });
+
+  if (content && !content.published) return null;
 
   const defaultContent = {
     mainTitle: 'Your Trusted Partner For Himalayan Adventures',

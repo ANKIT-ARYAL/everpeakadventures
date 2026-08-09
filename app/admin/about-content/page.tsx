@@ -7,8 +7,11 @@ import Link from 'next/link';
 import toast, { Toaster } from 'react-hot-toast';
 import MediaUploader from '@/app/components/admin/MediaUploader';
 import RichTextEditor from '@/app/components/admin/RichTextEditor';
+import ToggleShow from '../components/ToggleShow';
+import TipTapEditor from '@/app/components/admin/TipTapEditor';
 
 const defaultContent = {
+  published: true,
   title: 'About Us',
   featuredImage: '',
   happyTravelers: '',
@@ -39,6 +42,7 @@ export default function AboutContentPage() {
         const json = await res.json();
         if (json.success && json.data) {
           setForm({
+            published: json.data.published ?? true,
             title: json.data.title || '',
             featuredImage: json.data.featuredImage || '',
             happyTravelers: json.data.happyTravelers || '',
@@ -113,13 +117,16 @@ export default function AboutContentPage() {
           </Link>
           <h1 className="text-xl font-black uppercase text-[#112233]">About Page Content</h1>
         </div>
-        <button 
-          type="submit" 
-          disabled={saving}
-          className="bg-[#24a0ed] hover:bg-[#1a85c6] text-white font-bold px-6 py-2.5 rounded-lg flex items-center gap-2 disabled:opacity-50 uppercase tracking-wider"
-        >
-          <Save className="w-4 h-4" /> {saving ? 'Saving...' : 'Save Changes'}
-        </button>
+        <div className="flex items-center gap-2">
+          <ToggleShow model="about-content" resource="about-content" id="__single__" published={form.published ?? true} />
+          <button 
+            type="submit" 
+            disabled={saving}
+            className="bg-[#24a0ed] hover:bg-[#1a85c6] text-white font-bold px-6 py-2.5 rounded-lg flex items-center gap-2 disabled:opacity-50 uppercase tracking-wider"
+          >
+            <Save className="w-4 h-4" /> {saving ? 'Saving...' : 'Save Changes'}
+          </button>
+        </div>
       </div>
 
       <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 space-y-4">
@@ -167,22 +174,22 @@ export default function AboutContentPage() {
 
         <div>
           <label className="block font-bold mb-1">Paragraph 1</label>
-          <textarea name="paragraph1" rows={3} value={form.paragraph1} onChange={handleChange} className="w-full p-3 border rounded-lg focus:border-[#24a0ed] outline-none" placeholder="Ever Peak Adventure is a leading..." />
+          <TipTapEditor value={form.paragraph1} onChange={(html) => setForm(prev => ({ ...prev, paragraph1: html }))} placeholder="Ever Peak Adventure is a leading..." />
         </div>
 
         <div>
           <label className="block font-bold mb-1">Paragraph 2</label>
-          <textarea name="paragraph2" rows={3} value={form.paragraph2} onChange={handleChange} className="w-full p-3 border rounded-lg focus:border-[#24a0ed] outline-none" placeholder="We specialize in trekking..." />
+          <TipTapEditor value={form.paragraph2} onChange={(html) => setForm(prev => ({ ...prev, paragraph2: html }))} placeholder="We specialize in trekking..." />
         </div>
 
         <div>
           <label className="block font-bold mb-1">Paragraph 3</label>
-          <textarea name="paragraph3" rows={3} value={form.paragraph3} onChange={handleChange} className="w-full p-3 border rounded-lg focus:border-[#24a0ed] outline-none" placeholder="We strictly follow government..." />
+          <TipTapEditor value={form.paragraph3} onChange={(html) => setForm(prev => ({ ...prev, paragraph3: html }))} placeholder="We strictly follow government..." />
         </div>
 
         <div>
           <label className="block font-bold mb-1">Paragraph 4</label>
-          <textarea name="paragraph4" rows={3} value={form.paragraph4} onChange={handleChange} className="w-full p-3 border rounded-lg focus:border-[#24a0ed] outline-none" placeholder="Our guides are highly trained..." />
+          <TipTapEditor value={form.paragraph4} onChange={(html) => setForm(prev => ({ ...prev, paragraph4: html }))} placeholder="Our guides are highly trained..." />
         </div>
       </div>
 
@@ -196,22 +203,22 @@ export default function AboutContentPage() {
 
         <div>
           <label className="block font-bold mb-1">Culture Text</label>
-          <textarea name="cultureText" rows={3} value={form.cultureText} onChange={handleChange} className="w-full p-3 border rounded-lg focus:border-[#24a0ed] outline-none" placeholder="Driven by passion, integrity, and respect." />
+          <TipTapEditor value={form.cultureText} onChange={(html) => setForm(prev => ({ ...prev, cultureText: html }))} placeholder="Driven by passion, integrity, and respect." />
         </div>
 
         <div>
           <label className="block font-bold mb-1">Mission</label>
-          <textarea name="missionText" rows={3} value={form.missionText} onChange={handleChange} className="w-full p-3 border rounded-lg focus:border-[#24a0ed] outline-none" placeholder="To deliver safe, authentic..." />
+          <TipTapEditor value={form.missionText} onChange={(html) => setForm(prev => ({ ...prev, missionText: html }))} placeholder="To deliver safe, authentic..." />
         </div>
 
         <div>
           <label className="block font-bold mb-1">Vision</label>
-          <textarea name="visionText" rows={3} value={form.visionText} onChange={handleChange} className="w-full p-3 border rounded-lg focus:border-[#24a0ed] outline-none" placeholder="To become a globally trusted..." />
+          <TipTapEditor value={form.visionText} onChange={(html) => setForm(prev => ({ ...prev, visionText: html }))} placeholder="To become a globally trusted..." />
         </div>
 
         <div>
           <label className="block font-bold mb-1">Goals</label>
-          <textarea name="goalsText" rows={3} value={form.goalsText} onChange={handleChange} className="w-full p-3 border rounded-lg focus:border-[#24a0ed] outline-none" placeholder="To design and operate..." />
+          <TipTapEditor value={form.goalsText} onChange={(html) => setForm(prev => ({ ...prev, goalsText: html }))} placeholder="To design and operate..." />
         </div>
       </div>
     </form>

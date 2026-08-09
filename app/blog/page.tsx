@@ -4,9 +4,11 @@ import { Calendar, ArrowRight } from 'lucide-react';
 import { prisma } from '@/lib/prisma';
 import SubpageHeroContent from '@/app/components/pages/SubpageHeroContent';
 import { Stagger, StaggerItem } from '@/app/components/animations/Motion';
+import { stripHtml } from '@/lib/stripHtml';
 
 export default async function BlogPage() {
   const posts = await prisma.blogPost.findMany({
+    where: { published: true },
     orderBy: { order: 'asc' },
   });
 
@@ -58,7 +60,7 @@ export default async function BlogPage() {
                       </h3>
 
                       <p className="text-gray-600 text-xs md:text-sm line-clamp-3 mb-6 leading-relaxed">
-                        {post.excerpt}
+                        {stripHtml(post.excerpt)}
                       </p>
                     </div>
 

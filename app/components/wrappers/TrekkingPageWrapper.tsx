@@ -1,4 +1,5 @@
 import { prisma } from "@/lib/prisma";
+import { stripHtml } from '@/lib/stripHtml';
 import TrekkingPage from "../pages/TrekkingPage";
 
 export const dynamic = 'force-dynamic'; // Forces Next.js to re-evaluate searchParams on every request
@@ -17,6 +18,7 @@ export default async function TrekkingPageWrapper({ searchParams }: PageProps) {
   const pageSize = 12;
 
   const allTreks = await prisma.trek.findMany({
+    where: { published: true },
     orderBy: { order: 'asc' },
   });
 
@@ -24,7 +26,7 @@ export default async function TrekkingPageWrapper({ searchParams }: PageProps) {
     ? allTreks.filter(
         (t) =>
           t.title.toLowerCase().includes(query) ||
-          (t.description || '').toLowerCase().includes(query) ||
+          stripHtml(t.description).toLowerCase().includes(query) ||
           (t.region || '').toLowerCase().includes(query)
       )
     : allTreks;
@@ -35,7 +37,7 @@ export default async function TrekkingPageWrapper({ searchParams }: PageProps) {
   const startIndex = (safePage - 1) * pageSize;
   const paginatedTreks = filteredTreks.slice(startIndex, startIndex + pageSize);
 
-  const hero = await prisma.subpageHero.findUnique({ where: { slug: 'trekking' } });
+  const hero = await prisma.subpageHero.findFirst({ where: { slug: 'trekking', published: true } });
 
   return (
     <TrekkingPage 

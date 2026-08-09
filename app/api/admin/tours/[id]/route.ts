@@ -6,7 +6,7 @@ export async function GET(
   request: Request,
   { params }: { params: Promise<{ id: string }> }
 ) {
-  const unauthorized = await requireAdmin();
+  const unauthorized = await requireAdmin("tours", "view");
   if (unauthorized) return unauthorized;
 
   const { id } = await params;
@@ -34,7 +34,7 @@ export async function PUT(
   request: Request,
   { params }: { params: Promise<{ id: string }> }
 ) {
-  const unauthorized = await requireAdmin();
+  const unauthorized = await requireAdmin("tours", "edit");
   if (unauthorized) return unauthorized;
 
   const { id } = await params;
@@ -117,7 +117,7 @@ export async function DELETE(
   request: Request,
   { params }: { params: Promise<{ id: string }> }
 ) {
-  const unauthorized = await requireAdmin();
+  const unauthorized = await requireAdmin("tours", "delete");
   if (unauthorized) return unauthorized;
 
   const { id } = await params;

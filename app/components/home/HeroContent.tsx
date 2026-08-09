@@ -4,6 +4,7 @@ import { Calendar, Footprints, Headphones, ShieldCheck, Users } from "lucide-rea
 import type { JSX, SVGProps, ComponentType } from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
+import { stripHtml } from '@/lib/stripHtml';
 
 const iconMap: Record<string, ComponentType<SVGProps<SVGSVGElement>>> = {
   ShieldCheck,
@@ -61,7 +62,7 @@ export default function HeroContent({ hero, trustItems }: HeroContentProps) {
         <motion.div variants={item} className="w-24 h-[2px] bg-orange-400 mb-4" />
 
         <motion.p variants={item} className="text-gray-200 mb-8 max-w-2xl">
-          {hero.subtext}
+          {stripHtml(hero.subtext)}
         </motion.p>
 
         <motion.div variants={item} className="w-full max-w-2xl mb-6">
@@ -108,7 +109,7 @@ export default function HeroContent({ hero, trustItems }: HeroContentProps) {
                 <IconComponent className="text-orange-400 w-7 h-7" />
                 <div className="text-left">
                   <p className="font-bold">{item.title}</p>
-                  <p className="text-sm text-gray-300">{item.subtitle}</p>
+                  <p className="text-sm text-gray-300">{stripHtml(item.subtitle)}</p>
                 </div>
               </div>
             );

@@ -17,6 +17,7 @@ export default async function TourDestinationPage({ params }: PageProps) {
   const tours = await prisma.tour.findMany({
     where: {
       destination: { equals: slug.toLowerCase(), mode: 'insensitive' },
+      published: true,
     },
     orderBy: { order: 'asc' },
   });

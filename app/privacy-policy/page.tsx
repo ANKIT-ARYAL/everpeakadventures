@@ -5,7 +5,9 @@ import SubpageHeroContent from '@/app/components/pages/SubpageHeroContent';
 import { Reveal } from '@/app/components/animations/Motion';
 
 export default async function PrivacyPolicyPage() {
-  const pageData = await prisma.privacyPolicyContent.findFirst();
+  const pageData = await prisma.privacyPolicyContent.findFirst({
+    where: { published: true },
+  });
 
   return (
     <div className="min-h-screen bg-[#f8faf9] font-sans text-gray-800 pb-20">

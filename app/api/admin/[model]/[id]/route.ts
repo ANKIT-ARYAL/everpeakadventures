@@ -15,18 +15,34 @@ const modelMap: Record<string, any> = {
   'welcome-features': prisma.welcomeFeature,
   'subpage-heroes': prisma.subpageHero,
   departures: prisma.fixedDeparture,
-  pages: prisma.page,
   'trust-items': prisma.trustItem,
+};
+
+const resourceByModel: Record<string, string> = {
+  treks: 'treks',
+  tours: 'tours',
+  blogs: 'blogs',
+  testimonials: 'testimonials',
+  faqs: 'faqs',
+  team: 'team',
+  'legal-documents': 'legal-documents',
+  'why-choose-us-items': 'why-choose-us',
+  'why-choose-us-features': 'why-choose-us',
+  'welcome-features': 'welcome-features',
+  'subpage-heroes': 'subpage-hero',
+  departures: 'departures',
+  'trust-items': 'trust-items',
 };
 
 export async function PUT(
   request: Request,
   { params }: { params: Promise<{ model: string; id: string }> }
 ) {
-  const unauthorized = await requireAdmin();
+  const { model } = await params;
+  const unauthorized = await requireAdmin(resourceByModel[model], "edit");
   if (unauthorized) return unauthorized;
 
-  const { model, id } = await params;
+  const { id } = await params;
   const delegate = modelMap[model];
 
   if (!delegate) return NextResponse.json({ error: 'Invalid model' }, { status: 400 });
@@ -48,10 +64,11 @@ export async function DELETE(
   request: Request,
   { params }: { params: Promise<{ model: string; id: string }> }
 ) {
-  const unauthorized = await requireAdmin();
+  const { model } = await params;
+  const unauthorized = await requireAdmin(resourceByModel[model], "delete");
   if (unauthorized) return unauthorized;
 
-  const { model, id } = await params;
+  const { id } = await params;
   const delegate = modelMap[model];
 
   if (!delegate) return NextResponse.json({ error: 'Invalid model' }, { status: 400 });

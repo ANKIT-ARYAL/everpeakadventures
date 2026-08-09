@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { Save, ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
 import toast, { Toaster } from 'react-hot-toast';
+import ToggleShow from '../components/ToggleShow';
 
 interface Props {
   contactData?: any;
@@ -15,6 +16,7 @@ export default function ContactInfoForm({ contactData }: Props) {
   const [loading, setLoading] = useState(false);
 
   const [contact, setContact] = useState({
+    published: contactData?.published ?? true,
     address: contactData?.address || '',
     phone: contactData?.phone || '',
     email: contactData?.email || '',
@@ -64,13 +66,16 @@ export default function ContactInfoForm({ contactData }: Props) {
           </Link>
           <h1 className="text-xl font-black uppercase text-[#112233]">Contact Info</h1>
         </div>
-        <button 
-          type="submit" 
-          disabled={loading}
-          className="bg-[#24a0ed] hover:bg-[#1a85c6] text-white font-bold px-6 py-2.5 rounded-lg flex items-center gap-2 disabled:opacity-50 uppercase tracking-wider"
-        >
-          <Save className="w-4 h-4" /> {loading ? 'Saving...' : 'Save Changes'}
-        </button>
+        <div className="flex items-center gap-2">
+          <ToggleShow model="contact-info" resource="contact-info" id="__single__" published={contact.published ?? true} />
+          <button 
+            type="submit" 
+            disabled={loading}
+            className="bg-[#24a0ed] hover:bg-[#1a85c6] text-white font-bold px-6 py-2.5 rounded-lg flex items-center gap-2 disabled:opacity-50 uppercase tracking-wider"
+          >
+            <Save className="w-4 h-4" /> {loading ? 'Saving...' : 'Save Changes'}
+          </button>
+        </div>
       </div>
 
       {/* Contact Info */}

@@ -3,6 +3,7 @@ import { prisma } from '@/lib/prisma';
 import { Clock, Tag, ArrowRight } from 'lucide-react';
 import Link from 'next/link';
 import { Reveal, Stagger, StaggerItem } from '@/app/components/animations/Motion';
+import { stripHtml } from '@/lib/stripHtml';
 
 interface PageProps {
   params: Promise<{
@@ -23,6 +24,7 @@ export default async function TrekkingRegionPage({ params }: PageProps) {
         { region: { contains: cleanSlug, mode: 'insensitive' } },
         { region: { contains: slug, mode: 'insensitive' } },
       ],
+      published: true,
     },
     orderBy: { order: 'asc' },
   });
@@ -112,7 +114,7 @@ export default async function TrekkingRegionPage({ params }: PageProps) {
                       {trek.title}
                     </h3>
                     <p className="text-gray-500 text-xs leading-relaxed line-clamp-2">
-                      {trek.description}
+                      {stripHtml(trek.description)}
                     </p>
                   </div>
                 </div>

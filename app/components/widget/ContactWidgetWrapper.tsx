@@ -4,6 +4,8 @@ import ContactWidget from "./ContactWidget";
 export default async function ContactWidgetWrapper() {
   const settings = await prisma.contactWidgetSettings.findFirst();
 
+  if (settings && !settings.published) return null;
+
   return (
     <ContactWidget
       enabled={settings?.enabled ?? true}

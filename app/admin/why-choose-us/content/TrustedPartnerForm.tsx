@@ -5,6 +5,8 @@ import { useRouter } from 'next/navigation';
 import { Save, ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
 import toast, { Toaster } from 'react-hot-toast';
+import ToggleShow from '../../components/ToggleShow';
+import TipTapEditor from '@/app/components/admin/TipTapEditor';
 
 interface Props {
   initialData?: any;
@@ -15,6 +17,7 @@ export default function TrustedPartnerForm({ initialData }: Props) {
   const [loading, setLoading] = useState(false);
 
   const [form, setForm] = useState({
+    published: initialData?.published ?? true,
     mainTitle: initialData?.mainTitle || '',
     description: initialData?.description || '',
     badgeTitle: initialData?.badgeTitle || '',
@@ -65,13 +68,16 @@ export default function TrustedPartnerForm({ initialData }: Props) {
           </Link>
           <h1 className="text-xl font-black uppercase text-[#112233]">Section Content</h1>
         </div>
-        <button 
-          type="submit" 
-          disabled={loading}
-          className="bg-[#24a0ed] hover:bg-[#1a85c6] text-white font-bold px-6 py-2.5 rounded-lg flex items-center gap-2 disabled:opacity-50 uppercase tracking-wider"
-        >
-          <Save className="w-4 h-4" /> {loading ? 'Saving...' : 'Save Content'}
-        </button>
+        <div className="flex items-center gap-2">
+          <ToggleShow model="trusted-partner" resource="why-choose-us" id="__single__" published={form.published ?? true} />
+          <button 
+            type="submit" 
+            disabled={loading}
+            className="bg-[#24a0ed] hover:bg-[#1a85c6] text-white font-bold px-6 py-2.5 rounded-lg flex items-center gap-2 disabled:opacity-50 uppercase tracking-wider"
+          >
+            <Save className="w-4 h-4" /> {loading ? 'Saving...' : 'Save Content'}
+          </button>
+        </div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -90,7 +96,7 @@ export default function TrustedPartnerForm({ initialData }: Props) {
 
             <div>
               <label className="block font-bold mb-1">Description *</label>
-              <textarea name="description" rows={4} required value={form.description} onChange={handleChange} className="w-full p-3 border rounded-lg focus:border-[#24a0ed] outline-none" placeholder="Short section description..." />
+              <TipTapEditor value={form.description} onChange={(html) => setForm(prev => ({ ...prev, description: html }))} placeholder="Short section description..." minHeight="120px" />
             </div>
           </div>
 
@@ -105,7 +111,7 @@ export default function TrustedPartnerForm({ initialData }: Props) {
 
             <div>
               <label className="block font-bold mb-1">Badge Subtitle</label>
-              <textarea name="badgeSubtitle" rows={3} value={form.badgeSubtitle} onChange={handleChange} className="w-full p-3 border rounded-lg focus:border-[#24a0ed] outline-none" placeholder="Badge description..." />
+              <TipTapEditor value={form.badgeSubtitle} onChange={(html) => setForm(prev => ({ ...prev, badgeSubtitle: html }))} placeholder="Badge description..." />
             </div>
 
             <div>
@@ -125,7 +131,7 @@ export default function TrustedPartnerForm({ initialData }: Props) {
 
             <div>
               <label className="block font-bold mb-1">Story Description</label>
-              <textarea name="storyDescription" rows={4} value={form.storyDescription} onChange={handleChange} className="w-full p-3 border rounded-lg focus:border-[#24a0ed] outline-none" placeholder="Story text..." />
+              <TipTapEditor value={form.storyDescription} onChange={(html) => setForm(prev => ({ ...prev, storyDescription: html }))} placeholder="Story text..." minHeight="120px" />
             </div>
           </div>
 

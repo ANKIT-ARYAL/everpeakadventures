@@ -3,6 +3,7 @@
 import React from 'react';
 import { Star } from 'lucide-react';
 import { Reveal, Stagger, StaggerItem } from '../animations/Motion';
+import { stripHtml } from '@/lib/stripHtml';
 
 interface Review {
   id: string;
@@ -59,7 +60,7 @@ export default function ClientReviews({ reviews = [], section = null, showAll = 
               className="bg-white rounded-2xl border border-gray-100 shadow-[0_4px_25px_rgba(0,0,0,0.04)] p-8 flex flex-col justify-between"
             >
               <p className="text-gray-600 text-[13.5px] leading-relaxed mb-8">
-                &quot;{review.quote}&quot;
+                &quot;{stripHtml(review.quote)}&quot;
               </p>
 
               {/* Author Info */}

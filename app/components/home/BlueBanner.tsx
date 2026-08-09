@@ -3,6 +3,7 @@
 import React from 'react';
 import Link from 'next/link';
 import { Reveal } from '../animations/Motion';
+import { stripHtml } from '@/lib/stripHtml';
 
 interface BlueBannerData {
   title: string;
@@ -36,7 +37,7 @@ export default function BlueBanner({ data }: BlueBannerProps) {
             {data.title}
           </h2>
           <p className="text-white/90 text-xs md:text-sm leading-relaxed">
-            {data.subtitle}
+            {stripHtml(data.subtitle)}
           </p>
         </Reveal>
 

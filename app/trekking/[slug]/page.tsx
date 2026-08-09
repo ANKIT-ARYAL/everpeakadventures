@@ -27,8 +27,8 @@ interface PageProps {
 export default async function TrekDetailPage({ params }: PageProps) {
   const { slug } = await params;
 
-  const trek = await prisma.trek.findUnique({
-    where: { slug },
+  const trek = await prisma.trek.findFirst({
+    where: { slug, published: true },
     include: {
       groupPrices: true,
       fixedSchedules: true,
@@ -38,14 +38,14 @@ export default async function TrekDetailPage({ params }: PageProps) {
   if (!trek) notFound();
 
   const relatedTreks = await prisma.trek.findMany({
-    where: { id: { not: trek.id } },
+    where: { id: { not: trek.id }, published: true },
     take: 3,
     orderBy: { order: 'asc' },
   });
 
   const linkedFaqs = trek.slug
     ? await prisma.fAQ.findMany({
-        where: { relatedType: 'trek', relatedSlug: trek.slug },
+        where: { relatedType: 'trek', relatedSlug: trek.slug, published: true },
         orderBy: { order: 'asc' },
       })
     : [];

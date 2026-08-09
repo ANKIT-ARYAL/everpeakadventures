@@ -2,6 +2,8 @@
 
 import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
+import { useAdminPerms } from "../AdminPermsContext";
+import { hasPerm } from "@/lib/permissions";
 
 type Row = {
   id: string;
@@ -78,6 +80,10 @@ export default function BookingsManager({
   const [busy, setBusy] = useState(false);
   const [notice, setNotice] = useState("");
   const [form, setForm] = useState({ status: "", adminNotes: "" });
+
+  const { isSuperAdmin, permissions } = useAdminPerms();
+  const canEditBooking = isSuperAdmin || hasPerm(permissions, "bookings", "edit");
+  const canDeleteBooking = isSuperAdmin || hasPerm(permissions, "bookings", "delete");
 
   // ---- Client-side instant filters (no reload) ----
   const [filters, setFilters] = useState({
@@ -537,36 +543,46 @@ export default function BookingsManager({
               )}
 
               <div className="ftb-modal-update-form">
-                <div>
-                  <label htmlFor="modal-status">Status</label>
-                  <select id="modal-status" value={form.status} onChange={(e) => setForm({ ...form, status: e.target.value })}>
-                    {STATUSES.map((s) => (
-                      <option key={s.value} value={s.value}>
-                        {s.label}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-                <div>
-                  <label htmlFor="modal-notes">Internal Notes</label>
-                  <textarea
-                    id="modal-notes"
-                    rows={3}
-                    placeholder="Add admin/private notes"
-                    value={form.adminNotes}
-                    onChange={(e) => setForm({ ...form, adminNotes: e.target.value })}
-                  />
-                </div>
-                <button className="button" onClick={saveChanges} disabled={busy}>
-                  {busy ? "Saving..." : "Save Changes"}
-                </button>
+                {canEditBooking ? (
+                  <>
+                    <div>
+                      <label htmlFor="modal-status">Status</label>
+                      <select id="modal-status" value={form.status} onChange={(e) => setForm({ ...form, status: e.target.value })}>
+                        {STATUSES.map((s) => (
+                          <option key={s.value} value={s.value}>
+                            {s.label}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                    <div>
+                      <label htmlFor="modal-notes">Internal Notes</label>
+                      <textarea
+                        id="modal-notes"
+                        rows={3}
+                        placeholder="Add admin/private notes"
+                        value={form.adminNotes}
+                        onChange={(e) => setForm({ ...form, adminNotes: e.target.value })}
+                      />
+                    </div>
+                    <button className="button" onClick={saveChanges} disabled={busy}>
+                      {busy ? "Saving..." : "Save Changes"}
+                    </button>
+                  </>
+                ) : (
+                  <p style={{ margin: "10px 0 0", fontWeight: 600, color: "#6b7280" }}>
+                    Read-only — your role cannot edit booking details.
+                  </p>
+                )}
               </div>
 
-              <div className="ftb-modal-delete-form">
-                <button className="button-link-delete" onClick={removeBooking} disabled={busy}>
-                  Delete Booking
-                </button>
-              </div>
+              {canDeleteBooking && (
+                <div className="ftb-modal-delete-form">
+                  <button className="button-link-delete" onClick={removeBooking} disabled={busy}>
+                    Delete Booking
+                  </button>
+                </div>
+              )}
             </div>
           </div>
         </div>

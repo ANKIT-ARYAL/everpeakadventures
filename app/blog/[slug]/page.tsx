@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { Calendar, FolderOpen, ArrowRight } from 'lucide-react';
 import { Reveal, Stagger, StaggerItem } from '@/app/components/animations/Motion';
 import FAQAccordion from '@/app/components/FAQAccordion';
+import { stripHtml } from '@/lib/stripHtml';
 
 export const dynamic = 'force-dynamic';
 
@@ -18,15 +19,15 @@ export default async function BlogPostDetailPage({ params }: PageProps) {
   const { slug } = await params;
 
   // Query database for blog post matching slug
-  const post = await prisma.blogPost.findUnique({
-    where: { slug },
+  const post = await prisma.blogPost.findFirst({
+    where: { slug, published: true },
   });
 
   if (!post) notFound();
 
   // Related posts for the bottom section
   const relatedPosts = await prisma.blogPost.findMany({
-    where: { id: { not: post.id } },
+    where: { id: { not: post.id }, published: true },
     take: 3,
     orderBy: { order: 'asc' },
   });
@@ -36,7 +37,7 @@ export default async function BlogPostDetailPage({ params }: PageProps) {
 
   // Linked FAQs from the FAQ manager (related blog)
   const linkedFaqs = await prisma.fAQ.findMany({
-    where: { relatedType: 'blog', relatedSlug: post.slug },
+    where: { relatedType: 'blog', relatedSlug: post.slug, published: true },
     orderBy: { order: 'asc' },
   });
   const mergedFaqs = [...linkedFaqs, ...faqs];
@@ -113,7 +114,7 @@ export default async function BlogPostDetailPage({ params }: PageProps) {
 
               {post.excerpt && (
                 <p className="text-gray-500 text-sm italic border-l-4 border-[#24a0ed] pl-4">
-                  {post.excerpt}
+                  {stripHtml(post.excerpt)}
                 </p>
               )}
 
@@ -124,7 +125,7 @@ export default async function BlogPostDetailPage({ params }: PageProps) {
                 />
               ) : (
                 <p className="text-gray-600 text-xs md:text-sm leading-relaxed">
-                  {post.excerpt || 'This article is being updated. Please check back soon.'}
+                  {stripHtml(post.excerpt) || 'This article is being updated. Please check back soon.'}
                 </p>
               )}
             </Reveal>

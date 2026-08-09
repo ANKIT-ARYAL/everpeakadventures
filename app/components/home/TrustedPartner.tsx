@@ -1,6 +1,8 @@
 import React from 'react';
 import Link from 'next/link';
 import { Star, Map, Award, ShieldCheck, MapPin, Smile, Leaf, CheckCircle2 } from 'lucide-react';
+import RichText from '@/app/components/RichText';
+import { stripHtml } from '@/lib/stripHtml';
 
 const iconMap: Record<string, React.ReactNode> = {
   Map: <Map className="w-5 h-5" />,
@@ -61,7 +63,7 @@ export default function TrustedPartner({ content, features }: TrustedPartnerProp
               <div className="flex-1">
                 <h4 className="font-bold text-[#333333] text-sm mb-2">{content.badgeTitle}</h4>
                 <p className="text-xs text-gray-500 leading-relaxed">
-                  {content.badgeSubtitle}
+                  {stripHtml(content.badgeSubtitle)}
                 </p>
               </div>
               <div className="w-10 h-10 shrink-0 flex flex-col items-center justify-center">
@@ -112,9 +114,7 @@ export default function TrustedPartner({ content, features }: TrustedPartnerProp
                 alt="Trekker" 
                 className="w-24 h-24 rounded-lg object-cover shrink-0 shadow-sm"
               />
-              <p className="text-[13px] text-gray-600 leading-relaxed font-medium">
-                {content.storyDescription}
-              </p>
+              <RichText html={content.storyDescription} className="text-[13px] text-gray-600 leading-relaxed font-medium" />
             </div>
           </div>
 
@@ -143,9 +143,7 @@ export default function TrustedPartner({ content, features }: TrustedPartnerProp
             
             <div className="w-16 h-1 bg-[#d97736] my-6"></div>
 
-            <p className="text-gray-200 text-sm md:text-base leading-relaxed mb-8 max-w-md">
-              {content.description}
-            </p>
+            <RichText html={content.description} className="text-gray-200 text-sm md:text-base leading-relaxed mb-8 max-w-md" />
             <div>
               <Link href="/about-us" className="inline-block bg-[#3bbae6] hover:bg-[#2da1c9] text-white font-semibold text-sm px-6 py-3 rounded shadow-md transition-colors duration-200 cursor-pointer">
                 Discover Ever Peak Adventures
@@ -162,7 +160,7 @@ export default function TrustedPartner({ content, features }: TrustedPartnerProp
                 </div>
                 <div>
                   <h4 className="font-bold text-[15px] mb-1">{item.title}</h4>
-                  <p className="text-gray-500 text-[11px] leading-snug">{item.desc}</p>
+                  <p className="text-gray-500 text-[11px] leading-snug">{stripHtml(item.desc)}</p>
                 </div>
               </div>
             ))}

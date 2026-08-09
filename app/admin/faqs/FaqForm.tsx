@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { Save, ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
 import toast, { Toaster } from 'react-hot-toast';
+import TipTapEditor from '@/app/components/admin/TipTapEditor';
 
 interface RelatedPage {
   type: 'trek' | 'tour' | 'blog';
@@ -119,7 +120,7 @@ export default function FaqForm({ initialData, isEditing = false, relatedPages =
 
             <div>
               <label className="block font-bold mb-1">Answer *</label>
-              <textarea name="answer" rows={6} required value={form.answer} onChange={handleChange} className="w-full p-3 border rounded-lg focus:border-[#24a0ed] outline-none" placeholder="Write the answer..." />
+              <TipTapEditor value={form.answer} onChange={(html) => setForm(prev => ({ ...prev, answer: html }))} placeholder="Write the answer..." minHeight="160px" />
             </div>
           </div>
 

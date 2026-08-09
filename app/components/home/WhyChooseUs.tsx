@@ -1,6 +1,8 @@
 'use client';
 
 import { Reveal, Stagger, StaggerItem } from '../animations/Motion';
+import RichText from '@/app/components/RichText';
+import { stripHtml } from '@/lib/stripHtml';
 
 interface Feature {
   id: string;
@@ -32,9 +34,7 @@ export default function WhyChooseUs({ features = [], badge, title, titleHighligh
             {title ?? 'Why Choose '} <span className="text-[#fca020]">{titleHighlight ?? 'Ever Peak Adventures'}</span>?
           </h2>
           
-          <p className="text-[#666666] text-[14px] leading-relaxed">
-            {subtitle ?? 'We combine years of Himalayan expertise, personalized service, and a passion for adventure to deliver safe, authentic, and unforgettable trekking experiences throughout Nepal.'}
-          </p>
+          <RichText html={subtitle ?? 'We combine years of Himalayan expertise, personalized service, and a passion for adventure to deliver safe, authentic, and unforgettable trekking experiences throughout Nepal.'} className="text-[#666666] text-[14px] leading-relaxed" />
         </Reveal>
 
         {/* Grid Section */}
@@ -53,7 +53,7 @@ export default function WhyChooseUs({ features = [], badge, title, titleHighligh
               </h3>
               
               <p className="text-gray-500 text-[12px] leading-relaxed">
-                {feature.description}
+                {stripHtml(feature.description)}
               </p>
             </StaggerItem>
           ))}

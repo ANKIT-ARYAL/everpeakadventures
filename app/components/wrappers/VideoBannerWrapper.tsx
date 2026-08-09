@@ -4,6 +4,8 @@ import VideoBanner from "../home/VideoBanner";
 export default async function VideoBannerWrapper() {
   const content = await prisma.videoBannerContent.findFirst();
 
+  if (content && !content.published) return null;
+
   const data = content || {
     title: 'Explore Full Itineraries & Trip Ideas For Trekking',
     subtitle: 'Carefully crafted Trekking plans designed for every trail, pace, and adventure level.',

@@ -3,6 +3,8 @@
 import React, { useState } from 'react';
 import { Trash2 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
+import { useAdminPerms } from '../AdminPermsContext';
+import { hasPerm } from '@/lib/permissions';
 
 interface DeleteButtonProps {
   id: string;
@@ -10,9 +12,32 @@ interface DeleteButtonProps {
   title: string;
 }
 
+const RESOURCE_BY_MODEL: Record<string, string> = {
+  treks: 'treks',
+  tours: 'tours',
+  blogs: 'blogs',
+  testimonials: 'testimonials',
+  faqs: 'faqs',
+  team: 'team',
+  'legal-documents': 'legal-documents',
+  'why-choose-us-items': 'why-choose-us',
+  'why-choose-us-features': 'why-choose-us',
+  'welcome-features': 'welcome-features',
+  'subpage-heroes': 'subpage-hero',
+  departures: 'departures',
+  'trust-items': 'trust-items',
+};
+
 export default function DeleteButton({ id, model, title }: DeleteButtonProps) {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
+  const { isSuperAdmin, permissions } = useAdminPerms();
+
+  const resource = RESOURCE_BY_MODEL[model] ?? model;
+
+  if (!isSuperAdmin && !hasPerm(permissions, resource, 'delete')) {
+    return null;
+  }
 
   const handleDelete = async () => {
     if (!confirm(`Are you sure you want to delete "${title}"?`)) return;
@@ -38,9 +63,11 @@ export default function DeleteButton({ id, model, title }: DeleteButtonProps) {
       onClick={handleDelete}
       disabled={loading}
       title="Delete Item"
-      className="p-1.5 rounded bg-red-50 text-red-600 hover:bg-red-100 transition-colors disabled:opacity-50"
+      aria-label={`Delete ${title}`}
+      className="inline-flex items-center gap-1 px-2 py-1.5 rounded bg-red-50 text-red-600 hover:bg-red-100 transition-colors disabled:opacity-50"
     >
       <Trash2 className="w-3.5 h-3.5" />
+      <span className="hidden md:inline text-xs font-medium">Delete</span>
     </button>
   );
 }

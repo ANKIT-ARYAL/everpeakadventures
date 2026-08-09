@@ -15,6 +15,7 @@ export default async function TourPackagesWrapper({ searchParams }: PageProps) {
   const pageSize = 12;
 
   const allTours = await prisma.tour.findMany({
+    where: { published: true },
     orderBy: { order: 'asc' },
   });
 
@@ -22,7 +23,7 @@ export default async function TourPackagesWrapper({ searchParams }: PageProps) {
   const startIndex = (currentPage - 1) * pageSize;
   const paginatedTours = allTours.slice(startIndex, startIndex + pageSize);
 
-  const hero = await prisma.subpageHero.findUnique({ where: { slug: 'tour' } });
+  const hero = await prisma.subpageHero.findFirst({ where: { slug: 'tour', published: true } });
 
   return (
     <TourPackagesPage 

@@ -6,10 +6,13 @@ import SubpageHeroContent from '@/app/components/pages/SubpageHeroContent';
 export default async function TestimonialsPage() {
   // Fetch all client reviews from the database
   const reviews = await prisma.clientReview.findMany({
+    where: { published: true },
     orderBy: { order: 'asc' },
   });
 
-  const section = await prisma.testimonialSectionContent.findFirst();
+  const section = await prisma.testimonialSectionContent.findFirst({
+    where: { published: true },
+  });
 
   return (
     <div className="min-h-screen bg-[#f8faf9] font-sans text-gray-800 pb-20">

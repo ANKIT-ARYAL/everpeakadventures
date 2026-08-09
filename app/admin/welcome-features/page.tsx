@@ -4,6 +4,8 @@ import AddNewButton from "../components/AddNewButton";
 import EditButton from "../components/EditButton";
 import DeleteButton from "../components/DeleteButton";
 import ViewButton from "../components/ViewButton";
+import ToggleShow from "../components/ToggleShow";
+import { stripHtml } from "@/lib/stripHtml";
 
 export const dynamic = 'force-dynamic';
 
@@ -30,8 +32,8 @@ export default async function AdminWelcomeFeaturesPage() {
         <AddNewButton href="/admin/welcome-features/new" label="Add New Feature" />
       </div>
 
-      {/* Data Table */}
-      <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+      {/* Data Table - Desktop */}
+      <div className="hidden md:block bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse">
             <thead>
@@ -62,7 +64,7 @@ export default async function AdminWelcomeFeaturesPage() {
                     </td>
 
                     <td className="py-3 px-4 text-gray-600 font-medium max-w-md">
-                      {feature.description}
+                      {stripHtml(feature.description)}
                     </td>
 
                     <td className="py-3 px-4 text-center font-bold text-gray-700">
@@ -71,6 +73,7 @@ export default async function AdminWelcomeFeaturesPage() {
 
                     <td className="py-3 px-4 text-right">
                       <div className="flex items-center justify-end gap-2">
+                        <ToggleShow model="welcome-features" resource="welcome-features" id={feature.id} published={feature.published} />
                         <EditButton href={`/admin/welcome-features/${feature.id}/edit`} />
                         <ViewButton href="/" />
                         <DeleteButton id={feature.id} model="welcome-features" title={feature.title} />
@@ -82,6 +85,33 @@ export default async function AdminWelcomeFeaturesPage() {
             </tbody>
           </table>
         </div>
+      </div>
+
+      {/* Mobile Cards */}
+      <div className="md:hidden space-y-3">
+        {features.length === 0 ? (
+          <div className="bg-white rounded-xl shadow-sm border border-gray-100 py-12 text-center text-gray-400 font-medium">
+            No welcome features found.
+          </div>
+        ) : (
+          features.map((feature, index) => (
+            <div key={feature.id} className="bg-white rounded-xl shadow-sm border border-gray-100 p-4">
+              <div className="flex items-start justify-between gap-3">
+                <Link href={`/admin/welcome-features/${feature.id}/edit`} className="font-bold text-[#112233] hover:text-[#24a0ed] min-w-0 flex-1 block">
+                  <span className="block truncate">#{index + 1} · {feature.title}</span>
+                </Link>
+                <span className="bg-gray-100 text-gray-600 font-bold px-2 py-0.5 rounded-full text-[10px] shrink-0">#{feature.order}</span>
+              </div>
+              <p className="text-gray-600 font-medium mt-2 text-[11px] line-clamp-3">{stripHtml(feature.description)}</p>
+              <div className="flex items-center gap-2 mt-3 pt-3 border-t border-gray-100">
+                <ToggleShow model="welcome-features" resource="welcome-features" id={feature.id} published={feature.published} />
+                <EditButton href={`/admin/welcome-features/${feature.id}/edit`} />
+                <ViewButton href="/" />
+                <DeleteButton id={feature.id} model="welcome-features" title={feature.title} />
+              </div>
+            </div>
+          ))
+        )}
       </div>
 
     </div>

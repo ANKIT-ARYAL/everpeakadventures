@@ -35,6 +35,7 @@ model TourSchedule {
 // ----------------------------------------
 
 model HeroContent {
+  published Boolean @default(true) // show/hide this section on the frontend
   id                  String   @id @default(uuid())
   topLabel            String?
   mainHeading         String?
@@ -52,6 +53,7 @@ model HeroContent {
 }
 
 model Trek {
+  published Boolean @default(true) // show/hide this section on the frontend
   id              String   @id @default(cuid())
   slug            String?  @unique
   title           String
@@ -125,6 +127,7 @@ model TrekSchedule {
 }
 
 model Tour {
+  published Boolean @default(true) // show/hide this section on the frontend
   id          String   @id @default(uuid())
   title       String
   slug        String   @unique
@@ -188,6 +191,7 @@ model Tour {
 }
 
 model BlogPost {
+  published Boolean @default(true) // show/hide this section on the frontend
   id              String   @id @default(uuid())
   title           String
   slug            String   @unique
@@ -208,6 +212,7 @@ model BlogPost {
 
 model ClientReview {
   id        String   @id @default(uuid())
+  published Boolean  @default(true) // show/hide this review on the frontend
   quote     String
   name      String
   location  String   @default("")
@@ -218,6 +223,7 @@ model ClientReview {
 }
 
 model TestimonialSectionContent {
+  published Boolean @default(true) // show/hide this section on the frontend
   id        String   @id @default(uuid())
   title     String   @default("WHAT OUR CLIENT SAY ABOUT US ?")
   subtitle  String   @default("Real experiences shared by travelers who trusted us.")
@@ -226,6 +232,7 @@ model TestimonialSectionContent {
 }
 
 model BlueBannerContent {
+  published Boolean @default(true) // show/hide this section on the frontend
   id         String   @id @default(uuid())
   title      String   @default("Explore the Himalayas with Trusted Local Experts")
   subtitle   String   @default("Ever Peak Adventures offers unforgettable trekking, peak climbing, and cultural journeys across Everest, Annapurna, and beyond. Safe, authentic, and professionally guided.")
@@ -235,6 +242,7 @@ model BlueBannerContent {
 }
 
 model AboutPageContent {
+  published Boolean @default(true) // show/hide this section on the frontend
   id              String   @id @default(uuid())
   title           String   @default("About Us")
   featuredImage   String   @default("https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?q=80&w=1000&auto=format&fit=crop")
@@ -255,6 +263,7 @@ model AboutPageContent {
 }
 
 model DirectorMessageContent {
+  published Boolean @default(true) // show/hide this section on the frontend
   id           String   @id @default(uuid())
   contentHtml  String
   founderName  String   @default("Dipesh Aryal")
@@ -265,6 +274,7 @@ model DirectorMessageContent {
 }
 
 model TeamMember {
+  published Boolean @default(true) // show/hide this section on the frontend
   id        String   @id @default(uuid())
   name      String
   role      String
@@ -276,6 +286,7 @@ model TeamMember {
 }
 
 model WhyPageContent {
+  published Boolean @default(true) // show/hide this section on the frontend
   id          String   @id @default(uuid())
   title       String   @default("Why Ever Peak Adventures")
   subtitle    String   @default("Have questions or ready to plan your Himalayan adventure?")
@@ -284,6 +295,7 @@ model WhyPageContent {
 }
 
 model ResponsibleTravelContent {
+  published Boolean @default(true) // show/hide this section on the frontend
   id          String   @id @default(uuid())
   title       String   @default("Responsible Travel")
   subtitle    String   @default("Have questions or ready to plan your Himalayan adventure?")
@@ -292,6 +304,7 @@ model ResponsibleTravelContent {
 }
 
 model TermsPageContent {
+  published Boolean @default(true) // show/hide this section on the frontend
   id          String   @id @default(uuid())
   title       String   @default("Terms and Conditions")
   subtitle    String   @default("Have questions or ready to plan your Himalayan adventure?")
@@ -300,6 +313,7 @@ model TermsPageContent {
 }
 
 model FAQ {
+  published Boolean @default(true) // show/hide this section on the frontend
   id          String   @id @default(uuid())
   question    String
   answer      String
@@ -311,6 +325,7 @@ model FAQ {
 }
 
 model ContactInfo {
+  published Boolean @default(true) // show/hide this section on the frontend
   id        String   @id @default(uuid())
   address   String   @default("Kathmandu, Nepal")
   phone     String   @default("9851093960")
@@ -365,6 +380,7 @@ model Section {
 }
 
 model TrustItem {
+  published Boolean @default(true) // show/hide this section on the frontend
   id        String   @id @default(uuid())
   title     String
   subtitle  String
@@ -375,6 +391,7 @@ model TrustItem {
 }
 
 model FixedDeparture {
+  published Boolean @default(true) // show/hide this section on the frontend
   id            String   @id @default(uuid())
   title         String
   heroImage     String
@@ -391,6 +408,7 @@ model FixedDeparture {
 }
 
 model WelcomeContent {
+  published Boolean @default(true) // show/hide this section on the frontend
   id             String   @id @default(uuid())
   companyName    String   @default("Ever Peak Adventure")
   description    String
@@ -401,6 +419,7 @@ model WelcomeContent {
 }
 
 model WelcomeFeature {
+  published Boolean @default(true) // show/hide this section on the frontend
   id          String   @id @default(uuid())
   title       String
   description String
@@ -410,6 +429,7 @@ model WelcomeFeature {
 }
 
 model HomeSectionContent {
+  published Boolean @default(true) // show/hide this section on the frontend
   id                        String   @id @default(uuid())
   featuredTreksLabel        String   @default("Top Rated Routes")
   featuredTreksTitle        String   @default("Featured Trekking Packages")
@@ -432,6 +452,7 @@ model HomeSectionContent {
 }
 
 model ContactWidgetSettings {
+  published Boolean @default(true) // show/hide this section on the frontend
   id        String   @id @default(uuid())
   enabled   Boolean  @default(true)
   whatsapp  String   @default("9851093960")
@@ -466,6 +487,7 @@ model SiteSettings {
 }
 
 model SubpageHero {
+  published Boolean @default(true) // show/hide this section on the frontend
   id        String   @id @default(uuid())
   slug      String   @unique
   title     String
@@ -475,6 +497,7 @@ model SubpageHero {
 }
 
 model TrustedPartnerContent {
+  published Boolean @default(true) // show/hide this section on the frontend
   id               String   @id @default(uuid())
   mainTitle        String   @default("Your Trusted Partner For Himalayan Adventures")
   description      String
@@ -489,6 +512,7 @@ model TrustedPartnerContent {
 }
 
 model WhyChooseUsItem {
+  published Boolean @default(true) // show/hide this section on the frontend
   id        String   @id @default(uuid())
   title     String
   desc      String
@@ -498,6 +522,7 @@ model WhyChooseUsItem {
 }
 
 model WhyChooseUsFeature {
+  published Boolean @default(true) // show/hide this section on the frontend
   id          String   @id @default(uuid())
   icon        String
   title       String
@@ -507,6 +532,7 @@ model WhyChooseUsFeature {
 }
 
 model VideoBannerContent {
+  published Boolean @default(true) // show/hide this section on the frontend
   id               String   @id @default(uuid())
   title            String   @default("Explore Full Itineraries & Trip Ideas For Trekking")
   subtitle         String   @default("Carefully crafted Trekking plans designed for every trail, pace, and adventure level.")
@@ -518,6 +544,7 @@ model VideoBannerContent {
 }
 
 model CtaBannerContent {
+  published Boolean @default(true) // show/hide this section on the frontend
   id            String   @id @default(uuid())
   title         String   @default("Experience nature in a new way. Visit Us.")
   subtitle      String   @default("Where every step brings you closer to nature.")
@@ -528,6 +555,7 @@ model CtaBannerContent {
 }
 
 model LegalDocument {
+  published Boolean @default(true) // show/hide this section on the frontend
   id          String   @id @default(uuid())
   title       String
   image       String
@@ -538,6 +566,7 @@ model LegalDocument {
 }
 
 model PrivacyPolicyContent {
+  published Boolean @default(true) // show/hide this section on the frontend
   id          String   @id @default(uuid())
   title       String   @default("Privacy Policy")
   subtitle    String   @default("Have questions or ready to plan your Himalayan adventure?")
@@ -572,4 +601,32 @@ model BookingSubmission {
   status         String   @default("new") // new | pending | confirmed | cancelled | completed
   adminNotes     String?  @db.Text
   createdAt      DateTime @default(now())
+}
+
+// ----------------------------------------
+// RBAC (ROLES, USERS, PERMISSIONS)
+// ----------------------------------------
+
+model Role {
+  id          String   @id @default(cuid())
+  name        String   @unique
+  description String?
+  // Permission keys, e.g. ["blog:view","blog:create","blog:edit","user:view"]
+  permissions String[]
+  users       User[]
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model User {
+  id           String    @id @default(cuid())
+  username     String    @unique
+  passwordHash String
+  name         String?
+  roleId       String
+  role         Role      @relation(fields: [roleId], references: [id])
+  active       Boolean   @default(true)
+  lastLoginAt  DateTime?
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
 }

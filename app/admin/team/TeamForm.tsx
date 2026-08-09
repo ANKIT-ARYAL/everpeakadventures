@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { Save, ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
 import toast, { Toaster } from 'react-hot-toast';
+import TipTapEditor from '@/app/components/admin/TipTapEditor';
 
 interface Props {
   initialData?: any;
@@ -101,7 +102,7 @@ export default function TeamForm({ initialData, isEditing = false }: Props) {
 
             <div>
               <label className="block font-bold mb-1">Bio</label>
-              <textarea name="bio" rows={6} value={form.bio} onChange={handleChange} className="w-full p-3 border rounded-lg focus:border-[#24a0ed] outline-none" placeholder="Short biography..." />
+              <TipTapEditor value={form.bio} onChange={(html) => setForm(prev => ({ ...prev, bio: html }))} placeholder="Short biography..." minHeight="160px" />
             </div>
           </div>
 

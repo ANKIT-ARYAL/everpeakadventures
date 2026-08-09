@@ -3,6 +3,7 @@
 import React from 'react';
 import Link from 'next/link';
 import { Reveal, Stagger, StaggerItem } from '../animations/Motion';
+import RichText from '@/app/components/RichText';
 
 interface Tour {
   id: string;
@@ -36,9 +37,7 @@ export default function PopularTours({ tours = [], watermark, title, subtitle }:
             <h2 className="text-3xl md:text-4xl font-extrabold text-[#222222] tracking-tight uppercase oswald mb-3">
               {title ?? 'Popular Tours'}
             </h2>
-            <p className="text-gray-500 text-sm md:text-base italic">
-              {subtitle ?? '"Premium tour packages tailored for comfort, culture, and adventure."'}
-            </p>
+            <RichText html={subtitle ?? '"Premium tour packages tailored for comfort, culture, and adventure."'} className="text-gray-500 text-sm md:text-base italic" />
           </div>
         </Reveal>
 

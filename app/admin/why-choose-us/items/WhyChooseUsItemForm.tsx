@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { Save, ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
 import toast, { Toaster } from 'react-hot-toast';
+import TipTapEditor from '@/app/components/admin/TipTapEditor';
 
 interface Props {
   initialData?: any;
@@ -89,7 +90,7 @@ export default function WhyChooseUsItemForm({ initialData, isEditing = false }: 
 
         <div>
           <label className="block font-bold mb-1">Description *</label>
-          <textarea name="desc" rows={4} required value={form.desc} onChange={handleChange} className="w-full p-3 border rounded-lg focus:border-[#24a0ed] outline-none" placeholder="Short description..." />
+          <TipTapEditor value={form.desc} onChange={(html) => setForm(prev => ({ ...prev, desc: html }))} placeholder="Short description..." minHeight="120px" />
         </div>
 
         <div>

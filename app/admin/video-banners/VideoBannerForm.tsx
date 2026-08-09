@@ -2,9 +2,12 @@
 
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Save, ArrowLeft, Plus, Trash2 } from 'lucide-react';
+import { Save, ArrowLeft, Plus, Trash2, Eye, EyeOff, ExternalLink } from 'lucide-react';
 import Link from 'next/link';
 import toast, { Toaster } from 'react-hot-toast';
+import { useAdminPerms } from '../AdminPermsContext';
+import { hasPerm } from '@/lib/permissions';
+import TipTapEditor from '@/app/components/admin/TipTapEditor';
 
 interface Props {
   videoBannerData?: any;
@@ -14,6 +17,40 @@ interface Props {
 export default function VideoBannerForm({ videoBannerData, ctaBannerData }: Props) {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
+  const { isSuperAdmin, permissions } = useAdminPerms();
+  const canEdit = isSuperAdmin || hasPerm(permissions, 'video-banners', 'edit');
+
+  const [videoPublished, setVideoPublished] = useState(videoBannerData?.published ?? true);
+  const [ctaPublished, setCtaPublished] = useState(ctaBannerData?.published ?? true);
+
+  const togglePublished = async (model: string, current: boolean, setter: (v: boolean) => void) => {
+    try {
+      const res = await fetch('/api/admin/toggle', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ model, id: '__single__', published: !current }),
+      });
+      if (!res.ok) throw new Error('Failed to update visibility');
+      setter(!current);
+      toast.success(!current ? 'Now visible on the website.' : 'Hidden from the website.');
+      router.refresh();
+    } catch {
+      toast.error('Could not update visibility.');
+    }
+  };
+
+  const PublishedToggle = ({ published, onClick }: { published: boolean; onClick: () => void }) => (
+    <button
+      type="button"
+      onClick={onClick}
+      disabled={!canEdit}
+      title={published ? 'Hide from frontend' : 'Show on frontend'}
+      className={`p-1.5 rounded transition-colors disabled:opacity-40 ${published ? 'bg-emerald-50 text-emerald-600 hover:bg-emerald-100' : 'bg-gray-100 text-gray-500 hover:bg-gray-200'}`}
+    >
+      {published ? <Eye className="w-3.5 h-3.5" /> : <EyeOff className="w-3.5 h-3.5" />}
+    </button>
+  );
+
 
   const [videoBanner, setVideoBanner] = useState({
     title: videoBannerData?.title || '',
@@ -110,7 +147,18 @@ export default function VideoBannerForm({ videoBannerData, ctaBannerData }: Prop
 
       {/* Video Banner */}
       <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 space-y-4">
-        <h2 className="font-bold text-gray-800 uppercase tracking-wider border-b pb-2">Video Banner</h2>
+        <div className="flex flex-wrap items-center justify-between gap-2 border-b pb-2">
+          <h2 className="font-bold text-gray-800 uppercase tracking-wider">Video Banner</h2>
+          <div className="flex items-center gap-2">
+            <PublishedToggle
+              published={videoPublished}
+              onClick={() => togglePublished('video-banner-content', videoPublished, setVideoPublished)}
+            />
+            <a href="/" target="_blank" rel="noopener noreferrer" title="View on site" className="p-1.5 rounded bg-emerald-50 text-emerald-600 hover:bg-emerald-100">
+              <ExternalLink className="w-3.5 h-3.5" />
+            </a>
+          </div>
+        </div>
 
         <div>
           <label className="block font-bold mb-1">Title</label>
@@ -119,7 +167,7 @@ export default function VideoBannerForm({ videoBannerData, ctaBannerData }: Prop
 
         <div>
           <label className="block font-bold mb-1">Subtitle</label>
-          <textarea name="subtitle" rows={3} value={videoBanner.subtitle} onChange={handleVideoBannerChange} className="w-full p-3 border rounded-lg focus:border-[#24a0ed] outline-none" placeholder="Banner subtitle..." />
+          <TipTapEditor value={videoBanner.subtitle} onChange={(html) => setVideoBanner(prev => ({ ...prev, subtitle: html }))} placeholder="Banner subtitle..." />
         </div>
 
         <div>
@@ -172,7 +220,18 @@ export default function VideoBannerForm({ videoBannerData, ctaBannerData }: Prop
 
       {/* CTA Banner */}
       <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 space-y-4">
-        <h2 className="font-bold text-gray-800 uppercase tracking-wider border-b pb-2">CTA Banner</h2>
+        <div className="flex flex-wrap items-center justify-between gap-2 border-b pb-2">
+          <h2 className="font-bold text-gray-800 uppercase tracking-wider">CTA Banner</h2>
+          <div className="flex items-center gap-2">
+            <PublishedToggle
+              published={ctaPublished}
+              onClick={() => togglePublished('cta-banner-content', ctaPublished, setCtaPublished)}
+            />
+            <a href="/" target="_blank" rel="noopener noreferrer" title="View on site" className="p-1.5 rounded bg-emerald-50 text-emerald-600 hover:bg-emerald-100">
+              <ExternalLink className="w-3.5 h-3.5" />
+            </a>
+          </div>
+        </div>
 
         <div>
           <label className="block font-bold mb-1">Title</label>
@@ -181,7 +240,7 @@ export default function VideoBannerForm({ videoBannerData, ctaBannerData }: Prop
 
         <div>
           <label className="block font-bold mb-1">Subtitle</label>
-          <textarea name="subtitle" rows={3} value={ctaBanner.subtitle} onChange={handleCtaBannerChange} className="w-full p-3 border rounded-lg focus:border-[#24a0ed] outline-none" placeholder="CTA subtitle..." />
+          <TipTapEditor value={ctaBanner.subtitle} onChange={(html) => setCtaBanner(prev => ({ ...prev, subtitle: html }))} placeholder="CTA subtitle..." />
         </div>
 
         <div>

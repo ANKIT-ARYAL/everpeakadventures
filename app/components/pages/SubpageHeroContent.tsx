@@ -10,7 +10,9 @@ interface SubpageHeroContentProps {
 }
 
 export default async function SubpageHeroContent({ slug, fallbackTitle, fallbackSubtitle, fallbackImage }: SubpageHeroContentProps) {
-  const hero = await prisma.subpageHero.findUnique({ where: { slug } });
+  const hero = await prisma.subpageHero.findFirst({
+    where: { slug, published: true },
+  });
 
   return (
     <SubpageHero

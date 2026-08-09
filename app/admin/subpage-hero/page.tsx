@@ -4,6 +4,7 @@ import AddNewButton from "../components/AddNewButton";
 import ViewButton from "../components/ViewButton";
 import EditButton from "../components/EditButton";
 import DeleteButton from "../components/DeleteButton";
+import ToggleShow from "../components/ToggleShow";
 
 export const dynamic = 'force-dynamic';
 
@@ -30,8 +31,8 @@ export default async function AdminSubpageHeroPage() {
         <AddNewButton href="/admin/subpage-hero/new" label="Add New Hero" />
       </div>
 
-      {/* Data Table */}
-      <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+      {/* Data Table - Desktop */}
+      <div className="hidden md:block bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse">
             <thead>
@@ -71,6 +72,7 @@ export default async function AdminSubpageHeroPage() {
 
                     <td className="py-3 px-4 text-right">
                       <div className="flex items-center justify-end gap-2">
+                        <ToggleShow model="subpage-heroes" resource="subpage-hero" id={hero.id} published={hero.published} />
                         <EditButton href={`/admin/subpage-hero/${hero.id}/edit`} />
                         <ViewButton href={`/${hero.slug}`} />
                         <DeleteButton id={hero.id} model="subpage-heroes" title={hero.slug} />
@@ -82,6 +84,36 @@ export default async function AdminSubpageHeroPage() {
             </tbody>
           </table>
         </div>
+      </div>
+
+      {/* Mobile Cards */}
+      <div className="md:hidden space-y-3">
+        {heroes.length === 0 ? (
+          <div className="bg-white rounded-xl shadow-sm border border-gray-100 py-12 text-center text-gray-400 font-medium">
+            No subpage heroes found.
+          </div>
+        ) : (
+          heroes.map((hero) => (
+            <div key={hero.id} className="bg-white rounded-xl shadow-sm border border-gray-100 p-4">
+              <Link href={`/admin/subpage-hero/${hero.id}/edit`} className="font-bold text-[#112233] hover:text-[#24a0ed] block truncate">
+                {hero.slug}
+              </Link>
+              <span className="block text-[10px] text-gray-400 font-normal truncate">ID: {hero.id}</span>
+              <div className="mt-3 text-[11px]">
+                <span className="block text-[9px] font-bold text-gray-400 uppercase tracking-wider">Title</span>
+                <span className="font-semibold text-gray-700">{hero.title}</span>
+                <span className="block text-[9px] font-bold text-gray-400 uppercase tracking-wider mt-2">Subtitle</span>
+                <span className="text-gray-500 font-medium line-clamp-2">{hero.subtitle || '—'}</span>
+              </div>
+              <div className="flex items-center gap-2 mt-3 pt-3 border-t border-gray-100">
+                <ToggleShow model="subpage-heroes" resource="subpage-hero" id={hero.id} published={hero.published} />
+                <EditButton href={`/admin/subpage-hero/${hero.id}/edit`} />
+                <ViewButton href={`/${hero.slug}`} />
+                <DeleteButton id={hero.id} model="subpage-heroes" title={hero.slug} />
+              </div>
+            </div>
+          ))
+        )}
       </div>
 
     </div>

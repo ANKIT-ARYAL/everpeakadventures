@@ -5,6 +5,8 @@ import { useRouter } from 'next/navigation';
 import { Save, ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
 import toast, { Toaster } from 'react-hot-toast';
+import ToggleShow from '../components/ToggleShow';
+import TipTapEditor from '@/app/components/admin/TipTapEditor';
 
 interface Props {
   initialData?: any;
@@ -15,6 +17,7 @@ export default function HomeSectionContentForm({ initialData }: Props) {
   const [loading, setLoading] = useState(false);
 
   const [form, setForm] = useState({
+    published: initialData?.published ?? true,
     featuredTreksLabel: initialData?.featuredTreksLabel || 'Top Rated Routes',
     featuredTreksTitle: initialData?.featuredTreksTitle || 'Featured Trekking Packages',
     bestSellersWatermark: initialData?.bestSellersWatermark || 'Trekking',
@@ -73,13 +76,16 @@ export default function HomeSectionContentForm({ initialData }: Props) {
           </Link>
           <h1 className="text-xl font-black uppercase text-[#112233]">Home Sections</h1>
         </div>
-        <button
-          type="submit"
-          disabled={loading}
-          className="bg-[#24a0ed] hover:bg-[#1a85c6] text-white font-bold px-6 py-2.5 rounded-lg flex items-center gap-2 disabled:opacity-50 uppercase tracking-wider"
-        >
-          <Save className="w-4 h-4" /> {loading ? 'Saving...' : 'Save Changes'}
-        </button>
+        <div className="flex items-center gap-2">
+          <ToggleShow model="home-section-content" resource="home-section-content" id="__single__" published={form.published ?? true} />
+          <button
+            type="submit"
+            disabled={loading}
+            className="bg-[#24a0ed] hover:bg-[#1a85c6] text-white font-bold px-6 py-2.5 rounded-lg flex items-center gap-2 disabled:opacity-50 uppercase tracking-wider"
+          >
+            <Save className="w-4 h-4" /> {loading ? 'Saving...' : 'Save Changes'}
+          </button>
+        </div>
       </div>
 
       <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 space-y-4">
@@ -111,7 +117,7 @@ export default function HomeSectionContentForm({ initialData }: Props) {
 
         <div>
           <label className="block font-bold mb-1">Subtitle</label>
-          <textarea name="bestSellersSubtitle" rows={3} value={form.bestSellersSubtitle} onChange={handleChange} className="w-full p-3 border rounded-lg focus:border-[#24a0ed] outline-none" placeholder="Short description..." />
+          <TipTapEditor value={form.bestSellersSubtitle} onChange={(html) => setForm(prev => ({ ...prev, bestSellersSubtitle: html }))} placeholder="Short description..." />
         </div>
       </div>
 
@@ -144,7 +150,7 @@ export default function HomeSectionContentForm({ initialData }: Props) {
 
         <div>
           <label className="block font-bold mb-1">Subtitle</label>
-          <textarea name="popularToursSubtitle" rows={3} value={form.popularToursSubtitle} onChange={handleChange} className="w-full p-3 border rounded-lg focus:border-[#24a0ed] outline-none" placeholder="Short description..." />
+          <TipTapEditor value={form.popularToursSubtitle} onChange={(value) => setForm(prev => ({ ...prev, popularToursSubtitle: value }))} placeholder="Short description..." />
         </div>
       </div>
 
@@ -163,7 +169,7 @@ export default function HomeSectionContentForm({ initialData }: Props) {
 
         <div>
           <label className="block font-bold mb-1">Subtitle</label>
-          <textarea name="exploreBlogsSubtitle" rows={3} value={form.exploreBlogsSubtitle} onChange={handleChange} className="w-full p-3 border rounded-lg focus:border-[#24a0ed] outline-none" placeholder="Short description..." />
+          <TipTapEditor value={form.exploreBlogsSubtitle} onChange={(value) => setForm(prev => ({ ...prev, exploreBlogsSubtitle: value }))} placeholder="Short description..." />
         </div>
       </div>
 
@@ -187,7 +193,7 @@ export default function HomeSectionContentForm({ initialData }: Props) {
 
         <div>
           <label className="block font-bold mb-1">Subtitle</label>
-          <textarea name="whyChooseUsSubtitle" rows={3} value={form.whyChooseUsSubtitle} onChange={handleChange} className="w-full p-3 border rounded-lg focus:border-[#24a0ed] outline-none" placeholder="Short description..." />
+          <TipTapEditor value={form.whyChooseUsSubtitle} onChange={(value) => setForm(prev => ({ ...prev, whyChooseUsSubtitle: value }))} placeholder="Short description..." />
         </div>
       </div>
     </form>

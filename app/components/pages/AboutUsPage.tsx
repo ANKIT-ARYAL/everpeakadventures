@@ -1,6 +1,7 @@
 import React from 'react';
 import Link from 'next/link';
 import { Reveal, Stagger, StaggerItem } from '../animations/Motion';
+import RichText from '@/app/components/RichText';
 
 interface AboutPageProps {
   data: {
@@ -81,10 +82,10 @@ export default function AboutUsPage({ data }: AboutPageProps) {
                 About Ever Peak Adventures
               </h2>
               <div className="space-y-4 text-gray-600 text-[14px] leading-relaxed">
-                <p>{data.paragraph1}</p>
-                <p>{data.paragraph2}</p>
-                <p>{data.paragraph3}</p>
-                <p>{data.paragraph4}</p>
+                <RichText html={data.paragraph1} />
+                <RichText html={data.paragraph2} />
+                <RichText html={data.paragraph3} />
+                <RichText html={data.paragraph4} />
               </div>
             </Reveal>
 
@@ -98,9 +99,10 @@ export default function AboutUsPage({ data }: AboutPageProps) {
           <h2 className="text-2xl md:text-3xl font-black uppercase tracking-wide oswald">
             {data.cultureTitle}
           </h2>
-          <p className="text-sm md:text-base font-medium max-w-2xl leading-relaxed text-right md:text-right text-white">
-            {data.cultureText}
-          </p>
+          <RichText
+            html={data.cultureText}
+            className="text-sm md:text-base font-medium max-w-2xl leading-relaxed text-right md:text-right text-white"
+          />
         </div>
       </Reveal>
 
@@ -114,9 +116,10 @@ export default function AboutUsPage({ data }: AboutPageProps) {
                 <h3 className="text-xl font-bold uppercase tracking-wider mb-4 oswald text-white">
                   Our Mission
                 </h3>
-                <p className="text-white/90 text-xs md:text-sm leading-relaxed mb-8">
-                  {data.missionText}
-                </p>
+                <RichText
+                  html={data.missionText}
+                  className="text-white/90 text-xs md:text-sm leading-relaxed mb-8"
+                />
               </div>
               <div className="flex justify-center pt-4 border-t border-white/20">
                 <span className="text-3xl">🚀</span>
@@ -128,9 +131,10 @@ export default function AboutUsPage({ data }: AboutPageProps) {
                 <h3 className="text-xl font-bold uppercase tracking-wider mb-4 oswald text-white">
                   Our Vision
                 </h3>
-                <p className="text-white/90 text-xs md:text-sm leading-relaxed mb-8">
-                  {data.visionText}
-                </p>
+                <RichText
+                  html={data.visionText}
+                  className="text-white/90 text-xs md:text-sm leading-relaxed mb-8"
+                />
               </div>
               <div className="flex justify-center pt-4 border-t border-white/20">
                 <span className="text-3xl">👁️</span>
@@ -142,9 +146,10 @@ export default function AboutUsPage({ data }: AboutPageProps) {
                 <h3 className="text-xl font-bold uppercase tracking-wider mb-4 oswald text-white">
                   Our Goals
                 </h3>
-                <p className="text-white/90 text-xs md:text-sm leading-relaxed mb-8">
-                  {data.goalsText}
-                </p>
+                <RichText
+                  html={data.goalsText}
+                  className="text-white/90 text-xs md:text-sm leading-relaxed mb-8"
+                />
               </div>
               <div className="flex justify-center pt-4 border-t border-white/20">
                 <span className="text-3xl">🎯</span>

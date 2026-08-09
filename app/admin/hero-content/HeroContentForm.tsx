@@ -6,6 +6,8 @@ import { Save, ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
 import toast, { Toaster } from 'react-hot-toast';
 import MediaUploader from '@/app/components/admin/MediaUploader';
+import ToggleShow from '../components/ToggleShow';
+import TipTapEditor from '@/app/components/admin/TipTapEditor';
 
 interface Props {
   initialData?: any;
@@ -16,6 +18,7 @@ export default function HeroContentForm({ initialData }: Props) {
   const [loading, setLoading] = useState(false);
 
   const [form, setForm] = useState({
+    published: initialData?.published ?? true,
     topLabel: initialData?.topLabel || '',
     mainHeading: initialData?.mainHeading || '',
     subtext: initialData?.subtext || '',
@@ -80,13 +83,16 @@ export default function HeroContentForm({ initialData }: Props) {
           </Link>
           <h1 className="text-xl font-black uppercase text-[#112233]">Hero Content</h1>
         </div>
-        <button 
-          type="submit" 
-          disabled={loading}
-          className="bg-[#24a0ed] hover:bg-[#1a85c6] text-white font-bold px-6 py-2.5 rounded-lg flex items-center gap-2 disabled:opacity-50 uppercase tracking-wider"
-        >
-          <Save className="w-4 h-4" /> {loading ? 'Saving...' : 'Save Changes'}
-        </button>
+        <div className="flex items-center gap-2">
+          <ToggleShow model="hero-content" resource="hero-content" id="__single__" published={form.published ?? true} />
+          <button 
+            type="submit" 
+            disabled={loading}
+            className="bg-[#24a0ed] hover:bg-[#1a85c6] text-white font-bold px-6 py-2.5 rounded-lg flex items-center gap-2 disabled:opacity-50 uppercase tracking-wider"
+          >
+            <Save className="w-4 h-4" /> {loading ? 'Saving...' : 'Save Changes'}
+          </button>
+        </div>
       </div>
 
       <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 space-y-4">
@@ -104,7 +110,7 @@ export default function HeroContentForm({ initialData }: Props) {
 
         <div>
           <label className="block font-bold mb-1">Subtext</label>
-          <textarea name="subtext" rows={4} value={form.subtext} onChange={handleChange} className="w-full p-3 border rounded-lg focus:border-[#24a0ed] outline-none" placeholder="Short description..." />
+          <TipTapEditor value={form.subtext} onChange={(html) => setForm(prev => ({ ...prev, subtext: html }))} placeholder="Short description..." minHeight="160px" />
         </div>
 
         <div>

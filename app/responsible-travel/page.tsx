@@ -4,7 +4,9 @@ import SubpageHeroContent from '@/app/components/pages/SubpageHeroContent';
 import { Reveal } from '@/app/components/animations/Motion';
 
 export default async function ResponsibleTravelPage() {
-  const content = await prisma.responsibleTravelContent.findFirst();
+  const content = await prisma.responsibleTravelContent.findFirst({
+    where: { published: true },
+  });
 
   const data = content || {
     title: 'Responsible Travel',

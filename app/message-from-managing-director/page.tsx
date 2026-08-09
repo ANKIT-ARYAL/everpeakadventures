@@ -4,7 +4,9 @@ import { prisma } from '@/lib/prisma';
 import { Reveal, Stagger, StaggerItem } from '@/app/components/animations/Motion';
 
 export default async function MessageFromFounderPage() {
-  const content = await prisma.directorMessageContent.findFirst();
+  const content = await prisma.directorMessageContent.findFirst({
+    where: { published: true },
+  });
 
   const data = content || {
     contentHtml: `

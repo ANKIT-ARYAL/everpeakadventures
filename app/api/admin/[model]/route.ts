@@ -16,18 +16,34 @@ const modelMap: Record<string, any> = {
   'welcome-features': prisma.welcomeFeature,
   'subpage-heroes': prisma.subpageHero,
   departures: prisma.fixedDeparture,
-  pages: prisma.page,
   'trust-items': prisma.trustItem,
+};
+
+// Map URL slugs to permission resources
+const resourceByModel: Record<string, string> = {
+  treks: 'treks',
+  tours: 'tours',
+  blogs: 'blogs',
+  testimonials: 'testimonials',
+  faqs: 'faqs',
+  team: 'team',
+  'legal-documents': 'legal-documents',
+  'why-choose-us-items': 'why-choose-us',
+  'why-choose-us-features': 'why-choose-us',
+  'welcome-features': 'welcome-features',
+  'subpage-heroes': 'subpage-hero',
+  departures: 'departures',
+  'trust-items': 'trust-items',
 };
 
 export async function GET(
   request: Request,
   { params }: { params: Promise<{ model: string }> }
 ) {
-  const unauthorized = await requireAdmin();
+  const { model } = await params;
+  const unauthorized = await requireAdmin(resourceByModel[model], "view");
   if (unauthorized) return unauthorized;
 
-  const { model } = await params;
   const delegate = modelMap[model];
 
   if (!delegate) {
@@ -35,8 +51,8 @@ export async function GET(
   }
 
   try {
-    // 'subpage-heroes' and 'pages' have no `order` column — fall back to updatedAt
-    const hasOrder = ['subpage-heroes', 'pages'].includes(model);
+    // 'subpage-heroes' has no `order` column — fall back to updatedAt
+    const hasOrder = ['subpage-heroes'].includes(model);
     const items = await delegate.findMany({
       orderBy: hasOrder ? { updatedAt: 'asc' } : { order: 'asc' },
     });
@@ -50,10 +66,10 @@ export async function POST(
   request: Request,
   { params }: { params: Promise<{ model: string }> }
 ) {
-  const unauthorized = await requireAdmin();
+  const { model } = await params;
+  const unauthorized = await requireAdmin(resourceByModel[model], "create");
   if (unauthorized) return unauthorized;
 
-  const { model } = await params;
   const delegate = modelMap[model];
 
   if (!delegate) {

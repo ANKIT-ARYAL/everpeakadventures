@@ -4,8 +4,11 @@ import HeroMedia from "./HeroMedia";
 
 export default async function Hero() {
   // Fetch hero configuration & trust items dynamically from the database
-  const heroData = await prisma.heroContent.findFirst();
+  const heroData = await prisma.heroContent.findFirst({
+    where: { published: true },
+  });
   const trustItems = await prisma.trustItem.findMany({
+    where: { published: true },
     orderBy: { order: 'asc' },
   });
 

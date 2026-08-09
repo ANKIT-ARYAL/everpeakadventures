@@ -4,6 +4,8 @@ import React from 'react';
 import Link from 'next/link';
 import { MapPin } from 'lucide-react';
 import { Reveal, Stagger, StaggerItem } from '../animations/Motion';
+import { stripHtml } from '@/lib/stripHtml';
+import RichText from '@/app/components/RichText';
 
 interface BlogPost {
   id: string;
@@ -44,9 +46,7 @@ export default function ExploreBlogs({ posts = [], watermark, title, subtitle }:
             <h2 className="text-3xl md:text-4xl font-extrabold text-[#222222] tracking-tight uppercase oswald mb-3">
               {title ?? 'Explore Our Blogs'}
             </h2>
-            <p className="text-gray-500 text-sm md:text-base">
-              {subtitle ?? 'At Ever Peak Adventure, we believe that travel is not just about reaching a destination—it’s about creating stories.'}
-            </p>
+            <RichText html={subtitle ?? 'At Ever Peak Adventure, we believe that travel is not just about reaching a destination—it’s about creating stories.'} className="text-gray-500 text-sm md:text-base" />
           </div>
         </Reveal>
 
@@ -101,7 +101,7 @@ export default function ExploreBlogs({ posts = [], watermark, title, subtitle }:
                       {blog.title}
                     </h3>
                     <p className="text-gray-500 text-xs leading-relaxed line-clamp-2 mb-4">
-                      {blog.excerpt}
+                      {stripHtml(blog.excerpt)}
                     </p>
                   </div>
 

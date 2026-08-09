@@ -3,7 +3,7 @@ import { prisma } from '@/lib/prisma';
 import { requireAdmin } from "@/app/lib/require-admin";
 
 export async function GET() {
-  const unauthorized = await requireAdmin();
+  const unauthorized = await requireAdmin("treks", "view");
   if (unauthorized) return unauthorized;
 
   try {
@@ -22,7 +22,7 @@ export async function GET() {
 }
 
 export async function POST(request: Request) {
-  const unauthorized = await requireAdmin();
+  const unauthorized = await requireAdmin("treks", "create");
   if (unauthorized) return unauthorized;
 
   try {

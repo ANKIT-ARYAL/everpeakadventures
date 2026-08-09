@@ -4,7 +4,9 @@ import SubpageHeroContent from '@/app/components/pages/SubpageHeroContent';
 import { Reveal } from '@/app/components/animations/Motion';
 
 export default async function TermsAndConditionsPage() {
-  const content = await prisma.termsPageContent.findFirst();
+  const content = await prisma.termsPageContent.findFirst({
+    where: { published: true },
+  });
 
   const data = content || {
     title: 'Terms and Conditions',

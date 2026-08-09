@@ -4,7 +4,9 @@ import SubpageHeroContent from '@/app/components/pages/SubpageHeroContent';
 import { Reveal } from '@/app/components/animations/Motion';
 
 export default async function WhyEverPeakAdventuresPage() {
-  const content = await prisma.whyPageContent.findFirst();
+  const content = await prisma.whyPageContent.findFirst({
+    where: { published: true },
+  });
 
   const data = content || {
     title: 'Why Ever Peak Adventures',

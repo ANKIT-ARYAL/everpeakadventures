@@ -9,7 +9,7 @@ export async function GET(
   _request: Request,
   { params }: { params: Promise<{ id: string }> }
 ) {
-  const unauthorized = await requireAdmin();
+  const unauthorized = await requireAdmin("bookings", "view");
   if (unauthorized) return unauthorized;
 
   const { id } = await params;
@@ -23,7 +23,7 @@ export async function PATCH(
   request: Request,
   { params }: { params: Promise<{ id: string }> }
 ) {
-  const unauthorized = await requireAdmin();
+  const unauthorized = await requireAdmin("bookings", "edit");
   if (unauthorized) return unauthorized;
 
   const { id } = await params;
@@ -58,7 +58,7 @@ export async function DELETE(
   _request: Request,
   { params }: { params: Promise<{ id: string }> }
 ) {
-  const unauthorized = await requireAdmin();
+  const unauthorized = await requireAdmin("bookings", "delete");
   if (unauthorized) return unauthorized;
 
   const { id } = await params;

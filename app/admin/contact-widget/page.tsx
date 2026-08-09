@@ -5,8 +5,10 @@ import { useRouter } from 'next/navigation';
 import { Save, ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
 import toast, { Toaster } from 'react-hot-toast';
+import ToggleShow from '../components/ToggleShow';
 
 const defaultSettings = {
+  published: true,
   enabled: true,
   whatsapp: '',
   viber: '',
@@ -27,6 +29,7 @@ export default function ContactWidgetSettingsPage() {
         const json = await res.json();
         if (json.success && json.data) {
           setForm({
+            published: json.data.published ?? true,
             enabled: json.data.enabled !== undefined ? Boolean(json.data.enabled) : true,
             whatsapp: json.data.whatsapp || '',
             viber: json.data.viber || '',
@@ -79,13 +82,16 @@ export default function ContactWidgetSettingsPage() {
           </Link>
           <h1 className="text-xl font-black uppercase text-[#112233]">Contact Widget</h1>
         </div>
-        <button
-          type="submit"
-          disabled={loading}
-          className="bg-[#24a0ed] hover:bg-[#1a85c6] text-white font-bold px-6 py-2.5 rounded-lg flex items-center gap-2 disabled:opacity-50 uppercase tracking-wider"
-        >
-          <Save className="w-4 h-4" /> {loading ? 'Saving...' : 'Save Changes'}
-        </button>
+        <div className="flex items-center gap-2">
+          <ToggleShow model="contact-widget" resource="contact-widget" id="__single__" published={form.published ?? true} />
+          <button
+            type="submit"
+            disabled={loading}
+            className="bg-[#24a0ed] hover:bg-[#1a85c6] text-white font-bold px-6 py-2.5 rounded-lg flex items-center gap-2 disabled:opacity-50 uppercase tracking-wider"
+          >
+            <Save className="w-4 h-4" /> {loading ? 'Saving...' : 'Save Changes'}
+          </button>
+        </div>
       </div>
 
       <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 space-y-4">

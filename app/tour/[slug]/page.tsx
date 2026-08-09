@@ -27,8 +27,8 @@ interface PageProps {
 export default async function TourDetailPage({ params }: PageProps) {
   const { slug } = await params;
 
-  const tour = await prisma.tour.findUnique({
-    where: { slug },
+  const tour = await prisma.tour.findFirst({
+    where: { slug, published: true },
     include: {
       groupPrices: true,
       fixedSchedules: true,
@@ -38,13 +38,13 @@ export default async function TourDetailPage({ params }: PageProps) {
   if (!tour) notFound();
 
   const relatedTours = await prisma.tour.findMany({
-    where: { destination: tour.destination, NOT: { id: tour.id } },
+    where: { destination: tour.destination, NOT: { id: tour.id }, published: true },
     take: 4,
     orderBy: { order: 'asc' },
   });
 
   const linkedFaqs = await prisma.fAQ.findMany({
-    where: { relatedType: 'tour', relatedSlug: tour.slug },
+    where: { relatedType: 'tour', relatedSlug: tour.slug, published: true },
     orderBy: { order: 'asc' },
   });
 

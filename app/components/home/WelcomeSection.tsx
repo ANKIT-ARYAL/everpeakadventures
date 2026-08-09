@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { Reveal, Stagger, StaggerItem } from '../animations/Motion';
+import { stripHtml } from '@/lib/stripHtml';
 
 // 1. Define the props interface
 interface WelcomeSectionProps {
@@ -142,7 +143,7 @@ export default function WelcomeSection({
                     {feature.title}
                   </h3>
                   <p className="text-xs md:text-sm text-[#666666] mt-0.5">
-                    {feature.description}
+                    {stripHtml(feature.description)}
                   </p>
                 </div>
               </StaggerItem>

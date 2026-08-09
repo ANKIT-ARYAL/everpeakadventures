@@ -2,6 +2,8 @@ import NextAuth from "next-auth";
 import type { NextAuthOptions } from "next-auth";
 import { getServerSession } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
+import { prisma } from "@/lib/prisma";
+import { verifyPassword } from "@/lib/password";
 
 const SESSION_MAX_AGE = 8 * 60 * 60;
 const SESSION_ABSOLUTE_MAX_AGE = 24 * 60 * 60;
@@ -70,7 +72,48 @@ export const authOptions: NextAuthOptions = {
           password === process.env.ADMIN_PASSWORD
         ) {
           clearLoginFailures(username);
-          return { id: "1", name: username, email: username };
+          return {
+            id: "super-admin",
+            name: username,
+            email: username,
+            username,
+            isSuperAdmin: true,
+            permissions: ["*"],
+          };
+        }
+
+        try {
+          const user = await prisma.user.findUnique({
+            where: { username },
+            include: { role: true },
+          });
+
+          if (user && user.active && password) {
+            const valid = await verifyPassword(password, user.passwordHash);
+            if (valid) {
+              clearLoginFailures(username);
+              try {
+                await prisma.user.update({
+                  where: { id: user.id },
+                  data: { lastLoginAt: new Date() },
+                });
+              } catch {
+                // Non-fatal: lastLoginAt tracking failure should not block login.
+              }
+              return {
+                id: user.id,
+                name: user.name ?? user.username,
+                email: user.username,
+                username: user.username,
+                role: user.role.name,
+                roleId: user.role.id,
+                isSuperAdmin: false,
+                permissions: user.role.permissions,
+              };
+            }
+          }
+        } catch {
+          // DB unavailable: fall through to lockout behavior.
         }
 
         recordLoginFailure(username);
@@ -100,10 +143,19 @@ export const authOptions: NextAuthOptions = {
     },
   },
   callbacks: {
-    async jwt({ token, user }) {
+    async jwt({ token, user, trigger, session }) {
+      if (trigger === "update" && session?.permissions) {
+        token.permissions = session.permissions;
+      }
+
       if (user) {
         token.authTime = Math.floor(Date.now() / 1000);
         token.sub = user.id;
+        token.username = user.username;
+        token.role = user.role;
+        token.roleId = user.roleId;
+        token.isSuperAdmin = user.isSuperAdmin;
+        token.permissions = user.permissions;
       }
 
       const authTime = token.authTime as number | undefined;
@@ -115,8 +167,14 @@ export const authOptions: NextAuthOptions = {
     },
     async session({ session, token }) {
       session.user = {
+        id: (token.sub as string | undefined) ?? undefined,
         name: (token.name as string | undefined) ?? "admin",
         email: (token.email as string | undefined) ?? "admin",
+        username: token.username,
+        role: token.role,
+        roleId: token.roleId,
+        isSuperAdmin: token.isSuperAdmin,
+        permissions: token.permissions ?? [],
       };
       return session;
     },

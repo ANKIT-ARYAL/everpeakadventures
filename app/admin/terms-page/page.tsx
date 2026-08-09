@@ -6,8 +6,10 @@ import { Save, ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
 import toast, { Toaster } from 'react-hot-toast';
 import RichTextEditor from '@/app/components/admin/RichTextEditor';
+import ToggleShow from '../components/ToggleShow';
 
 const defaultContent = {
+  published: true,
   title: 'Terms and Conditions',
   subtitle: 'Have questions or ready to plan your Himalayan adventure?',
   contentHtml: '',
@@ -26,6 +28,7 @@ export default function TermsPage() {
         const json = await res.json();
         if (json.success && json.data) {
           setForm({
+            published: json.data.published ?? true,
             title: json.data.title || '',
             subtitle: json.data.subtitle || '',
             contentHtml: json.data.contentHtml || '',
@@ -88,13 +91,16 @@ export default function TermsPage() {
           </Link>
           <h1 className="text-xl font-black uppercase text-[#112233]">Terms and Conditions</h1>
         </div>
-        <button 
-          type="submit" 
-          disabled={saving}
-          className="bg-[#24a0ed] hover:bg-[#1a85c6] text-white font-bold px-6 py-2.5 rounded-lg flex items-center gap-2 disabled:opacity-50 uppercase tracking-wider"
-        >
-          <Save className="w-4 h-4" /> {saving ? 'Saving...' : 'Save Changes'}
-        </button>
+        <div className="flex items-center gap-2">
+          <ToggleShow model="terms-page" resource="terms-page" id="__single__" published={form.published ?? true} />
+          <button 
+            type="submit" 
+            disabled={saving}
+            className="bg-[#24a0ed] hover:bg-[#1a85c6] text-white font-bold px-6 py-2.5 rounded-lg flex items-center gap-2 disabled:opacity-50 uppercase tracking-wider"
+          >
+            <Save className="w-4 h-4" /> {saving ? 'Saving...' : 'Save Changes'}
+          </button>
+        </div>
       </div>
 
       <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 space-y-4">

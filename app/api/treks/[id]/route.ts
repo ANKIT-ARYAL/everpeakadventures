@@ -6,7 +6,7 @@ export async function PUT(
   request: Request,
   { params }: { params: Promise<{ id: string }> }
 ) {
-  const unauthorized = await requireAdmin();
+  const unauthorized = await requireAdmin("treks", "edit");
   if (unauthorized) return unauthorized;
 
   try {
@@ -85,7 +85,7 @@ export async function DELETE(
   request: Request,
   { params }: { params: Promise<{ id: string }> }
 ) {
-  const unauthorized = await requireAdmin();
+  const unauthorized = await requireAdmin("treks", "delete");
   if (unauthorized) return unauthorized;
 
   try {

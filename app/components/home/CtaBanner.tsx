@@ -3,6 +3,7 @@
 import React from 'react';
 import Link from 'next/link';
 import { Reveal } from '../animations/Motion';
+import { stripHtml } from '@/lib/stripHtml';
 
 interface CtaBannerData {
   title: string;
@@ -42,7 +43,7 @@ export default function CtaBanner({ data }: CtaBannerProps) {
           </h2>
 
           <p className="text-gray-200 text-sm md:text-base mb-8 font-medium">
-            {data.subtitle}
+            {stripHtml(data.subtitle)}
           </p>
 
           {/* Buttons */}

@@ -1,5 +1,6 @@
 import React from 'react';
 import { Reveal } from '@/app/components/animations/Motion';
+import RichText from '@/app/components/RichText';
 
 interface FaqItem {
   question: string;
@@ -26,9 +27,10 @@ export default function FAQAccordion({ faqs, title = 'FAQs' }: FAQAccordionProps
               <span>{faq.question}</span>
               <span className="text-gray-400 group-open:rotate-180 transition-transform">▼</span>
             </summary>
-            <p className="text-xs text-gray-600 mt-3 pt-3 border-t border-gray-200 leading-relaxed">
-              {faq.answer}
-            </p>
+            <RichText
+              html={faq.answer}
+              className="text-xs text-gray-600 mt-3 pt-3 border-t border-gray-200 leading-relaxed"
+            />
           </details>
         ))}
       </div>

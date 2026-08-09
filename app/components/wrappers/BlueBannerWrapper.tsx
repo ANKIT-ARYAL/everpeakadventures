@@ -4,11 +4,13 @@ import BlueBanner from "../home/BlueBanner";
 export default async function BlueBannerWrapper() {
   const content = await prisma.blueBannerContent.findFirst();
 
+  if (content && !content.published) return null;
+
   const data = content || {
-    title: 'Explore the Himalayas with Trusted Local Experts',
-    subtitle: 'Ever Peak Adventures offers unforgettable trekking, peak climbing, and cultural journeys across Everest, Annapurna, and beyond. Safe, authentic, and professionally guided.',
-    buttonText: 'View All Trek Packages →',
-    buttonLink: '/tour',
+    title: 'Ever Peak Adventure',
+    subtitle: 'Your trusted local partner for Himalayan adventures in Nepal.',
+    buttonText: 'Learn More',
+    buttonLink: '/about-us',
   };
 
   return <BlueBanner data={data} />;

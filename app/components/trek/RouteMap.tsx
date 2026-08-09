@@ -2,6 +2,7 @@
 
 import React, { useRef, useEffect, useState, useCallback } from 'react';
 import { Play, Pause, RotateCcw } from 'lucide-react';
+import RichText from '@/app/components/RichText';
 
 interface Day {
   day: number;
@@ -254,7 +255,7 @@ export default function RouteMap({ itinerary, chartTitle }: Props) {
           <span className="text-[11px] text-gray-400 font-bold">{marker.elev.toLocaleString()} m</span>
         </div>
         <h4 className="font-bold text-sm text-[#112233]">{marker.title}</h4>
-        {marker.desc && <p className="text-xs text-gray-600 mt-1 leading-relaxed">{marker.desc}</p>}
+        {marker.desc && <RichText html={marker.desc} className="text-xs text-gray-600 mt-1 leading-relaxed" />}
       </div>
     </div>
   );

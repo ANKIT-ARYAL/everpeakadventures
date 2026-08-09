@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 import { Save, ArrowLeft, Quote } from 'lucide-react';
 import Link from 'next/link';
 import toast, { Toaster } from 'react-hot-toast';
+import TipTapEditor from '@/app/components/admin/TipTapEditor';
 
 interface Props {
   initialData?: any;
@@ -137,7 +138,7 @@ export default function TestimonialForm({ initialData, sectionData, isEditing = 
             
             <div>
               <label className="block font-bold mb-1">Quote *</label>
-              <textarea name="quote" rows={4} required value={form.quote} onChange={handleChange} className="w-full p-3 border rounded-lg focus:border-[#24a0ed] outline-none" placeholder="What did the client say?" />
+              <TipTapEditor value={form.quote} onChange={(html) => setForm(prev => ({ ...prev, quote: html }))} placeholder="What did the client say?" minHeight="160px" />
             </div>
 
             <div>

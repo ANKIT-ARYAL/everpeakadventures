@@ -5,6 +5,8 @@ import Link from 'next/link';
 import { ChevronDown, Search } from 'lucide-react';
 import SubpageHero from './SubpageHero';
 import { Reveal, Stagger, StaggerItem } from '../animations/Motion';
+import RichText from '@/app/components/RichText';
+import { stripHtml } from '@/lib/stripHtml';
 
 interface FAQItem {
   id: string;
@@ -25,7 +27,7 @@ export default function FAQClientPage({ faqs = [], heroTitle, heroSubtitle, hero
 
   const filteredFaqs = faqs.filter(faq => 
     faq.question.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    faq.answer.toLowerCase().includes(searchQuery.toLowerCase())
+    stripHtml(faq.answer).toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   return (
@@ -67,7 +69,7 @@ export default function FAQClientPage({ faqs = [], heroTitle, heroSubtitle, hero
 
                       {isOpen && (
                         <div className="px-6 pb-5 text-gray-600 text-xs md:text-sm leading-relaxed border-t border-gray-50 pt-3">
-                          {faq.answer}
+                          <RichText html={faq.answer} />
                         </div>
                       )}
                     </StaggerItem>

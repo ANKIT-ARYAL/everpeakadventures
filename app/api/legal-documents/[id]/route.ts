@@ -3,7 +3,7 @@ import { prisma } from '@/lib/prisma';
 import { requireAdmin } from "@/app/lib/require-admin";
 
 export async function PUT(request: Request, { params }: { params: Promise<{ id: string }> }) {
-  const unauthorized = await requireAdmin();
+  const unauthorized = await requireAdmin("legal-documents", "edit");
   if (unauthorized) return unauthorized;
 
   try {
@@ -27,7 +27,7 @@ export async function PUT(request: Request, { params }: { params: Promise<{ id: 
 }
 
 export async function DELETE(request: Request, { params }: { params: Promise<{ id: string }> }) {
-  const unauthorized = await requireAdmin();
+  const unauthorized = await requireAdmin("legal-documents", "delete");
   if (unauthorized) return unauthorized;
 
   try {

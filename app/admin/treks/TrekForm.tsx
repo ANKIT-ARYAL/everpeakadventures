@@ -4,7 +4,7 @@ import React, { useMemo, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Save, ArrowLeft, Plus, Trash2, Image as ImageIcon, Video, ExternalLink } from 'lucide-react';
 import Link from 'next/link';
-import RichTextEditor from '@/app/components/admin/RichTextEditor';
+import TipTapEditor from '@/app/components/admin/TipTapEditor';
 import MediaUploader from '@/app/components/admin/MediaUploader';
 import RouteMapEditor, { EMPTY_ROUTE_MAP } from '@/app/components/admin/RouteMapEditor';
 
@@ -372,14 +372,14 @@ export default function TrekForm({ initialData, isEditing = false }: TrekFormPro
             </div>
             <div>
               <label className="block font-bold text-gray-700 mb-1">Short Card Description (Excerpt)</label>
-              <RichTextEditor value={formData.description} onChange={(html) => setFormData(prev => ({ ...prev, description: html }))} placeholder="Short excerpt shown on cards..." minHeight="80px" />
+              <TipTapEditor value={formData.description} onChange={(html) => setFormData(prev => ({ ...prev, description: html }))} placeholder="Short excerpt shown on cards..." minHeight="80px" />
             </div>
           </div>
 
           {/* Main Content Editor (Overview) */}
           <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 space-y-4">
             <h2 className="font-bold text-gray-800 uppercase tracking-wider border-b pb-2">Trip Overview / Description</h2>
-            <RichTextEditor value={formData.overview} onChange={(html) => setFormData(prev => ({ ...prev, overview: html }))} placeholder="Full descriptive overview of the trek..." minHeight="200px" />
+            <TipTapEditor value={formData.overview} onChange={(html) => setFormData(prev => ({ ...prev, overview: html }))} placeholder="Full descriptive overview of the trek..." minHeight="200px" />
           </div>
 
           {/* Advanced PageManager - Group Pricing Repeater */}
@@ -467,7 +467,7 @@ export default function TrekForm({ initialData, isEditing = false }: TrekFormPro
             <div className="flex items-center justify-between border-b pb-2">
               <h2 className="font-bold text-gray-800 uppercase tracking-wider">Highlights</h2>
             </div>
-            <RichTextEditor value={formData.highlights} onChange={(html) => setFormData(prev => ({ ...prev, highlights: html }))} placeholder="Enter trek highlights..." minHeight="120px" />
+            <TipTapEditor value={formData.highlights} onChange={(html) => setFormData(prev => ({ ...prev, highlights: html }))} placeholder="Enter trek highlights..." minHeight="120px" />
             <p className="text-[10px] text-gray-400">Use the bullet list button for each highlight.</p>
           </div>
 
@@ -496,7 +496,7 @@ export default function TrekForm({ initialData, isEditing = false }: TrekFormPro
                     <input type="number" value={dayObj.elev ?? ''} onChange={(e) => handleItineraryChange(idx, 'elev', Number(e.target.value))} placeholder="e.g. 3440" className="w-full px-3 py-2 border border-gray-200 rounded-lg bg-white" />
                   </div>
                 </div>
-                <textarea rows={3} value={dayObj.desc} onChange={(e) => handleItineraryChange(idx, 'desc', e.target.value)} placeholder="Day description..." className="w-full px-3 py-2 border border-gray-200 rounded-lg bg-white" />
+                <TipTapEditor value={dayObj.desc} onChange={(html) => handleItineraryChange(idx, 'desc', html)} placeholder="Day description..." minHeight="100px" />
               </div>
             ))}
           </div>
@@ -507,7 +507,7 @@ export default function TrekForm({ initialData, isEditing = false }: TrekFormPro
               <div className="flex items-center justify-between border-b pb-2">
                 <h2 className="font-bold text-emerald-700 uppercase tracking-wider">Package Inclusions</h2>
               </div>
-              <RichTextEditor value={formData.inclusions} onChange={(html) => setFormData(prev => ({ ...prev, inclusions: html }))} placeholder="Enter what is included in the package..." minHeight="150px" />
+              <TipTapEditor value={formData.inclusions} onChange={(html) => setFormData(prev => ({ ...prev, inclusions: html }))} placeholder="Enter what is included in the package..." minHeight="150px" />
               <p className="text-[10px] text-gray-400">Use the bullet list button for each inclusion.</p>
             </div>
 
@@ -515,7 +515,7 @@ export default function TrekForm({ initialData, isEditing = false }: TrekFormPro
               <div className="flex items-center justify-between border-b pb-2">
                 <h2 className="font-bold text-rose-700 uppercase tracking-wider">Package Exclusions</h2>
               </div>
-              <RichTextEditor value={formData.exclusions} onChange={(html) => setFormData(prev => ({ ...prev, exclusions: html }))} placeholder="Enter what is excluded from the package..." minHeight="150px" />
+              <TipTapEditor value={formData.exclusions} onChange={(html) => setFormData(prev => ({ ...prev, exclusions: html }))} placeholder="Enter what is excluded from the package..." minHeight="150px" />
               <p className="text-[10px] text-gray-400">Use the bullet list button for each exclusion.</p>
             </div>
           </div>
@@ -525,7 +525,7 @@ export default function TrekForm({ initialData, isEditing = false }: TrekFormPro
             <div className="flex items-center justify-between border-b pb-2">
               <h2 className="font-bold text-gray-800 uppercase tracking-wider">Equipment &amp; Trekking Gears</h2>
             </div>
-            <RichTextEditor value={formData.packingList} onChange={(html) => setFormData(prev => ({ ...prev, packingList: html }))} placeholder="Enter required equipment & packing list..." minHeight="150px" />
+            <TipTapEditor value={formData.packingList} onChange={(html) => setFormData(prev => ({ ...prev, packingList: html }))} placeholder="Enter required equipment & packing list..." minHeight="150px" />
             <p className="text-[10px] text-gray-400">Use the bullet list button for each gear item.</p>
           </div>
 
@@ -676,14 +676,6 @@ export default function TrekForm({ initialData, isEditing = false }: TrekFormPro
                 heightClass="h-48"
               />
             </div>
-
-            {/* Detailed interactive route map data */}
-            <div className="border-t border-gray-100 pt-4">
-              <RouteMapEditor
-                value={formData.routeMap}
-                onChange={(v) => setFormData(prev => ({ ...prev, routeMap: v }))}
-              />
-            </div>
           </div>
 
           {/* Trek Video */}
@@ -745,6 +737,12 @@ export default function TrekForm({ initialData, isEditing = false }: TrekFormPro
               ))}
             </div>
           </div>
+
+          {/* Detailed Route Map */}
+          <RouteMapEditor
+            value={formData.routeMap}
+            onChange={(v) => setFormData(prev => ({ ...prev, routeMap: v }))}
+          />
 
         </div>
 

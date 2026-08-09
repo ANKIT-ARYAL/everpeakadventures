@@ -7,6 +7,7 @@ import { Stagger, StaggerItem } from '@/app/components/animations/Motion';
 export default async function LegalDocumentsPage() {
   // Fetch legal documents dynamically from the database
   const documents = await prisma.legalDocument.findMany({
+    where: { published: true },
     orderBy: { order: 'asc' },
   });
 

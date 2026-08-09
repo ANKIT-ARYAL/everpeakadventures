@@ -5,6 +5,7 @@ import AddNewButton from "../components/AddNewButton";
 import EditButton from "../components/EditButton";
 import DeleteButton from "../components/DeleteButton";
 import ViewButton from "../components/ViewButton";
+import ToggleShow from "../components/ToggleShow";
 
 export const dynamic = 'force-dynamic';
 
@@ -32,20 +33,20 @@ export default async function AdminDeparturesPage() {
       </div>
 
       {/* Filter / Search Bar */}
-      <div className="bg-white p-4 rounded-xl shadow-sm border border-gray-100 flex items-center justify-between gap-4">
+      <div className="bg-white p-4 rounded-xl shadow-sm border border-gray-100 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
         <span className="font-bold text-gray-700">All ({departures.length})</span>
-        <div className="relative">
+        <div className="relative w-full sm:w-auto">
           <Search className="w-3.5 h-3.5 text-gray-400 absolute left-3 top-2.5" />
           <input 
             type="text" 
             placeholder="Search departures..." 
-            className="pl-9 pr-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:border-[#24a0ed] w-64"
+            className="pl-9 pr-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:border-[#24a0ed] w-full sm:w-64"
           />
         </div>
       </div>
 
-      {/* Data Table */}
-      <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+      {/* Data Table - Desktop */}
+      <div className="hidden md:block bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse">
             <thead>
@@ -122,6 +123,7 @@ export default async function AdminDeparturesPage() {
                     
                     <td className="py-3 px-4 text-right">
                       <div className="flex items-center justify-end gap-2">
+                        <ToggleShow model="departures" resource="departures" id={departure.id} published={departure.published} />
                         <EditButton href={`/admin/departures/${departure.id}/edit`} />
                         <ViewButton href="/#departures" />
                         <DeleteButton id={departure.id} model="departures" title={departure.title} />
@@ -133,6 +135,62 @@ export default async function AdminDeparturesPage() {
             </tbody>
           </table>
         </div>
+      </div>
+
+      {/* Mobile Cards */}
+      <div className="md:hidden space-y-3">
+        {departures.length === 0 ? (
+          <div className="bg-white rounded-xl shadow-sm border border-gray-100 py-12 text-center text-gray-400 font-medium">
+            No fixed departures found.
+          </div>
+        ) : (
+          departures.map((departure, index) => (
+            <div key={departure.id} className="bg-white rounded-xl shadow-sm border border-gray-100 p-4">
+              <div className="flex items-start gap-3">
+                <img
+                  src={departure.heroImage || 'https://via.placeholder.com/150'}
+                  alt={departure.title}
+                  className="w-12 h-12 object-cover rounded-lg border border-gray-200 shadow-sm shrink-0"
+                />
+                <div className="min-w-0 flex-1">
+                  <Link href={`/admin/departures/${departure.id}/edit`} className="font-bold text-[#112233] hover:text-[#24a0ed] block truncate">
+                    {departure.title}
+                  </Link>
+                  <span className="block text-[10px] text-gray-400 font-normal truncate">#{index + 1} · {departure.durationDays} · {departure.seatsLeft} Seats Left</span>
+                </div>
+              </div>
+              <div className="grid grid-cols-2 gap-x-4 gap-y-2 mt-3 text-[11px]">
+                <div className="min-w-0">
+                  <span className="block text-[9px] font-bold text-gray-400 uppercase tracking-wider">Start Date</span>
+                  <span className="font-semibold text-gray-700">{departure.startDate}</span>
+                  {departure.endDate && <span className="block text-[10px] text-gray-400 font-normal">To: {departure.endDate}</span>}
+                </div>
+                <div className="min-w-0">
+                  <span className="block text-[9px] font-bold text-gray-400 uppercase tracking-wider">Price</span>
+                  <span className="font-bold text-[#112233]">US$ {departure.price}</span>
+                  {departure.originalPrice && <span className="block text-[10px] text-gray-400 line-through">US$ {departure.originalPrice}</span>}
+                </div>
+                <div className="min-w-0 col-span-2">
+                  <span className="block text-[9px] font-bold text-gray-400 uppercase tracking-wider">Status</span>
+                  <span className={`inline-block px-2 py-1 rounded text-[10px] font-bold uppercase tracking-wider ${
+                    departure.status === 'Guaranteed' ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' :
+                    departure.status === 'Filling Fast' ? 'bg-orange-50 text-orange-700 border border-orange-200' :
+                    departure.status === 'Sold Out' ? 'bg-red-50 text-red-700 border border-red-200' :
+                    'bg-blue-50 text-blue-700 border border-blue-200'
+                  }`}>
+                    {departure.status}
+                  </span>
+                </div>
+              </div>
+              <div className="flex items-center gap-2 mt-3 pt-3 border-t border-gray-100">
+                <ToggleShow model="departures" resource="departures" id={departure.id} published={departure.published} />
+                <EditButton href={`/admin/departures/${departure.id}/edit`} />
+                <ViewButton href="/#departures" />
+                <DeleteButton id={departure.id} model="departures" title={departure.title} />
+              </div>
+            </div>
+          ))
+        )}
       </div>
 
     </div>

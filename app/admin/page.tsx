@@ -1,33 +1,73 @@
 import { prisma } from "@/lib/prisma";
+import { auth } from "@/auth";
+import { hasPerm } from "@/lib/permissions";
+import type { PermAction } from "@/lib/permissions";
 import Link from 'next/link';
 import { 
   Compass, Layers, FileText, HelpCircle, MessageSquare, 
-  Shield, Users, Briefcase, Mail, FileCheck, Database
+  Shield, Users, Briefcase, Mail, Database
 } from 'lucide-react';
 
 export const dynamic = 'force-dynamic';
 
 export default async function AdminDashboardPage() {
-  // Fetch live counts for every database model
-  const trekCount = await prisma.trek.count();
-  const tourCount = await prisma.tour.count();
-  const blogCount = await prisma.blogPost.count();
-  const faqCount = await prisma.fAQ.count();
-  const reviewCount = await prisma.clientReview.count();
-  const teamCount = await prisma.teamMember.count();
-  const legalCount = await prisma.legalDocument.count();
-  const fixedCount = await prisma.fixedDeparture.count();
-  const submissionCount = await prisma.contactSubmission.count();
-  const bookingCount = await prisma.bookingSubmission.count();
-  const recentBookings = await prisma.bookingSubmission.findMany({
-    orderBy: { createdAt: 'desc' },
-    take: 5,
-  });
-  const pageCount = await prisma.page.count();
+  const session = await auth();
+  const permissions = session?.user?.permissions ?? [];
+  const isSuperAdmin = !!session?.user?.isSuperAdmin;
+  const can = (resource: string, action: PermAction = "view") =>
+    isSuperAdmin || hasPerm(permissions, resource, action);
+
+  const overviewCards = [] as {
+    title: string;
+    count: number;
+    href: string;
+    icon: any;
+    color: string;
+    desc: string;
+  }[];
+
+  const pushCard = async (
+    resource: string,
+    card: {
+      title: string;
+      href: string;
+      icon: any;
+      color: string;
+      desc: string;
+    },
+    counter: () => Promise<number>
+  ) => {
+    if (can(resource)) {
+      overviewCards.push({ ...card, count: await counter() });
+    }
+  };
+
+  await Promise.all([
+    pushCard("blogs", { title: 'Posts (Blogs)', href: '/admin/blogs', icon: FileText, color: 'text-emerald-500', desc: 'View all blog posts' }, () => prisma.blogPost.count()),
+    pushCard("treks", { title: 'Trekking', href: '/admin/treks', icon: Compass, color: 'text-blue-500', desc: 'View all trekking packages' }, () => prisma.trek.count()),
+    pushCard("tours", { title: 'Tour Packages', href: '/admin/tours', icon: Layers, color: 'text-amber-500', desc: 'View all tour packages' }, () => prisma.tour.count()),
+    pushCard("testimonials", { title: 'Testimonials', href: '/admin/testimonials', icon: MessageSquare, color: 'text-purple-500', desc: 'View all client reviews' }, () => prisma.clientReview.count()),
+    pushCard("faqs", { title: 'FAQs', href: '/admin/faqs', icon: HelpCircle, color: 'text-rose-500', desc: 'View all FAQs' }, () => prisma.fAQ.count()),
+    pushCard("departures", { title: 'Fixed Departures', href: '/admin/departures', icon: Briefcase, color: 'text-indigo-500', desc: 'View scheduled departures' }, () => prisma.fixedDeparture.count()),
+    pushCard("team", { title: 'Team Members', href: '/admin/team', icon: Users, color: 'text-cyan-500', desc: 'View company staff & guides' }, () => prisma.teamMember.count()),
+    pushCard("legal-documents", { title: 'Legal Documents', href: '/admin/legal-documents', icon: Shield, color: 'text-indigo-600', desc: 'View legal files & licenses' }, () => prisma.legalDocument.count()),
+    pushCard("contact-submissions", { title: 'Contact Leads', href: '/admin/contact-submissions', icon: Mail, color: 'text-yellow-500', desc: 'View customer inquiries' }, () => prisma.contactSubmission.count()),
+    pushCard("bookings", { title: 'Booking Requests', href: '/admin/bookings', icon: Briefcase, color: 'text-orange-500', desc: 'View booking requests' }, () => prisma.bookingSubmission.count()),
+  ]);
+
+  let recentBookings: Awaited<ReturnType<typeof prisma.bookingSubmission.findMany>> = [];
+  if (can("bookings")) {
+    recentBookings = await prisma.bookingSubmission.findMany({
+      orderBy: { createdAt: 'desc' },
+      take: 5,
+    });
+  }
 
   // Fetch or fallback to default dynamic system summary settings
-  let systemSetting = await prisma.systemSetting.findFirst();
-  if (!systemSetting) {
+  let systemSetting = can("site-settings")
+    ? await prisma.systemSetting.findFirst()
+    : null;
+  if (can("site-settings") && !systemSetting) {
     systemSetting = await prisma.systemSetting.create({
       data: {
         clientExpiry: "16 Dec, 2026",
@@ -37,20 +77,6 @@ export default async function AdminDashboardPage() {
       }
     });
   }
-
-  const overviewCards = [
-    { title: 'Posts (Blogs)', count: blogCount, href: '/admin/blogs', icon: FileText, color: 'text-emerald-500', desc: 'View all blog posts' },
-    { title: 'Pages', count: pageCount, href: '/admin/pages', icon: FileCheck, color: 'text-amber-600', desc: 'View all dynamic pages' },
-    { title: 'Trekking', count: trekCount, href: '/admin/treks', icon: Compass, color: 'text-blue-500', desc: 'View all trekking packages' },
-    { title: 'Tour Packages', count: tourCount, href: '/admin/tours', icon: Layers, color: 'text-amber-500', desc: 'View all tour packages' },
-    { title: 'Testimonials', count: reviewCount, href: '/admin/testimonials', icon: MessageSquare, color: 'text-purple-500', desc: 'View all client reviews' },
-    { title: 'FAQs', count: faqCount, href: '/admin/faqs', icon: HelpCircle, color: 'text-rose-500', desc: 'View all FAQs' },
-    { title: 'Fixed Departures', count: fixedCount, href: '/admin/departures', icon: Briefcase, color: 'text-indigo-500', desc: 'View scheduled departures' },
-    { title: 'Team Members', count: teamCount, href: '/admin/team', icon: Users, color: 'text-cyan-500', desc: 'View company staff & guides' },
-    { title: 'Legal Documents', count: legalCount, href: '/admin/legal-documents', icon: Shield, color: 'text-indigo-600', desc: 'View legal files & licenses' },
-    { title: 'Contact Leads', count: submissionCount, href: '/admin/contact-submissions', icon: Mail, color: 'text-yellow-500', desc: 'View customer inquiries' },
-    { title: 'Booking Requests', count: bookingCount, href: '/admin/bookings', icon: Briefcase, color: 'text-orange-500', desc: 'View booking requests' },
-  ];
 
   return (
     <div className="space-y-6 max-w-[1400px] mx-auto text-xs">
@@ -74,6 +100,7 @@ export default async function AdminDashboardPage() {
       </div>
 
       {/* Dynamic System & Hosting Summary Box */}
+      {systemSetting && (
       <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
         <div className="flex items-center justify-between mb-4">
           <h2 className="font-bold text-gray-800 uppercase tracking-wider flex items-center gap-2">
@@ -101,8 +128,10 @@ export default async function AdminDashboardPage() {
           </div>
         </div>
       </div>
+      )}
 
       {/* Website Content Overview Grid */}
+      {overviewCards.length > 0 && (
       <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
         <div className="mb-6">
           <h2 className="font-bold text-gray-800 uppercase tracking-wider">
@@ -111,7 +140,7 @@ export default async function AdminDashboardPage() {
           <p className="text-gray-400 mt-0.5">Quick access to all your website content. Click any card to manage.</p>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+        <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-5 gap-4">
           {overviewCards.map((card, idx) => {
             const Icon = card.icon;
             return (
@@ -144,8 +173,10 @@ export default async function AdminDashboardPage() {
           })}
         </div>
       </div>
+      )}
 
     {/* Recent Booking Requests Notification */}
+      {can("bookings") && (
       <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
         <div className="flex items-center justify-between mb-4">
           <h2 className="font-bold text-gray-800 uppercase tracking-wider flex items-center gap-2">
@@ -185,7 +216,7 @@ export default async function AdminDashboardPage() {
           </div>
         )}
       </div>
-
+      )}
     </div>
   );
 }

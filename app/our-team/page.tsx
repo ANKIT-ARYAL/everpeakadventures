@@ -6,6 +6,7 @@ import { Stagger, StaggerItem } from '@/app/components/animations/Motion';
 
 export default async function OurTeamPage() {
   const teamMembers = await prisma.teamMember.findMany({
+    where: { published: true },
     orderBy: { order: 'asc' },
   });
 

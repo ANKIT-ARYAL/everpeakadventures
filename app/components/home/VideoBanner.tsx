@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { Play } from 'lucide-react';
 import Link from 'next/link';
 import { Reveal } from '../animations/Motion';
+import { stripHtml } from '@/lib/stripHtml';
 
 export interface VideoBannerData {
   title: string;
@@ -80,7 +81,7 @@ export default function VideoBanner({ data }: VideoBannerProps) {
         </h2>
         
         <p className="text-gray-200 text-xs md:text-sm max-w-xl mx-auto leading-relaxed mb-6">
-          {data?.subtitle || 'Carefully crafted Trekking plans designed for every trail, pace, and adventure level.'}
+          {stripHtml(data?.subtitle) || 'Carefully crafted Trekking plans designed for every trail, pace, and adventure level.'}
         </p>
 
         <Link 

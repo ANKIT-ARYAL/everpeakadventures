@@ -2,6 +2,8 @@
 
 import Link from "next/link";
 import { Reveal, Stagger, StaggerItem } from '../animations/Motion';
+import RichText from '@/app/components/RichText';
+import { stripHtml } from '@/lib/stripHtml';
 
 interface BestSellersProps {
   data: any[];
@@ -25,9 +27,7 @@ export default function BestSellers({ data, watermark, title, subtitle }: BestSe
           <h2 className="relative z-10 text-4xl font-bold text-[#222222] uppercase tracking-wide mb-3">
             {title ?? 'Best Seller Trekking'}
           </h2>
-          <p className="relative z-10 text-[#555555] text-base">
-            {subtitle ?? '"Top-rated trekking journeys offering breathtaking views and authentic experiences."'}
-          </p>
+          <RichText html={subtitle ?? '"Top-rated trekking journeys offering breathtaking views and authentic experiences."'} className="relative z-10 text-[#555555] text-base" />
         </Reveal>
 
         {/* Grid Container */}
@@ -77,7 +77,7 @@ export default function BestSellers({ data, watermark, title, subtitle }: BestSe
 
                   {/* Description */}
                   <p className="text-[#555555] text-sm leading-relaxed text-justify line-clamp-3 m-0">
-                    {trek.description}
+                    {stripHtml(trek.description)}
                   </p>
                   </Link>
                 </div>
