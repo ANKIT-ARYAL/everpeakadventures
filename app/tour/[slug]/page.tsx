@@ -100,7 +100,7 @@ export default async function TourDetailPage({ params }: PageProps) {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           
           {/* LEFT SIDEBAR: EXACT MATCH BOOKING & GROUP PRICE TABLE */}
-          <div className="space-y-6 sticky top-6">
+          <div className="space-y-6 md:sticky top-6">
             <div className="bg-white rounded-xl shadow-lg border border-gray-100 p-6 space-y-5">
               
               {/* Header Price display */}
