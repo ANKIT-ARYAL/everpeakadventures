@@ -52,19 +52,19 @@ export default function NewsletterForm() {
         placeholder="Name"
         value={name}
         onChange={(e) => setName(e.target.value)}
-        className="bg-[#243545] border border-white/10 rounded-md px-3.5 py-2 text-xs text-white placeholder-gray-400 focus:outline-none focus:border-white/30 w-full"
+        className="bg-black/40 border border-white/15 rounded-md px-3.5 py-2 text-xs text-white placeholder-gray-400 focus:outline-none focus:border-white/40 w-full"
       />
       <input 
         type="email" 
         placeholder="Email"
         value={email}
         onChange={(e) => setEmail(e.target.value)}
-        className="bg-[#243545] border border-white/10 rounded-md px-3.5 py-2 text-xs text-white placeholder-gray-400 focus:outline-none focus:border-white/30 w-full"
+        className="bg-black/40 border border-white/15 rounded-md px-3.5 py-2 text-xs text-white placeholder-gray-400 focus:outline-none focus:border-white/40 w-full"
       />
       <button 
         type="submit"
         disabled={status === 'loading'}
-        className="bg-[#243545] hover:bg-[#2f4356] border border-white/10 px-3.5 py-2 rounded-md text-white transition-colors flex items-center justify-center shrink-0 disabled:opacity-60"
+        className="bg-black/40 hover:bg-black/60 border border-white/15 px-3.5 py-2 rounded-md text-white transition-colors flex items-center justify-center shrink-0 disabled:opacity-60"
         aria-label="Subscribe"
       >
         {status === 'loading' ? (

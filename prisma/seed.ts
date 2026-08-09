@@ -82,6 +82,90 @@ async function main() {
       addressMapUrl: 'https://maps.app.goo.gl/1vfJx36bEbCc7UAu9',
       footerBgImage: 'https://images.unsplash.com/photo-1544644181-1484b3fdfc62?q=80&w=2000&auto=format&fit=crop',
       copyrightText: 'Copyright © 2026 Everpeak Adventures | Design By Fly Up Technology',
+      newsletterTitle: 'Subscribe our Newsletter',
+      footerColumns: [
+        {
+          title: 'Popular Trekking',
+          links: [
+            { label: 'Everest Region', href: '/trekking-types/everest-region' },
+            { label: 'Manaslu Region', href: '/trekking-types/manaslu-region' },
+            { label: 'Annapurna Region', href: '/trekking-types/annapurna-region' },
+            { label: 'Langtang Region', href: '/trekking-types/langtang-region' },
+            { label: 'Mustang Region', href: '/trekking-types/mustang-region' },
+            { label: 'Kanchenjunga Region', href: '/trekking-types/kanchenjunga-region' },
+          ],
+        },
+        {
+          title: 'Tour Categories',
+          links: [
+            { label: 'Adventure Sports', href: '/tour' },
+            { label: 'Culture + Nature Tours', href: '/tour' },
+            { label: 'Day Tours', href: '/tour' },
+            { label: 'Multi Country Tours', href: '/tour-destination/nepal' },
+          ],
+        },
+        {
+          title: 'Popular Tours',
+          links: [
+            { label: 'Spiritual Tours', href: '/tour-destination/nepal' },
+            { label: 'Village Tours', href: '/tour-destination/nepal' },
+            { label: 'Wildlife Safari Tours', href: '/tour-destination/nepal' },
+            { label: 'Cultural Tours', href: '/tour' },
+          ],
+        },
+        {
+          title: 'Company',
+          links: [
+            { label: 'About us', href: '/about-us' },
+            { label: 'Our Team', href: '/our-team' },
+            { label: 'Responsible Tourism', href: '/responsible-travel' },
+            { label: 'Registrations & Affiliations', href: '/legal-document' },
+          ],
+        },
+        {
+          title: 'Useful Links',
+          links: [
+            { label: 'Privacy Policy', href: '/privacy-policy' },
+            { label: 'Terms & Conditions', href: '/terms-and-conditions' },
+            { label: 'B2B Partner', href: '/contact-us' },
+            { label: 'Gallery', href: '/trekking' },
+          ],
+        },
+      ],
+      footerLogos: {
+        associations: [
+          {
+            label: 'Proud Member of Trekking Agencies Association of Nepal',
+            src: 'https://ml978xhbpkuo.i.optimole.com/cb:t1g8.6c6/w:150/h:150/q:mauto/rt:fill/g:ce/f:best/https://everpeakadventures.com/wp-content/uploads/2026/01/Proud-Member-of-Trekking-Agencys-Association-of-Nepal-Logo.png',
+          },
+          {
+            label: 'Nepal Tourism Board - Department of Tourism',
+            src: 'https://ml978xhbpkuo.i.optimole.com/cb:t1g8.6c6/w:150/h:150/q:mauto/rt:fill/g:ce/f:best/https://everpeakadventures.com/wp-content/uploads/2026/01/Nepal-Tourism-Board-Department-of-Tourism-Logo.jpg',
+          },
+          {
+            label: 'Government of Nepal',
+            src: 'https://ml978xhbpkuo.i.optimole.com/cb:t1g8.6c6/w:150/h:150/q:mauto/rt:fill/g:ce/f:best/https://everpeakadventures.com/wp-content/uploads/2026/01/Goverment-of-Nepal-Logo.png',
+          },
+          {
+            label: 'General Member of Nepal Mountaineering Association',
+            src: 'https://ml978xhbpkuo.i.optimole.com/cb:t1g8.6c6/w:150/h:150/q:mauto/rt:fill/g:ce/f:best/https://everpeakadventures.com/wp-content/uploads/2026/01/General-Member-of-Nepal-Mountaineering-Association-Logo.png',
+          },
+        ],
+        payments: [
+          {
+            label: 'eSewa Nepal',
+            src: 'https://ml978xhbpkuo.i.optimole.com/cb:t1g8.6c6/w:300/h:104/q:mauto/f:best/https://everpeakadventures.com/wp-content/uploads/2026/01/ESEWA.png',
+          },
+          {
+            label: 'Khalti',
+            src: 'https://ml978xhbpkuo.i.optimole.com/cb:t1g8.6c6/w:300/h:115/q:mauto/f:best/https://everpeakadventures.com/wp-content/uploads/2026/01/logo-khalti.png',
+          },
+          {
+            label: 'VISA',
+            src: 'https://ml978xhbpkuo.i.optimole.com/cb:t1g8.6c6/w:112/h:36/q:mauto/f:best/https://everpeakadventures.com/wp-content/uploads/2026/01/Visa.png',
+          },
+        ],
+      },
     },
   });
 

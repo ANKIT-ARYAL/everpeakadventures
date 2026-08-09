@@ -34,6 +34,9 @@ export async function PUT(request: Request) {
       addressMapUrl: body.addressMapUrl,
       footerBgImage: body.footerBgImage,
       copyrightText: body.copyrightText,
+      newsletterTitle: body.newsletterTitle,
+      footerColumns: body.footerColumns,
+      footerLogos: body.footerLogos,
     };
 
     const settings = existing

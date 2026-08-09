@@ -454,6 +454,14 @@ model SiteSettings {
   addressMapUrl     String   @default("https://maps.app.goo.gl/1vfJx36bEbCc7UAu9")
   footerBgImage     String   @default("https://images.unsplash.com/photo-1544644181-1484b3fdfc62?q=80&w=2000&auto=format&fit=crop")
   copyrightText     String   @default("Copyright © 2026 Everpeak Adventures | Design By Fly Up Technology")
+
+  // Editable footer link columns (JSON array of { title, links: [{label, href}] })
+  footerColumns     Json?
+  // Bottom-bar logo groups (JSON array of { group, logos: [{label, src, href}] }) used for
+  // associations & payment badges
+  footerLogos       Json?
+  // Newsletter settings that fill the footer subscribe block
+  newsletterTitle   String   @default("Subscribe our Newsletter")
   updatedAt         DateTime @updatedAt
 }
 
