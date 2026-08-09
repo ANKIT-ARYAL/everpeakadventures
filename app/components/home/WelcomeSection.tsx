@@ -152,7 +152,7 @@ export default function WelcomeSection({
           {/* Call to Action Button */}
           <Reveal delay={0.2}>
             <Link
-              href={buttonLink ?? "/about"}
+              href={buttonLink ?? "/about-us"}
               className="inline-flex items-center gap-2 bg-[#1a73e8] hover:bg-[#1557b0] text-white font-medium text-sm px-6 py-3 rounded-lg shadow-md hover:shadow-lg transition-all duration-200"
             >
               {buttonText ?? "Know More About Us"}

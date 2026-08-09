@@ -61,3 +61,24 @@ body {
 .rich-content br {
   display: block;
 }
+
+/* Homepage loader: the logo drops in with a bounce, then continuously zooms
+ * toward the viewer until the split-open reveal lifts the two door panels. */
+@keyframes home-bounce {
+  0%   { opacity: 0; transform: translateY(-45%) scale(0.35); }
+  55%  { opacity: 1; transform: translateY(7%)  scale(1.06); }
+  72%  { transform: translateY(-3%) scale(0.98); }
+  86%  { transform: translateY(2%)  scale(1.02); }
+  100% { transform: translateY(0)   scale(1); }
+}
+
+@keyframes home-zoom {
+  from { transform: scale(1); }
+  to   { transform: scale(1.14); }
+}
+
+/* Homepage loader: progress bar */
+@keyframes home-bar {
+  from { width: 0%; }
+  to   { width: 100%; }
+}

@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { z } from 'zod';
 import { isValidPhoneNumber } from 'libphonenumber-js';
+import { rateLimit } from '@/app/lib/rate-limit';
 
 const inquirySchema = z.object({
   tripTitle: z.string().trim().min(1, 'Trip title is required'),
@@ -25,6 +26,9 @@ const inquirySchema = z.object({
 });
 
 export async function POST(request: Request) {
+  const limited = await rateLimit(request, { windowMs: 60 * 1000, max: 10, keyPrefix: "inquiries" });
+  if (limited) return limited;
+
   try {
     const body = await request.json();
 

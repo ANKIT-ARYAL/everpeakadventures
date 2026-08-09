@@ -60,7 +60,7 @@ export default function FixedDepartures({ data = [], label, title }: FixedDepart
             </h2>
           </div>
 
-          <div className="relative z-10 flex items-center gap-3 w-full md:w-auto">
+          <div className="relative z-10 flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full md:w-auto">
             {/* Changed from Link to Button to reset the filter */}
             <button 
               onClick={() => setSelectedMonth('All')}
@@ -72,8 +72,8 @@ export default function FixedDepartures({ data = [], label, title }: FixedDepart
             >
               All Departures
             </button>
-            
-            <div className="relative w-full md:w-auto">
+
+            <div className="relative w-full sm:w-auto">
               {/* Added value and onChange to control the filter state */}
               <select 
                 value={selectedMonth}

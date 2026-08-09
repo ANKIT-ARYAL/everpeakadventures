@@ -4,13 +4,13 @@ import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import {
   Calendar, Clock, CheckCircle2, XCircle, Utensils, Award, 
-  Mountain, Home, Share2, MapPin, Activity as ActivityIcon, Flag
+  Mountain, Home, MapPin, Activity as ActivityIcon, Flag
 } from 'lucide-react';
 import TrekGallerySlider from '../TrekGallerySlider';
 import StickySectionNav from '@/app/components/trek/StickySectionNav';
 import RouteMap from '@/app/components/trek/RouteMap';
 import RouteMapImage from '@/app/components/trek/RouteMapImage';
-import DetailedRouteMap, { RoutePoint, RouteSegment, Peak, ElevationDay } from '@/app/components/trek/DetailedRouteMap';
+import DetailedRouteMap, { RoutePoint, RouteSegment, Peak } from '@/app/components/trek/DetailedRouteMap';
 import GallerySection from '@/app/components/trek/GallerySection';
 import { Reveal, Stagger, StaggerItem } from '@/app/components/animations/Motion';
 import { toHtml } from '@/app/lib/html';
@@ -53,13 +53,20 @@ export default async function TrekDetailPage({ params }: PageProps) {
   const galleryImages = (trek.gallery || []).filter(Boolean);
   const itineraryDays = Array.isArray(trek.itinerary) ? (trek.itinerary as any[]) : [];
   const packingItems = trek.packingList || '';
-  const shareUrl = `https://everpeakadventures.com/trekking/${trek.slug ?? trek.id}`;
 
   const parsePrice = (s?: string | null) => {
     const n = Number(String(s ?? '').replace(/[^0-9.]/g, ''));
     return Number.isFinite(n) && n > 0 ? n : 0;
   };
   const groupPricesArr = (trek.groupPrices || []) as any[];
+  const routeMap =
+    trek.routeMap && typeof trek.routeMap === 'object' && !Array.isArray(trek.routeMap)
+      ? (trek.routeMap as { peaks?: Peak[]; routePoints?: RoutePoint[]; routeSegments?: RouteSegment[]; title?: string; subtitle?: string; brandName?: string; brandTagline?: string; footerUrl?: string; maxAltitude?: number })
+      : null;
+  const buildElevationData = (itinerary: any[]) =>
+    (itinerary || [])
+      .filter((d) => d && d.title)
+      .map((d) => ({ day: d.day, location: d.title, elevation: Number(d.elev) || 0 }));
   const minPrice = groupPricesArr.length
     ? Math.min(...groupPricesArr.map((g: any) => parsePrice(g.price)).filter((n: number) => n > 0))
     : (trek.discountedPrice ?? trek.price);
@@ -90,8 +97,8 @@ export default async function TrekDetailPage({ params }: PageProps) {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           
           {/* LEFT SIDEBAR: EXACT MATCH BOOKING & GROUP PRICE TABLE */}
-          <div className="space-y-6">
-            <div className="bg-white rounded-xl shadow-lg border border-gray-100 p-6 sticky top-6 space-y-5">
+          <div className="space-y-6 sticky top-6">
+            <div className="bg-white rounded-xl shadow-lg border border-gray-100 p-6 space-y-5">
               
               {/* Header Price display */}
               <div className="border-b pb-5">
@@ -364,100 +371,33 @@ export default async function TrekDetailPage({ params }: PageProps) {
       </>)}
 
       {/* ROUTE MAP & ELEVATION */}
-      {((trek.mapImage) || itineraryDays.length > 0) && (
+      {(trek.mapImage || routeMap || itineraryDays.length > 0) && (
         <section className="max-w-[1200px] mx-auto px-5 mt-10">
-          <RouteMapImage src={trek.mapImage} alt={`${trek.title} route map`} />
+          {trek.mapImage && (
+            <RouteMapImage src={trek.mapImage} alt={`${trek.title} route map`} />
+          )}
+          {routeMap && (
+            <div className={trek.mapImage ? 'mt-10' : ''}>
+              <DetailedRouteMap
+                title={routeMap.title || trek.title}
+                subtitle={routeMap.subtitle}
+                brandName={routeMap.brandName}
+                brandTagline={routeMap.brandTagline}
+                footerUrl={routeMap.footerUrl}
+                maxAltitude={routeMap.maxAltitude}
+                peaks={routeMap.peaks}
+                routePoints={routeMap.routePoints}
+                routeSegments={routeMap.routeSegments}
+                elevationData={buildElevationData(itineraryDays)}
+                showElevationProfile={false}
+              />
+            </div>
+          )}
           {itineraryDays.length > 0 && (
-            <div className="mt-6">
+            <div className="mt-10">
               <RouteMap itinerary={itineraryDays} chartTitle={trek.title} />
             </div>
           )}
-          
-          {/* Detailed Interactive Route Map (EBC with Gokyo Lake example) */}
-          <div className="mt-10">
-            <DetailedRouteMap
-              title="EBC WITH GOKYO LAKE HELI SHUTTLE TREK"
-              subtitle="Detailed route map with elevation profile"
-              brandName="NEPAL HIKING TEAM"
-              brandTagline="Walk, Explore and Discover"
-              maxAltitude={5545}
-              peaks={[
-                { name: 'Mt. Everest', elevation: 8848, x: 720, y: 180 },
-                { name: 'Lhotse', elevation: 8481, x: 750, y: 200 },
-                { name: 'Nuptse', elevation: 7879, x: 700, y: 220 },
-                { name: 'Everest Base Camp', elevation: 5364, x: 680, y: 260 },
-                { name: 'Kala Patthar', elevation: 5545, x: 690, y: 275 },
-                { name: 'Chhukung Ri', elevation: 5546, x: 780, y: 280 },
-                { name: 'Island Peak', elevation: 6189, x: 800, y: 290 },
-                { name: 'Kongma La Pass', elevation: 5535, x: 760, y: 300 },
-                { name: 'Nangkar Tshang', elevation: 5083, x: 740, y: 285 },
-                { name: 'Chhukung', elevation: 4730, x: 770, y: 310 },
-                { name: 'Imja Tsho', elevation: 5010, x: 790, y: 320 },
-              ]}
-              routePoints={[
-                { id: 'kathmandu', name: 'Kathmandu', elevation: 1335, x: 100, y: 520, type: 'start', day: 1 },
-                { id: 'lukla', name: 'Lukla', elevation: 2860, x: 280, y: 380, type: 'airport', day: 3 },
-                { id: 'phakding', name: 'Phakding', elevation: 2652, x: 320, y: 360, type: 'trek', day: 3 },
-                { id: 'namche', name: 'Namche Bazaar', elevation: 3440, x: 380, y: 330, type: 'acclimatization', day: 4 },
-                { id: 'tengboche', name: 'Tengboche', elevation: 3860, x: 440, y: 300, type: 'trek', day: 6 },
-                { id: 'dingboche', name: 'Dingboche', elevation: 4410, x: 500, y: 280, type: 'acclimatization', day: 7 },
-                { id: 'lobuche', name: 'Lobuche', elevation: 4910, x: 560, y: 260, type: 'trek', day: 9 },
-                { id: 'gorakshep', name: 'Gorakshep', elevation: 5164, x: 600, y: 250, type: 'trek', day: 10 },
-                { id: 'ebc', name: 'EBC', elevation: 5364, x: 630, y: 245, type: 'end', day: 10 },
-                { id: 'kalapathar', name: 'Kala Patthar', elevation: 5545, x: 640, y: 240, type: 'peak', day: 11 },
-                { id: 'dzongla', name: 'Dzongla', elevation: 4830, x: 620, y: 280, type: 'trek', day: 11 },
-                { id: 'cho_la', name: 'Cho La Pass', elevation: 5420, x: 660, y: 295, type: 'pass', day: 12 },
-                { id: 'dragnag', name: 'Dragnag', elevation: 4700, x: 700, y: 310, type: 'trek', day: 12 },
-                { id: 'gokyo', name: 'Gokyo', elevation: 4790, x: 740, y: 320, type: 'lake', day: 13 },
-                { id: 'gokyo_ri', name: 'Gokyo Ri', elevation: 5360, x: 760, y: 300, type: 'peak', day: 14 },
-                { id: 'renjo_la', name: 'Renjo La Pass', elevation: 5360, x: 780, y: 270, type: 'pass' },
-                { id: 'thame', name: 'Thame', elevation: 3800, x: 420, y: 290, type: 'helipad' },
-                { id: 'lukla_end', name: 'Lukla', elevation: 2860, x: 280, y: 380, type: 'airport', day: 14 },
-                { id: 'kathmandu_end', name: 'Kathmandu', elevation: 1335, x: 100, y: 520, type: 'end', day: 17 },
-              ]}
-              routeSegments={[
-                { from: 'kathmandu', to: 'lukla', type: 'flight' },
-                { from: 'lukla', to: 'phakding', type: 'trekking' },
-                { from: 'phakding', to: 'namche', type: 'trekking' },
-                { from: 'namche', to: 'tengboche', type: 'trekking' },
-                { from: 'tengboche', to: 'dingboche', type: 'trekking' },
-                { from: 'dingboche', to: 'lobuche', type: 'trekking' },
-                { from: 'lobuche', to: 'gorakshep', type: 'trekking' },
-                { from: 'gorakshep', to: 'ebc', type: 'trekking' },
-                { from: 'gorakshep', to: 'kalapathar', type: 'secondary' },
-                { from: 'dingboche', to: 'dzongla', type: 'secondary' },
-                { from: 'dzongla', to: 'cho_la', type: 'trekking' },
-                { from: 'cho_la', to: 'dragnag', type: 'trekking' },
-                { from: 'dragnag', to: 'gokyo', type: 'trekking' },
-                { from: 'gokyo', to: 'gokyo_ri', type: 'secondary' },
-                { from: 'gokyo', to: 'renjo_la', type: 'secondary' },
-                { from: 'renjo_la', to: 'thame', type: 'trekking' },
-                { from: 'thame', to: 'namche', type: 'secondary' },
-                { from: 'gokyo', to: 'lukla_end', type: 'flight' },
-                { from: 'lukla_end', to: 'kathmandu_end', type: 'flight' },
-              ]}
-              elevationData={[
-                { day: 1, location: 'Kathmandu', elevation: 1335 },
-                { day: 2, location: 'Kathmandu', elevation: 1335 },
-                { day: 3, location: 'Phakding', elevation: 2652, distance: '8km' },
-                { day: 4, location: 'Namche Bazaar', elevation: 3440, distance: '12km' },
-                { day: 5, location: 'Namche / Everest View Hotel', elevation: 3880, distance: '4km / 11km' },
-                { day: 6, location: 'Tengboche', elevation: 3860, distance: '12km' },
-                { day: 7, location: 'Dingboche', elevation: 4410, distance: '12km' },
-                { day: 8, location: 'Dingboche / Nangkartsang Peak', elevation: 5083, distance: '6km / 4410m' },
-                { day: 9, location: 'Lobuche', elevation: 4910, distance: '15km' },
-                { day: 10, location: 'Gorakshep / EBC', elevation: 5364, distance: '14km' },
-                { day: 11, location: 'Dzongla / Kala Patthar', elevation: 5545, distance: '' },
-                { day: 12, location: 'Thangnak / Cho La Pass', elevation: 5420, distance: '9km' },
-                { day: 13, location: 'Gokyo', elevation: 4790, distance: '5km' },
-                { day: 14, location: 'Gokyo Ri / Lukla', elevation: 2860, distance: '4km' },
-                { day: 15, location: 'Kathmandu', elevation: 1335 },
-                { day: 16, location: 'Kathmandu', elevation: 1335 },
-                { day: 17, location: 'Departure', elevation: 1335 },
-              ]}
-              footerUrl="www.nepalhikingteam.com"
-            />
-          </div>
         </section>
       )}
 
@@ -510,6 +450,8 @@ export default async function TrekDetailPage({ params }: PageProps) {
           <Stagger className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {relatedTreks.map((item) => (
               <StaggerItem key={item.id} className="bg-white rounded-xl overflow-hidden border border-gray-100 shadow-sm flex flex-col justify-between group">
+                <Link 
+                    href={`/trekking/${item.slug ? item.slug : item.id}`}>
                 <div className="h-44 overflow-hidden bg-gray-100 relative">
                   <img src={item.heroImage} alt={item.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
                   <span className="absolute top-2 left-2 bg-white/95 text-[#112233] text-[9px] font-black uppercase tracking-wider px-2 py-1 rounded-full shadow-sm">
@@ -530,13 +472,13 @@ export default async function TrekDetailPage({ params }: PageProps) {
                       </span>
                     )}
                   </div>
-                  <Link 
-                    href={`/trekking/${item.slug ? item.slug : item.id}`}
+                  <button                     
                     className="w-full bg-[#112233] hover:bg-[#24a0ed] text-white font-bold py-2 rounded-lg text-center uppercase tracking-wider text-[11px] block transition-colors"
                   >
                     Start Journey
-                  </Link>
+                  </button>
                 </div>
+                </Link>
               </StaggerItem>
             ))}
           </Stagger>

@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { Save, ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
 import toast, { Toaster } from 'react-hot-toast';
+import MediaUploader from '@/app/components/admin/MediaUploader';
 
 interface Props {
   initialData?: any;
@@ -18,6 +19,8 @@ export default function HeroContentForm({ initialData }: Props) {
     topLabel: initialData?.topLabel || '',
     mainHeading: initialData?.mainHeading || '',
     subtext: initialData?.subtext || '',
+    heroMediaType: initialData?.heroMediaType || 'youtube',
+    heroMediaUrl: initialData?.heroMediaUrl || '',
     youtubeVideoId: initialData?.youtubeVideoId || '',
     searchPlaceholder: initialData?.searchPlaceholder || '',
     primaryButtonText: initialData?.primaryButtonText || '',
@@ -43,6 +46,8 @@ export default function HeroContentForm({ initialData }: Props) {
           topLabel: form.topLabel,
           mainHeading: form.mainHeading,
           subtext: form.subtext,
+          heroMediaType: form.heroMediaType,
+          heroMediaUrl: form.heroMediaUrl,
           youtubeVideoId: form.youtubeVideoId,
           searchPlaceholder: form.searchPlaceholder,
           primaryButtonText: form.primaryButtonText,
@@ -103,9 +108,47 @@ export default function HeroContentForm({ initialData }: Props) {
         </div>
 
         <div>
-          <label className="block font-bold mb-1">YouTube Video ID</label>
-          <input type="text" name="youtubeVideoId" value={form.youtubeVideoId} onChange={handleChange} className="w-full p-2.5 border rounded-lg focus:border-[#24a0ed] outline-none" placeholder="e.g. gCRNEJxDJKM" />
+          <label className="block font-bold mb-1">Hero Media Type</label>
+          <p className="text-[10px] text-gray-400 mb-2">Choose what plays in the hero background.</p>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+            {[
+              { value: 'youtube', label: 'YouTube Link', desc: 'Paste a YouTube video ID' },
+              { value: 'video', label: 'Upload Video', desc: 'MP4 / WebM file' },
+              { value: 'image', label: 'Upload Image', desc: 'JPG, PNG, SVG, GIF' },
+            ].map(opt => (
+              <button
+                key={opt.value}
+                type="button"
+                onClick={() => setForm(prev => ({ ...prev, heroMediaType: opt.value }))}
+                className={`p-3 rounded-lg border-2 text-left transition-colors ${
+                  form.heroMediaType === opt.value
+                    ? 'border-[#24a0ed] bg-[#e8f5fe] text-[#112233]'
+                    : 'border-gray-200 bg-white hover:border-gray-300'
+                }`}
+              >
+                <span className="block font-bold text-[11px]">{opt.label}</span>
+                <span className="block text-[10px] text-gray-400">{opt.desc}</span>
+              </button>
+            ))}
+          </div>
         </div>
+
+        {form.heroMediaType === 'youtube' && (
+          <div>
+            <label className="block font-bold mb-1">YouTube Video ID</label>
+            <input type="text" name="youtubeVideoId" value={form.youtubeVideoId} onChange={handleChange} className="w-full p-2.5 border rounded-lg focus:border-[#24a0ed] outline-none" placeholder="e.g. gCRNEJxDJKM" />
+          </div>
+        )}
+
+        {(form.heroMediaType === 'video' || form.heroMediaType === 'image') && (
+          <MediaUploader
+            type={form.heroMediaType === 'video' ? 'video' : 'image'}
+            value={form.heroMediaUrl}
+            onChange={(url) => setForm(prev => ({ ...prev, heroMediaUrl: url }))}
+            label={form.heroMediaType === 'video' ? 'Hero Video File' : 'Hero Image'}
+            heightClass={form.heroMediaType === 'video' ? 'h-48' : 'h-44'}
+          />
+        )}
 
         <div>
           <label className="block font-bold mb-1">Search Placeholder</label>

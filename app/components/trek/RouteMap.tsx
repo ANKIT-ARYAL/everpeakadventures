@@ -134,7 +134,7 @@ export default function RouteMap({ itinerary, chartTitle }: Props) {
 
       {/* Chart */}
       <div className="relative w-full overflow-auto">
-        <svg viewBox={`0 0 ${W} ${H}`} className="w-full min-w-[520px]" role="img" aria-label="Route elevation profile">
+        <svg viewBox={`0 0 ${W} ${H}`} className="w-full h-auto" role="img" aria-label="Route elevation profile">
           <defs>
             <linearGradient id="areaFill" x1="0" y1="0" x2="0" y2="1">
               <stop offset="0%" stopColor="#24a0ed" stopOpacity="0.35" />

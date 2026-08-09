@@ -1,7 +1,11 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { rateLimit } from '@/app/lib/rate-limit';
 
 export async function POST(request: Request) {
+  const limited = await rateLimit(request, { windowMs: 60 * 1000, max: 5, keyPrefix: "newsletter" });
+  if (limited) return limited;
+
   try {
     const body = await request.json();
 

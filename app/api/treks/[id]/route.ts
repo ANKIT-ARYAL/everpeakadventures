@@ -49,6 +49,7 @@ export async function PUT(
           itinerary: body.itinerary,
           mapUrl: body.mapUrl,
           mapImage: body.mapImage || null,
+          routeMap: body.routeMap ?? null,
           videoUrl: body.videoUrl || null,
           videoType: body.videoType || null,
           order: Number(body.order),

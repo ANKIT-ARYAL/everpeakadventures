@@ -1,6 +1,16 @@
 version: '3.8'
 
 services:
+  redis:
+    image: redis:7-alpine
+    container_name: everpeak_redis
+    restart: always
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    command: ["redis-server", "--appendonly", "yes"]
+
   postgres:
     image: postgres:15-alpine
     container_name: everpeak_postgres
@@ -26,8 +36,11 @@ services:
       - "3000:3000"
     environment:
       - DATABASE_URL=postgresql://postgres:password@postgres:5432/everpeak_db?schema=public
+      - REDIS_URL=redis://redis:6379
     depends_on:
       - postgres
+      - redis
 
 volumes:
   postgres_data:
+  redis_data:

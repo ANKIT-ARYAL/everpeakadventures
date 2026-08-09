@@ -91,12 +91,12 @@ export default async function Footer() {
               Popular Trekking
             </h4>
             <ul className="space-y-2.5 text-gray-400">
-              <li><Link href="/trekking-types/everest-region/" className="hover:text-white transition-colors">Everest Region</Link></li>
-              <li><Link href="/trekking-types/manaslu-region/" className="hover:text-white transition-colors">Manaslu Region</Link></li>
-              <li><Link href="/trekking-types/annapurna-region/" className="hover:text-white transition-colors">Annapurna Region</Link></li>
-              <li><Link href="/trekking-types/langtang-region/" className="hover:text-white transition-colors">Langtang Region</Link></li>
-              <li><Link href="/trekking-types/mustang-region/" className="hover:text-white transition-colors">Mustang Region</Link></li>
-              <li><Link href="/trekking-types/kanchenjunga-region/" className="hover:text-white transition-colors">Kanchenjunga Region</Link></li>
+              <li><Link href="/trekking-types/everest-region" className="hover:text-white transition-colors">Everest Region</Link></li>
+              <li><Link href="/trekking-types/manaslu-region" className="hover:text-white transition-colors">Manaslu Region</Link></li>
+              <li><Link href="/trekking-types/annapurna-region" className="hover:text-white transition-colors">Annapurna Region</Link></li>
+              <li><Link href="/trekking-types/langtang-region" className="hover:text-white transition-colors">Langtang Region</Link></li>
+              <li><Link href="/trekking-types/mustang-region" className="hover:text-white transition-colors">Mustang Region</Link></li>
+              <li><Link href="/trekking-types/kanchenjunga-region" className="hover:text-white transition-colors">Kanchenjunga Region</Link></li>
             </ul>
           </div>
 
@@ -109,7 +109,7 @@ export default async function Footer() {
               <li><Link href="/tour" className="hover:text-white transition-colors">Adventure Sports</Link></li>
               <li><Link href="/tour" className="hover:text-white transition-colors">Culture + Nature Tours</Link></li>
               <li><Link href="/tour" className="hover:text-white transition-colors">Day Tours</Link></li>
-              <li><Link href="/tour-destination/nepal/" className="hover:text-white transition-colors">Nepal Tours</Link></li>
+              <li><Link href="/tour-destination/nepal" className="hover:text-white transition-colors">Nepal Tours</Link></li>
             </ul>
           </div>
 
@@ -119,9 +119,9 @@ export default async function Footer() {
               Popular Tours
             </h4>
             <ul className="space-y-2.5 text-gray-400">
-              <li><Link href="/tour-destination/nepal/" className="hover:text-white transition-colors">Spiritual Tours</Link></li>
-              <li><Link href="/tour-destination/nepal/" className="hover:text-white transition-colors">Village Tours</Link></li>
-              <li><Link href="/tour-destination/nepal/" className="hover:text-white transition-colors">Wildlife Safari Tours</Link></li>
+              <li><Link href="/tour-destination/nepal" className="hover:text-white transition-colors">Spiritual Tours</Link></li>
+              <li><Link href="/tour-destination/nepal" className="hover:text-white transition-colors">Village Tours</Link></li>
+              <li><Link href="/tour-destination/nepal" className="hover:text-white transition-colors">Wildlife Safari Tours</Link></li>
               <li><Link href="/tour" className="hover:text-white transition-colors">Cultural Tours</Link></li>
             </ul>
           </div>

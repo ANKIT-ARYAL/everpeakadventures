@@ -3,13 +3,14 @@ import { prisma } from '@/lib/prisma';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import {
-  Calendar, Clock, CheckCircle2, XCircle, Utensils, Award, 
-  Mountain, Car, Share2, MapPin, Activity as ActivityIcon, Flag
+  Clock, CheckCircle2, XCircle, Utensils, 
+  Mountain, Car, MapPin, Activity as ActivityIcon, Flag
 } from 'lucide-react';
 import TourGallerySlider from '../TourGallerySlider';
 import StickySectionNav from '@/app/components/trek/StickySectionNav';
 import RouteMap from '@/app/components/trek/RouteMap';
 import RouteMapImage from '@/app/components/trek/RouteMapImage';
+import DetailedRouteMap, { RoutePoint, RouteSegment, Peak } from '@/app/components/trek/DetailedRouteMap';
 import GallerySection from '@/app/components/trek/GallerySection';
 import { Reveal, Stagger, StaggerItem } from '@/app/components/animations/Motion';
 import { toHtml } from '@/app/lib/html';
@@ -53,7 +54,16 @@ export default async function TourDetailPage({ params }: PageProps) {
   // Safe cast for itinerary Json field
   const itineraryDays = Array.isArray(tour.itinerary) ? (tour.itinerary as any[]) : [];
   const packingItems = tour.packingList || '';
-  const shareUrl = `https://everpeakadventures.com/tour/${tour.slug ?? tour.id}`;
+
+  const buildTourElevationData = (itinerary: any[]) =>
+    (itinerary || [])
+      .filter((d) => d && d.title)
+      .map((d) => ({ day: d.day, location: d.title, elevation: Number(d.elev) || 0 }));
+
+  const routeMap =
+    tour.routeMap && typeof tour.routeMap === 'object' && !Array.isArray(tour.routeMap)
+      ? (tour.routeMap as { peaks?: Peak[]; routePoints?: RoutePoint[]; routeSegments?: RouteSegment[]; title?: string; subtitle?: string; brandName?: string; brandTagline?: string; footerUrl?: string; maxAltitude?: number })
+      : null;
 
   const parsePrice = (s?: string | null) => {
     const n = Number(String(s ?? '').replace(/[^0-9.]/g, ''));
@@ -90,8 +100,8 @@ export default async function TourDetailPage({ params }: PageProps) {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           
           {/* LEFT SIDEBAR: EXACT MATCH BOOKING & GROUP PRICE TABLE */}
-          <div className="space-y-6">
-            <div className="bg-white rounded-xl shadow-lg border border-gray-100 p-6 sticky top-6 space-y-5">
+          <div className="space-y-6 sticky top-6">
+            <div className="bg-white rounded-xl shadow-lg border border-gray-100 p-6 space-y-5">
               
               {/* Header Price display */}
               <div className="border-b pb-5">
@@ -364,11 +374,30 @@ export default async function TourDetailPage({ params }: PageProps) {
       </>)}
 
       {/* ROUTE MAP & ELEVATION */}
-      {(tour.mapImage || itineraryDays.length > 0) && (
+      {(tour.mapImage || routeMap || itineraryDays.length > 0) && (
         <section className="max-w-[1200px] mx-auto px-5 mt-10">
-          <RouteMapImage src={tour.mapImage} alt={`${tour.title} route map`} />
+          {tour.mapImage && (
+            <RouteMapImage src={tour.mapImage} alt={`${tour.title} route map`} />
+          )}
+          {routeMap && (
+            <div className={tour.mapImage ? 'mt-10' : ''}>
+              <DetailedRouteMap
+                title={routeMap.title || tour.title}
+                subtitle={routeMap.subtitle}
+                brandName={routeMap.brandName}
+                brandTagline={routeMap.brandTagline}
+                footerUrl={routeMap.footerUrl}
+                maxAltitude={routeMap.maxAltitude}
+                peaks={routeMap.peaks}
+                routePoints={routeMap.routePoints}
+                routeSegments={routeMap.routeSegments}
+                elevationData={buildTourElevationData(itineraryDays)}
+                showElevationProfile={false}
+              />
+            </div>
+          )}
           {itineraryDays.length > 0 && (
-            <div className="mt-6">
+            <div className="mt-10">
               <RouteMap itinerary={itineraryDays} chartTitle={tour.title} />
             </div>
           )}
@@ -424,6 +453,8 @@ export default async function TourDetailPage({ params }: PageProps) {
           <Stagger className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {relatedTours.map((item) => (
               <StaggerItem key={item.id} className="bg-white rounded-xl overflow-hidden border border-gray-100 shadow-sm flex flex-col justify-between group">
+                <Link 
+                    href={`/tour/${item.slug ? item.slug : item.id}`}>
                 <div className="h-44 overflow-hidden bg-gray-100 relative">
                   <img src={item.heroImage} alt={item.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
                   <span className="absolute top-2 left-2 bg-white/95 text-[#112233] text-[9px] font-black uppercase tracking-wider px-2 py-1 rounded-full shadow-sm">
@@ -444,13 +475,13 @@ export default async function TourDetailPage({ params }: PageProps) {
                       </span>
                     )}
                   </div>
-                  <Link 
-                    href={`/tour/${item.slug ? item.slug : item.id}`}
+                  <button                     
                     className="w-full bg-[#112233] hover:bg-[#24a0ed] text-white font-bold py-2 rounded-lg text-center uppercase tracking-wider text-[11px] block transition-colors"
                   >
                     Start Journey
-                  </Link>
+                  </button>
                 </div>
+                </Link>
               </StaggerItem>
             ))}
           </Stagger>

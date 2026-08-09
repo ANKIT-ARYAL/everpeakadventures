@@ -26,6 +26,8 @@ export async function PUT(request: Request) {
       topLabel: body.topLabel,
       mainHeading: body.mainHeading,
       subtext: body.subtext,
+      heroMediaType: body.heroMediaType,
+      heroMediaUrl: body.heroMediaUrl,
       youtubeVideoId: body.youtubeVideoId,
       searchPlaceholder: body.searchPlaceholder,
       primaryButtonText: body.primaryButtonText,

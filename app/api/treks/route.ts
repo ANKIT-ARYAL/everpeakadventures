@@ -65,6 +65,7 @@ export async function POST(request: Request) {
         itinerary: body.itinerary || [],
         mapUrl: body.mapUrl,
         mapImage: body.mapImage || null,
+        routeMap: body.routeMap ?? null,
         videoUrl: body.videoUrl || null,
         videoType: body.videoType || null,
         isBestSeller: body.isBestSeller || false,

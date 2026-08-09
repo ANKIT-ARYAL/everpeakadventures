@@ -176,8 +176,8 @@ export default function DetailedRouteMap({
   const elevationRange = Math.max(maxElevationData - minElevation, 1000);
   const elevationBase = minElevation - 500;
 
-  const yScale = (elev: number) => 
-    mapHeight - (elev - elevationBase) / elevationRange * mapHeight + 20;
+  const yScale = (elev: number) =>
+    220 - (elev - elevationBase) / elevationRange * 200;
 
   return (
     <div className="w-full max-w-[1200px] mx-auto">
@@ -212,7 +212,7 @@ export default function DetailedRouteMap({
         </div>
 
         {/* Main Map Area */}
-        <div className="relative p-4" style={{ height: `${mapHeight}px` }}>
+        <div className="relative p-4">
           {/* Watermark */}
           <svg width="100%" height="100%" viewBox={'0 0 ' + mapWidth + ' ' + mapHeight} style={{ position: 'absolute', top: 0, left: 0, pointerEvents: 'none', opacity: 0.08 }}>
             <text
@@ -230,7 +230,8 @@ export default function DetailedRouteMap({
             </text>
           </svg>
 
-          <svg width={mapWidth} height={mapHeight} viewBox={'0 0 ' + mapWidth + ' ' + mapHeight} className="w-full h-auto" style={{ maxWidth: '100%' }}>
+          <div className="relative w-full" style={{ aspectRatio: `${mapWidth} / ${mapHeight}`, maxWidth: `${mapWidth}px`, margin: '0 auto' }}>
+          <svg width="100%" height="100%" viewBox={'0 0 ' + mapWidth + ' ' + mapHeight} className="block w-full h-auto" style={{ maxWidth: '100%' }}>
             {/* Route Paths */}
             <g strokeLinecap="round" strokeLinejoin="round">
               {routeSegments.map(seg => drawPath(seg.from, seg.to, seg.type))}
@@ -286,6 +287,7 @@ export default function DetailedRouteMap({
               {footerUrl}
             </text>
           </svg>
+          </div>
 
           {/* Legend - Top Left Overlay */}
           {showLegend && (

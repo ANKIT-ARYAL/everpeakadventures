@@ -1,15 +1,17 @@
-FROM node:20-alpine
-
+# ---- Dependencies + Build ----
+FROM node:20-alpine AS builder
 WORKDIR /app
-
+ENV NEXT_TELEMETRY_DISABLED=1
 COPY package.json package-lock.json* ./
-
 RUN npm install
-
 COPY . .
+RUN npx prisma generate && npm run build
 
-RUN npx prisma generate
-
+# ---- Production runtime ----
+FROM node:20-alpine
+WORKDIR /app
+ENV NODE_ENV=production
+ENV NEXT_TELEMETRY_DISABLED=1
+COPY --from=builder /app /app
 EXPOSE 3000
-
-CMD ["npm", "run", "dev"]
+CMD ["npm", "start"]

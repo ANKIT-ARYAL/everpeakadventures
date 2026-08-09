@@ -1,5 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import HeroContent from "./HeroContent";
+import HeroMedia from "./HeroMedia";
 
 export default async function Hero() {
   // Fetch hero configuration & trust items dynamically from the database
@@ -13,6 +14,8 @@ export default async function Hero() {
     topLabel: "Your Adventure, Our Expertise",
     mainHeading: "Explore Nepal. Beyond the peak",
     subtext: "Authentic treks, Trusted guides. Unforgettable experiences.",
+    heroMediaType: "youtube",
+    heroMediaUrl: "",
     youtubeVideoId: "gCRNEJxDJKM",
     searchPlaceholder: "Search by trek name",
     primaryButtonText: "▲ View Treks",
@@ -21,22 +24,22 @@ export default async function Hero() {
     secondaryButtonLink: "/send-inquiry",
   };
 
-  const videoUrl = `https://www.youtube.com/embed/${hero.youtubeVideoId}?autoplay=1&mute=1&controls=0&loop=1&playlist=${hero.youtubeVideoId}&playsinline=1&modestbranding=1&rel=0`;
+  const mediaType = hero.heroMediaType || "youtube";
+  const videoId =
+    mediaType === "youtube" && hero.youtubeVideoId
+      ? hero.youtubeVideoId
+      : undefined;
+  const mediaUrl =
+    mediaType !== "youtube" ? hero.heroMediaUrl : undefined;
 
   return (
     <section className="relative w-screen h-[75vh] overflow-hidden">
 
-      {/* VIDEO */}
-      <iframe
-        className="
-          absolute top-1/2 left-1/2
-          w-[177.77vh] h-[56.25vw]
-          min-h-screen min-w-full
-          -translate-x-1/2 -translate-y-1/2
-          pointer-events-none
-        "
-        src={videoUrl}
-        allow="autoplay; fullscreen"
+      {/* MEDIA (youtube video | uploaded video | image) */}
+      <HeroMedia
+        mediaType={(mediaType === "youtube" || mediaType === "video" || mediaType === "image" ? mediaType : "youtube")}
+        videoId={videoId}
+        mediaUrl={mediaUrl ?? undefined}
       />
 
       {/* OVERLAY */}

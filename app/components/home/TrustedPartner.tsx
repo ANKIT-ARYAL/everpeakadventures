@@ -1,4 +1,5 @@
 import React from 'react';
+import Link from 'next/link';
 import { Star, Map, Award, ShieldCheck, MapPin, Smile, Leaf, CheckCircle2 } from 'lucide-react';
 
 const iconMap: Record<string, React.ReactNode> = {
@@ -146,9 +147,9 @@ export default function TrustedPartner({ content, features }: TrustedPartnerProp
               {content.description}
             </p>
             <div>
-              <button className="bg-[#3bbae6] hover:bg-[#2da1c9] text-white font-semibold text-sm px-6 py-3 rounded shadow-md transition-colors duration-200 cursor-pointer">
+              <Link href="/about-us" className="inline-block bg-[#3bbae6] hover:bg-[#2da1c9] text-white font-semibold text-sm px-6 py-3 rounded shadow-md transition-colors duration-200 cursor-pointer">
                 Discover Ever Peak Adventures
-              </button>
+              </Link>
             </div>
           </div>
 

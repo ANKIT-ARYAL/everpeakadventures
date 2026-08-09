@@ -16,6 +16,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [collapsed, setCollapsed] = useState(false);
   const [mounted, setMounted] = useState(false);
+  const [groupCollapsed, setGroupCollapsed] = useState<Record<string, boolean>>({});
 
   useEffect(() => setMounted(true), []);
 
@@ -72,7 +73,6 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       icon: MapPin,
       items: [
         { href: '/admin/treks', label: 'Treks', icon: Compass, color: 'text-[#24a0ed]' },
-        { href: '/admin/faqs', label: 'Trekking FAQs', icon: HelpCircle, color: 'text-rose-400' },
       ]
     },
     {
@@ -119,8 +119,6 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     },
   ];
 
-  const [groupCollapsed, setGroupCollapsed] = useState<Record<string, boolean>>({});
-
   const toggleGroup = (label: string) => {
     setGroupCollapsed(prev => ({ ...prev, [label]: !prev[label] }));
   };
@@ -128,33 +126,71 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   const renderNav = () => (
     <>
       {/* Brand Header */}
-      <div className="p-4 bg-[#0b131a] border-b border-white/10 flex items-center justify-between sticky top-0 z-10 bg-[#101b25]">
-        <Link href="/admin" className="font-bold text-white tracking-wider flex items-center gap-2">
-          <span className="bg-[#f59e0b] text-[#112233] px-2 py-0.5 rounded text-[10px]">ADMIN</span>
-          {!collapsed && <span className={mounted ? '' : 'invisible'}>Ever Peak CMS</span>}
-        </Link>
-        <div className="flex items-center gap-1">
-          <button 
+      <div className="p-4 bg-[#0b131a] border-b border-white/10 flex items-center sticky top-0 z-10 bg-[#101b25]">
+        {collapsed ? (
+          <button
             type="button"
-            onClick={() => setCollapsed(!collapsed)}
-            className="p-2 text-gray-400 hover:text-white hover:bg-white/5 rounded-lg transition-colors"
-            aria-label={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
-            title={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+            onClick={() => setCollapsed(false)}
+            className="mx-auto p-2 text-gray-400 hover:text-white hover:bg-white/5 rounded-lg transition-colors"
+            aria-label="Expand sidebar"
+            title="Expand sidebar"
           >
-            {collapsed ? <ChevronRight className="w-5 h-5" /> : <ChevronLeft className="w-5 h-5" />}
+            <ChevronRight className="w-5 h-5" />
           </button>
-          <button 
-            type="button"
-            onClick={() => setSidebarOpen(false)}
-            className="lg:hidden text-gray-400 hover:text-white"
-            aria-label="Close sidebar"
-          >
-            <X className="w-5 h-5" />
-          </button>
-        </div>
+        ) : (
+          <>
+            <div className="flex items-center justify-between flex-1 min-w-0">
+              <Link href="/admin" className="font-bold text-white tracking-wider flex items-center gap-2">
+                <span className="bg-[#f59e0b] text-[#112233] px-2 py-0.5 rounded text-[10px]">ADMIN</span>
+                {<span className={mounted ? '' : 'invisible'}>Ever Peak CMS</span>}
+              </Link>
+              <div className="flex items-center gap-1 shrink-0">
+                <button
+                  type="button"
+                  onClick={() => setCollapsed(true)}
+                  className="p-2 text-gray-400 hover:text-white hover:bg-white/5 rounded-lg transition-colors"
+                  aria-label="Collapse sidebar"
+                  title="Collapse sidebar"
+                >
+                  <ChevronLeft className="w-5 h-5" />
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setSidebarOpen(false)}
+                  className="lg:hidden text-gray-400 hover:text-white"
+                  aria-label="Close sidebar"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+            </div>
+          </>
+        )}
       </div>
 
       {/* Navigation Links Grouped */}
+      {collapsed ? (
+        /* Collapsed: flat list of icon-only items */
+        <div className="flex-1 py-4 space-y-1 px-1">
+          {navGroups
+            .flatMap((group) => group.items)
+            .map((item) => (
+              <Link
+                key={item.href}
+                href={item.href}
+                onClick={() => setSidebarOpen(false)}
+                className={`flex items-center justify-center px-1 py-2.5 hover:bg-white/5 hover:text-white transition-colors rounded-lg ${pathname === item.href ? 'bg-white/10 text-white' : ''}`}
+                title={item.label}
+              >
+                <item.icon className={`w-4 h-4 ${item.color}`} />
+              </Link>
+            ))}
+          <BookingsNotification collapsed={collapsed} />
+          <div className="pt-4 border-t border-white/10 mt-4">
+            <LogoutButton collapsed={collapsed} />
+          </div>
+        </div>
+      ) : (
       <div className="flex-1 py-4 space-y-1">
         {navGroups.map((group, groupIdx) => (
           <div key={group.label} className="group">
@@ -193,14 +229,15 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         ))}
 
         {/* Bookings Notification */}
-        <div className="pt-4 px-4 pb-1">
-          <BookingsNotification />
+        <div className={`${collapsed ? 'pt-4 px-0' : 'pt-4 px-4'} pb-1`}>
+          <BookingsNotification collapsed={collapsed} />
         </div>
 
         <div className="pt-4 border-t border-white/10 mt-4">
-          <LogoutButton />
+          <LogoutButton collapsed={collapsed} />
         </div>
       </div>
+      )}
     </>
   );
 
@@ -208,7 +245,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     <div className="min-h-screen bg-[#f0f2f5] flex font-sans text-gray-800">
       
       {/* Sidebar - fixed on desktop, drawer on mobile */}
-      <aside className={`w-64 bg-[#101b25] text-gray-300 flex-col fixed inset-y-0 left-0 z-50 overflow-y-auto text-xs pb-10 hidden lg:flex transition-all duration-300 ${collapsed ? 'w-16' : ''}`}>
+      <aside className={`bg-[#101b25] text-gray-300 flex-col fixed inset-y-0 left-0 z-50 overflow-y-auto text-xs pb-10 hidden lg:flex transition-all duration-300 ${collapsed ? 'w-16' : 'w-64'}`}>
         {renderNav()}
       </aside>
 

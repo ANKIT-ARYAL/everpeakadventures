@@ -1,10 +1,14 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
+import { requireAdmin } from "@/app/lib/require-admin";
 
 export async function GET(
   request: Request,
   { params }: { params: Promise<{ id: string }> }
 ) {
+  const unauthorized = await requireAdmin();
+  if (unauthorized) return unauthorized;
+
   const { id } = await params;
 
   try {
@@ -30,6 +34,9 @@ export async function PUT(
   request: Request,
   { params }: { params: Promise<{ id: string }> }
 ) {
+  const unauthorized = await requireAdmin();
+  if (unauthorized) return unauthorized;
+
   const { id } = await params;
 
   try {
@@ -68,6 +75,7 @@ export async function PUT(
           transport: body.transport || null,
           mapUrl: body.mapUrl || null,
           mapImage: body.mapImage || null,
+          routeMap: body.routeMap ?? null,
           regions: body.regions || [],
           videoUrl: body.videoUrl || null,
           videoType: body.videoType || null,
@@ -109,6 +117,9 @@ export async function DELETE(
   request: Request,
   { params }: { params: Promise<{ id: string }> }
 ) {
+  const unauthorized = await requireAdmin();
+  if (unauthorized) return unauthorized;
+
   const { id } = await params;
 
   try {

@@ -8,7 +8,7 @@ export default async function VideoBannerWrapper() {
     title: 'Explore Full Itineraries & Trip Ideas For Trekking',
     subtitle: 'Carefully crafted Trekking plans designed for every trail, pace, and adventure level.',
     buttonText: 'START JOURNEY',
-    buttonLink: '/tours',
+    buttonLink: '/tour',
     videoUrl: 'https://www.youtube.com/watch?v=gCRNEJxDJKM',
     backgroundImages: [
       'https://images.unsplash.com/photo-1544735716-392fe2489ffa?q=80&w=1200&auto=format&fit=crop',

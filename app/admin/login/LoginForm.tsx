@@ -1,8 +1,11 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { signIn } from "next-auth/react";
+
+const MAX_ATTEMPTS = 5;
+const LOCKOUT_MS = 10 * 60 * 1000;
 
 export default function LoginForm() {
   const router = useRouter();
@@ -11,11 +14,39 @@ export default function LoginForm() {
 
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [attempts, setAttempts] = useState(0);
+  const [lockedUntil, setLockedUntil] = useState<number | null>(null);
+  const [now, setNow] = useState(Date.now());
+
+  useEffect(() => {
+    if (!lockedUntil) return;
+    setNow(Date.now());
+    const id = setInterval(() => setNow(Date.now()), 1000);
+    return () => clearInterval(id);
+  }, [lockedUntil]);
+
+  useEffect(() => {
+    if (lockedUntil && Date.now() >= lockedUntil) {
+      setLockedUntil(null);
+      setAttempts(0);
+      setError(null);
+    }
+  }, [now, lockedUntil]);
+
+  const lockSeconds = lockedUntil
+    ? Math.max(0, Math.ceil((lockedUntil - now) / 1000))
+    : 0;
+  const lockedOut = !!lockedUntil && lockSeconds > 0;
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setLoading(true);
     setError(null);
+
+    if (lockedOut) {
+      setLoading(false);
+      return;
+    }
 
     const formData = new FormData(event.currentTarget);
 
@@ -26,9 +57,25 @@ export default function LoginForm() {
     });
 
     if (result?.error) {
-      setError("Invalid username or password.");
+      const newAttempts = attempts + 1;
+      setAttempts(newAttempts);
       setLoading(false);
+
+      if (newAttempts >= MAX_ATTEMPTS) {
+        setLockedUntil(Date.now() + LOCKOUT_MS);
+        setError(
+          "Too many failed attempts. Please wait 10 minutes before trying again."
+        );
+      } else {
+        setError(
+          `Invalid username or password. ${
+            MAX_ATTEMPTS - newAttempts
+          } attempt${MAX_ATTEMPTS - newAttempts === 1 ? "" : "s"} remaining.`
+        );
+      }
     } else {
+      setAttempts(0);
+      setLockedUntil(null);
       router.push(callbackUrl);
       router.refresh();
     }
@@ -86,10 +133,14 @@ export default function LoginForm() {
 
           <button
             type="submit"
-            disabled={loading}
+            disabled={loading || lockedOut}
             className="w-full bg-[#f59e0b] hover:bg-[#e08e0a] text-[#112233] font-bold text-sm py-2.5 rounded-lg transition-colors disabled:opacity-60"
           >
-            {loading ? "Signing in..." : "Sign In"}
+            {loading
+              ? "Signing in..."
+              : lockedOut
+              ? `Locked — try again in ${lockSeconds}s`
+              : "Sign In"}
           </button>
         </form>
       </div>

@@ -5,6 +5,7 @@ import "./globals.css";
 import Footer from "./components/layout/Footer";
 import NavbarWrapper from "./components/wrappers/NavbarWrapper";
 import ContactWidgetWrapper from "./components/widget/ContactWidgetWrapper";
+import HomeLoader from "./components/loading/HomeLoader";
 import { MotionProvider } from "./components/animations/Motion";
 
 const geistSans = Geist({
@@ -39,6 +40,7 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
           {children}
           {!isAdmin && <Footer />}
           {!isAdmin && <ContactWidgetWrapper />}
+          <HomeLoader />
         </MotionProvider>
       </body>
     </html>

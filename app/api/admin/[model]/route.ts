@@ -15,6 +15,9 @@ const modelMap: Record<string, any> = {
   'why-choose-us-features': prisma.whyChooseUsFeature,
   'welcome-features': prisma.welcomeFeature,
   'subpage-heroes': prisma.subpageHero,
+  departures: prisma.fixedDeparture,
+  pages: prisma.page,
+  'trust-items': prisma.trustItem,
 };
 
 export async function GET(
@@ -32,7 +35,11 @@ export async function GET(
   }
 
   try {
-    const items = await delegate.findMany({ orderBy: { order: 'asc' } });
+    // 'subpage-heroes' and 'pages' have no `order` column — fall back to updatedAt
+    const hasOrder = ['subpage-heroes', 'pages'].includes(model);
+    const items = await delegate.findMany({
+      orderBy: hasOrder ? { updatedAt: 'asc' } : { order: 'asc' },
+    });
     return NextResponse.json(items);
   } catch (error) {
     return NextResponse.json({ error: 'Failed to fetch items' }, { status: 500 });

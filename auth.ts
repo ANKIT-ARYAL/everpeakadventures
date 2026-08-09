@@ -8,6 +8,36 @@ const SESSION_ABSOLUTE_MAX_AGE = 24 * 60 * 60;
 const SECURE_COOKIES = process.env.NODE_ENV === "production";
 const COOKIE_PREFIX = SECURE_COOKIES ? "__Secure-" : "";
 
+// Brute-force protection: max failed attempts for a given username within a window.
+const MAX_LOGIN_ATTEMPTS = 5;
+const LOGIN_WINDOW_MS = 10 * 60 * 1000;
+const loginFailures = new Map<string, { count: number; firstAt: number }>();
+
+function isLoginLocked(username: string): boolean {
+  const entry = loginFailures.get(username);
+  if (!entry) return false;
+  if (Date.now() - entry.firstAt >= LOGIN_WINDOW_MS) {
+    loginFailures.delete(username);
+    return false;
+  }
+  return entry.count >= MAX_LOGIN_ATTEMPTS;
+}
+
+function recordLoginFailure(username: string) {
+  const now = Date.now();
+  const entry = loginFailures.get(username) || { count: 0, firstAt: now };
+  if (now - entry.firstAt >= LOGIN_WINDOW_MS) {
+    entry.count = 0;
+    entry.firstAt = now;
+  }
+  entry.count += 1;
+  loginFailures.set(username, entry);
+}
+
+function clearLoginFailures(username: string) {
+  loginFailures.delete(username);
+}
+
 const cookieOptions = {
   httpOnly: true,
   sameSite: "lax" as const,
@@ -25,17 +55,25 @@ export const authOptions: NextAuthOptions = {
       },
       async authorize(credentials) {
         const username = credentials?.username as string | undefined;
+
+        if (!username) return null;
+
+        if (isLoginLocked(username)) {
+          return null;
+        }
+
         const password = credentials?.password as string | undefined;
 
         if (
-          username &&
           password &&
           username === process.env.ADMIN_USERNAME &&
           password === process.env.ADMIN_PASSWORD
         ) {
+          clearLoginFailures(username);
           return { id: "1", name: username, email: username };
         }
 
+        recordLoginFailure(username);
         return null;
       },
     }),

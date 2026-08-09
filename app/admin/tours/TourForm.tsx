@@ -6,6 +6,7 @@ import { Save, ArrowLeft, Plus, Trash2, Image as ImageIcon, Video, Search, MapPi
 import Link from 'next/link';
 import RichTextEditor from '@/app/components/admin/RichTextEditor';
 import MediaUploader from '@/app/components/admin/MediaUploader';
+import RouteMapEditor, { EMPTY_ROUTE_MAP } from '@/app/components/admin/RouteMapEditor';
 
 interface TourFormProps {
   initialData?: any;
@@ -78,6 +79,12 @@ export default function TourForm({ initialData, isEditing = false }: TourFormPro
     transport: initialData?.transport || '',
     mapUrl: initialData?.mapUrl || '',
     mapImage: initialData?.mapImage || '',
+    routeMap:
+      initialData?.routeMap &&
+      typeof initialData.routeMap === 'object' &&
+      Array.isArray(initialData.routeMap.peaks)
+        ? initialData.routeMap
+        : { ...EMPTY_ROUTE_MAP },
     videoUrl: initialData?.videoUrl || '',
     videoType: initialData?.videoType || 'youtube',
     order: initialData?.order || 0,
@@ -698,6 +705,14 @@ export default function TourForm({ initialData, isEditing = false }: TourFormPro
                 onChange={(url) => setFormData(prev => ({ ...prev, mapImage: url }))}
                 label="Upload Route Map Image"
                 heightClass="h-48"
+              />
+            </div>
+
+            {/* Detailed interactive route map data */}
+            <div className="border-t border-gray-100 pt-4">
+              <RouteMapEditor
+                value={formData.routeMap}
+                onChange={(v) => setFormData(prev => ({ ...prev, routeMap: v }))}
               />
             </div>
           </div>
