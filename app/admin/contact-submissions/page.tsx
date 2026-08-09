@@ -21,8 +21,8 @@ export default async function AdminContactSubmissionsPage() {
         <p className="text-gray-500 mt-1">Inquiries submitted via the contact form.</p>
       </div>
 
-      {/* Data Table */}
-      <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+      {/* Data Table - Desktop */}
+      <div className="hidden md:block bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse">
             <thead>
@@ -82,6 +82,50 @@ export default async function AdminContactSubmissionsPage() {
             </tbody>
           </table>
         </div>
+      </div>
+
+      {/* Mobile Cards */}
+      <div className="md:hidden space-y-3">
+        {submissions.length === 0 ? (
+          <div className="bg-white rounded-xl shadow-sm border border-gray-100 py-12 text-center text-gray-400 font-medium">
+            No submissions found.
+          </div>
+        ) : (
+          submissions.map((submission, index) => (
+            <div key={submission.id} className="bg-white rounded-xl shadow-sm border border-gray-100 p-4">
+              <div className="flex items-start justify-between gap-3">
+                <div className="min-w-0 flex-1">
+                  <span className="block font-bold text-[#112233] truncate">
+                    {submission.firstName} {submission.lastName}
+                  </span>
+                  <span className="block text-[#24a0ed] font-semibold text-sm truncate">{submission.email}</span>
+                  <span className="block text-gray-500 mt-0.5 text-[11px] truncate">#{index + 1} · {submission.phone}</span>
+                </div>
+                <span className="bg-gray-100 text-gray-600 font-bold px-2 py-0.5 rounded-full text-[10px] shrink-0">#{index + 1}</span>
+              </div>
+              <div className="grid grid-cols-2 gap-x-4 gap-y-2 mt-3 text-[11px]">
+                <div className="min-w-0">
+                  <span className="block text-[9px] font-bold text-gray-400 uppercase tracking-wider">Contact Method</span>
+                  <span className="font-semibold uppercase tracking-wider text-gray-700 truncate block">{submission.contactMethod}</span>
+                </div>
+                <div className="min-w-0">
+                  <span className="block text-[9px] font-bold text-gray-400 uppercase tracking-wider">Best Time</span>
+                  <span className="text-gray-600 font-medium">{submission.bestTime}</span>
+                </div>
+                <div className="min-w-0 col-span-2">
+                  <span className="block text-[9px] font-bold text-gray-400 uppercase tracking-wider">Message</span>
+                  <span className="text-gray-600 line-clamp-2">{submission.message}</span>
+                </div>
+                <div className="min-w-0 col-span-2">
+                  <span className="block text-[9px] font-bold text-gray-400 uppercase tracking-wider">Submitted</span>
+                  <span className="text-gray-500 font-medium whitespace-nowrap">
+                    {new Date(submission.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                  </span>
+                </div>
+              </div>
+            </div>
+          ))
+        )}
       </div>
 
     </div>

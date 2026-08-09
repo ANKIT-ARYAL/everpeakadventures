@@ -415,39 +415,45 @@ export default function TourForm({ initialData, isEditing = false }: TourFormPro
               </button>
             </div>
 
-            <div className="overflow-x-auto">
-              <table className="w-full text-left border border-gray-100 rounded-lg overflow-hidden">
-                <thead>
-                  <tr className="bg-gray-50 text-gray-500 uppercase text-[10px] tracking-wider">
-                    <th className="px-3 py-2 font-bold">Pax / No. of Persons</th>
-                    <th className="px-3 py-2 font-bold">Group Type</th>
-                    <th className="px-3 py-2 font-bold">Price per Person</th>
-                    <th className="px-3 py-2 font-bold text-right">Action</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {formData.groupPrices.map((g: any, idx: number) => (
-                    <tr key={idx} className="border-t border-gray-100">
-                      <td className="px-2 py-2">
-                        <input type="text" value={g.groupSize} onChange={(e) => handleGroupPriceChange(idx, 'groupSize', e.target.value)} placeholder="2 - 4 Pax" className="w-full px-3 py-2 border border-gray-200 rounded-lg" />
-                      </td>
-                      <td className="px-2 py-2">
-                        <select value={g.groupType} onChange={(e) => handleGroupPriceChange(idx, 'groupType', e.target.value)} className="w-full px-3 py-2 border border-gray-200 rounded-lg bg-white">
-                          <option>Small Group</option>
-                          <option>Best Value</option>
-                          <option>Super Group</option>
-                        </select>
-                      </td>
-                      <td className="px-2 py-2">
-                        <input type="text" value={g.price} onChange={(e) => handleGroupPriceChange(idx, 'price', e.target.value)} placeholder="US$ 2,599" className="w-full px-3 py-2 border border-gray-200 rounded-lg" />
-                      </td>
-                      <td className="px-2 py-2 text-right">
-                        <button type="button" onClick={() => removeGroupPriceRow(idx)} className="text-red-500 p-1.5 hover:bg-red-50 rounded"><Trash2 className="w-4 h-4" /></button>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+            {/* Desktop: Table-like Grid | Mobile: Stacked Cards */}
+            <div className="space-y-3">
+              {/* Desktop Header */}
+              <div className="hidden md:grid grid-cols-4 gap-3 px-3 py-2 bg-gray-50 text-gray-500 uppercase text-[10px] tracking-wider font-bold rounded-t-lg border-b border-gray-100">
+                <span>Pax / No. of Persons</span>
+                <span>Group Type</span>
+                <span>Price per Person</span>
+                <span className="text-right">Action</span>
+              </div>
+
+              {formData.groupPrices.map((g: any, idx: number) => (
+                <div key={idx} className="grid grid-cols-1 md:grid-cols-4 gap-3 items-end p-3 rounded-lg border border-gray-100 bg-gray-50/50 md:bg-transparent md:rounded-none md:border-t md:border-gray-100 md:p-2">
+                  <div className="space-y-1 md:col-span-1">
+                    <label className="md:hidden block text-[10px] font-bold text-gray-400 uppercase tracking-wider">Pax / No. of Persons</label>
+                    <input type="text" value={g.groupSize} onChange={(e) => handleGroupPriceChange(idx, 'groupSize', e.target.value)} placeholder="2 - 4 Pax" className="w-full px-3 py-2 border border-gray-200 rounded-lg" />
+                  </div>
+                  <div className="space-y-1 md:col-span-1">
+                    <label className="md:hidden block text-[10px] font-bold text-gray-400 uppercase tracking-wider">Group Type</label>
+                    <select value={g.groupType} onChange={(e) => handleGroupPriceChange(idx, 'groupType', e.target.value)} className="w-full px-3 py-2 border border-gray-200 rounded-lg bg-white">
+                      <option>Small Group</option>
+                      <option>Best Value</option>
+                      <option>Super Group</option>
+                    </select>
+                  </div>
+                  <div className="space-y-1 md:col-span-1">
+                    <label className="md:hidden block text-[10px] font-bold text-gray-400 uppercase tracking-wider">Price per Person</label>
+                    <input type="text" value={g.price} onChange={(e) => handleGroupPriceChange(idx, 'price', e.target.value)} placeholder="US$ 2,599" className="w-full px-3 py-2 border border-gray-200 rounded-lg" />
+                  </div>
+                  <div className="md:col-span-1 flex justify-end">
+                    <button type="button" onClick={() => removeGroupPriceRow(idx)} className="text-red-500 p-1.5 hover:bg-red-50 rounded"><Trash2 className="w-4 h-4" /></button>
+                  </div>
+                </div>
+              ))}
+
+              {formData.groupPrices.length === 0 && (
+                <div className="text-center py-8 text-gray-400 text-sm">
+                  No group pricing rows yet. Click "Add Row" to add pricing tiers.
+                </div>
+              )}
             </div>
           </div>
 

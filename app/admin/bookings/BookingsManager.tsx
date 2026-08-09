@@ -442,6 +442,65 @@ export default function BookingsManager({
         </div>
       </div>
 
+      {/* Mobile Cards */}
+      <div className="md:hidden space-y-3">
+        {visibleRows.length === 0 ? (
+          <div className="bg-white rounded-xl shadow-sm border border-gray-100 py-12 text-center text-gray-400 font-medium">
+            No booking requests found.
+          </div>
+        ) : (
+          visibleRows.map((r, idx) => (
+            <div key={r.id} className="bg-white rounded-xl shadow-sm border border-gray-100 p-4">
+              <div className="flex items-start justify-between gap-3">
+                <div className="min-w-0 flex-1">
+                  <span className="block font-bold text-[#112233] truncate">{r.fullName}</span>
+                  <span className="block text-[#24a0ed] text-sm truncate">{r.email}</span>
+                  <span className="block text-gray-500 mt-0.5 text-[11px] truncate">#{idx + 1} · {r.phone}</span>
+                </div>
+                <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${r.status === 'confirmed' ? 'bg-emerald-50 text-emerald-700' : r.status === 'pending' ? 'bg-amber-50 text-amber-700' : r.status === 'completed' ? 'bg-blue-50 text-blue-700' : r.status === 'cancelled' ? 'bg-red-50 text-red-700' : 'bg-gray-100 text-gray-600'}`}>
+                  {STATUS_LABEL[r.status] || r.status}
+                </span>
+              </div>
+              <div className="grid grid-cols-2 gap-x-4 gap-y-2 mt-3 text-[11px]">
+                <div className="min-w-0">
+                  <span className="block text-[9px] font-bold text-gray-400 uppercase tracking-wider">Trip / Tour</span>
+                  <span className="font-semibold text-gray-700 truncate block">{r.tripTitle}</span>
+                </div>
+                <div className="min-w-0">
+                  <span className="block text-[9px] font-bold text-gray-400 uppercase tracking-wider">Country</span>
+                  <span className="text-gray-600">{r.country}</span>
+                </div>
+                <div className="min-w-0">
+                  <span className="block text-[9px] font-bold text-gray-400 uppercase tracking-wider">Travel Date</span>
+                  <span className="text-gray-600 font-medium">{r.travelDate}</span>
+                </div>
+                <div className="min-w-0">
+                  <span className="block text-[9px] font-bold text-gray-400 uppercase tracking-wider">Travellers</span>
+                  <span className="text-gray-600">{r.travellers}</span>
+                </div>
+                <div className="min-w-0">
+                  <span className="block text-[9px] font-bold text-gray-400 uppercase tracking-wider">Group / Type</span>
+                  <span className="text-gray-600 truncate block">{r.groupSize}</span>
+                </div>
+                <div className="min-w-0">
+                  <span className="block text-[9px] font-bold text-gray-400 uppercase tracking-wider">Price</span>
+                  <span className="font-bold text-gray-700">{formatUsd(r.pp)} PP · Total {formatUsd(r.total)}</span>
+                </div>
+                <div className="min-w-0 col-span-2">
+                  <span className="block text-[9px] font-bold text-gray-400 uppercase tracking-wider">Created</span>
+                  <span className="text-gray-500 font-medium">{formatDateLong(r.createdAt)}</span>
+                </div>
+              </div>
+              <div className="flex items-center gap-2 mt-3 pt-3 border-t border-gray-100">
+                <button type="button" className="button ftb-view-booking" onClick={() => setOpenId(r.id)}>
+                  View Details
+                </button>
+              </div>
+            </div>
+          ))
+        )}
+      </div>
+
       {openRow && (
         <div className="ftb-modal is-open" aria-hidden="false">
           <div className="ftb-modal-backdrop" onClick={() => setOpenId(null)} />

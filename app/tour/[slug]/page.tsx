@@ -137,27 +137,36 @@ export default async function TourDetailPage({ params }: PageProps) {
                 <div className="space-y-2">
                   <h4 className="font-bold text-gray-800 uppercase tracking-wider text-xs">Group-Size Discounts</h4>
                   <p className="text-[10px] text-gray-400">Your group is private - we do not add others to your group.</p>
-                  <div className="overflow-x-auto">
-                  <div className="min-w-[420px] border border-gray-200 rounded-lg overflow-hidden text-[11px]">
-                    <div className="grid grid-cols-4 bg-gray-100 font-bold text-gray-600 p-2 border-b border-gray-200 text-center uppercase tracking-wide">
+                  <div className="border border-gray-200 rounded-lg overflow-hidden text-[11px]">
+                    {/* Desktop Header */}
+                    <div className="hidden md:grid grid-cols-4 bg-gray-100 font-bold text-gray-600 p-2 border-b border-gray-200 text-center uppercase tracking-wide">
                       <span>No. of Persons</span>
                       <span>Group Type</span>
                       <span>Price / Person</span>
                       <span></span>
                     </div>
                     {tour.groupPrices.map((gp: any, i: number) => (
-                      <div key={gp.id} className={`grid grid-cols-4 p-2 text-center text-gray-600 items-center ${i !== tour.groupPrices.length - 1 ? 'border-b border-gray-100' : ''}`}>
-                        <span className="font-semibold">{gp.groupSize}</span>
-                        <span>{gp.groupType}</span>
-                        <span className="text-[#24a0ed] font-bold">{gp.price}</span>
-                        <span>
+                      <div key={gp.id} className={`grid grid-cols-1 md:grid-cols-4 p-2 text-center text-gray-600 items-center ${i !== tour.groupPrices.length - 1 ? 'border-b border-gray-100' : ''}`}>
+                        <div className="space-y-1 md:contents">
+                          <label className="md:hidden block text-[9px] font-bold text-gray-400 uppercase tracking-wider">No. of Persons</label>
+                          <span className="font-semibold">{gp.groupSize}</span>
+                        </div>
+                        <div className="space-y-1 md:contents">
+                          <label className="md:hidden block text-[9px] font-bold text-gray-400 uppercase tracking-wider">Group Type</label>
+                          <span>{gp.groupType}</span>
+                        </div>
+                        <div className="space-y-1 md:contents">
+                          <label className="md:hidden block text-[9px] font-bold text-gray-400 uppercase tracking-wider">Price / Person</label>
+                          <span className="text-[#24a0ed] font-bold">{gp.price}</span>
+                        </div>
+                        <div className="space-y-1 md:contents">
+                          <label className="md:hidden block text-[9px] font-bold text-gray-400 uppercase tracking-wider">Action</label>
                           <Link href={`/booking-form/?trip_id=${tour.id}`} className="text-[#24a0ed] hover:text-[#112233] font-bold underline">
                             Book
                           </Link>
-                        </span>
+                        </div>
                       </div>
                     ))}
-                    </div>
                   </div>
                 </div>
               )}
