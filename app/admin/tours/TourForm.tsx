@@ -2,13 +2,15 @@
 
 import React, { useMemo, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Save, ArrowLeft, Plus, Trash2, Image as ImageIcon, Video, Search, MapPin, ExternalLink } from 'lucide-react';
+import { Save, ArrowLeft, Plus, Trash2, Image as ImageIcon, ExternalLink } from 'lucide-react';
 import Link from 'next/link';
 import TipTapEditor from '@/app/components/admin/TipTapEditor';
 import MediaUploader from '@/app/components/admin/MediaUploader';
 import RouteMapEditor, { EMPTY_ROUTE_MAP } from '@/app/components/admin/RouteMapEditor';
 import FieldGrid from '@/app/components/admin/FieldGrid';
+import SectionCard from '@/app/components/admin/SectionCard';
 import ToggleShow from '../components/ToggleShow';
+import StickySectionNav from '@/app/components/admin/StickySectionNav';
 
 interface TourFormProps {
   initialData?: any;
@@ -418,13 +420,15 @@ export default function TourForm({ initialData, isEditing = false, categories }:
         </div>
       </div>
 
+      <StickySectionNav sections={['Overview', 'Pricing & Booking', 'Itinerary', 'Inclusions', 'Route Map', 'Media', 'Categories', 'SEO']} />
+
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* ============ LEFT / MAIN COLUMN ============ */}
         <div className="lg:col-span-2 space-y-6">
 
-          {/* Title & Permalink */}
-          <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 space-y-4">
-            <h2 className="font-bold text-gray-800 uppercase tracking-wider border-b pb-2">Title &amp; Permalink</h2>
+          {/* Overview group */}
+          <div id="sec-overview" className="space-y-6 scroll-mt-24">
+          <SectionCard title="Title & Permalink" defaultOpen>
             <div>
               <label className="block font-bold text-gray-700 mb-1">Title *</label>
               <input type="text" name="title" value={formData.title} onChange={handleChange} required className="w-full px-4 py-2.5 border border-gray-200 rounded-lg text-sm font-medium focus:outline-none focus:border-[#24a0ed]" />
@@ -437,18 +441,23 @@ export default function TourForm({ initialData, isEditing = false, categories }:
               <label className="block font-bold text-gray-700 mb-1">Short Card Description (Excerpt)</label>
               <TipTapEditor value={formData.description} onChange={(html) => setFormData(prev => ({ ...prev, description: html }))} placeholder="Short excerpt shown on cards..." minHeight="80px" />
             </div>
-          </div>
+          </SectionCard>
 
-          {/* Main Content Editor (Overview) */}
-          <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 space-y-4">
-            <h2 className="font-bold text-gray-800 uppercase tracking-wider border-b pb-2">Trip Overview / Description</h2>
+          <SectionCard title="Trip Overview / Description">
             <TipTapEditor value={formData.overview} onChange={(html) => setFormData(prev => ({ ...prev, overview: html }))} placeholder="Full descriptive overview of the trek..." minHeight="200px" />
+          </SectionCard>
+
+          <SectionCard title="Highlights">
+            <TipTapEditor value={formData.highlights} onChange={(html) => setFormData(prev => ({ ...prev, highlights: html }))} placeholder="Enter trek highlights..." minHeight="120px" />
+            <p className="text-[10px] text-gray-400">Use the bullet list button for each highlight.</p>
+          </SectionCard>
           </div>
 
-          {/* Advanced Pricing / Group Price */}
-          <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 space-y-4">
+          {/* Pricing & Booking group */}
+          <div id="sec-pricing-booking" className="space-y-6 scroll-mt-24">
+          <SectionCard title="Advanced Pricing / Group Price">
             <div className="flex items-center justify-between border-b pb-2">
-              <h2 className="font-bold text-gray-800 uppercase tracking-wider">Advanced Pricing / Group Price</h2>
+              <h3 className="font-bold text-gray-800 uppercase tracking-wider">Advanced Pricing / Group Price</h3>
               <button type="button" onClick={addGroupPriceRow} className="text-[#24a0ed] font-bold flex items-center gap-1">
                 <Plus className="w-3.5 h-3.5" /> Add Row
               </button>
@@ -494,12 +503,11 @@ export default function TourForm({ initialData, isEditing = false, categories }:
                 </div>
               )}
             </div>
-          </div>
+          </SectionCard>
 
-          {/* Group Date Schedule / Departure Slots */}
-          <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 space-y-4">
+          <SectionCard title="Group Date Schedule / Departure Slots">
             <div className="flex items-center justify-between border-b pb-2">
-              <h2 className="font-bold text-gray-800 uppercase tracking-wider">Group Date Schedule / Departure Slots</h2>
+              <h3 className="font-bold text-gray-800 uppercase tracking-wider">Group Date Schedule / Departure Slots</h3>
               <button type="button" onClick={addScheduleRow} className="text-[#24a0ed] font-bold flex items-center gap-1">
                 <Plus className="w-3.5 h-3.5" /> Add Row
               </button>
@@ -529,21 +537,14 @@ export default function TourForm({ initialData, isEditing = false, categories }:
                 </button>
               </div>
             ))}
+          </SectionCard>
           </div>
 
-          {/* Highlights */}
-          <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 space-y-4">
+          {/* Itinerary group */}
+          <div id="sec-itinerary" className="space-y-6 scroll-mt-24">
+          <SectionCard title="Day-by-Day Itinerary">
             <div className="flex items-center justify-between border-b pb-2">
-              <h2 className="font-bold text-gray-800 uppercase tracking-wider">Highlights</h2>
-            </div>
-            <TipTapEditor value={formData.highlights} onChange={(html) => setFormData(prev => ({ ...prev, highlights: html }))} placeholder="Enter trek highlights..." minHeight="120px" />
-            <p className="text-[10px] text-gray-400">Use the bullet list button for each highlight.</p>
-          </div>
-
-          {/* Itinerary */}
-          <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 space-y-4">
-            <div className="flex items-center justify-between border-b pb-2">
-              <h2 className="font-bold text-gray-800 uppercase tracking-wider">Day-by-Day Itinerary</h2>
+              <h3 className="font-bold text-gray-800 uppercase tracking-wider">Day-by-Day Itinerary</h3>
               <button type="button" onClick={addItineraryDay} className="bg-[#112233] text-white px-3 py-1.5 rounded text-[10px] font-bold flex items-center gap-1">
                 <Plus className="w-3.5 h-3.5" /> Add Day
               </button>
@@ -618,12 +619,11 @@ export default function TourForm({ initialData, isEditing = false, categories }:
                 </div>
               </div>
             ))}
-          </div>
+          </SectionCard>
 
-          {/* Altitude Chart (Day Wise) Addon */}
-          <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 space-y-4">
+          <SectionCard title="Altitude Chart (Day Wise)">
             <div className="flex items-center justify-between border-b pb-2">
-              <h2 className="font-bold text-gray-800 uppercase tracking-wider">Tour Details Page Manager - Altitude Chart Addon</h2>
+              <h3 className="font-bold text-gray-800 uppercase tracking-wider">Tour Details Page Manager - Altitude Chart Addon</h3>
               <button type="button" onClick={addAltitudeDay} className="bg-[#112233] text-white px-3 py-1.5 rounded text-[10px] font-bold flex items-center gap-1">
                 <Plus className="w-3.5 h-3.5" /> Add Day
               </button>
@@ -655,48 +655,51 @@ export default function TourForm({ initialData, isEditing = false, categories }:
                 </div>
               </div>
             ))}
+          </SectionCard>
           </div>
 
-          {/* Package Inclusions & Exclusions */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 space-y-4">
-              <div className="flex items-center justify-between border-b pb-2">
-                <h2 className="font-bold text-emerald-700 uppercase tracking-wider">Package Inclusions</h2>
-              </div>
-              <TipTapEditor value={formData.inclusions} onChange={(html) => setFormData(prev => ({ ...prev, inclusions: html }))} placeholder="Enter what is included in the package..." minHeight="150px" />
-              <p className="text-[10px] text-gray-400">Use the bullet list button for each inclusion.</p>
-            </div>
-
-            <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 space-y-4">
-              <div className="flex items-center justify-between border-b pb-2">
-                <h2 className="font-bold text-rose-700 uppercase tracking-wider">Package Exclusions</h2>
-              </div>
-              <TipTapEditor value={formData.exclusions} onChange={(html) => setFormData(prev => ({ ...prev, exclusions: html }))} placeholder="Enter what is excluded from the package..." minHeight="150px" />
-              <p className="text-[10px] text-gray-400">Use the bullet list button for each exclusion.</p>
-            </div>
-          </div>
-
-          {/* Equipment & Packing */}
-          <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 space-y-4">
+          {/* Inclusions group */}
+          <div id="sec-inclusions" className="space-y-6 scroll-mt-24">
+          <SectionCard title="Package Inclusions">
             <div className="flex items-center justify-between border-b pb-2">
-              <h2 className="font-bold text-gray-800 uppercase tracking-wider">Equipment &amp; Trekking Gears</h2>
+              <h3 className="font-bold text-emerald-700 uppercase tracking-wider">Package Inclusions</h3>
+            </div>
+            <TipTapEditor value={formData.inclusions} onChange={(html) => setFormData(prev => ({ ...prev, inclusions: html }))} placeholder="Enter what is included in the package..." minHeight="150px" />
+            <p className="text-[10px] text-gray-400">Use the bullet list button for each inclusion.</p>
+          </SectionCard>
+
+          <SectionCard title="Package Exclusions">
+            <div className="flex items-center justify-between border-b pb-2">
+              <h3 className="font-bold text-rose-700 uppercase tracking-wider">Package Exclusions</h3>
+            </div>
+            <TipTapEditor value={formData.exclusions} onChange={(html) => setFormData(prev => ({ ...prev, exclusions: html }))} placeholder="Enter what is excluded from the package..." minHeight="150px" />
+            <p className="text-[10px] text-gray-400">Use the bullet list button for each exclusion.</p>
+          </SectionCard>
+
+          <SectionCard title="Equipment & Trekking Gears">
+            <div className="flex items-center justify-between border-b pb-2">
+              <h3 className="font-bold text-gray-800 uppercase tracking-wider">Equipment &amp; Trekking Gears</h3>
             </div>
             <TipTapEditor value={formData.packingList} onChange={(html) => setFormData(prev => ({ ...prev, packingList: html }))} placeholder="Enter required equipment & packing list..." minHeight="150px" />
             <p className="text-[10px] text-gray-400">Use the bullet list button for each gear item.</p>
+          </SectionCard>
           </div>
 
-          {/* Detailed Route Map (above Gallery Slider) */}
+          {/* Route Map group */}
+          <div id="sec-route-map" className="scroll-mt-24">
           <RouteMapEditor
             value={formData.routeMap}
             onChange={(v) => setFormData(prev => ({ ...prev, routeMap: v }))}
           />
+          </div>
 
-          {/* Gallery */}
-          <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 space-y-4">
+          {/* Media group */}
+          <div id="sec-media" className="scroll-mt-24">
+          <SectionCard title="Trek Gallery Slider">
             <div className="flex items-center justify-between border-b pb-2">
-              <h2 className="font-bold text-gray-800 uppercase tracking-wider flex items-center gap-2">
+              <h3 className="font-bold text-gray-800 uppercase tracking-wider flex items-center gap-2">
                 <ImageIcon className="w-4 h-4 text-[#24a0ed]" /> Trek Gallery Slider
-              </h2>
+              </h3>
               <button type="button" onClick={() => addListItem('gallery')} className="text-[#24a0ed] font-bold flex items-center gap-1">
                 <Plus className="w-3.5 h-3.5" /> Add Image
               </button>
@@ -714,23 +717,20 @@ export default function TourForm({ initialData, isEditing = false, categories }:
                 </div>
               ))}
             </div>
+          </SectionCard>
           </div>
         </div>
 
         {/* ============ RIGHT SIDEBAR ============ */}
         <div className="space-y-6">
 
-          {/* Featured Image Box */}
-          <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 space-y-4">
-            <h3 className="font-bold text-gray-800 uppercase tracking-wider border-b pb-2">Featured Image *</h3>
+          {/* Media group */}
+          <div id="sec-media" className="scroll-mt-24">
+          <SectionCard title="Featured Image">
             <MediaUploader value={formData.heroImage} onChange={(url) => setFormData(prev => ({ ...prev, heroImage: url }))} heightClass="h-44" />
-          </div>
+          </SectionCard>
 
-          {/* Pricing & Quick Facts */}
-          <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-200 space-y-4">
-            <h3 className="font-bold text-gray-800 uppercase tracking-wider border-b pb-2">Pricing &amp; Quick Facts</h3>
-
-            {/* On-Page Preview (live-derived) */}
+          <SectionCard title="Pricing & Quick Facts">
             <div className="bg-emerald-50 border border-emerald-200 rounded-xl p-4 space-y-3">
               <div className="flex items-center justify-between">
                 <span className="font-bold text-emerald-800 uppercase tracking-wider text-[11px]">On-Page Preview</span>
@@ -853,13 +853,9 @@ export default function TourForm({ initialData, isEditing = false, categories }:
                 heightClass="h-48"
               />
             </div>
-          </div>
+          </SectionCard>
 
-          {/* Trek Video */}
-          <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 space-y-4">
-            <h3 className="font-bold text-gray-800 uppercase tracking-wider border-b pb-2 flex items-center gap-2">
-              <Video className="w-4 h-4 text-[#24a0ed]" /> Trek Video
-            </h3>
+          <SectionCard title="Trek Video">
             <div className="flex gap-3">
               <button
                 type="button"
@@ -895,10 +891,12 @@ export default function TourForm({ initialData, isEditing = false, categories }:
             ) : (
               <MediaUploader type="video" value={formData.videoUrl} onChange={(url) => setFormData(prev => ({ ...prev, videoUrl: url }))} label="Upload Video File (MP4)" heightClass="h-36" />
             )}
+          </SectionCard>
           </div>
 
-          {/* Trekking Categories (Taxonomy Checklist) */}
-          <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 space-y-4">
+          {/* Categories group */}
+          <div id="sec-categories" className="scroll-mt-24">
+          <SectionCard title="Trekking Categories">
             <div className="flex items-center justify-between border-b pb-2">
               <h3 className="font-bold text-gray-800 uppercase tracking-wider">Trekking Categories</h3>
               <Link href="/admin/tour-categories" className="text-[#24a0ed] font-bold text-xs hover:underline flex items-center gap-1">
@@ -931,13 +929,12 @@ export default function TourForm({ initialData, isEditing = false, categories }:
                 + Add
               </button>
             </div>
+          </SectionCard>
           </div>
 
-          {/* SEO Meta Box */}
-          <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 space-y-4">
-            <h3 className="font-bold text-gray-800 uppercase tracking-wider border-b pb-2 flex items-center gap-2">
-              <Search className="w-4 h-4 text-[#24a0ed]" /> SEO Meta Box
-            </h3>
+          {/* SEO group */}
+          <div id="sec-seo" className="scroll-mt-24">
+          <SectionCard title="SEO Meta Box">
             <div>
               <label className="block font-bold text-gray-700 mb-1">Focus Keyphrase</label>
               <input
@@ -971,6 +968,7 @@ export default function TourForm({ initialData, isEditing = false, categories }:
                 className="w-full px-3 py-2 border border-gray-200 rounded-lg"
               />
             </div>
+          </SectionCard>
           </div>
 
         </div>

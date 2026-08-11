@@ -8,13 +8,14 @@ interface Props {
   subtitle?: string;
   defaultOpen?: boolean;
   action?: React.ReactNode;
+  id?: string;
   children: React.ReactNode;
 }
 
-export default function SectionCard({ title, subtitle, defaultOpen = false, action, children }: Props) {
+export default function SectionCard({ title, subtitle, defaultOpen = false, action, id, children }: Props) {
   const [open, setOpen] = useState(defaultOpen);
   return (
-    <div className="bg-white rounded-xl shadow-sm border border-gray-100">
+    <div id={id} className="bg-white rounded-xl shadow-sm border border-gray-100 scroll-mt-24">
       <div className="flex items-center justify-between gap-3 px-4 py-3 sm:px-5">
         <button
           type="button"
