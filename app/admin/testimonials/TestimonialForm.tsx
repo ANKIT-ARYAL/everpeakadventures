@@ -166,7 +166,6 @@ export default function TestimonialForm({ initialData, sectionData, isEditing = 
             <h3 className="font-bold text-gray-800 uppercase tracking-wider border-b pb-2">Client Avatar</h3>
             <MediaUploader value={form.avatar} onChange={(url) => setForm(prev => ({ ...prev, avatar: url }))} label="Upload Avatar" heightClass="h-24" />
           </div>
-          </div>
 
           <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 space-y-4">
             <h3 className="font-bold text-gray-800 uppercase tracking-wider border-b pb-2">Review Attributes</h3>
