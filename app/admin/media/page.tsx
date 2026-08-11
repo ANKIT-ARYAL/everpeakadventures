@@ -1,7 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import { readdir } from "node:fs/promises";
 import path from "node:path";
-import Link from "next/link";
 import { Images } from "lucide-react";
 import MediaGalleryGrid, { GalleryFile } from "@/app/components/admin/MediaGalleryGrid";
 import { IMAGE_SLOTS } from "@/lib/media-slots";
@@ -20,11 +19,12 @@ function collectUsage() {
   const addList = (urls: string[] | undefined, label?: string, type?: string) => {
     (urls || []).forEach((u) => add(u, label, type));
   };
-  const addItineraryGallery = (itinerary: any, label?: string) => {
+  const addItineraryGallery = (itinerary: unknown, label?: string) => {
     if (!Array.isArray(itinerary)) return;
-    itinerary.forEach((day: any, i: number) => {
-      if (day && Array.isArray(day.gallery)) {
-        addList(day.gallery, `${label} · Day ${day.day || i + 1}`, 'Itinerary');
+    itinerary.forEach((day: unknown, i: number) => {
+      if (day && typeof day === 'object' && Array.isArray((day as { gallery?: unknown[] }).gallery)) {
+        const d = day as { gallery: string[]; day?: number };
+        addList(d.gallery, `${label || ''} · Day ${d.day || i + 1}`, 'Itinerary');
       }
     });
   };
@@ -37,7 +37,7 @@ export default async function AdminMediaPage() {
   const [
     treks, tours, blogs, team, reviews, director, aboutContent,
     heroContents, videoBanners, ctaBanners, welcome, subpageHeroes,
-    trustedPartner, legalDocs, site, pageCategories, contentPages,
+    trustedPartner, legalDocs, site, contentPages,
   ] = await Promise.all([
     prisma.trek.findMany(),
     prisma.tour.findMany(),
@@ -54,7 +54,6 @@ export default async function AdminMediaPage() {
     prisma.trustedPartnerContent.findMany(),
     prisma.legalDocument.findMany(),
     prisma.siteSettings.findMany(),
-    prisma.pageCategory.findMany(),
     prisma.contentPage.findMany(),
   ]);
 
@@ -89,7 +88,6 @@ export default async function AdminMediaPage() {
     u.add(s.logoImage, 'Site', 'Logo');
     u.add(s.footerBgImage, 'Site', 'Footer Background');
   });
-  pageCategories.forEach((c) => u.add(null));
   contentPages.forEach((p) => u.add(p.heroImage, p.title, 'Page Hero'));
 
   const assets = await prisma.mediaAsset.findMany({ orderBy: { createdAt: 'desc' } });
@@ -104,6 +102,23 @@ export default async function AdminMediaPage() {
     createdAt: a.createdAt ? a.createdAt.toISOString() : null,
     usedIn: u.usage[a.url] || [],
   }));
+
+  // Content-referenced images (e.g. Unsplash heroes, galleries) that are not
+  // in the media library yet, so the gallery reflects every image used on the site.
+  for (const url of Object.keys(u.usage)) {
+    if (!known.has(url)) {
+      files.push({
+        id: null,
+        url,
+        kind: 'image',
+        originalName: url.split('/').pop() || 'content-image',
+        size: null,
+        createdAt: null,
+        usedIn: u.usage[url] || [],
+      });
+      known.add(url);
+    }
+  }
 
   try {
     const base = path.join(process.cwd(), 'public', 'uploads');

@@ -1,18 +1,18 @@
 import React from 'react';
 
-interface Props {
+interface Props<T> {
   headers: string[];
   rows: React.ReactNode[][];
   /** Original data aligned with `rows`, passed through to `mobileCards`. */
-  data?: unknown[];
-  mobileCards?: (row: React.ReactNode[], data: unknown, index: number) => React.ReactNode;
+  data?: T[];
+  mobileCards?: (row: React.ReactNode[], data: T, index: number) => React.ReactNode;
   emptyText?: string;
   /** Optional class applied to both the `th` and matching `td` of each column. */
   columnClassNames?: (string | undefined)[];
   tableClassName?: string;
 }
 
-export default function ResponsiveTable({
+export default function ResponsiveTable<T>({
   headers,
   rows,
   data,
@@ -20,7 +20,7 @@ export default function ResponsiveTable({
   emptyText = 'No items found.',
   columnClassNames,
   tableClassName,
-}: Props) {
+}: Props<T>) {
   if (rows.length === 0) {
     return (
       <div className="bg-white rounded-xl shadow-sm border border-gray-100">
@@ -52,11 +52,11 @@ export default function ResponsiveTable({
           </table>
         </div>
       </div>
-      {mobileCards && (
+      {mobileCards && data && (
         <div className="md:hidden space-y-3">
           {rows.map((r, i) => (
             <div key={i} className="bg-white rounded-xl shadow-sm border border-gray-100 p-4">
-              {mobileCards(r, data?.[i], i)}
+              {mobileCards(r, data[i] as T, i)}
             </div>
           ))}
         </div>

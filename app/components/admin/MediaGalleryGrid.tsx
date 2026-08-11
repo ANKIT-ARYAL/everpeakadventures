@@ -31,11 +31,13 @@ function errMsg(err: unknown, fallback: string) {
 export default function MediaGalleryGrid({ files, slots }: Props) {
   const router = useRouter();
   const uploadRef = useRef<HTMLInputElement>(null);
+  const dragDepth = useRef(0);
   const [query, setQuery] = useState('');
   const [filter, setFilter] = useState<'all' | 'image' | 'video' | 'unused'>('all');
   const [preview, setPreview] = useState<GalleryFile | null>(null);
   const [uploading, setUploading] = useState(false);
   const [uploadError, setUploadError] = useState('');
+  const [dragging, setDragging] = useState(false);
 
   const filtered = useMemo(() => {
     return files.filter((f) => {
@@ -47,8 +49,7 @@ export default function MediaGalleryGrid({ files, slots }: Props) {
     });
   }, [files, query, filter]);
 
-  const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const filesList = Array.from(e.target.files || []);
+  const doUpload = async (filesList: File[]) => {
     if (filesList.length === 0) return;
     setUploading(true);
     setUploadError('');
@@ -71,8 +72,26 @@ export default function MediaGalleryGrid({ files, slots }: Props) {
     }
   };
 
+  const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    await doUpload(Array.from(e.target.files || []));
+  };
+
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    dragDepth.current = 0;
+    setDragging(false);
+    doUpload(Array.from(e.dataTransfer.files || []));
+  };
+
   return (
-    <div>
+    <>
+      <div
+        onDragEnter={(e) => { e.preventDefault(); dragDepth.current++; setDragging(true); }}
+        onDragLeave={(e) => { e.preventDefault(); dragDepth.current = Math.max(0, dragDepth.current - 1); if (dragDepth.current === 0) setDragging(false); }}
+        onDragOver={(e) => e.preventDefault()}
+        onDrop={handleDrop}
+        className={dragging ? 'bg-blue-50 transition-colors' : 'transition-colors'}
+      >
       <div className="px-5 py-3 border-b border-gray-200 flex flex-col sm:flex-row items-center gap-3">
         <div className="relative flex-1 w-full">
           <Search className="w-4 h-4 text-gray-400 absolute left-3 top-2.5" />
@@ -119,6 +138,28 @@ export default function MediaGalleryGrid({ files, slots }: Props) {
         </div>
       )}
 
+      <div
+        onDragEnter={(e) => { e.preventDefault(); dragDepth.current++; setDragging(true); }}
+        onDragLeave={(e) => { e.preventDefault(); dragDepth.current = Math.max(0, dragDepth.current - 1); if (dragDepth.current === 0) setDragging(false); }}
+        onDragOver={(e) => e.preventDefault()}
+        onDrop={handleDrop}
+        onClick={() => uploadRef.current?.click()}
+        className={`m-5 border-2 border-dashed rounded-xl text-center cursor-pointer transition-colors ${dragging ? 'border-[#24a0ed] bg-blue-50' : 'border-gray-300 hover:border-[#24a0ed] hover:bg-blue-50/40'}`}
+      >
+        {uploading ? (
+          <div className="py-8">
+            <Loader2 className="w-8 h-8 animate-spin text-[#24a0ed] mx-auto mb-2" />
+            <p className="font-bold text-gray-700">Uploading files...</p>
+          </div>
+        ) : (
+          <div className="py-8">
+            <Upload className="w-8 h-8 text-gray-400 mx-auto mb-2" />
+            <p className="font-bold text-gray-700">Drop files here to upload</p>
+            <p className="text-gray-400 text-sm mt-1">or click to browse your computer</p>
+          </div>
+        )}
+      </div>
+
       <div className="p-5">
         {filtered.length === 0 ? (
           <div className="text-center py-16 text-gray-400">No files found.</div>
@@ -146,6 +187,7 @@ export default function MediaGalleryGrid({ files, slots }: Props) {
           </div>
         )}
       </div>
+      </div>
 
       {preview && (
         <FileLightbox
@@ -155,7 +197,7 @@ export default function MediaGalleryGrid({ files, slots }: Props) {
           onClose={() => setPreview(null)}
         />
       )}
-    </div>
+    </>
   );
 }
 
@@ -236,7 +278,7 @@ export function FileLightbox({ file, slots, onClose }: { file: GalleryFile; slot
   };
 
   const deleteFile = async () => {
-    if (!file.id) return;
+    if (!file.id && !file.url.startsWith('/uploads')) return;
     const warn = file.usedIn.length > 0
       ? `This file is used in ${file.usedIn.length} place${file.usedIn.length > 1 ? 's' : ''}. Deleting it will break those pages. Delete anyway?`
       : 'Delete this file permanently?';
@@ -244,7 +286,13 @@ export function FileLightbox({ file, slots, onClose }: { file: GalleryFile; slot
     setDeleting(true);
     setActionError('');
     try {
-      const res = await fetch(`/api/media/${file.id}`, { method: 'DELETE' });
+      const res = file.id
+        ? await fetch(`/api/media/${file.id}`, { method: 'DELETE' })
+        : await fetch('/api/media', {
+            method: 'DELETE',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ url: file.url }),
+          });
       const data = await res.json();
       if (!res.ok || !data.success) throw new Error(data.error || 'Delete failed');
       onClose();
@@ -382,13 +430,15 @@ export function FileLightbox({ file, slots, onClose }: { file: GalleryFile; slot
 
             <button
               onClick={deleteFile}
-              disabled={!file.id || deleting}
+              disabled={!file.id && !file.url.startsWith('/uploads') || deleting}
               className="inline-flex items-center justify-center gap-1.5 w-full text-xs font-bold bg-rose-50 text-rose-600 border border-rose-100 rounded-lg px-3 py-2 hover:bg-rose-100 disabled:opacity-50"
             >
               {deleting ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Trash2 className="w-3.5 h-3.5" />}
               {deleting ? 'Deleting...' : 'Delete file permanently'}
             </button>
-            {!file.id && <p className="text-[10px] text-gray-400 text-center">Only files uploaded through the admin can be deleted from here.</p>}
+            {!file.id && !file.url.startsWith('/uploads') && (
+              <p className="text-[10px] text-gray-400 text-center">Only files stored on this website can be deleted from here.</p>
+            )}
           </div>
         )}
       </div>

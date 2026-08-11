@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useSyncExternalStore } from 'react';
 import { useEditor, EditorContent } from '@tiptap/react';
 import StarterKit from '@tiptap/starter-kit';
 import Underline from '@tiptap/extension-underline';
@@ -16,7 +16,7 @@ import MediaLibraryModal from './MediaLibraryModal';
 import {
   Bold, Italic, Underline as UnderlineIcon, Strikethrough, Heading1, Heading2, Heading3,
   List, ListOrdered, Link2, Link2Off, Undo2, Redo2, RemoveFormatting, Quote, Code2,
-  Image as ImageIcon, AlignLeft, AlignCenter, AlignRight, Minus, Loader2, Image as AddMediaIcon,
+  AlignLeft, AlignCenter, AlignRight, Minus, Image as AddMediaIcon,
 } from 'lucide-react';
 
 // --- Custom Font Size extension (uses TextStyle mark) ---
@@ -66,8 +66,10 @@ interface Props {
 
 const FONT_SIZES = ['12px', '14px', '16px', '18px', '20px', '24px', '28px', '32px', '36px', '42px', '48px'];
 
+const emptySubscribe = () => () => {};
+
 export default function TipTapEditor({ value, onChange, placeholder = '', minHeight = '120px' }: Props) {
-  const [mounted, setMounted] = useState(false);
+  const mounted = useSyncExternalStore(emptySubscribe, () => true, () => false);
   const [uploading, setUploading] = useState(false);
   const [mediaModalOpen, setMediaModalOpen] = useState(false);
 
@@ -147,8 +149,6 @@ export default function TipTapEditor({ value, onChange, placeholder = '', minHei
     },
   });
 
-  useEffect(() => setMounted(true), []);
-
   useEffect(() => {
     if (editor && editor.getHTML() !== value) {
       editor.commands.setContent(value || '', { emitUpdate: false });
@@ -165,26 +165,6 @@ export default function TipTapEditor({ value, onChange, placeholder = '', minHei
       return;
     }
     editor.chain().focus().extendMarkRange('link').setLink({ href: url }).run();
-  };
-
-  const pickImage = () => {
-    const input = document.createElement('input');
-    input.type = 'file';
-    input.accept = 'image/*';
-    input.onchange = async () => {
-      const file = input.files?.[0];
-      if (!file) return;
-      setUploading(true);
-      try {
-        const url = await uploadAndInsert(file);
-        editor?.chain().focus().setImage({ src: url }).run();
-      } catch {
-        // noop
-      } finally {
-        setUploading(false);
-      }
-    };
-    input.click();
   };
 
   const handleMediaSelect = (url: string) => {
@@ -293,11 +273,6 @@ export default function TipTapEditor({ value, onChange, placeholder = '', minHei
           <AlignRight className="w-3.5 h-3.5" />
         </button>
         <span className="w-px h-4 bg-gray-300 mx-1" />
-
-        {/* Image upload */}
-        <button type="button" className={`${toolBtn(editor?.isActive('image'))} relative`} onMouseDown={(e) => e.preventDefault()} onClick={pickImage} title="Upload Image" disabled={uploading}>
-          {uploading ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <ImageIcon className="w-3.5 h-3.5" />}
-        </button>
 
         {/* Add Media from Library */}
         <button type="button" className={toolBtn()} onMouseDown={(e) => e.preventDefault()} onClick={() => setMediaModalOpen(true)} title="Add Media" disabled={uploading}>

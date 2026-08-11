@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { readdir } from 'node:fs/promises';
+import { readdir, unlink } from 'node:fs/promises';
 import path from 'node:path';
 import { requireAdmin } from "@/app/lib/require-admin";
 import { prisma } from '@/lib/prisma';
@@ -56,6 +56,15 @@ async function collectContentImages() {
   return urls;
 }
 
+interface MediaFile {
+  url: string;
+  kind: string;
+  originalName: string | null;
+  size: number | null;
+  createdAt: Date | string | null;
+  source?: string;
+}
+
 export async function GET() {
   const unauthorized = await requireAdmin("media", "view");
   if (unauthorized) return unauthorized;
@@ -67,7 +76,7 @@ export async function GET() {
   const contentImageUrls = await collectContentImages();
   contentImageUrls.forEach(u => known.add(u));
 
-  const files: any[] = assets.map((a) => ({
+  const files: MediaFile[] = assets.map((a) => ({
     url: a.url,
     kind: a.kind,
     originalName: a.originalName,
@@ -118,4 +127,41 @@ export async function GET() {
   }
 
   return NextResponse.json({ success: true, files });
+}
+
+const PUBLIC_DIR = path.join(process.cwd(), 'public');
+
+async function deleteFileFromDisk(url?: string | null) {
+  if (!url || !url.startsWith('/uploads')) return;
+  try {
+    await unlink(path.join(PUBLIC_DIR, url));
+  } catch {
+    // file already gone or not on disk
+  }
+}
+
+// Delete by URL, used for legacy files that only exist on disk (no DB record).
+export async function DELETE(request: Request) {
+  const unauthorized = await requireAdmin('media', 'delete');
+  if (unauthorized) return unauthorized;
+
+  try {
+    const { url } = await request.json().catch(() => ({}));
+    if (typeof url !== 'string' || !url) {
+      return NextResponse.json({ success: false, error: 'Missing url' }, { status: 400 });
+    }
+
+    const asset = await prisma.mediaAsset.findFirst({ where: { url } });
+    if (asset) {
+      await deleteFileFromDisk(asset.url);
+      await prisma.mediaAsset.delete({ where: { id: asset.id } });
+    } else {
+      await deleteFileFromDisk(url);
+    }
+
+    return NextResponse.json({ success: true, message: 'File deleted' });
+  } catch (error) {
+    console.error('Media delete failed:', error);
+    return NextResponse.json({ success: false, error: 'Delete failed' }, { status: 500 });
+  }
 }

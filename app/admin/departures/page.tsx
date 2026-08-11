@@ -151,7 +151,7 @@ export default async function AdminDeparturesPage() {
       <div className="bg-blue-50 border border-blue-200 rounded-xl p-4 flex items-start gap-3 text-blue-800">
         <CalendarDays className="w-5 h-5 shrink-0 mt-0.5" />
         <p className="text-[11px] leading-relaxed">
-          The frontend only shows departures in the next 2 years. Recurring departures ("Every Year") automatically get a new
+          The frontend only shows departures in the next 2 years. Recurring departures (&quot;Every Year&quot;) automatically get a new
           dated instance created for each upcoming year, so you never have to re-enter them.
         </p>
       </div>
