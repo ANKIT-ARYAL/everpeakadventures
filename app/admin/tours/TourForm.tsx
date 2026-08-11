@@ -7,10 +7,12 @@ import Link from 'next/link';
 import TipTapEditor from '@/app/components/admin/TipTapEditor';
 import MediaUploader from '@/app/components/admin/MediaUploader';
 import RouteMapEditor, { EMPTY_ROUTE_MAP } from '@/app/components/admin/RouteMapEditor';
+import FieldGrid from '@/app/components/admin/FieldGrid';
 
 interface TourFormProps {
   initialData?: any;
   isEditing?: boolean;
+  categories?: { name: string; slug: string; description?: string | null; image?: string | null }[];
 }
 
 const PRIMARY_DESTINATIONS = ['Nepal', 'Bhutan', 'Tibet'];
@@ -45,11 +47,18 @@ const REGION_FROM_SLUG: Record<string, string> = Object.fromEntries(
   Object.entries(REGION_SLUGS).map(([k, v]) => [v, k])
 );
 
-export default function TourForm({ initialData, isEditing = false }: TourFormProps) {
+export default function TourForm({ initialData, isEditing = false, categories }: TourFormProps) {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [newRegion, setNewRegion] = useState('');
   const [newPrimaryDestination, setNewPrimaryDestination] = useState('');
+
+  const categoryOptions = categories && categories.length > 0
+    ? categories.map((c) => c.name)
+    : REGION_CATEGORIES;
+
+  const [customCategories, setCustomCategories] = useState<string[]>([]);
+  const allOptions = [...new Set([...categoryOptions, ...customCategories])];
 
   const [formData, setFormData] = useState({
     title: initialData?.title || '',
@@ -77,6 +86,12 @@ export default function TourForm({ initialData, isEditing = false }: TourFormPro
     activity: initialData?.activity || '',
     groupSize: initialData?.groupSize || '1 - 10',
     transport: initialData?.transport || '',
+    rate: initialData?.rate ?? '',
+    rating: initialData?.rating ?? '',
+    altitudeData:
+      Array.isArray(initialData?.altitudeData) && initialData.altitudeData.length > 0
+        ? initialData.altitudeData
+        : [{ day: 1, place: '', altitude: '', note: '' }],
     mapUrl: initialData?.mapUrl || '',
     mapImage: initialData?.mapImage || '',
     routeMap:
@@ -135,7 +150,7 @@ export default function TourForm({ initialData, isEditing = false }: TourFormPro
     setFormData(prev => ({
       ...prev,
       [name]:
-        name === 'order' || name === 'price' || name === 'discountedPrice' || name === 'originalPrice'
+        name === 'order' || name === 'price' || name === 'discountedPrice' || name === 'originalPrice' || name === 'rate' || name === 'rating'
           ? Number(value)
           : value,
       ...(name === 'title' && !isEditing
@@ -220,10 +235,10 @@ export default function TourForm({ initialData, isEditing = false }: TourFormPro
   };
 
   const addNewRegion = () => {
-    if (newRegion.trim() && !formData.regions.includes(newRegion.trim())) {
-      setFormData(prev => ({ ...prev, regions: [...prev.regions, newRegion.trim()] }));
-      setNewRegion('');
-    }
+    const v = newRegion.trim();
+    if (v && !allOptions.includes(v)) setCustomCategories(prev => [...prev, v]);
+    if (v && !formData.regions.includes(v)) toggleRegion(v);
+    setNewRegion('');
   };
 
   const addNewPrimaryDestination = () => {
@@ -253,6 +268,28 @@ export default function TourForm({ initialData, isEditing = false }: TourFormPro
       ...prev,
       itinerary: prev.itinerary.filter((_: any, i: number) => i !== index).map((item: any, idx: number) => ({ ...item, day: idx + 1 })),
     }));
+  };
+
+  const removeAltitudeDay = (index: number) => {
+    setFormData(prev => ({
+      ...prev,
+      altitudeData: prev.altitudeData.filter((_: any, i: number) => i !== index).map((item: any, idx: number) => ({ ...item, day: idx + 1 })),
+    }));
+  };
+
+  const addAltitudeDay = () => {
+    setFormData(prev => ({
+      ...prev,
+      altitudeData: [...prev.altitudeData, { day: prev.altitudeData.length + 1, place: '', altitude: '', note: '' }],
+    }));
+  };
+
+  const handleAltitudeChange = (index: number, key: string, value: any) => {
+    setFormData(prev => {
+      const updated = [...prev.altitudeData];
+      updated[index][key] = value;
+      return { ...prev, altitudeData: updated };
+    });
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -520,13 +557,100 @@ export default function TourForm({ initialData, isEditing = false }: TourFormPro
                   )}
                 </div>
                 <input type="text" value={dayObj.title} onChange={(e) => handleItineraryChange(idx, 'title', e.target.value)} placeholder="Day title (e.g. Arrival in Kathmandu)" className="w-full px-3 py-2 border border-gray-200 rounded-lg bg-white" />
+                <FieldGrid cols={4}>
+                  <div>
+                    <label className="block font-bold text-gray-600 mb-1 text-[10px] uppercase tracking-wider">Starting Point</label>
+                    <input type="text" value={dayObj.startPoint ?? ''} onChange={(e) => handleItineraryChange(idx, 'startPoint', e.target.value)} placeholder="Kathmandu" className="w-full px-3 py-2 border border-gray-200 rounded-lg bg-white" />
+                  </div>
+                  <div>
+                    <label className="block font-bold text-gray-600 mb-1 text-[10px] uppercase tracking-wider">Ending Point</label>
+                    <input type="text" value={dayObj.endPoint ?? ''} onChange={(e) => handleItineraryChange(idx, 'endPoint', e.target.value)} placeholder="Phakding" className="w-full px-3 py-2 border border-gray-200 rounded-lg bg-white" />
+                  </div>
+                  <div>
+                    <label className="block font-bold text-gray-600 mb-1 text-[10px] uppercase tracking-wider">Distance</label>
+                    <input type="text" value={dayObj.distance ?? ''} onChange={(e) => handleItineraryChange(idx, 'distance', e.target.value)} placeholder="Approx. 8 km" className="w-full px-3 py-2 border border-gray-200 rounded-lg bg-white" />
+                  </div>
+                  <div>
+                    <label className="block font-bold text-gray-600 mb-1 text-[10px] uppercase tracking-wider">Duration / Hours</label>
+                    <input type="text" value={dayObj.hours ?? ''} onChange={(e) => handleItineraryChange(idx, 'hours', e.target.value)} placeholder="30-minute flight &amp; 3-4 hrs trek" className="w-full px-3 py-2 border border-gray-200 rounded-lg bg-white" />
+                  </div>
+                </FieldGrid>
                 <div className="flex items-center gap-2">
                   <div className="flex-1">
                     <label className="block font-bold text-gray-600 mb-1 text-[10px] uppercase tracking-wider">Elevation (metres)</label>
                     <input type="number" value={dayObj.elev ?? ''} onChange={(e) => handleItineraryChange(idx, 'elev', Number(e.target.value))} placeholder="e.g. 3440" className="w-full px-3 py-2 border border-gray-200 rounded-lg bg-white" />
                   </div>
                 </div>
-                <TipTapEditor value={dayObj.desc} onChange={(html) => handleItineraryChange(idx, 'desc', html)} placeholder="Day description..." />
+                <TipTapEditor value={dayObj.desc} onChange={(html) => handleItineraryChange(idx, 'desc', html)} placeholder="Day description (focus line)..." />
+                <div>
+                  <label className="block font-bold text-gray-600 mb-1 text-[10px] uppercase tracking-wider">Important Note</label>
+                  <input type="text" value={dayObj.note ?? ''} onChange={(e) => handleItineraryChange(idx, 'note', e.target.value)} placeholder="e.g. Keep your day flexible." className="w-full px-3 py-2 border border-gray-200 rounded-lg bg-white" />
+                </div>
+                <div>
+                  <label className="block font-bold text-gray-600 mb-1 text-[10px] uppercase tracking-wider">Day Gallery Images</label>
+                  <div className="space-y-2">
+                    {(Array.isArray(dayObj.gallery) ? dayObj.gallery : dayObj.gallery ? [dayObj.gallery] : []).map((gUrl: string, gi: number) => (
+                      <MediaUploader
+                        key={gi}
+                        value={gUrl}
+                        onChange={(url) => {
+                          const arr: string[] = Array.isArray(dayObj.gallery) ? [...dayObj.gallery] : [];
+                          arr[gi] = url;
+                          handleItineraryChange(idx, 'gallery', arr.filter(Boolean));
+                        }}
+                        heightClass="h-28"
+                      />
+                    ))}
+                    <button
+                      type="button"
+                      onClick={() => {
+                        const arr: string[] = Array.isArray(dayObj.gallery) ? [...dayObj.gallery] : [];
+                        arr.push('');
+                        handleItineraryChange(idx, 'gallery', arr);
+                      }}
+                      className="text-[#24a0ed] font-bold flex items-center gap-1"
+                    >
+                      <Plus className="w-3.5 h-3.5" /> Add Image
+                    </button>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* Altitude Chart (Day Wise) Addon */}
+          <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 space-y-4">
+            <div className="flex items-center justify-between border-b pb-2">
+              <h2 className="font-bold text-gray-800 uppercase tracking-wider">Tour Details Page Manager - Altitude Chart Addon</h2>
+              <button type="button" onClick={addAltitudeDay} className="bg-[#112233] text-white px-3 py-1.5 rounded text-[10px] font-bold flex items-center gap-1">
+                <Plus className="w-3.5 h-3.5" /> Add Day
+              </button>
+            </div>
+            <p className="text-gray-400 text-[11px] -mt-2">Use day number to control order. Empty rows are ignored on save.</p>
+            {formData.altitudeData.map((ad: any, idx: number) => (
+              <div key={idx} className="p-4 rounded-xl border border-gray-100 bg-gray-50/50 space-y-3 relative">
+                <div className="flex items-center justify-between">
+                  <span className="font-bold text-gray-700">Day {ad.day || idx + 1}</span>
+                  {formData.altitudeData.length > 1 && (
+                    <button type="button" onClick={() => removeAltitudeDay(idx)} className="text-red-500 hover:text-red-700 flex items-center gap-1 font-bold">
+                      <Trash2 className="w-3 h-3" /> Remove
+                    </button>
+                  )}
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                  <div>
+                    <label className="block font-bold text-gray-600 mb-1 text-[10px] uppercase tracking-wider">Place</label>
+                    <input type="text" value={ad.place ?? ''} onChange={(e) => handleAltitudeChange(idx, 'place', e.target.value)} placeholder="e.g. Koto" className="w-full px-3 py-2 border border-gray-200 rounded-lg bg-white" />
+                  </div>
+                  <div>
+                    <label className="block font-bold text-gray-600 mb-1 text-[10px] uppercase tracking-wider">Altitude (m)</label>
+                    <input type="text" value={ad.altitude ?? ''} onChange={(e) => handleAltitudeChange(idx, 'altitude', e.target.value)} placeholder="e.g. 1300" className="w-full px-3 py-2 border border-gray-200 rounded-lg bg-white" />
+                  </div>
+                  <div className="md:col-span-1">
+                    <label className="block font-bold text-gray-600 mb-1 text-[10px] uppercase tracking-wider">Day Note</label>
+                    <input type="text" value={ad.note ?? ''} onChange={(e) => handleAltitudeChange(idx, 'note', e.target.value)} placeholder="Arrival and trek..." className="w-full px-3 py-2 border border-gray-200 rounded-lg bg-white" />
+                  </div>
+                </div>
               </div>
             ))}
           </div>
@@ -558,6 +682,12 @@ export default function TourForm({ initialData, isEditing = false }: TourFormPro
             <TipTapEditor value={formData.packingList} onChange={(html) => setFormData(prev => ({ ...prev, packingList: html }))} placeholder="Enter required equipment & packing list..." minHeight="150px" />
             <p className="text-[10px] text-gray-400">Use the bullet list button for each gear item.</p>
           </div>
+
+          {/* Detailed Route Map (above Gallery Slider) */}
+          <RouteMapEditor
+            value={formData.routeMap}
+            onChange={(v) => setFormData(prev => ({ ...prev, routeMap: v }))}
+          />
 
           {/* Gallery */}
           <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 space-y-4">
@@ -681,6 +811,14 @@ export default function TourForm({ initialData, isEditing = false }: TourFormPro
                 <input type="text" name="transport" value={formData.transport} onChange={handleChange} placeholder="Flight / Bus" className="w-full px-3 py-2 border border-gray-200 rounded-lg" />
               </div>
               <div>
+                <label className="block font-bold text-gray-700 mb-1">Rating Number</label>
+                <input type="number" step="0.01" name="rate" value={formData.rate} onChange={handleChange} placeholder="e.g. 4.8" className="w-full px-3 py-2 border border-gray-200 rounded-lg" />
+              </div>
+              <div>
+                <label className="block font-bold text-gray-700 mb-1">Rating out of 5</label>
+                <input type="number" step="0.01" name="rating" value={formData.rating} onChange={handleChange} placeholder="e.g. 5" className="w-full px-3 py-2 border border-gray-200 rounded-lg" />
+              </div>
+              <div>
                 <label className="block font-bold text-gray-700 mb-1">Display Order</label>
                 <input type="number" name="order" value={formData.order} onChange={handleChange} className="w-full px-3 py-2 border border-gray-200 rounded-lg bg-gray-50" />
               </div>
@@ -698,8 +836,8 @@ export default function TourForm({ initialData, isEditing = false }: TourFormPro
             </label>
 
             <div>
-              <label className="block font-bold text-gray-700 mb-1">Elevation Map URL</label>
-              <input type="url" name="mapUrl" value={formData.mapUrl} onChange={handleChange} placeholder="https://..." className="w-full px-3 py-2 border border-gray-200 rounded-lg" />
+              <label className="block font-bold text-gray-700 mb-1">Elevation Map Image</label>
+              <MediaUploader value={formData.mapUrl} onChange={(url) => setFormData(prev => ({ ...prev, mapUrl: url }))} label="Upload Elevation Map Image" heightClass="h-36" />
             </div>
 
             <div>
@@ -759,9 +897,14 @@ export default function TourForm({ initialData, isEditing = false }: TourFormPro
 
           {/* Trekking Categories (Taxonomy Checklist) */}
           <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 space-y-4">
-            <h3 className="font-bold text-gray-800 uppercase tracking-wider border-b pb-2">Trekking Categories</h3>
+            <div className="flex items-center justify-between border-b pb-2">
+              <h3 className="font-bold text-gray-800 uppercase tracking-wider">Trekking Categories</h3>
+              <Link href="/admin/tour-categories" className="text-[#24a0ed] font-bold text-xs hover:underline flex items-center gap-1">
+                <ExternalLink className="w-3.5 h-3.5" /> Manage Categories
+              </Link>
+            </div>
             <div className="max-h-64 overflow-y-auto space-y-2">
-              {REGION_CATEGORIES.map((cat) => (
+              {allOptions.map((cat) => (
                 <label key={cat} className="flex items-center gap-2.5 cursor-pointer p-2 rounded-lg hover:bg-gray-50">
                   <input
                     type="checkbox"
@@ -772,6 +915,19 @@ export default function TourForm({ initialData, isEditing = false }: TourFormPro
                   <span className="font-medium text-gray-700">{cat}</span>
                 </label>
               ))}
+            </div>
+            <div className="flex items-center gap-2 pt-2 border-t border-gray-100">
+              <input
+                type="text"
+                value={newRegion}
+                onChange={(e) => setNewRegion(e.target.value)}
+                onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); addNewRegion(); } }}
+                placeholder="Add a new category name…"
+                className="flex-1 px-3 py-2 border border-gray-200 rounded-lg text-sm outline-none focus:border-[#24a0ed]"
+              />
+              <button type="button" onClick={addNewRegion} className="bg-[#112233] text-white px-3 py-2 rounded-lg text-xs font-bold whitespace-nowrap hover:bg-[#1e3a52]">
+                + Add
+              </button>
             </div>
           </div>
 
@@ -814,12 +970,6 @@ export default function TourForm({ initialData, isEditing = false }: TourFormPro
               />
             </div>
           </div>
-
-          {/* Detailed Route Map */}
-          <RouteMapEditor
-            value={formData.routeMap}
-            onChange={(v) => setFormData(prev => ({ ...prev, routeMap: v }))}
-          />
 
         </div>
       </div>
