@@ -65,7 +65,7 @@ export default function TeamForm({ initialData, isEditing = false }: Props) {
       <Toaster position="top-center" />
       
       {/* Top Bar */}
-      <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 flex items-center justify-between">
+      <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div className="flex items-center gap-3">
           <Link href="/admin/team" className="p-2 bg-gray-100 rounded-lg hover:bg-gray-200">
             <ArrowLeft className="w-4 h-4" />

@@ -11,7 +11,7 @@ export default async function AdminContactSubmissionsPage() {
     <div className="space-y-6 max-w-[1400px] mx-auto text-xs">
 
       {/* Top Header Bar */}
-      <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 flex items-center justify-between gap-4">
+      <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div className="flex items-center gap-3">
           <h1 className="text-2xl font-black text-[#112233] oswald uppercase tracking-wide">Contact Submissions</h1>
           <span className="bg-gray-100 text-gray-600 font-bold px-2.5 py-0.5 rounded-full">

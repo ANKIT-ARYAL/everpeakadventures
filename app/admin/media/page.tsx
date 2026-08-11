@@ -185,7 +185,7 @@ export default async function AdminMediaPage() {
             Every image and video uploaded through the admin, with where each one is used.
           </p>
         </div>
-        <div className="flex items-center gap-3">
+        <div className="flex flex-wrap items-center gap-3">
           <span className="bg-gray-100 text-gray-600 font-bold px-3 py-1.5 rounded-full">{totalFiles} files</span>
           <span className="bg-emerald-50 text-emerald-700 font-bold px-3 py-1.5 rounded-full">{usedCount} in use</span>
           <span className="bg-orange-50 text-orange-600 font-bold px-3 py-1.5 rounded-full">{totalFiles - usedCount} unused</span>

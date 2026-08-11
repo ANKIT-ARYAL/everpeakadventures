@@ -85,7 +85,7 @@ export default function PrivacyPolicyPage() {
     <form onSubmit={handleSubmit} className="max-w-5xl mx-auto space-y-6 text-xs text-gray-800 font-sans pb-20">
       <Toaster position="top-center" />
       
-      <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 flex items-center justify-between">
+      <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div className="flex items-center gap-3">
           <Link href="/admin" className="p-2 bg-gray-100 rounded-lg hover:bg-gray-200">
             <ArrowLeft className="w-4 h-4" />

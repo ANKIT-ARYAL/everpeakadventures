@@ -53,7 +53,7 @@ export default async function AdminTestimonialsPage() {
           <p className="text-gray-500 mt-1">Manage client reviews, testimonials, and section headings.</p>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2">
           <Link
             href="/admin/testimonials/new"
             className="border border-gray-200 text-gray-700 font-bold text-xs px-4 py-2.5 rounded-lg hover:bg-gray-50 flex items-center gap-2 uppercase tracking-wider"

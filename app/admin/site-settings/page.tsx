@@ -165,7 +165,7 @@ export default function SiteSettingsPage() {
       <Toaster position="top-center" />
       
       {/* Top Bar */}
-      <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 flex items-center justify-between">
+      <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div className="flex items-center gap-3">
           <Link href="/admin" className="p-2 bg-gray-100 rounded-lg hover:bg-gray-200">
             <ArrowLeft className="w-4 h-4" />
@@ -288,7 +288,7 @@ export default function SiteSettingsPage() {
             </div>
 
             {col.links.map((link, li) => (
-              <div key={li} className="flex items-center gap-2">
+              <div key={li} className="flex flex-col sm:flex-row items-start sm:items-center gap-2">
                 <input
                   type="text"
                   value={link.label}
@@ -334,8 +334,8 @@ export default function SiteSettingsPage() {
 
           {form.footerLogos[group].map((logo, li) => (
             <div key={li} className="border border-gray-200 rounded-lg p-4 space-y-3">
-              <div className="flex items-start gap-2">
-                <div className="flex-1 space-y-2">
+              <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2">
+                <div className="flex-1 w-full space-y-2">
                   <input
                     type="text"
                     value={logo.label}

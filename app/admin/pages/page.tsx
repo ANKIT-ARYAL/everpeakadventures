@@ -46,7 +46,7 @@ export default async function AdminPagesPage() {
   }
 
   const renderPage = (p: any) => (
-    <div key={p.id} className="flex items-center justify-between px-4 sm:pl-16 pr-4 py-3 border-b border-gray-100 last:border-b-0">
+    <div key={p.id} className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 px-4 sm:pl-16 pr-4 py-3 border-b border-gray-100 last:border-b-0">
       <div className="flex items-center gap-3 min-w-0">
         <FileText className="w-4 h-4 text-indigo-400 shrink-0" />
         <div className="min-w-0">

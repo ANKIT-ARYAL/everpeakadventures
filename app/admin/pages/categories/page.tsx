@@ -45,7 +45,7 @@ export default async function AdminPageCategoriesPage() {
 
         {roots.map((root) => (
           <div key={root.id} className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-            <div className="flex items-center justify-between p-4 bg-[#f8f9fa] border-b border-gray-200">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 p-4 bg-[#f8f9fa] border-b border-gray-200">
               <div className="flex items-center gap-3 min-w-0">
                 <Folder className="w-5 h-5 text-indigo-500 shrink-0" />
                 <div className="min-w-0">
@@ -53,7 +53,7 @@ export default async function AdminPageCategoriesPage() {
                   <div className="text-xs text-gray-400">{root.slug} · {root._count.pages} pages · {root._count.children} sub-categories</div>
                 </div>
               </div>
-              <div className="flex items-center gap-2 shrink-0">
+              <div className="flex flex-wrap items-center gap-2 shrink-0 w-full sm:w-auto">
                 <Link href="/admin/pages/categories/new" className="text-indigo-600 font-bold text-xs px-2 py-1.5 rounded hover:bg-indigo-50">
                   + Sub Category / Page
                 </Link>
@@ -67,7 +67,7 @@ export default async function AdminPageCategoriesPage() {
             </div>
 
             {(childrenByParent.get(root.id) || []).map((child) => (
-              <div key={child.id} className="flex items-center justify-between pl-10 pr-4 py-3 border-b border-gray-100 last:border-b-0">
+              <div key={child.id} className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 pl-10 pr-4 py-3 border-b border-gray-100 last:border-b-0">
                 <div className="flex items-center gap-3 min-w-0">
                   <span className="w-4 h-px bg-gray-300 shrink-0" />
                   <Folder className="w-4 h-4 text-indigo-400 shrink-0" />
@@ -76,7 +76,7 @@ export default async function AdminPageCategoriesPage() {
                     <div className="text-xs text-gray-400">{child.slug} · {child._count.pages} pages</div>
                   </div>
                 </div>
-                <div className="flex items-center gap-2 shrink-0">
+                <div className="flex flex-wrap items-center gap-2 shrink-0 w-full sm:w-auto">
                   <Link href="/admin/pages/new" className="text-indigo-600 font-bold text-xs px-2 py-1.5 rounded hover:bg-indigo-50">
                     + Page
                   </Link>

@@ -30,7 +30,7 @@ export default async function AdminWhyChooseUsPage() {
     <div className="space-y-6 max-w-[1400px] mx-auto text-xs">
       
       {/* Top Header Bar */}
-      <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 flex items-center justify-between">
+      <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div>
           <h1 className="text-2xl font-black text-[#112233] oswald uppercase tracking-wide">Why Choose Us</h1>
           <p className="text-gray-500 mt-1">Manage the Why Choose Us section content, items, and features grid.</p>

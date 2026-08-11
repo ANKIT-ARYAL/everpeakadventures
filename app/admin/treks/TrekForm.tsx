@@ -388,7 +388,7 @@ export default function TrekForm({ initialData, isEditing = false, categories }:
     <form onSubmit={handleSubmit} className="max-w-[1200px] mx-auto space-y-6 pb-20 text-xs font-sans text-gray-800">
 
       {/* Top Header Actions */}
-      <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 flex items-center justify-between">
+      <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div className="flex items-center gap-3">
           <Link href="/admin/treks" className="p-2 rounded-lg bg-gray-100 text-gray-600 hover:bg-gray-200 transition-colors">
             <ArrowLeft className="w-4 h-4" />
@@ -398,7 +398,7 @@ export default function TrekForm({ initialData, isEditing = false, categories }:
           </h1>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="w-full sm:w-auto flex flex-wrap items-center gap-2">
           {isEditing && <ToggleShow model="treks" resource="treks" id={initialData?.id as string} published={initialData?.published ?? true} />}
           {isEditing && formData.slug && (
             <Link
@@ -789,7 +789,7 @@ export default function TrekForm({ initialData, isEditing = false, categories }:
               </p>
             </div>
 
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div>
                 <label className="block font-bold text-gray-700 mb-1">Regular Price</label>
                 <input type="number" name="originalPrice" value={formData.originalPrice} onChange={handleChange} placeholder="2975" className="w-full px-3 py-2 border border-gray-200 rounded-lg font-bold text-gray-400" />

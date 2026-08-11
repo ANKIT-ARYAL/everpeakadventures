@@ -101,7 +101,7 @@ export default async function AdminDashboardPage() {
       {/* Dynamic System & Hosting Summary Box */}
       {systemSetting && (
       <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
-        <div className="flex items-center justify-between mb-4">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 mb-4">
           <h2 className="font-bold text-gray-800 uppercase tracking-wider flex items-center gap-2">
             <Database className="w-4 h-4 text-[#2271b1]" /> System & Hosting Summary (Dynamic)
           </h2>
@@ -177,7 +177,7 @@ export default async function AdminDashboardPage() {
     {/* Recent Booking Requests Notification */}
       {can("bookings") && (
       <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
-        <div className="flex items-center justify-between mb-4">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 mb-4">
           <h2 className="font-bold text-gray-800 uppercase tracking-wider flex items-center gap-2">
             <Briefcase className="w-4 h-4 text-orange-500" /> Recent Booking Requests
           </h2>
