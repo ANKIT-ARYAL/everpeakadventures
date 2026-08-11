@@ -6,6 +6,7 @@ import { Save, ArrowLeft, CalendarDays, RefreshCw } from 'lucide-react';
 import Link from 'next/link';
 import toast, { Toaster } from 'react-hot-toast';
 import ToggleShow from '../components/ToggleShow';
+import NumberInput from '@/app/components/NumberInput';
 
 interface TripOption {
   id: string;
@@ -209,7 +210,7 @@ export default function DepartureForm({ initialData, isEditing = false, treks = 
 
         <div>
           <label className="block font-bold mb-1">Seats Left</label>
-          <input type="number" name="seatsLeft" value={form.seatsLeft} onChange={handleChange} className="w-full p-2.5 border rounded-lg focus:border-[#24a0ed] outline-none" />
+          <NumberInput type="number" name="seatsLeft" value={form.seatsLeft} onChange={handleChange} className="w-full p-2.5 border rounded-lg focus:border-[#24a0ed] outline-none" />
         </div>
 
         <div>

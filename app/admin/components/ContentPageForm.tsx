@@ -7,6 +7,7 @@ import { Save, ArrowLeft } from 'lucide-react';
 import toast, { Toaster } from 'react-hot-toast';
 import MediaUploader from '@/app/components/admin/MediaUploader';
 import TipTapEditor from '@/app/components/admin/TipTapEditor';
+import NumberInput from '@/app/components/NumberInput';
 
 interface Props {
   categories: { id: string; name: string; depth: number }[];
@@ -140,7 +141,7 @@ export default function ContentPageForm({ categories = [], initialData, isEditin
             </div>
             <div>
               <label className={labelCls}>Order</label>
-              <input type="number" name="order" value={form.order} onChange={handleChange} className={inputCls} />
+              <NumberInput type="number" name="order" value={form.order} onChange={handleChange} className={inputCls} />
             </div>
             <label className="flex items-center justify-between cursor-pointer bg-gray-50 border border-gray-200 rounded-lg px-3 py-2.5">
               <span className="font-bold text-gray-700">Published</span>

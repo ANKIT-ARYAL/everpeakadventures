@@ -7,6 +7,7 @@ import Link from 'next/link';
 import toast, { Toaster } from 'react-hot-toast';
 import TipTapEditor from '@/app/components/admin/TipTapEditor';
 import ToggleShow from '../components/ToggleShow';
+import NumberInput from '@/app/components/NumberInput';
 
 interface RelatedPage {
   type: 'trek' | 'tour' | 'blog';
@@ -138,7 +139,7 @@ export default function FaqForm({ initialData, isEditing = false, relatedPages =
 
             <div>
               <label className="block font-bold mb-1">Display Order</label>
-              <input type="number" name="order" value={form.order} onChange={handleChange} className="w-full p-2.5 border rounded-lg outline-none bg-gray-50" />
+              <NumberInput type="number" name="order" value={form.order} onChange={handleChange} className="w-full p-2.5 border rounded-lg outline-none bg-gray-50" />
             </div>
           </div>
 

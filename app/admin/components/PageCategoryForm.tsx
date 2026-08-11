@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { Save, ArrowLeft } from 'lucide-react';
 import toast, { Toaster } from 'react-hot-toast';
 import TipTapEditor from '@/app/components/admin/TipTapEditor';
+import NumberInput from '@/app/components/NumberInput';
 
 interface Props {
   parents: { id: string; name: string }[];
@@ -117,7 +118,7 @@ export default function PageCategoryForm({ parents = [], initialData, isEditing 
           </div>
           <div>
             <label className={labelCls}>Order</label>
-            <input type="number" name="order" value={form.order} onChange={handleChange} className={inputCls} />
+            <NumberInput type="number" name="order" value={form.order} onChange={handleChange} className={inputCls} />
           </div>
         </div>
         <div>

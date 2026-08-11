@@ -8,6 +8,7 @@ import toast, { Toaster } from 'react-hot-toast';
 import TipTapEditor from '@/app/components/admin/TipTapEditor';
 import MediaUploader from '@/app/components/admin/MediaUploader';
 import ToggleShow from '../components/ToggleShow';
+import NumberInput from '@/app/components/NumberInput';
 
 interface Props {
   initialData?: any;
@@ -227,7 +228,7 @@ export default function BlogForm({ initialData, isEditing = false }: Props) {
 
             <div>
               <label className="block font-bold mb-1">Display Order</label>
-              <input type="number" name="order" value={form.order} onChange={handleChange} className="w-full p-2.5 border rounded-lg outline-none bg-gray-50" />
+              <NumberInput type="number" name="order" value={form.order} onChange={handleChange} className="w-full p-2.5 border rounded-lg outline-none bg-gray-50" />
             </div>
           </div>
 

@@ -11,6 +11,7 @@ import FieldGrid from '@/app/components/admin/FieldGrid';
 import SectionCard from '@/app/components/admin/SectionCard';
 import ToggleShow from '../components/ToggleShow';
 import StickySectionNav from '@/app/components/admin/StickySectionNav';
+import NumberInput from '@/app/components/NumberInput';
 
 const toDateInput = (v?: string | null) => {
   if (!v) return '';
@@ -554,7 +555,7 @@ export default function TourForm({ initialData, isEditing = false, categories }:
                 </div>
                 <div className="w-20">
                   <label className="block font-bold text-gray-600 mb-1 text-[10px] uppercase tracking-wider">Seats</label>
-                  <input type="number" value={s.seatsLeft} onChange={(e) => handleScheduleChange(idx, 'seatsLeft', e.target.value)} className="w-full px-3 py-2 border border-gray-200 rounded-lg bg-white" />
+                  <NumberInput type="number" value={s.seatsLeft} onChange={(e) => handleScheduleChange(idx, 'seatsLeft', e.target.value)} className="w-full px-3 py-2 border border-gray-200 rounded-lg bg-white" />
                 </div>
                 <label className="flex items-center gap-1.5 pb-2 text-[11px] font-bold text-gray-600">
                   <input type="checkbox" checked={s.recurring} onChange={(e) => handleScheduleChange(idx, 'recurring', e.target.checked)} className="w-4 h-4 accent-[#24a0ed]" />
@@ -609,7 +610,7 @@ export default function TourForm({ initialData, isEditing = false, categories }:
                 <div className="flex items-center gap-2">
                   <div className="flex-1">
                     <label className="block font-bold text-gray-600 mb-1 text-[10px] uppercase tracking-wider">Elevation (metres)</label>
-                    <input type="number" value={dayObj.elev ?? ''} onChange={(e) => handleItineraryChange(idx, 'elev', Number(e.target.value))} placeholder="e.g. 3440" className="w-full px-3 py-2 border border-gray-200 rounded-lg bg-white" />
+                    <NumberInput type="number" value={dayObj.elev ?? ''} onChange={(e) => handleItineraryChange(idx, 'elev', Number(e.target.value))} placeholder="e.g. 3440" className="w-full px-3 py-2 border border-gray-200 rounded-lg bg-white" />
                   </div>
                 </div>
                 <TipTapEditor value={dayObj.desc} onChange={(html) => handleItineraryChange(idx, 'desc', html)} placeholder="Day description (focus line)..." />
@@ -802,7 +803,7 @@ export default function TourForm({ initialData, isEditing = false, categories }:
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div>
                 <label className="block font-bold text-gray-700 mb-1">Regular Price</label>
-                <input type="number" name="originalPrice" value={formData.originalPrice} onChange={handleChange} placeholder="2975" className="w-full px-3 py-2 border border-gray-200 rounded-lg font-bold text-gray-400" />
+                <NumberInput type="number" name="originalPrice" value={formData.originalPrice} onChange={handleChange} placeholder="2975" className="w-full px-3 py-2 border border-gray-200 rounded-lg font-bold text-gray-400" />
               </div>
               <div>
                 <label className="block font-bold text-gray-700 mb-1">Destination</label>
@@ -842,15 +843,15 @@ export default function TourForm({ initialData, isEditing = false, categories }:
               </div>
               <div>
                 <label className="block font-bold text-gray-700 mb-1">Rating Number</label>
-                <input type="number" step="0.01" name="rate" value={formData.rate} onChange={handleChange} placeholder="e.g. 4.8" className="w-full px-3 py-2 border border-gray-200 rounded-lg" />
+                <NumberInput type="number" step="0.01" name="rate" value={formData.rate} onChange={handleChange} placeholder="e.g. 4.8" className="w-full px-3 py-2 border border-gray-200 rounded-lg" />
               </div>
               <div>
                 <label className="block font-bold text-gray-700 mb-1">Rating out of 5</label>
-                <input type="number" step="0.01" name="rating" value={formData.rating} onChange={handleChange} placeholder="e.g. 5" className="w-full px-3 py-2 border border-gray-200 rounded-lg" />
+                <NumberInput type="number" step="0.01" name="rating" value={formData.rating} onChange={handleChange} placeholder="e.g. 5" className="w-full px-3 py-2 border border-gray-200 rounded-lg" />
               </div>
               <div>
                 <label className="block font-bold text-gray-700 mb-1">Display Order</label>
-                <input type="number" name="order" value={formData.order} onChange={handleChange} className="w-full px-3 py-2 border border-gray-200 rounded-lg bg-gray-50" />
+                <NumberInput type="number" name="order" value={formData.order} onChange={handleChange} className="w-full px-3 py-2 border border-gray-200 rounded-lg bg-gray-50" />
               </div>
             </div>
 

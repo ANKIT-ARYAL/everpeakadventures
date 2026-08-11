@@ -6,6 +6,7 @@ import toast, { Toaster } from 'react-hot-toast';
 import { CheckCircle2, Info } from 'lucide-react';
 import Select from 'react-select';
 import { getCountries, getCountryCallingCode, isValidPhoneNumber, AsYouType } from 'libphonenumber-js';
+import NumberInput from '@/app/components/NumberInput';
 
 const regionNames = new Intl.DisplayNames(['en'], { type: 'region' });
 const countryOptions = getCountries().map((countryCode) => {
@@ -122,8 +123,7 @@ export default function BookingFormClient({ trips, logoImage }: Props) {
   const handleTripChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     if (isFixedDeparture) return;
     const newTrip = trips.find(t => t.title === e.target.value);
-    if (newTrip) {
-      setForm(prev => ({ ...prev, tripTitle: newTrip.title }));
+    if (newTrip) {      setForm(prev => ({ ...prev, tripTitle: newTrip.title }));
       // We don't change URL params dynamically here to keep it simple, 
       // but it correctly updates the local state form value.
     }
@@ -370,19 +370,19 @@ export default function BookingFormClient({ trips, logoImage }: Props) {
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 bg-gray-50/50 p-4 border border-gray-100 rounded-xl">
               <div>
                 <span className="block text-[10px] text-gray-500 font-bold mb-1">Adult Male</span>
-                <input type="number" min="0" name="adultMale" value={form.adultMale} onChange={handleChange} className="w-full p-2.5 border border-gray-200 rounded-lg text-sm focus:border-[#1a5b88] focus:outline-none" />
+                <NumberInput type="number" min="0" name="adultMale" value={form.adultMale} onChange={handleChange} className="w-full p-2.5 border border-gray-200 rounded-lg text-sm focus:border-[#1a5b88] focus:outline-none" />
               </div>
               <div>
                 <span className="block text-[10px] text-gray-500 font-bold mb-1">Adult Female</span>
-                <input type="number" min="0" name="adultFemale" value={form.adultFemale} onChange={handleChange} className="w-full p-2.5 border border-gray-200 rounded-lg text-sm focus:border-[#1a5b88] focus:outline-none" />
+                <NumberInput type="number" min="0" name="adultFemale" value={form.adultFemale} onChange={handleChange} className="w-full p-2.5 border border-gray-200 rounded-lg text-sm focus:border-[#1a5b88] focus:outline-none" />
               </div>
               <div>
                 <span className="block text-[10px] text-gray-500 font-bold mb-1">Child Male</span>
-                <input type="number" min="0" name="childMale" value={form.childMale} onChange={handleChange} className="w-full p-2.5 border border-gray-200 rounded-lg text-sm focus:border-[#1a5b88] focus:outline-none" />
+                <NumberInput type="number" min="0" name="childMale" value={form.childMale} onChange={handleChange} className="w-full p-2.5 border border-gray-200 rounded-lg text-sm focus:border-[#1a5b88] focus:outline-none" />
               </div>
               <div>
                 <span className="block text-[10px] text-gray-500 font-bold mb-1">Child Female</span>
-                <input type="number" min="0" name="childFemale" value={form.childFemale} onChange={handleChange} className="w-full p-2.5 border border-gray-200 rounded-lg text-sm focus:border-[#1a5b88] focus:outline-none" />
+                <NumberInput type="number" min="0" name="childFemale" value={form.childFemale} onChange={handleChange} className="w-full p-2.5 border border-gray-200 rounded-lg text-sm focus:border-[#1a5b88] focus:outline-none" />
               </div>
             </div>
             <p className="text-[10px] text-gray-400 mt-2 flex items-center gap-1">

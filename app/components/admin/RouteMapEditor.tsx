@@ -4,6 +4,7 @@ import React from 'react';
 import { Plus, Trash2 } from 'lucide-react';
 import SectionCard from './SectionCard';
 import FieldGrid from './FieldGrid';
+import NumberInput from '@/app/components/NumberInput';
 
 export type RoutePointType = 'start' | 'end' | 'trek' | 'acclimatization' | 'peak' | 'lake' | 'pass' | 'airport' | 'helipad';
 export type SegmentType = 'trekking' | 'secondary' | 'driving' | 'flight';
@@ -79,7 +80,7 @@ export default function RouteMapEditor({ value = EMPTY_ROUTE_MAP, onChange }: Pr
           <FieldGrid cols={3}>
             <div>
               <label className={labelCls}>Max altitude (m)</label>
-              <input type="number" className={inputCls} value={d.maxAltitude ?? ''} placeholder="e.g. 5545"
+              <NumberInput type="number" className={inputCls} value={d.maxAltitude ?? ''} placeholder="e.g. 5545"
                 onChange={(e) => set({ maxAltitude: e.target.value === '' ? undefined : Number(e.target.value) })} />
             </div>
             <div>
@@ -118,15 +119,15 @@ export default function RouteMapEditor({ value = EMPTY_ROUTE_MAP, onChange }: Pr
               <FieldGrid cols={3}>
                 <div>
                   <label className={labelCls}>Elevation (m)</label>
-                  <input type="number" className={inputCls} placeholder="Elev m" value={p.elevation || ''} onChange={(e) => setPeak(i, { elevation: Number(e.target.value) })} />
+                  <NumberInput type="number" className={inputCls} placeholder="Elev m" value={p.elevation || ''} onChange={(e) => setPeak(i, { elevation: Number(e.target.value) })} />
                 </div>
                 <div>
                   <label className={labelCls}>X coordinate</label>
-                  <input type="number" className={inputCls} placeholder="X" value={p.x || ''} onChange={(e) => setPeak(i, { x: Number(e.target.value) })} />
+                  <NumberInput type="number" className={inputCls} placeholder="X" value={p.x || ''} onChange={(e) => setPeak(i, { x: Number(e.target.value) })} />
                 </div>
                 <div>
                   <label className={labelCls}>Y coordinate</label>
-                  <input type="number" className={inputCls} placeholder="Y" value={p.y || ''} onChange={(e) => setPeak(i, { y: Number(e.target.value) })} />
+                  <NumberInput type="number" className={inputCls} placeholder="Y" value={p.y || ''} onChange={(e) => setPeak(i, { y: Number(e.target.value) })} />
                 </div>
               </FieldGrid>
             </div>
@@ -161,19 +162,19 @@ export default function RouteMapEditor({ value = EMPTY_ROUTE_MAP, onChange }: Pr
                 </div>
                 <div>
                   <label className={labelCls}>Elev (m)</label>
-                  <input type="number" className={inputCls} placeholder="Elev m" value={p.elevation || ''} onChange={(e) => setPoint(i, { elevation: Number(e.target.value) })} />
+                  <NumberInput type="number" className={inputCls} placeholder="Elev m" value={p.elevation || ''} onChange={(e) => setPoint(i, { elevation: Number(e.target.value) })} />
                 </div>
                 <div>
                   <label className={labelCls}>X</label>
-                  <input type="number" className={inputCls} placeholder="X" value={p.x || ''} onChange={(e) => setPoint(i, { x: Number(e.target.value) })} />
+                  <NumberInput type="number" className={inputCls} placeholder="X" value={p.x || ''} onChange={(e) => setPoint(i, { x: Number(e.target.value) })} />
                 </div>
                 <div>
                   <label className={labelCls}>Y</label>
-                  <input type="number" className={inputCls} placeholder="Y" value={p.y || ''} onChange={(e) => setPoint(i, { y: Number(e.target.value) })} />
+                  <NumberInput type="number" className={inputCls} placeholder="Y" value={p.y || ''} onChange={(e) => setPoint(i, { y: Number(e.target.value) })} />
                 </div>
                 <div>
                   <label className={labelCls}>Day</label>
-                  <input type="number" className={inputCls} placeholder="Day" value={p.day ?? ''} onChange={(e) => setPoint(i, { day: e.target.value === '' ? undefined : Number(e.target.value) })} />
+                  <NumberInput type="number" className={inputCls} placeholder="Day" value={p.day ?? ''} onChange={(e) => setPoint(i, { day: e.target.value === '' ? undefined : Number(e.target.value) })} />
                 </div>
               </FieldGrid>
             </div>

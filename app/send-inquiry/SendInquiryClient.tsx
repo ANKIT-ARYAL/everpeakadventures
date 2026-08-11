@@ -6,6 +6,7 @@ import toast, { Toaster } from 'react-hot-toast';
 import { CheckCircle2, MessageCircle } from 'lucide-react';
 import Select from 'react-select';
 import { getCountries, getCountryCallingCode, isValidPhoneNumber, AsYouType } from 'libphonenumber-js';
+import NumberInput from '@/app/components/NumberInput';
 
 const regionNames = new Intl.DisplayNames(['en'], { type: 'region' });
 const countryOptions = getCountries().map((countryCode) => {
@@ -369,19 +370,19 @@ export default function SendInquiryClient({ trips, logoImage }: Props) {
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
                 <div className="p-3 rounded-lg border border-gray-200 bg-gray-50/40 space-y-1">
                   <span className="text-[10px] text-gray-400 font-bold block">Adult Male</span>
-                  <input type="number" min={0} name="adultMale" value={form.adultMale} onChange={handleChange} className="w-full font-bold text-xs bg-white border border-gray-200 rounded px-2.5 py-1.5" />
+                  <NumberInput type="number" min={0} name="adultMale" value={form.adultMale} onChange={handleChange} className="w-full font-bold text-xs bg-white border border-gray-200 rounded px-2.5 py-1.5" />
                 </div>
                 <div className="p-3 rounded-lg border border-gray-200 bg-gray-50/40 space-y-1">
                   <span className="text-[10px] text-gray-400 font-bold block">Adult Female</span>
-                  <input type="number" min={0} name="adultFemale" value={form.adultFemale} onChange={handleChange} className="w-full font-bold text-xs bg-white border border-gray-200 rounded px-2.5 py-1.5" />
+                  <NumberInput type="number" min={0} name="adultFemale" value={form.adultFemale} onChange={handleChange} className="w-full font-bold text-xs bg-white border border-gray-200 rounded px-2.5 py-1.5" />
                 </div>
                 <div className="p-3 rounded-lg border border-gray-200 bg-gray-50/40 space-y-1">
                   <span className="text-[10px] text-gray-400 font-bold block">Child Male</span>
-                  <input type="number" min={0} name="childMale" value={form.childMale} onChange={handleChange} className="w-full font-bold text-xs bg-white border border-gray-200 rounded px-2.5 py-1.5" />
+                  <NumberInput type="number" min={0} name="childMale" value={form.childMale} onChange={handleChange} className="w-full font-bold text-xs bg-white border border-gray-200 rounded px-2.5 py-1.5" />
                 </div>
                 <div className="p-3 rounded-lg border border-gray-200 bg-gray-50/40 space-y-1">
                   <span className="text-[10px] text-gray-400 font-bold block">Child Female</span>
-                  <input type="number" min={0} name="childFemale" value={form.childFemale} onChange={handleChange} className="w-full font-bold text-xs bg-white border border-gray-200 rounded px-2.5 py-1.5" />
+                  <NumberInput type="number" min={0} name="childFemale" value={form.childFemale} onChange={handleChange} className="w-full font-bold text-xs bg-white border border-gray-200 rounded px-2.5 py-1.5" />
                 </div>
               </div>
               <p className="text-[10px] text-gray-400">Total travellers: <strong className="text-gray-700">{totalTravellers}</strong>. Price tier is selected automatically from the No. of Persons option.</p>
