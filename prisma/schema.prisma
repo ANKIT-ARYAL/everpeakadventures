@@ -20,16 +20,6 @@ model TourGroupPrice {
   tour      Tour   @relation(fields: [tourId], references: [id], onDelete: Cascade)
 }
 
-// Fixed Departure Schedule Box (Group Size, Dates, Status)
-model TourSchedule {
-  id        String @id @default(uuid())
-  groupSize String // e.g., "2-12 Pax"
-  dateRange String // e.g., "15 Sep - 28 Sep"
-  status    String // e.g., "Book"
-  tourId    String
-  tour      Tour   @relation(fields: [tourId], references: [id], onDelete: Cascade)
-}
-
 // ----------------------------------------
 // HOMEPAGE & GENERAL MODELS
 // ----------------------------------------
@@ -79,12 +69,19 @@ model Trek {
   transport     String?
   activity      String? // e.g. Trekking/Peak Climbing
 
+  // WP "Trekking, Tour and Destination Details" meta box
+  startPoint String? // WP start_at, e.g. Kathmandu
+  endPoint   String? // WP end_at, e.g. Kathmandu
+  rate       Float? // WP rate (rating number)
+  rating     Float? // WP rating (rate out of 5)
+  altitudeData Json? // WP altitude chart addon: [{ day, place, altitude, note }]
+
   // Region Taxonomy (checkboxes) - includes 'All Trekking Packages'
   regions String[]
 
   // Relational sections mirroring the WordPress admin metaboxes
   groupPrices    TrekGroupPrice[]
-  fixedSchedules TrekSchedule[]
+  departures     Departure[]
 
   highlights  String? @db.Text
   inclusions  String? @db.Text
@@ -112,16 +109,6 @@ model TrekGroupPrice {
   groupSize String // e.g., "2 - 4"
   groupType String @default("Best Value") // e.g., "Small Group", "Best Value", "Super Group"
   price     String // e.g., "US$ 2,599"
-  trekId    String
-  trek      Trek   @relation(fields: [trekId], references: [id], onDelete: Cascade)
-}
-
-// Fixed Departure Schedule Box (Group Size, Dates, Status)
-model TrekSchedule {
-  id        String @id @default(uuid())
-  groupSize String // e.g., "2-12 Pax"
-  dateRange String // e.g., "15 Sep - 28 Sep"
-  status    String // e.g., "Book"
   trekId    String
   trek      Trek   @relation(fields: [trekId], references: [id], onDelete: Cascade)
 }
@@ -157,6 +144,9 @@ model Tour {
   activity    String? // e.g., "Sightseeing / Tour", "Trekking"
   groupSize   String? // e.g., "1 - 10"
   transport   String?
+  rate        Float? // WP rate (rating number)
+  rating      Float? // WP rating (rate out of 5)
+  altitudeData Json? // WP altitude chart addon: [{ day, place, altitude, note }]
   mapUrl      String? // Route map / elevation chart URL
   mapImage    String? // Uploaded route-map graphic
   routeMap    Json?
@@ -175,7 +165,7 @@ model Tour {
 
   // Relational sections
   groupPrices    TourGroupPrice[]
-  fixedSchedules TourSchedule[]
+  departures     Departure[]
 
   highlights  String? @db.Text
   inclusions  String? @db.Text
@@ -390,21 +380,25 @@ model TrustItem {
   updatedAt DateTime @updatedAt
 }
 
-model FixedDeparture {
-  published Boolean @default(true) // show/hide this section on the frontend
-  id            String   @id @default(uuid())
-  title         String
-  heroImage     String
-  durationDays  String
-  startDate     String
-  endDate       String?
-  status        String   @default("Guaranteed")
-  seatsLeft     Int      @default(6)
-  price         Float
-  originalPrice Float?
-  order         Int      @default(0)
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
+// A fixed departure instance: a concrete date range for a Trek or Tour.
+// Price/title/image/duration always come from the linked trip.
+model Departure {
+  published  Boolean @default(true) // show/hide this departure on the frontend
+  id         String  @id @default(uuid())
+  tripType   String // "trek" | "tour"
+  trekId     String?
+  tourId     String?
+  trek       Trek?   @relation(fields: [trekId], references: [id], onDelete: Cascade)
+  tour       Tour?   @relation(fields: [tourId], references: [id], onDelete: Cascade)
+  startDate  DateTime
+  endDate    DateTime?
+  groupSize  String? // e.g., "2-12 Pax"
+  status     String   @default("Guaranteed") // Guaranteed | Available | Filling Fast | Sold Out
+  seatsLeft  Int      @default(12)
+  recurring  Boolean  @default(false) // "every year": auto-materialize an instance for the next 2 years
+  price      String?  // Optional departure-specific price override (e.g., "US$ 2,499")
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
 }
 
 model WelcomeContent {
@@ -581,6 +575,85 @@ model SystemSetting {
   databaseStatus String   @default("Optimized (PostgreSQL)")
   daysLeft       String   @default("133 days remaining")
   updatedAt      DateTime @updatedAt
+}
+
+// ----------------------------------------
+// TREK / TOUR CATEGORY MODELS
+// ----------------------------------------
+
+model TrekCategory {
+  id          String   @id @default(cuid())
+  name        String
+  slug        String   @unique
+  description String?  @db.Text
+  image       String?
+  order       Int      @default(0)
+  published   Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model TourCategory {
+  id          String   @id @default(cuid())
+  name        String
+  slug        String   @unique
+  description String?  @db.Text
+  image       String?
+  order       Int      @default(0)
+  published   Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+// ----------------------------------------
+// PAGES MANAGER (MAIN CATEGORY + SUB CATEGORY + CHILD PAGES)
+// ----------------------------------------
+
+// Hierarchical page categories: a main category can contain sub categories.
+model PageCategory {
+  id          String          @id @default(cuid())
+  name        String
+  slug        String          @unique
+  description String?         @db.Text
+  parentId    String?
+  parent      PageCategory?   @relation("PageCategoryTree", fields: [parentId], references: [id], onDelete: Cascade)
+  children    PageCategory[]  @relation("PageCategoryTree")
+  pages       ContentPage[]
+  order       Int             @default(0)
+  published   Boolean         @default(true)
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
+}
+
+// A content page lives inside a category (main or sub).
+model ContentPage {
+  id          String        @id @default(cuid())
+  title       String
+  slug        String        @unique
+  subtitle    String?
+  heroImage   String?
+  content     String?       @db.Text
+  categoryId  String?
+  category    PageCategory? @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+  published   Boolean       @default(true)
+  order       Int           @default(0)
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+}
+
+// ----------------------------------------
+// MEDIA LIBRARY (ALL UPLOADED FILES)
+// ----------------------------------------
+
+model MediaAsset {
+  id           String   @id @default(cuid())
+  url          String   @unique
+  path         String?
+  originalName String?
+  mime         String?
+  size         Int?
+  kind         String   @default("image") // image | video
+  createdAt    DateTime @default(now())
 }
 
 model BookingSubmission {
