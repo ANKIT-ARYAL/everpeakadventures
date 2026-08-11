@@ -6,6 +6,7 @@ import { Save, ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
 import toast, { Toaster } from 'react-hot-toast';
 import ToggleShow from '../components/ToggleShow';
+import SectionCard from '@/app/components/admin/SectionCard';
 
 interface Props {
   contactData?: any;
@@ -79,8 +80,7 @@ export default function ContactInfoForm({ contactData }: Props) {
       </div>
 
       {/* Contact Info */}
-      <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 space-y-4">
-        <h2 className="font-bold text-gray-800 uppercase tracking-wider border-b pb-2">Contact Info</h2>
+      <SectionCard title="Contact Info" defaultOpen>
 
         <div>
           <label className="block font-bold mb-1">Address</label>
@@ -101,7 +101,7 @@ export default function ContactInfoForm({ contactData }: Props) {
           <label className="block font-bold mb-1">Map URL</label>
           <textarea name="mapUrl" rows={3} value={contact.mapUrl} onChange={handleContactChange} className="w-full p-3 border rounded-lg font-mono text-xs focus:border-[#24a0ed] outline-none" placeholder="https://www.google.com/maps/embed?pb=..." />
         </div>
-      </div>
+      </SectionCard>
     </form>
   );
 }

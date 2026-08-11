@@ -5,6 +5,8 @@ import { useRouter } from 'next/navigation';
 import { Save, ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
 import toast, { Toaster } from 'react-hot-toast';
+import MediaUploader from '@/app/components/admin/MediaUploader';
+import ToggleShow from '../components/ToggleShow';
 
 interface Props {
   initialData?: any;
@@ -70,13 +72,16 @@ export default function LegalDocumentForm({ initialData, isEditing = false }: Pr
             {isEditing ? `Edit Document: ${initialData?.title}` : 'Add New Legal Document'}
           </h1>
         </div>
-        <button 
-          type="submit" 
-          disabled={loading}
-          className="bg-[#24a0ed] hover:bg-[#1a85c6] text-white font-bold px-6 py-2.5 rounded-lg flex items-center gap-2 disabled:opacity-50 uppercase tracking-wider"
-        >
-          <Save className="w-4 h-4" /> {loading ? 'Saving...' : (isEditing ? 'Update Document' : 'Publish Document')}
-        </button>
+        <div className="flex items-center gap-2">
+          {isEditing && <ToggleShow model="legal-documents" resource="legal-documents" id={initialData?.id as string} published={initialData?.published ?? true} />}
+          <button 
+            type="submit" 
+            disabled={loading}
+            className="bg-[#24a0ed] hover:bg-[#1a85c6] text-white font-bold px-6 py-2.5 rounded-lg flex items-center gap-2 disabled:opacity-50 uppercase tracking-wider"
+          >
+            <Save className="w-4 h-4" /> {loading ? 'Saving...' : (isEditing ? 'Update Document' : 'Publish Document')}
+          </button>
+        </div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -106,12 +111,7 @@ export default function LegalDocumentForm({ initialData, isEditing = false }: Pr
           
           <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 space-y-4">
             <h3 className="font-bold text-gray-800 uppercase tracking-wider border-b pb-2">Document Image *</h3>
-            <input type="url" name="image" required value={form.image} onChange={handleChange} placeholder="https://..." className="w-full p-2.5 border rounded-lg focus:border-[#24a0ed] outline-none" />
-            {form.image && (
-              <div className="h-36 rounded-lg overflow-hidden border">
-                <img src={form.image} alt="Preview" className="w-full h-full object-cover" />
-              </div>
-            )}
+            <MediaUploader value={form.image} onChange={(url) => setForm(prev => ({ ...prev, image: url }))} label="Upload Document Image" heightClass="h-36" />
           </div>
 
           <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 space-y-4">

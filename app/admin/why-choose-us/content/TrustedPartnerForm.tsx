@@ -7,6 +7,8 @@ import Link from 'next/link';
 import toast, { Toaster } from 'react-hot-toast';
 import ToggleShow from '../../components/ToggleShow';
 import TipTapEditor from '@/app/components/admin/TipTapEditor';
+import MediaUploader from '@/app/components/admin/MediaUploader';
+import SectionCard from '@/app/components/admin/SectionCard';
 
 interface Props {
   initialData?: any;
@@ -86,9 +88,7 @@ export default function TrustedPartnerForm({ initialData }: Props) {
         <div className="lg:col-span-2 space-y-6">
           
           {/* Main Content */}
-          <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 space-y-4">
-            <h2 className="font-bold text-gray-800 uppercase tracking-wider border-b pb-2">Main Content</h2>
-            
+          <SectionCard title="Main Content" defaultOpen>
             <div>
               <label className="block font-bold mb-1">Main Title *</label>
               <input type="text" name="mainTitle" required value={form.mainTitle} onChange={handleChange} className="w-full p-3 border rounded-lg text-sm font-medium focus:border-[#24a0ed] outline-none" placeholder="Your Trusted Partner For Himalayan Adventures" />
@@ -98,12 +98,10 @@ export default function TrustedPartnerForm({ initialData }: Props) {
               <label className="block font-bold mb-1">Description *</label>
               <TipTapEditor value={form.description} onChange={(html) => setForm(prev => ({ ...prev, description: html }))} placeholder="Short section description..." minHeight="120px" />
             </div>
-          </div>
+          </SectionCard>
 
           {/* Badge */}
-          <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 space-y-4">
-            <h2 className="font-bold text-gray-800 uppercase tracking-wider border-b pb-2">Badge</h2>
-            
+          <SectionCard title="Badge">
             <div>
               <label className="block font-bold mb-1">Badge Title</label>
               <input type="text" name="badgeTitle" value={form.badgeTitle} onChange={handleChange} className="w-full p-3 border rounded-lg focus:border-[#24a0ed] outline-none" placeholder="Traveler's Choice" />
@@ -118,12 +116,10 @@ export default function TrustedPartnerForm({ initialData }: Props) {
               <label className="block font-bold mb-1">Review Count Text</label>
               <input type="text" name="reviewCountText" value={form.reviewCountText} onChange={handleChange} className="w-full p-3 border rounded-lg focus:border-[#24a0ed] outline-none" placeholder="Reviews 5/5" />
             </div>
-          </div>
+          </SectionCard>
 
           {/* Traveler Story */}
-          <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 space-y-4">
-            <h2 className="font-bold text-gray-800 uppercase tracking-wider border-b pb-2">Traveler Story</h2>
-            
+          <SectionCard title="Traveler Story">
             <div>
               <label className="block font-bold mb-1">Story Title</label>
               <input type="text" name="storyTitle" value={form.storyTitle} onChange={handleChange} className="w-full p-3 border rounded-lg focus:border-[#24a0ed] outline-none" placeholder="Traveler Story" />
@@ -133,32 +129,20 @@ export default function TrustedPartnerForm({ initialData }: Props) {
               <label className="block font-bold mb-1">Story Description</label>
               <TipTapEditor value={form.storyDescription} onChange={(html) => setForm(prev => ({ ...prev, storyDescription: html }))} placeholder="Story text..." minHeight="120px" />
             </div>
-          </div>
+          </SectionCard>
 
         </div>
 
         {/* Right Sidebar */}
         <div className="space-y-6">
           
-          <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 space-y-4">
-            <h3 className="font-bold text-gray-800 uppercase tracking-wider border-b pb-2">Story Image</h3>
-            <input type="url" name="storyImage" value={form.storyImage} onChange={handleChange} placeholder="https://..." className="w-full p-2.5 border rounded-lg focus:border-[#24a0ed] outline-none" />
-            {form.storyImage && (
-              <div className="h-36 rounded-lg overflow-hidden border">
-                <img src={form.storyImage} alt="Story Preview" className="w-full h-full object-cover" />
-              </div>
-            )}
-          </div>
+          <SectionCard title="Story Image">
+            <MediaUploader value={form.storyImage} onChange={(url) => setForm(prev => ({ ...prev, storyImage: url }))} label="Upload Story Image" heightClass="h-36" />
+          </SectionCard>
 
-          <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 space-y-4">
-            <h3 className="font-bold text-gray-800 uppercase tracking-wider border-b pb-2">Background Hero Image</h3>
-            <input type="url" name="bgHeroImage" value={form.bgHeroImage} onChange={handleChange} placeholder="https://..." className="w-full p-2.5 border rounded-lg focus:border-[#24a0ed] outline-none" />
-            {form.bgHeroImage && (
-              <div className="h-36 rounded-lg overflow-hidden border">
-                <img src={form.bgHeroImage} alt="Background Preview" className="w-full h-full object-cover" />
-              </div>
-            )}
-          </div>
+          <SectionCard title="Background Hero Image">
+            <MediaUploader value={form.bgHeroImage} onChange={(url) => setForm(prev => ({ ...prev, bgHeroImage: url }))} label="Upload Background Hero Image" heightClass="h-36" />
+          </SectionCard>
 
         </div>
 

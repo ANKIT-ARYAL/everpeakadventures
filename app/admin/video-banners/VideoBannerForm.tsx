@@ -7,7 +7,9 @@ import Link from 'next/link';
 import toast, { Toaster } from 'react-hot-toast';
 import { useAdminPerms } from '../AdminPermsContext';
 import { hasPerm } from '@/lib/permissions';
+import MediaUploader from '@/app/components/admin/MediaUploader';
 import TipTapEditor from '@/app/components/admin/TipTapEditor';
+import SectionCard from '@/app/components/admin/SectionCard';
 
 interface Props {
   videoBannerData?: any;
@@ -146,19 +148,17 @@ export default function VideoBannerForm({ videoBannerData, ctaBannerData }: Prop
       </div>
 
       {/* Video Banner */}
-      <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 space-y-4">
-        <div className="flex flex-wrap items-center justify-between gap-2 border-b pb-2">
-          <h2 className="font-bold text-gray-800 uppercase tracking-wider">Video Banner</h2>
-          <div className="flex items-center gap-2">
-            <PublishedToggle
-              published={videoPublished}
-              onClick={() => togglePublished('video-banner-content', videoPublished, setVideoPublished)}
-            />
-            <a href="/" target="_blank" rel="noopener noreferrer" title="View on site" className="p-1.5 rounded bg-emerald-50 text-emerald-600 hover:bg-emerald-100">
-              <ExternalLink className="w-3.5 h-3.5" />
-            </a>
-          </div>
+      <SectionCard title="Video Banner" defaultOpen action={
+        <div className="flex items-center gap-2">
+          <PublishedToggle
+            published={videoPublished}
+            onClick={() => togglePublished('video-banner-content', videoPublished, setVideoPublished)}
+          />
+          <a href="/" target="_blank" rel="noopener noreferrer" title="View on site" className="p-1.5 rounded bg-emerald-50 text-emerald-600 hover:bg-emerald-100">
+            <ExternalLink className="w-3.5 h-3.5" />
+          </a>
         </div>
+      }>
 
         <div>
           <label className="block font-bold mb-1">Title</label>
@@ -201,37 +201,29 @@ export default function VideoBannerForm({ videoBannerData, ctaBannerData }: Prop
                   <Trash2 className="w-3.5 h-3.5" /> Remove
                 </button>
               </div>
-              <input 
-                type="url" 
-                value={img} 
-                onChange={(e) => handleImageChange(idx, e.target.value)} 
-                placeholder="https://..." 
-                className="w-full p-2.5 border rounded-lg bg-white outline-none" 
+              <MediaUploader
+                value={img}
+                onChange={(url) => handleImageChange(idx, url)}
+                label="Upload Background Image"
+                heightClass="h-24"
               />
-              {img && (
-                <div className="h-24 rounded-lg overflow-hidden border">
-                  <img src={img} alt="Preview" className="w-full h-full object-cover" />
-                </div>
-              )}
             </div>
           ))}
         </div>
-      </div>
+      </SectionCard>
 
       {/* CTA Banner */}
-      <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 space-y-4">
-        <div className="flex flex-wrap items-center justify-between gap-2 border-b pb-2">
-          <h2 className="font-bold text-gray-800 uppercase tracking-wider">CTA Banner</h2>
-          <div className="flex items-center gap-2">
-            <PublishedToggle
-              published={ctaPublished}
-              onClick={() => togglePublished('cta-banner-content', ctaPublished, setCtaPublished)}
-            />
-            <a href="/" target="_blank" rel="noopener noreferrer" title="View on site" className="p-1.5 rounded bg-emerald-50 text-emerald-600 hover:bg-emerald-100">
-              <ExternalLink className="w-3.5 h-3.5" />
-            </a>
-          </div>
+      <SectionCard title="CTA Banner" action={
+        <div className="flex items-center gap-2">
+          <PublishedToggle
+            published={ctaPublished}
+            onClick={() => togglePublished('cta-banner-content', ctaPublished, setCtaPublished)}
+          />
+          <a href="/" target="_blank" rel="noopener noreferrer" title="View on site" className="p-1.5 rounded bg-emerald-50 text-emerald-600 hover:bg-emerald-100">
+            <ExternalLink className="w-3.5 h-3.5" />
+          </a>
         </div>
+      }>
 
         <div>
           <label className="block font-bold mb-1">Title</label>
@@ -245,12 +237,7 @@ export default function VideoBannerForm({ videoBannerData, ctaBannerData }: Prop
 
         <div>
           <label className="block font-bold mb-1">Background Image</label>
-          <input type="url" name="bgImage" value={ctaBanner.bgImage} onChange={handleCtaBannerChange} placeholder="https://..." className="w-full p-2.5 border rounded-lg focus:border-[#24a0ed] outline-none" />
-          {ctaBanner.bgImage && (
-            <div className="h-36 rounded-lg overflow-hidden border mt-3">
-              <img src={ctaBanner.bgImage} alt="Preview" className="w-full h-full object-cover" />
-            </div>
-          )}
+          <MediaUploader value={ctaBanner.bgImage} onChange={(url) => setCtaBanner(prev => ({ ...prev, bgImage: url }))} label="Upload Background Image" heightClass="h-36" />
         </div>
 
         <div>
@@ -262,7 +249,7 @@ export default function VideoBannerForm({ videoBannerData, ctaBannerData }: Prop
           <label className="block font-bold mb-1">Secondary Link</label>
           <input type="text" name="secondaryLink" value={ctaBanner.secondaryLink} onChange={handleCtaBannerChange} className="w-full p-2.5 border rounded-lg focus:border-[#24a0ed] outline-none" placeholder="e.g. /tours" />
         </div>
-      </div>
+      </SectionCard>
     </form>
   );
 }

@@ -7,6 +7,7 @@ import Link from 'next/link';
 import toast, { Toaster } from 'react-hot-toast';
 import ToggleShow from '../components/ToggleShow';
 import TipTapEditor from '@/app/components/admin/TipTapEditor';
+import SectionCard from '@/app/components/admin/SectionCard';
 
 interface Props {
   initialData?: any;
@@ -88,9 +89,7 @@ export default function HomeSectionContentForm({ initialData }: Props) {
         </div>
       </div>
 
-      <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 space-y-4">
-        <h2 className="font-bold text-gray-800 uppercase tracking-wider border-b pb-2">Featured Treks</h2>
-
+      <SectionCard title="Featured Treks" defaultOpen>
         <div>
           <label className="block font-bold mb-1">Label</label>
           <input type="text" name="featuredTreksLabel" value={form.featuredTreksLabel} onChange={handleChange} className="w-full p-3 border rounded-lg text-sm font-medium focus:border-[#24a0ed] outline-none" placeholder="e.g. Top Rated Routes" />
@@ -100,11 +99,9 @@ export default function HomeSectionContentForm({ initialData }: Props) {
           <label className="block font-bold mb-1">Title</label>
           <input type="text" name="featuredTreksTitle" value={form.featuredTreksTitle} onChange={handleChange} className="w-full p-3 border rounded-lg text-sm font-medium focus:border-[#24a0ed] outline-none" placeholder="e.g. Featured Trekking Packages" />
         </div>
-      </div>
+      </SectionCard>
 
-      <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 space-y-4">
-        <h2 className="font-bold text-gray-800 uppercase tracking-wider border-b pb-2">Best Sellers</h2>
-
+      <SectionCard title="Best Sellers">
         <div>
           <label className="block font-bold mb-1">Watermark</label>
           <input type="text" name="bestSellersWatermark" value={form.bestSellersWatermark} onChange={handleChange} className="w-full p-3 border rounded-lg text-sm font-medium focus:border-[#24a0ed] outline-none" placeholder="e.g. Trekking" />
@@ -119,11 +116,9 @@ export default function HomeSectionContentForm({ initialData }: Props) {
           <label className="block font-bold mb-1">Subtitle</label>
           <TipTapEditor value={form.bestSellersSubtitle} onChange={(html) => setForm(prev => ({ ...prev, bestSellersSubtitle: html }))} placeholder="Short description..." />
         </div>
-      </div>
+      </SectionCard>
 
-      <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 space-y-4">
-        <h2 className="font-bold text-gray-800 uppercase tracking-wider border-b pb-2">Fixed Departures</h2>
-
+      <SectionCard title="Fixed Departures">
         <div>
           <label className="block font-bold mb-1">Label</label>
           <input type="text" name="fixedDeparturesLabel" value={form.fixedDeparturesLabel} onChange={handleChange} className="w-full p-3 border rounded-lg text-sm font-medium focus:border-[#24a0ed] outline-none" placeholder="e.g. Departure Dates" />
@@ -133,11 +128,9 @@ export default function HomeSectionContentForm({ initialData }: Props) {
           <label className="block font-bold mb-1">Title</label>
           <input type="text" name="fixedDeparturesTitle" value={form.fixedDeparturesTitle} onChange={handleChange} className="w-full p-3 border rounded-lg text-sm font-medium focus:border-[#24a0ed] outline-none" placeholder="e.g. Join Fixed Departure Trips" />
         </div>
-      </div>
+      </SectionCard>
 
-      <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 space-y-4">
-        <h2 className="font-bold text-gray-800 uppercase tracking-wider border-b pb-2">Popular Tours</h2>
-
+      <SectionCard title="Popular Tours">
         <div>
           <label className="block font-bold mb-1">Watermark</label>
           <input type="text" name="popularToursWatermark" value={form.popularToursWatermark} onChange={handleChange} className="w-full p-3 border rounded-lg text-sm font-medium focus:border-[#24a0ed] outline-none" placeholder="e.g. TOURS" />
@@ -152,11 +145,9 @@ export default function HomeSectionContentForm({ initialData }: Props) {
           <label className="block font-bold mb-1">Subtitle</label>
           <TipTapEditor value={form.popularToursSubtitle} onChange={(value) => setForm(prev => ({ ...prev, popularToursSubtitle: value }))} placeholder="Short description..." />
         </div>
-      </div>
+      </SectionCard>
 
-      <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 space-y-4">
-        <h2 className="font-bold text-gray-800 uppercase tracking-wider border-b pb-2">Explore Blogs</h2>
-
+      <SectionCard title="Explore Blogs">
         <div>
           <label className="block font-bold mb-1">Watermark</label>
           <input type="text" name="exploreBlogsWatermark" value={form.exploreBlogsWatermark} onChange={handleChange} className="w-full p-3 border rounded-lg text-sm font-medium focus:border-[#24a0ed] outline-none" placeholder="e.g. EXPLORE OUR BLOGS" />
@@ -171,11 +162,9 @@ export default function HomeSectionContentForm({ initialData }: Props) {
           <label className="block font-bold mb-1">Subtitle</label>
           <TipTapEditor value={form.exploreBlogsSubtitle} onChange={(value) => setForm(prev => ({ ...prev, exploreBlogsSubtitle: value }))} placeholder="Short description..." />
         </div>
-      </div>
+      </SectionCard>
 
-      <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 space-y-4">
-        <h2 className="font-bold text-gray-800 uppercase tracking-wider border-b pb-2">Why Choose Us</h2>
-
+      <SectionCard title="Why Choose Us">
         <div>
           <label className="block font-bold mb-1">Badge</label>
           <input type="text" name="whyChooseUsBadge" value={form.whyChooseUsBadge} onChange={handleChange} className="w-full p-3 border rounded-lg text-sm font-medium focus:border-[#24a0ed] outline-none" placeholder="e.g. Why Choose Us" />
@@ -195,7 +184,7 @@ export default function HomeSectionContentForm({ initialData }: Props) {
           <label className="block font-bold mb-1">Subtitle</label>
           <TipTapEditor value={form.whyChooseUsSubtitle} onChange={(value) => setForm(prev => ({ ...prev, whyChooseUsSubtitle: value }))} placeholder="Short description..." />
         </div>
-      </div>
+      </SectionCard>
     </form>
   );
 }

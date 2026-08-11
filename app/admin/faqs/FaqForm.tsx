@@ -6,6 +6,7 @@ import { Save, ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
 import toast, { Toaster } from 'react-hot-toast';
 import TipTapEditor from '@/app/components/admin/TipTapEditor';
+import ToggleShow from '../components/ToggleShow';
 
 interface RelatedPage {
   type: 'trek' | 'tour' | 'blog';
@@ -95,13 +96,16 @@ export default function FaqForm({ initialData, isEditing = false, relatedPages =
             {isEditing ? `Edit FAQ: ${initialData?.question}` : 'Add New FAQ'}
           </h1>
         </div>
-        <button 
-          type="submit" 
-          disabled={loading}
-          className="bg-[#24a0ed] hover:bg-[#1a85c6] text-white font-bold px-6 py-2.5 rounded-lg flex items-center gap-2 disabled:opacity-50 uppercase tracking-wider"
-        >
-          <Save className="w-4 h-4" /> {loading ? 'Saving...' : (isEditing ? 'Update FAQ' : 'Publish FAQ')}
-        </button>
+        <div className="flex items-center gap-2">
+          {isEditing && <ToggleShow model="faqs" resource="faqs" id={initialData?.id as string} published={initialData?.published ?? true} />}
+          <button 
+            type="submit" 
+            disabled={loading}
+            className="bg-[#24a0ed] hover:bg-[#1a85c6] text-white font-bold px-6 py-2.5 rounded-lg flex items-center gap-2 disabled:opacity-50 uppercase tracking-wider"
+          >
+            <Save className="w-4 h-4" /> {loading ? 'Saving...' : (isEditing ? 'Update FAQ' : 'Publish FAQ')}
+          </button>
+        </div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">

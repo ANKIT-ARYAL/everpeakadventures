@@ -6,6 +6,7 @@ import { Save, ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
 import toast, { Toaster } from 'react-hot-toast';
 import ToggleShow from '../components/ToggleShow';
+import SectionCard from '@/app/components/admin/SectionCard';
 
 const defaultSettings = {
   published: true,
@@ -94,9 +95,7 @@ export default function ContactWidgetSettingsPage() {
         </div>
       </div>
 
-      <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 space-y-4">
-        <h2 className="font-bold text-gray-800 uppercase tracking-wider border-b pb-2">Visibility</h2>
-
+      <SectionCard title="Visibility" defaultOpen>
         <label className="flex items-center gap-3 cursor-pointer">
           <input
             type="checkbox"
@@ -107,11 +106,9 @@ export default function ContactWidgetSettingsPage() {
           />
           <span className="font-bold">Show floating contact widget on the website</span>
         </label>
-      </div>
+      </SectionCard>
 
-      <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 space-y-4">
-        <h2 className="font-bold text-gray-800 uppercase tracking-wider border-b pb-2">Contact Channels</h2>
-
+      <SectionCard title="Contact Channels">
         <div>
           <label className="block font-bold mb-1">WhatsApp Number</label>
           <input type="text" name="whatsapp" value={form.whatsapp} onChange={handleChange} className="w-full p-3 border rounded-lg text-sm font-medium focus:border-[#24a0ed] outline-none" placeholder="e.g. 9851093960" />
@@ -131,7 +128,7 @@ export default function ContactWidgetSettingsPage() {
           <label className="block font-bold mb-1">Email</label>
           <input type="text" name="email" value={form.email} onChange={handleChange} className="w-full p-3 border rounded-lg text-sm font-medium focus:border-[#24a0ed] outline-none" placeholder="e.g. info@everpeakadventures.com" />
         </div>
-      </div>
+      </SectionCard>
     </form>
   );
 }

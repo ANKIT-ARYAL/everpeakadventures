@@ -30,7 +30,7 @@ export default function SectionCard({ title, subtitle, defaultOpen = false, acti
         </button>
         {action && <div className="shrink-0 flex items-center gap-2">{action}</div>}
       </div>
-      {open && <div className="px-4 sm:px-5 pb-5 border-t border-gray-100 pt-4">{children}</div>}
+      {open && <div className="px-4 sm:px-5 pb-5 border-t border-gray-100 pt-4 space-y-4">{children}</div>}
     </div>
   );
 }

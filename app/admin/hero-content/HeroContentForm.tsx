@@ -8,6 +8,7 @@ import toast, { Toaster } from 'react-hot-toast';
 import MediaUploader from '@/app/components/admin/MediaUploader';
 import ToggleShow from '../components/ToggleShow';
 import TipTapEditor from '@/app/components/admin/TipTapEditor';
+import SectionCard from '@/app/components/admin/SectionCard';
 
 interface Props {
   initialData?: any;
@@ -95,9 +96,7 @@ export default function HeroContentForm({ initialData }: Props) {
         </div>
       </div>
 
-      <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 space-y-4">
-        <h2 className="font-bold text-gray-800 uppercase tracking-wider border-b pb-2">Hero Section Content</h2>
-
+      <SectionCard title="Hero Section Content" defaultOpen>
         <div>
           <label className="block font-bold mb-1">Top Label</label>
           <input type="text" name="topLabel" value={form.topLabel} onChange={handleChange} className="w-full p-3 border rounded-lg text-sm font-medium focus:border-[#24a0ed] outline-none" placeholder="e.g. Explore the Himalayas with..." />
@@ -180,7 +179,7 @@ export default function HeroContentForm({ initialData }: Props) {
           <label className="block font-bold mb-1">Secondary Button Link</label>
           <input type="text" name="secondaryButtonLink" value={form.secondaryButtonLink} onChange={handleChange} className="w-full p-2.5 border rounded-lg focus:border-[#24a0ed] outline-none" placeholder="e.g. /send-inquiry" />
         </div>
-      </div>
+      </SectionCard>
     </form>
   );
 }

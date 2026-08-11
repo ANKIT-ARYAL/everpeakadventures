@@ -6,9 +6,10 @@ import { Save, ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
 import toast, { Toaster } from 'react-hot-toast';
 import MediaUploader from '@/app/components/admin/MediaUploader';
-import RichTextEditor from '@/app/components/admin/RichTextEditor';
 import ToggleShow from '../components/ToggleShow';
 import TipTapEditor from '@/app/components/admin/TipTapEditor';
+import SectionCard from '@/app/components/admin/SectionCard';
+import FieldGrid from '@/app/components/admin/FieldGrid';
 
 const defaultContent = {
   published: true,
@@ -129,9 +130,7 @@ export default function AboutContentPage() {
         </div>
       </div>
 
-      <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 space-y-4">
-        <h2 className="font-bold text-gray-800 uppercase tracking-wider border-b pb-2">Hero Section</h2>
-
+      <SectionCard title="Hero Section" defaultOpen>
         <div>
           <label className="block font-bold mb-1">Page Title</label>
           <input type="text" name="title" value={form.title} onChange={handleChange} className="w-full p-3 border rounded-lg text-sm font-medium focus:border-[#24a0ed] outline-none" placeholder="About Us" />
@@ -149,7 +148,7 @@ export default function AboutContentPage() {
           />
         </div>
 
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-4">
+        <FieldGrid cols={4}>
           <div>
             <label className="block font-bold mb-1">Happy Travelers</label>
             <input type="text" name="happyTravelers" value={form.happyTravelers} onChange={handleChange} className="w-full p-3 border rounded-lg text-sm font-medium focus:border-[#24a0ed] outline-none" placeholder="1,000+" />
@@ -166,12 +165,10 @@ export default function AboutContentPage() {
             <label className="block font-bold mb-1">Expert Guides</label>
             <input type="text" name="expertGuides" value={form.expertGuides} onChange={handleChange} className="w-full p-3 border rounded-lg text-sm font-medium focus:border-[#24a0ed] outline-none" placeholder="20+" />
           </div>
-        </div>
-      </div>
+        </FieldGrid>
+      </SectionCard>
 
-      <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 space-y-4">
-        <h2 className="font-bold text-gray-800 uppercase tracking-wider border-b pb-2">Intro Paragraphs</h2>
-
+      <SectionCard title="Intro Paragraphs">
         <div>
           <label className="block font-bold mb-1">Paragraph 1</label>
           <TipTapEditor value={form.paragraph1} onChange={(html) => setForm(prev => ({ ...prev, paragraph1: html }))} placeholder="Ever Peak Adventure is a leading..." />
@@ -191,11 +188,9 @@ export default function AboutContentPage() {
           <label className="block font-bold mb-1">Paragraph 4</label>
           <TipTapEditor value={form.paragraph4} onChange={(html) => setForm(prev => ({ ...prev, paragraph4: html }))} placeholder="Our guides are highly trained..." />
         </div>
-      </div>
+      </SectionCard>
 
-      <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 space-y-4">
-        <h2 className="font-bold text-gray-800 uppercase tracking-wider border-b pb-2">Company Culture & Vision</h2>
-
+      <SectionCard title="Company Culture & Vision">
         <div>
           <label className="block font-bold mb-1">Culture Title</label>
           <input type="text" name="cultureTitle" value={form.cultureTitle} onChange={handleChange} className="w-full p-3 border rounded-lg text-sm font-medium focus:border-[#24a0ed] outline-none" placeholder="Our Company Culture" />
@@ -220,7 +215,7 @@ export default function AboutContentPage() {
           <label className="block font-bold mb-1">Goals</label>
           <TipTapEditor value={form.goalsText} onChange={(html) => setForm(prev => ({ ...prev, goalsText: html }))} placeholder="To design and operate..." />
         </div>
-      </div>
+      </SectionCard>
     </form>
   );
 }

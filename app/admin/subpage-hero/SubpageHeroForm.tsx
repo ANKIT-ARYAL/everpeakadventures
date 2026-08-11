@@ -5,6 +5,9 @@ import { useRouter } from 'next/navigation';
 import { Save, ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
 import toast, { Toaster } from 'react-hot-toast';
+import MediaUploader from '@/app/components/admin/MediaUploader';
+import SectionCard from '@/app/components/admin/SectionCard';
+import ToggleShow from '../components/ToggleShow';
 
 const ALLOWED_SLUGS = [
   "trekking",
@@ -85,16 +88,19 @@ export default function SubpageHeroForm({ initialData, isEditing = false }: Prop
             {isEditing ? `Edit Hero: ${initialData?.slug}` : 'Add New Subpage Hero'}
           </h1>
         </div>
-        <button 
-          type="submit" 
-          disabled={loading}
-          className="bg-[#24a0ed] hover:bg-[#1a85c6] text-white font-bold px-6 py-2.5 rounded-lg flex items-center gap-2 disabled:opacity-50 uppercase tracking-wider"
-        >
-          <Save className="w-4 h-4" /> {loading ? 'Saving...' : (isEditing ? 'Update Hero' : 'Publish Hero')}
-        </button>
+        <div className="flex items-center gap-2">
+          {isEditing && <ToggleShow model="subpage-heroes" resource="subpage-hero" id={initialData?.id as string} published={initialData?.published ?? true} />}
+          <button 
+            type="submit" 
+            disabled={loading}
+            className="bg-[#24a0ed] hover:bg-[#1a85c6] text-white font-bold px-6 py-2.5 rounded-lg flex items-center gap-2 disabled:opacity-50 uppercase tracking-wider"
+          >
+            <Save className="w-4 h-4" /> {loading ? 'Saving...' : (isEditing ? 'Update Hero' : 'Publish Hero')}
+          </button>
+        </div>
       </div>
 
-      <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 space-y-4">
+      <SectionCard title="Hero Details" defaultOpen>
         <div>
           <label className="block font-bold mb-1">Page Slug *</label>
           <select name="slug" required value={form.slug} onChange={handleChange} className="w-full p-2.5 border rounded-lg bg-gray-50 focus:border-[#24a0ed] outline-none">
@@ -116,15 +122,10 @@ export default function SubpageHeroForm({ initialData, isEditing = false }: Prop
         </div>
 
         <div>
-          <label className="block font-bold mb-1">Background Image URL</label>
-          <input type="text" name="image" value={form.image} onChange={handleChange} className="w-full p-3 border rounded-lg focus:border-[#24a0ed] outline-none" placeholder="https://..." />
-          {form.image && (
-            <div className="h-36 rounded-lg overflow-hidden border mt-2">
-              <img src={form.image} alt="Preview" className="w-full h-full object-cover" />
-            </div>
-          )}
+          <label className="block font-bold mb-1">Background Image</label>
+          <MediaUploader value={form.image} onChange={(url) => setForm(prev => ({ ...prev, image: url }))} label="Upload Background Image" />
         </div>
-      </div>
+      </SectionCard>
     </form>
   );
 }

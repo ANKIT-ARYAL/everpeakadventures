@@ -7,6 +7,8 @@ import { Save, ArrowLeft, Quote } from 'lucide-react';
 import Link from 'next/link';
 import toast, { Toaster } from 'react-hot-toast';
 import TipTapEditor from '@/app/components/admin/TipTapEditor';
+import MediaUploader from '@/app/components/admin/MediaUploader';
+import ToggleShow from '../components/ToggleShow';
 
 interface Props {
   initialData?: any;
@@ -98,13 +100,16 @@ export default function TestimonialForm({ initialData, sectionData, isEditing = 
             {isEditing ? `Edit Testimonial: ${initialData?.name}` : 'Add New Testimonial'}
           </h1>
         </div>
-        <button 
-          type="submit" 
-          disabled={loading}
-          className="bg-[#24a0ed] hover:bg-[#1a85c6] text-white font-bold px-6 py-2.5 rounded-lg flex items-center gap-2 disabled:opacity-50 uppercase tracking-wider"
-        >
-          <Save className="w-4 h-4" /> {loading ? 'Saving...' : (isEditing ? 'Update Testimonial' : 'Publish Testimonial')}
-        </button>
+        <div className="flex items-center gap-2">
+          {isEditing && <ToggleShow model="testimonials" resource="testimonials" id={initialData?.id as string} published={initialData?.published ?? true} />}
+          <button 
+            type="submit" 
+            disabled={loading}
+            className="bg-[#24a0ed] hover:bg-[#1a85c6] text-white font-bold px-6 py-2.5 rounded-lg flex items-center gap-2 disabled:opacity-50 uppercase tracking-wider"
+          >
+            <Save className="w-4 h-4" /> {loading ? 'Saving...' : (isEditing ? 'Update Testimonial' : 'Publish Testimonial')}
+          </button>
+        </div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -159,18 +164,8 @@ export default function TestimonialForm({ initialData, sectionData, isEditing = 
           
           <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 space-y-4">
             <h3 className="font-bold text-gray-800 uppercase tracking-wider border-b pb-2">Client Avatar</h3>
-            <input type="url" name="avatar" value={form.avatar} onChange={handleChange} placeholder="https://..." className="w-full p-2.5 border rounded-lg focus:border-[#24a0ed] outline-none" />
-            {form.avatar ? (
-              <div className="flex justify-center">
-                <img src={form.avatar} alt="Preview" className="w-20 h-20 rounded-full object-cover border shadow-sm" />
-              </div>
-            ) : (
-              <div className="flex justify-center">
-                <div className="w-20 h-20 rounded-full bg-gray-100 border flex items-center justify-center text-gray-400">
-                  <Quote className="w-6 h-6" />
-                </div>
-              </div>
-            )}
+            <MediaUploader value={form.avatar} onChange={(url) => setForm(prev => ({ ...prev, avatar: url }))} label="Upload Avatar" heightClass="h-24" />
+          </div>
           </div>
 
           <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 space-y-4">

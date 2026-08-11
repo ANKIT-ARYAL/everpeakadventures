@@ -6,6 +6,8 @@ import { Save, ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
 import toast, { Toaster } from 'react-hot-toast';
 import TipTapEditor from '@/app/components/admin/TipTapEditor';
+import MediaUploader from '@/app/components/admin/MediaUploader';
+import ToggleShow from '../components/ToggleShow';
 
 interface Props {
   initialData?: any;
@@ -72,13 +74,16 @@ export default function TeamForm({ initialData, isEditing = false }: Props) {
             {isEditing ? `Edit Member: ${initialData?.name}` : 'Add New Team Member'}
           </h1>
         </div>
-        <button 
-          type="submit" 
-          disabled={loading}
-          className="bg-[#24a0ed] hover:bg-[#1a85c6] text-white font-bold px-6 py-2.5 rounded-lg flex items-center gap-2 disabled:opacity-50 uppercase tracking-wider"
-        >
-          <Save className="w-4 h-4" /> {loading ? 'Saving...' : (isEditing ? 'Update Member' : 'Publish Member')}
-        </button>
+        <div className="flex items-center gap-2">
+          {isEditing && <ToggleShow model="team" resource="team" id={initialData?.id as string} published={initialData?.published ?? true} />}
+          <button 
+            type="submit" 
+            disabled={loading}
+            className="bg-[#24a0ed] hover:bg-[#1a85c6] text-white font-bold px-6 py-2.5 rounded-lg flex items-center gap-2 disabled:opacity-50 uppercase tracking-wider"
+          >
+            <Save className="w-4 h-4" /> {loading ? 'Saving...' : (isEditing ? 'Update Member' : 'Publish Member')}
+          </button>
+        </div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -113,18 +118,7 @@ export default function TeamForm({ initialData, isEditing = false }: Props) {
           
           <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 space-y-4">
             <h3 className="font-bold text-gray-800 uppercase tracking-wider border-b pb-2">Member Photo *</h3>
-            <input type="url" name="image" required value={form.image} onChange={handleChange} placeholder="https://..." className="w-full p-2.5 border rounded-lg focus:border-[#24a0ed] outline-none" />
-            {form.image ? (
-              <div className="flex justify-center">
-                <img src={form.image} alt="Preview" className="w-24 h-24 rounded-full object-cover border shadow-sm" />
-              </div>
-            ) : (
-              <div className="flex justify-center">
-                <div className="w-24 h-24 rounded-full bg-gray-100 border flex items-center justify-center text-gray-400">
-                  <span className="font-bold text-xs">PHOTO</span>
-                </div>
-              </div>
-            )}
+            <MediaUploader value={form.image} onChange={(url) => setForm(prev => ({ ...prev, image: url }))} label="Upload Member Photo" />
           </div>
 
           <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 space-y-4">

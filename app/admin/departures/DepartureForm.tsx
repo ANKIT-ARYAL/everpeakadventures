@@ -5,6 +5,8 @@ import { useRouter } from 'next/navigation';
 import { Save, ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
 import toast, { Toaster } from 'react-hot-toast';
+import MediaUploader from '@/app/components/admin/MediaUploader';
+import ToggleShow from '../components/ToggleShow';
 
 interface Props {
   initialData?: any;
@@ -70,13 +72,16 @@ export default function DepartureForm({ initialData, isEditing = false }: Props)
             {isEditing ? 'Edit Departure' : 'Add New Departure'}
           </h1>
         </div>
-        <button 
-          type="submit" 
-          disabled={loading}
-          className="bg-[#24a0ed] hover:bg-[#1a85c6] text-white font-bold px-6 py-2.5 rounded-lg flex items-center gap-2 disabled:opacity-50"
-        >
-          <Save className="w-4 h-4" /> {loading ? 'Saving...' : 'Save Departure'}
-        </button>
+        <div className="flex items-center gap-2">
+          {isEditing && <ToggleShow model="departures" resource="departures" id={initialData?.id as string} published={initialData?.published ?? true} />}
+          <button 
+            type="submit" 
+            disabled={loading}
+            className="bg-[#24a0ed] hover:bg-[#1a85c6] text-white font-bold px-6 py-2.5 rounded-lg flex items-center gap-2 disabled:opacity-50"
+          >
+            <Save className="w-4 h-4" /> {loading ? 'Saving...' : 'Save Departure'}
+          </button>
+        </div>
       </div>
 
       <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -95,8 +100,8 @@ export default function DepartureForm({ initialData, isEditing = false }: Props)
           <input type="text" name="durationDays" required value={form.durationDays} onChange={handleChange} placeholder="e.g. 14 Days" className="w-full p-2.5 border rounded-lg focus:border-[#24a0ed] outline-none" />
         </div>
         <div className="md:col-span-2">
-          <label className="block font-bold mb-1">Hero Image URL *</label>
-          <input type="url" name="heroImage" required value={form.heroImage} onChange={handleChange} className="w-full p-2.5 border rounded-lg focus:border-[#24a0ed] outline-none" />
+          <label className="block font-bold mb-1">Hero Image *</label>
+          <MediaUploader value={form.heroImage} onChange={(url) => setForm(prev => ({ ...prev, heroImage: url }))} label="Upload Hero Image" />
         </div>
 
         {/* Departure Details */}

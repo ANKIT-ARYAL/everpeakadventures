@@ -5,8 +5,9 @@ import { useRouter } from 'next/navigation';
 import { Save, ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
 import toast, { Toaster } from 'react-hot-toast';
-import RichTextEditor from '@/app/components/admin/RichTextEditor';
+import TipTapEditor from '@/app/components/admin/TipTapEditor';
 import ToggleShow from '../components/ToggleShow';
+import SectionCard from '@/app/components/admin/SectionCard';
 
 const defaultContent = {
   published: true,
@@ -103,9 +104,7 @@ export default function WhyPagePage() {
         </div>
       </div>
 
-      <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 space-y-4">
-        <h2 className="font-bold text-gray-800 uppercase tracking-wider border-b pb-2">Page Header</h2>
-
+      <SectionCard title="Page Header" defaultOpen>
         <div>
           <label className="block font-bold mb-1">Page Title</label>
           <input type="text" name="title" value={form.title} onChange={handleChange} className="w-full p-3 border rounded-lg text-sm font-medium focus:border-[#24a0ed] outline-none" placeholder="Why Ever Peak Adventures" />
@@ -115,21 +114,19 @@ export default function WhyPagePage() {
           <label className="block font-bold mb-1">Subtitle</label>
           <input type="text" name="subtitle" value={form.subtitle} onChange={handleChange} className="w-full p-3 border rounded-lg text-sm font-medium focus:border-[#24a0ed] outline-none" placeholder="Have questions or ready to plan..." />
         </div>
-      </div>
+      </SectionCard>
 
-      <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 space-y-4">
-        <h2 className="font-bold text-gray-800 uppercase tracking-wider border-b pb-2">Content</h2>
-
+      <SectionCard title="Content">
         <div>
           <label className="block font-bold mb-1">Content</label>
-          <RichTextEditor
+          <TipTapEditor
             value={form.contentHtml}
             onChange={(html) => setForm(prev => ({ ...prev, contentHtml: html }))}
             placeholder="Write the Why page content here..."
             minHeight="400px"
           />
         </div>
-      </div>
+      </SectionCard>
     </form>
   );
 }

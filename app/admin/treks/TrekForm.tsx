@@ -8,6 +8,7 @@ import TipTapEditor from '@/app/components/admin/TipTapEditor';
 import MediaUploader from '@/app/components/admin/MediaUploader';
 import RouteMapEditor, { EMPTY_ROUTE_MAP } from '@/app/components/admin/RouteMapEditor';
 import FieldGrid from '@/app/components/admin/FieldGrid';
+import ToggleShow from '../components/ToggleShow';
 
 interface TrekFormProps {
   initialData?: any;
@@ -383,6 +384,7 @@ export default function TrekForm({ initialData, isEditing = false, categories }:
         </div>
 
         <div className="flex items-center gap-2">
+          {isEditing && <ToggleShow model="treks" resource="treks" id={initialData?.id as string} published={initialData?.published ?? true} />}
           {isEditing && formData.slug && (
             <Link
               href={`/trekking/${formData.slug}`}

@@ -6,8 +6,9 @@ import { Save, ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
 import toast, { Toaster } from 'react-hot-toast';
 import MediaUploader from '@/app/components/admin/MediaUploader';
-import RichTextEditor from '@/app/components/admin/RichTextEditor';
+import TipTapEditor from '@/app/components/admin/TipTapEditor';
 import ToggleShow from '../components/ToggleShow';
+import SectionCard from '@/app/components/admin/SectionCard';
 
 const defaultContent = {
   published: true,
@@ -108,10 +109,8 @@ export default function DirectorMessagePage() {
         </div>
       </div>
 
-      <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 space-y-4">
-        <h2 className="font-bold text-gray-800 uppercase tracking-wider border-b pb-2">Founder Details</h2>
-
-        <div className="grid grid-cols-2 gap-4">
+      <SectionCard title="Founder Details" defaultOpen>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
             <label className="block font-bold mb-1">Founder Name</label>
             <input type="text" name="founderName" value={form.founderName} onChange={handleChange} className="w-full p-3 border rounded-lg text-sm font-medium focus:border-[#24a0ed] outline-none" placeholder="Dipesh Aryal" />
@@ -122,11 +121,9 @@ export default function DirectorMessagePage() {
           </div>
         </div>
 
-        <div className="grid grid-cols-2 gap-4">
-          <div>
-            <label className="block font-bold mb-1">Founder Email</label>
-            <input type="email" name="founderEmail" value={form.founderEmail} onChange={handleChange} className="w-full p-3 border rounded-lg text-sm font-medium focus:border-[#24a0ed] outline-none" placeholder="dipesh@everpeakadventure.com" />
-          </div>
+        <div>
+          <label className="block font-bold mb-1">Founder Email</label>
+          <input type="email" name="founderEmail" value={form.founderEmail} onChange={handleChange} className="w-full p-3 border rounded-lg text-sm font-medium focus:border-[#24a0ed] outline-none" placeholder="dipesh@everpeakadventure.com" />
         </div>
 
         <div>
@@ -140,21 +137,19 @@ export default function DirectorMessagePage() {
             heightClass="h-44"
           />
         </div>
-      </div>
+      </SectionCard>
 
-      <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 space-y-4">
-        <h2 className="font-bold text-gray-800 uppercase tracking-wider border-b pb-2">Message Content</h2>
-
+      <SectionCard title="Message Content">
         <div>
           <label className="block font-bold mb-1">Content</label>
-          <RichTextEditor
+          <TipTapEditor
             value={form.contentHtml}
             onChange={(html) => setForm(prev => ({ ...prev, contentHtml: html }))}
             placeholder="Write the founder's message here..."
             minHeight="300px"
           />
         </div>
-      </div>
+      </SectionCard>
     </form>
   );
 }
