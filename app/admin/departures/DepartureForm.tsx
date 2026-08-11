@@ -10,6 +10,7 @@ import ToggleShow from '../components/ToggleShow';
 interface TripOption {
   id: string;
   title: string;
+  groupSizes?: string[];
 }
 
 interface Props {
@@ -52,6 +53,12 @@ export default function DepartureForm({ initialData, isEditing = false, treks = 
   });
 
   const options = tripType === 'trek' ? treks : tours;
+  const selectedTripOpt = options.find(o => o.id === tripId);
+  const matrixSizes = selectedTripOpt?.groupSizes || [];
+  const groupSizeOptions = Array.from(new Set([
+    ...(matrixSizes.length > 0 ? matrixSizes : ['1 - 12 Pax']),
+    ...(form.groupSize ? [form.groupSize] : []),
+  ]));
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
@@ -103,7 +110,7 @@ export default function DepartureForm({ initialData, isEditing = false, treks = 
     <form onSubmit={handleSubmit} className="max-w-4xl mx-auto space-y-6 text-xs text-gray-800">
       <Toaster position="top-center" />
 
-      <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 flex items-center justify-between">
+      <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div className="flex items-center gap-3">
           <Link href="/admin/departures" className="p-2 bg-gray-100 rounded-lg hover:bg-gray-200">
             <ArrowLeft className="w-4 h-4" />
@@ -136,7 +143,7 @@ export default function DepartureForm({ initialData, isEditing = false, treks = 
               <button
                 key={t}
                 type="button"
-                onClick={() => { setTripType(t); setTripId(''); }}
+                onClick={() => { setTripType(t); setTripId(''); setForm(prev => ({ ...prev, groupSize: '' })); }}
                 className={`px-6 py-2 rounded text-xs font-bold uppercase transition-colors ${tripType === t ? 'bg-white text-[#112233] shadow-sm' : 'text-gray-500 hover:text-gray-700'}`}
               >
                 {t === 'trek' ? 'Trek' : 'Tour'}
@@ -149,7 +156,16 @@ export default function DepartureForm({ initialData, isEditing = false, treks = 
           <label className="block font-bold mb-1">Select {tripType === 'trek' ? 'Trek' : 'Tour'} *</label>
           <select
             value={tripId}
-            onChange={(e) => setTripId(e.target.value)}
+            onChange={(e) => {
+              const id = e.target.value;
+              setTripId(id);
+              const trip = options.find(o => o.id === id);
+              const sizes = trip?.groupSizes || [];
+              setForm(prev => ({
+                ...prev,
+                groupSize: sizes.length > 0 && !sizes.includes(prev.groupSize) ? sizes[0] : prev.groupSize,
+              }));
+            }}
             required
             className="w-full p-2.5 border rounded-lg focus:border-[#24a0ed] outline-none bg-white"
           >
@@ -175,7 +191,11 @@ export default function DepartureForm({ initialData, isEditing = false, treks = 
 
         <div>
           <label className="block font-bold mb-1">Group Size</label>
-          <input type="text" name="groupSize" value={form.groupSize} onChange={handleChange} placeholder="e.g. 2-12 Pax" className="w-full p-2.5 border rounded-lg focus:border-[#24a0ed] outline-none" />
+          <select name="groupSize" value={form.groupSize} onChange={handleChange} className="w-full p-2.5 border rounded-lg focus:border-[#24a0ed] outline-none bg-white">
+            {groupSizeOptions.map(s => (
+              <option key={s} value={s}>{s}</option>
+            ))}
+          </select>
         </div>
 <div>
           <label className="block font-bold mb-1">Status</label>

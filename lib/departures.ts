@@ -24,6 +24,60 @@ function fmt(date: Date | null | undefined) {
   return date.toLocaleDateString("en-US", { day: "numeric", month: "short", year: "numeric" });
 }
 
+// Parse a price string like "US$ 2,499" into a number (2499).
+export function parsePrice(s?: string | null): number {
+  const n = Number(String(s ?? "").replace(/[^0-9.]/g, ""));
+  return Number.isFinite(n) && n > 0 ? n : 0;
+}
+
+// Parse a pax range like "2 - 4 Pax" / "10+ Pax" / "1-12" into { min, max }.
+function paxRange(s?: string | null): { min: number; max: number | null } | null {
+  if (!s) return null;
+  const str = String(s);
+  const plus = str.match(/(\d+)\s*\+/);
+  if (plus) return { min: Number(plus[1]), max: null };
+  const dash = str.match(/(\d+)\s*[-–—]\s*(\d+)/);
+  if (dash) return { min: Number(dash[1]), max: Number(dash[2]) };
+  const single = str.match(/\d+/);
+  if (single) return { min: Number(single[0]), max: Number(single[0]) };
+  return null;
+}
+
+function normalizeKey(s?: string | null): string {
+  return String(s ?? "").toLowerCase().replace(/\s+/g, " ").trim();
+}
+
+// Resolve the display price for a departure:
+// 1) an explicit price override, 2) the matching group-size tier, 3) the trip's price.
+function resolveDeparturePrice(d: any): number {
+  const override = parsePrice(d.price);
+  if (override > 0) return override;
+
+  const trip = d.trek || d.tour;
+  if (!trip) return 0;
+
+  const groupPrices = (trip.groupPrices || []) as any[];
+  const depRange = paxRange(d.groupSize);
+  if (depRange && groupPrices.length > 0) {
+    const exact = groupPrices.find((g: any) => normalizeKey(g.groupSize) === normalizeKey(d.groupSize));
+    if (exact) {
+      const p = parsePrice(exact.price);
+      if (p > 0) return p;
+    }
+    const matched = groupPrices.find((g: any) => {
+      const gr = paxRange(g.groupSize);
+      if (!gr) return false;
+      return depRange.min >= gr.min && (gr.max == null || depRange.min <= gr.max);
+    });
+    if (matched) {
+      const p = parsePrice(matched.price);
+      if (p > 0) return p;
+    }
+  }
+
+  return trip.price || trip.discountedPrice || 0;
+}
+
 // For every recurring departure, materialize dated instances for the next 2 years
 // so bookings can target a concrete stored date (e.g. Mar 15 -> 2027 & 2028 rows).
 export async function ensureRecurringInstances() {
@@ -52,6 +106,7 @@ export async function ensureRecurringInstances() {
     seatsLeft: number;
     recurring: boolean;
     published: boolean;
+    price?: string;
   }[] = [];
 
   for (const { tripType, tripId, source } of templates.values()) {
@@ -80,7 +135,29 @@ export async function ensureRecurringInstances() {
         seatsLeft: source.seatsLeft,
         recurring: true,
         published: source.published,
+        price: source.price || undefined,
       });
+    }
+
+    // Keep already-materialized instances in sync with the template's price override.
+    if (source.price) {
+      const siblings = await prisma.departure.findMany({
+        where: { tripType, ...tripRef, recurring: true, id: { not: source.id } },
+        select: { id: true, startDate: true },
+      });
+      const ids = siblings
+        .filter(
+          (s) =>
+            s.startDate.getMonth() === source.startDate.getMonth() &&
+            s.startDate.getDate() === source.startDate.getDate()
+        )
+        .map((s) => s.id);
+      if (ids.length > 0) {
+        await prisma.departure.updateMany({
+          where: { id: { in: ids } },
+          data: { price: source.price },
+        });
+      }
     }
   }
 
@@ -122,7 +199,7 @@ export function shapeDeparture(d: any): DepartureShape | null {
     endDate: fmt(d.endDate),
     status: d.status,
     seatsLeft: d.seatsLeft,
-    price: trip.discountedPrice ?? trip.price,
+    price: resolveDeparturePrice(d),
     originalPrice: trip.originalPrice ?? null,
   };
 }
@@ -141,12 +218,14 @@ export async function getFrontendDepartures(publishedOnly = true) {
         select: {
           id: true, slug: true, title: true, heroImage: true, durationDays: true,
           price: true, discountedPrice: true, originalPrice: true,
+          groupPrices: true,
         },
       },
       tour: {
         select: {
           id: true, slug: true, title: true, heroImage: true, duration: true,
           price: true, discountedPrice: true, originalPrice: true,
+          groupPrices: true,
         },
       },
     },

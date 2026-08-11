@@ -33,6 +33,7 @@ export async function PUT(request: Request, { params }: { params: Promise<{ id: 
         seatsLeft: Number(body.seatsLeft) || 12,
         recurring: !!body.recurring,
         published: body.published ?? true,
+        price: body.price ?? null,
       },
     });
     return NextResponse.json({ success: true, data: updated });

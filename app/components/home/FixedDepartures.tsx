@@ -154,18 +154,18 @@ export default function FixedDepartures({ data = [], label, title }: FixedDepart
 
                   <div className="flex flex-col">
                     <span className="text-[0.95rem] font-bold text-[#1a5b88]">
-                      US$ {trip.price}
+                      US$ {(trip.price ?? 0).toLocaleString()}
                     </span>
                     {trip.originalPrice && (
                       <span className="text-[0.8rem] text-[#777777] line-through mt-0.5">
-                        US$ {trip.originalPrice}
+                        US$ {(trip.originalPrice ?? 0).toLocaleString()}
                       </span>
                     )}
                   </div>
 
                   <div className="flex justify-start md:justify-end mt-2 md:mt-0">
                     <Link 
-                      href={`/booking-form/?trip_id=${trip.id}&departure_id=${trip.departureId || `dep_${trip.id}`}&departure_start=${trip.startDate}&pp=${trip.price}`}
+                      href={`/booking-form/?trip_id=${trip.trip_id}&departure_id=${trip.departureId || `dep_${trip.id}`}&departure_start=${trip.startDate}&pp=${trip.price}`}
                       className="border border-[#1a5b88] text-[#1a5b88] hover:bg-[#1a5b88] hover:text-white text-center transition-colors duration-200 px-4 py-2.5 rounded text-sm font-bold w-full md:w-[130px] cursor-pointer block"
                     >
                       Join this trip

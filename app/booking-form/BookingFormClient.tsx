@@ -41,6 +41,9 @@ export default function BookingFormClient({ trips, logoImage }: Props) {
   const departureStartParam = searchParams.get('departure_start');
   const pricePerPersonParam = Number(searchParams.get('pp'));
 
+  // Fixed departures are locked: destination and date come from the departure link.
+  const isFixedDeparture = !!departureIdParam || !!departureStartParam;
+
   // Find selected trip
   const selectedTrip = trips.find(t => t.id === tripIdParam) || trips[0] || {
     id: 'default',
@@ -117,6 +120,7 @@ export default function BookingFormClient({ trips, logoImage }: Props) {
 
   // Handle generic trip selection change
   const handleTripChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    if (isFixedDeparture) return;
     const newTrip = trips.find(t => t.title === e.target.value);
     if (newTrip) {
       setForm(prev => ({ ...prev, tripTitle: newTrip.title }));
@@ -272,17 +276,22 @@ export default function BookingFormClient({ trips, logoImage }: Props) {
           <div className="space-y-5">
             <div>
               <label className="block text-xs font-bold text-gray-700 mb-2">Choose Trek / Tour <span className="text-red-500">*</span></label>
-              <select 
+              <select
                 name="tripTitle"
                 value={form.tripTitle}
                 onChange={handleTripChange}
-                className="w-full p-3 border border-gray-200 rounded-lg text-sm bg-white focus:border-[#1a5b88] focus:outline-none"
+                disabled={isFixedDeparture}
+                className={`w-full p-3 border border-gray-200 rounded-lg text-sm focus:border-[#1a5b88] focus:outline-none ${
+                  isFixedDeparture ? 'bg-gray-50 text-gray-600 cursor-not-allowed' : 'bg-white'
+                }`}
               >
                 {trips.map(t => (
                   <option key={t.id} value={t.title}>{t.title}</option>
                 ))}
               </select>
-              <p className="text-[10px] text-gray-400 mt-1.5">Direct booking URL includes this trek/tour automatically.</p>
+              <p className="text-[10px] text-gray-400 mt-1.5">
+                {isFixedDeparture ? 'Destination is fixed to this fixed-departure trip.' : 'Direct booking URL includes this trek/tour automatically.'}
+              </p>
             </div>
 
             {/* CONDITIONAL: Fixed Departure Logic vs Standard Logic */}

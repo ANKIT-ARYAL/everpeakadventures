@@ -43,7 +43,7 @@ export default async function TourDetailPage({ params }: PageProps) {
   const tourDepartures = await prisma.departure.findMany({
     where: { tourId: tour.id, published: true, startDate: { gte: start, lte: end } },
     include: {
-      tour: { select: { id: true, slug: true, title: true, heroImage: true, duration: true, price: true, discountedPrice: true, originalPrice: true } },
+      tour: { select: { id: true, slug: true, title: true, heroImage: true, duration: true, price: true, discountedPrice: true, originalPrice: true, groupPrices: true } },
     },
     orderBy: { startDate: 'asc' },
   });

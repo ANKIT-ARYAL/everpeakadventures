@@ -51,6 +51,7 @@ export async function POST(request: Request) {
         seatsLeft: Number(body.seatsLeft) || 12,
         recurring: !!body.recurring,
         published: body.published ?? true,
+        price: body.price ?? null,
       },
     });
     return NextResponse.json({ success: true, data: newDeparture }, { status: 201 });

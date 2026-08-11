@@ -15,11 +15,24 @@ export default async function EditDeparturePage({ params }: PageProps) {
 
   const [departure, treks, tours] = await Promise.all([
     prisma.departure.findUnique({ where: { id } }),
-    prisma.trek.findMany({ select: { id: true, title: true }, orderBy: { title: 'asc' } }),
-    prisma.tour.findMany({ select: { id: true, title: true }, orderBy: { title: 'asc' } }),
+    prisma.trek.findMany({
+      select: { id: true, title: true, groupPrices: { select: { groupSize: true } } },
+      orderBy: { title: 'asc' },
+    }),
+    prisma.tour.findMany({
+      select: { id: true, title: true, groupPrices: { select: { groupSize: true } } },
+      orderBy: { title: 'asc' },
+    }),
   ]);
 
   if (!departure) notFound();
 
-  return <DepartureForm initialData={departure} isEditing={true} treks={treks} tours={tours} />;
+  const mapTrips = (trips: any[]): { id: string; title: string; groupSizes: string[] }[] =>
+    trips.map((t: any) => ({
+      id: t.id,
+      title: t.title,
+      groupSizes: Array.from(new Set((t.groupPrices || []).map((g: any) => g.groupSize as string).filter(Boolean))) as string[],
+    }));
+
+  return <DepartureForm initialData={departure} isEditing={true} treks={mapTrips(treks)} tours={mapTrips(tours)} />;
 }
