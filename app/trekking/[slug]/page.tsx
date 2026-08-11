@@ -4,7 +4,7 @@ import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import {
   Calendar, Clock, CheckCircle2, XCircle, Utensils, Award, 
-  Mountain, Home, MapPin, Activity as ActivityIcon, Flag
+  Mountain, Home, MapPin, Activity as ActivityIcon, Flag, Star
 } from 'lucide-react';
 import TrekGallerySlider from '../TrekGallerySlider';
 import StickySectionNav from '@/app/components/trek/StickySectionNav';
@@ -15,6 +15,8 @@ import GallerySection from '@/app/components/trek/GallerySection';
 import { Reveal, Stagger, StaggerItem } from '@/app/components/animations/Motion';
 import { toHtml } from '@/app/lib/html';
 import FAQAccordion from '@/app/components/FAQAccordion';
+import FixedDepartures from '@/app/components/home/FixedDepartures';
+import { ensureRecurringInstances, shapeDeparture, departureWindow } from '@/lib/departures';
 
 export const dynamic = 'force-dynamic';
 
@@ -31,11 +33,21 @@ export default async function TrekDetailPage({ params }: PageProps) {
     where: { slug, published: true },
     include: {
       groupPrices: true,
-      fixedSchedules: true,
     }
   });
 
   if (!trek) notFound();
+
+  await ensureRecurringInstances();
+  const { start, end } = departureWindow();
+  const trekDepartures = await prisma.departure.findMany({
+    where: { trekId: trek.id, published: true, startDate: { gte: start, lte: end } },
+    include: {
+      trek: { select: { id: true, slug: true, title: true, heroImage: true, durationDays: true, price: true, discountedPrice: true, originalPrice: true } },
+    },
+    orderBy: { startDate: 'asc' },
+  });
+  const shapedDepartures = trekDepartures.map(shapeDeparture).filter(Boolean);
 
   const relatedTreks = await prisma.trek.findMany({
     where: { id: { not: trek.id }, published: true },
@@ -168,23 +180,6 @@ export default async function TrekDetailPage({ params }: PageProps) {
                 </div>
               )}
 
-              {/* Group Schedule / Departures Box */}
-              {trek.fixedSchedules && trek.fixedSchedules.length > 0 && (
-                <div className="space-y-2 pt-2">
-                  <span className="text-[11px] font-bold uppercase text-gray-500 block">Group Date Schedule</span>
-                  <div className="space-y-1.5">
-                    {trek.fixedSchedules.map((sch: any) => (
-                      <div key={sch.id} className="flex items-center justify-between bg-gray-50 p-2 rounded border border-gray-200 text-[11px]">
-                        <span className="font-medium text-gray-700">{sch.dateRange}</span>
-                        <Link href={`/booking-form/?trip_id=${trek.id}`} className="bg-[#24a0ed] text-white px-3 py-1 rounded font-bold hover:bg-[#112233] transition-colors">
-                          {sch.status}
-                        </Link>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
-
               {/* All Inclusive Section */}
               {trek.isAllInclusive && (
                 <div className="bg-[#112233] text-white p-4 rounded-lg text-xs space-y-2">
@@ -240,7 +235,7 @@ export default async function TrekDetailPage({ params }: PageProps) {
                 <MapPin className="w-5 h-5 text-[#24a0ed]" />
                 <div>
                   <span className="text-[10px] text-gray-400 uppercase block font-bold">Start at</span>
-                  <span className="font-bold text-gray-800">Kathmandu</span>
+                  <span className="font-bold text-gray-800">{trek.startPoint || 'Kathmandu'}</span>
                 </div>
               </StaggerItem>
               <StaggerItem className="flex items-center gap-3 p-3 rounded-lg bg-gray-50 border border-gray-100">
@@ -296,9 +291,20 @@ export default async function TrekDetailPage({ params }: PageProps) {
                 <Flag className="w-5 h-5 text-[#24a0ed]" />
                 <div>
                   <span className="text-[10px] text-gray-400 uppercase block font-bold">End at</span>
-                  <span className="font-bold text-gray-800">Kathmandu</span>
+                  <span className="font-bold text-gray-800">{trek.endPoint || 'Kathmandu'}</span>
                 </div>
               </StaggerItem>
+              {(trek.rate || trek.rating) && (
+                <StaggerItem className="flex items-center gap-3 p-3 rounded-lg bg-gray-50 border border-gray-100">
+                  <Star className="w-5 h-5 text-[#24a0ed]" />
+                  <div>
+                    <span className="text-[10px] text-gray-400 uppercase block font-bold">Rating</span>
+                    <span className="font-bold text-gray-800">
+                      {trek.rate ? `${trek.rate}/` : ''}{trek.rating || 5}
+                    </span>
+                  </div>
+                </StaggerItem>
+              )}
             </Stagger>
 
             {/* Trip Overview */}
@@ -338,9 +344,59 @@ export default async function TrekDetailPage({ params }: PageProps) {
                         <span>Day {day.day || i + 1}: {day.title}</span>
                         <span className="text-gray-400 group-open:rotate-180 transition-transform shrink-0">▼</span>
                       </summary>
-                      <div className="text-xs text-gray-600 px-4 py-3.5 pt-3 border-t border-gray-200 leading-relaxed" dangerouslySetInnerHTML={{ __html: toHtml(day.desc) }} />
+                      <div className="text-xs text-gray-600 px-4 py-3.5 pt-3 border-t border-gray-200 leading-relaxed space-y-3">
+                        <div dangerouslySetInnerHTML={{ __html: toHtml(day.desc) }} />
+                        {(day.startPoint || day.endPoint || day.distance || day.hours) && (
+                          <div className="grid grid-cols-2 md:grid-cols-4 gap-2 pt-2 border-t border-gray-100">
+                            {day.startPoint && <div><span className="text-[10px] text-gray-400 uppercase block font-bold">Starting Point</span><span className="font-bold text-gray-700">{day.startPoint}</span></div>}
+                            {day.endPoint && <div><span className="text-[10px] text-gray-400 uppercase block font-bold">Ending Point</span><span className="font-bold text-gray-700">{day.endPoint}</span></div>}
+                            {day.distance && <div><span className="text-[10px] text-gray-400 uppercase block font-bold">Distance</span><span className="font-bold text-gray-700">{day.distance}</span></div>}
+                            {day.hours && <div><span className="text-[10px] text-gray-400 uppercase block font-bold">Duration</span><span className="font-bold text-gray-700">{day.hours}</span></div>}
+                          </div>
+                        )}
+                        {day.note && <p className="text-[10px] text-amber-700 bg-amber-50 border border-amber-100 rounded-lg px-3 py-2"><strong>Important Note:</strong> {day.note}</p>}
+                        {Array.isArray(day.gallery) && day.gallery.length > 0 && (
+                          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                            {day.gallery.map((src: string, gi: number) => (
+                              <img key={gi} src={src} alt={`Day ${day.day || i + 1} gallery`} className="w-full h-24 object-cover rounded-lg" loading="lazy" />
+                            ))}
+                          </div>
+                        )}
+                      </div>
                     </details>
                   ))}
+                </div>
+              </Reveal>
+            </>)}
+
+            {/* Altitude Chart (Day Wise) */}
+            {Array.isArray(trek.altitudeData) && trek.altitudeData.length > 0 && (<>
+              <div id="altitude-chart" className="scroll-mt-[118px]" />
+              <Reveal className="bg-white rounded-xl p-8 shadow-sm border border-gray-100 space-y-4">
+                <h2 className="text-xl font-bold oswald uppercase text-[#112233] border-b pb-3">
+                  Altitude Chart
+                </h2>
+                <div className="overflow-x-auto">
+                  <table className="w-full text-xs">
+                    <thead>
+                      <tr className="text-left text-[10px] uppercase tracking-wider text-gray-400 border-b">
+                        <th className="py-2 pr-3">Day</th>
+                        <th className="py-2 pr-3">Place</th>
+                        <th className="py-2 pr-3">Altitude (m)</th>
+                        <th className="py-2">Note</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {(trek.altitudeData as any[]).map((row: any, i: number) => (
+                        <tr key={i} className="border-b border-gray-50">
+                          <td className="py-2 pr-3 font-bold text-[#24a0ed]">Day {row.day || i + 1}</td>
+                          <td className="py-2 pr-3 font-bold text-gray-800">{row.place}</td>
+                          <td className="py-2 pr-3 font-bold text-gray-800">{row.altitude}</td>
+                          <td className="py-2 text-gray-500">{row.note}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
                 </div>
               </Reveal>
             </>)}
@@ -378,6 +434,15 @@ export default async function TrekDetailPage({ params }: PageProps) {
           </Reveal>
         </section>
       </>)}
+
+      {/* FIXED DEPARTURES */}
+      {shapedDepartures.length > 0 && (
+        <FixedDepartures
+          data={shapedDepartures as any[]}
+          label="Departure Dates"
+          title={`${trek.title} – Fixed Departures`}
+        />
+      )}
 
       {/* ROUTE MAP & ELEVATION */}
       {(trek.mapImage || routeMap || itineraryDays.length > 0) && (
@@ -449,6 +514,7 @@ export default async function TrekDetailPage({ params }: PageProps) {
           <FAQAccordion faqs={linkedFaqs} />
         </section>
       )}
+      
 
       {/* RELATED TREKS */}
       {relatedTreks.length > 0 && (

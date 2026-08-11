@@ -3,6 +3,7 @@ import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { auth } from "@/auth";
 import { resolveResourceForPath, hasPerm } from "@/lib/permissions";
+import { prisma } from "@/lib/prisma";
 import AdminShell from "./AdminShell";
 
 export default async function AdminLayout({ children }: { children: ReactNode }) {
@@ -44,12 +45,16 @@ export default async function AdminLayout({ children }: { children: ReactNode })
     );
   }
 
+  const site = await prisma.siteSettings.findFirst().catch(() => null);
+
   return (
     <AdminShell
+      name={user.name ?? user.username ?? "admin"}
       username={user.username ?? user.email ?? "admin"}
       role={user.role ?? null}
       isSuperAdmin={isSuperAdmin}
       permissions={permissions}
+      logoImage={site?.logoImage}
     >
       {children}
     </AdminShell>

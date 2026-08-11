@@ -10,6 +10,7 @@ const LINKS = [
   { id: 'include', label: 'Package Include' },
   { id: 'exclude', label: 'Package Exclude' },
   { id: 'equipment', label: 'Equipment & Gears' },
+  { id: 'departures', label: 'Fixed Departures' },
 ];
 
 const NAV_HEIGHT = 118; // offsets the sticky header + nav so scroll doesn't hide content

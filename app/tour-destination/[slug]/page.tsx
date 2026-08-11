@@ -91,6 +91,8 @@ export default async function TourDestinationPage({ params }: PageProps) {
                 key={pkg.id} 
                 className="bg-white rounded-xl overflow-hidden border border-gray-100 shadow-sm flex flex-col justify-between group hover:shadow-md transition-shadow"
               >
+                <Link 
+                    href={`/tour/${pkg.slug}`}>
                 <div className="relative h-52 overflow-hidden bg-gray-100">
                   <img 
                     src={pkg.heroImage} 
@@ -115,13 +117,13 @@ export default async function TourDestinationPage({ params }: PageProps) {
                     </div>
                   </div>
 
-                  <Link 
-                    href={`/tour/${pkg.slug}`}
+                  <button
                     className="w-full bg-[#1c2e40] hover:bg-[#24a0ed] text-white font-bold text-xs py-3 rounded-lg text-center transition-colors uppercase tracking-wider block shadow-sm"
                   >
                     View Details
-                  </Link>
+                  </button>
                 </div>
+                </Link>
               </StaggerItem>
             ))}
           </Stagger>

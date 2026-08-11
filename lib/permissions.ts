@@ -16,6 +16,20 @@ export const PERMISSION_RESOURCES: PermissionResource[] = [
   { key: "video-banners", label: "Video & CTA Banners", group: "Home", actions: ["view", "edit"] },
   { key: "welcome-features", label: "Welcome Features", group: "Home", actions: ["view", "create", "edit", "delete"] },
 
+  { key: "bookings", label: "Booking Requests", group: "Bookings", actions: ["view", "edit", "delete"] },
+
+  { key: "treks", label: "Treks", group: "Trekking In Nepal", actions: ["view", "create", "edit", "delete"] },
+  { key: "trek-categories", label: "Trekking Categories", group: "Trekking In Nepal", actions: ["view", "create", "edit", "delete"] },
+
+  { key: "tours", label: "Tours", group: "Tour Packages", actions: ["view", "create", "edit", "delete"] },
+  { key: "tour-categories", label: "Tour Categories", group: "Tour Packages", actions: ["view", "create", "edit", "delete"] },
+  { key: "departures", label: "Fixed Departures", group: "Tour Packages", actions: ["view", "create", "edit", "delete"] },
+
+  { key: "pages", label: "Pages", group: "Pages", actions: ["view", "create", "edit", "delete"] },
+  { key: "page-categories", label: "Page Categories", group: "Pages", actions: ["view", "create", "edit", "delete"] },
+
+  { key: "media", label: "All Gallery / Media Library", group: "Media", actions: ["view", "create", "edit", "delete"] },
+
   { key: "about-content", label: "About Page Content", group: "About Us", actions: ["view", "edit"] },
   { key: "director-message", label: "Message From Founder", group: "About Us", actions: ["view", "edit"] },
   { key: "why-page", label: "Why Ever Peak", group: "About Us", actions: ["view", "edit"] },
@@ -25,11 +39,6 @@ export const PERMISSION_RESOURCES: PermissionResource[] = [
   { key: "team", label: "Team Members", group: "About Us", actions: ["view", "create", "edit", "delete"] },
   { key: "testimonials", label: "Testimonials (Reviews)", group: "About Us", actions: ["view", "create", "edit", "delete"] },
 
-  { key: "treks", label: "Treks", group: "Trekking In Nepal", actions: ["view", "create", "edit", "delete"] },
-
-  { key: "tours", label: "Tours", group: "Tour Packages", actions: ["view", "create", "edit", "delete"] },
-  { key: "departures", label: "Fixed Departures", group: "Tour Packages", actions: ["view", "create", "edit", "delete"] },
-
   { key: "faqs", label: "All FAQs", group: "FAQ", actions: ["view", "create", "edit", "delete"] },
 
   { key: "blogs", label: "Blog Posts", group: "Blogs", actions: ["view", "create", "edit", "delete"] },
@@ -37,7 +46,6 @@ export const PERMISSION_RESOURCES: PermissionResource[] = [
   { key: "contact-info", label: "Contact Info", group: "Contact Us", actions: ["view", "edit"] },
   { key: "contact-widget", label: "Contact Widget", group: "Contact Us", actions: ["view", "edit"] },
   { key: "contact-submissions", label: "Contact Submissions", group: "Contact Us", actions: ["view", "edit", "delete"] },
-  { key: "bookings", label: "Booking Requests", group: "Contact Us", actions: ["view", "edit", "delete"] },
 
   { key: "site-settings", label: "Site Settings", group: "System", actions: ["view", "edit"] },
   { key: "subpage-hero", label: "Subpage Heroes", group: "System", actions: ["view", "create", "edit", "delete"] },

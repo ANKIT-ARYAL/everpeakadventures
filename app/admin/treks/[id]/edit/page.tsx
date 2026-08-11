@@ -8,18 +8,26 @@ interface PageProps {
   }>;
 }
 
+export const dynamic = 'force-dynamic';
+
 export default async function EditTrekPage({ params }: PageProps) {
   const { id } = await params;
 
-  const trek = await prisma.trek.findUnique({
-    where: { id },
-    include: {
-      groupPrices: { orderBy: { id: 'asc' } },
-      fixedSchedules: { orderBy: { id: 'asc' } },
-    },
-  });
+  const [trek, categories] = await Promise.all([
+    prisma.trek.findUnique({
+      where: { id },
+      include: {
+        groupPrices: { orderBy: { id: 'asc' } },
+        departures: { orderBy: { startDate: 'asc' } },
+      },
+    }),
+    prisma.trekCategory.findMany({
+      where: { published: true },
+      orderBy: { order: 'asc' },
+    }),
+  ]);
 
   if (!trek) notFound();
 
-  return <TrekForm initialData={trek} isEditing={true} />;
+  return <TrekForm initialData={trek} isEditing={true} categories={categories} />;
 }

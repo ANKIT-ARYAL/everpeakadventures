@@ -14,7 +14,7 @@ async function main() {
   await prisma.heroContent.deleteMany().catch(() => {});
   await prisma.trustItem.deleteMany().catch(() => {});
   await prisma.trek.deleteMany().catch(() => {});
-  await prisma.fixedDeparture.deleteMany().catch(() => {});
+  await prisma.departure.deleteMany().catch(() => {});
   await prisma.welcomeContent.deleteMany().catch(() => {});
   await prisma.trustedPartnerContent.deleteMany().catch(() => {});
   await prisma.whyChooseUsItem.deleteMany().catch(() => {});
@@ -531,56 +531,37 @@ itinerary: [
         { trekId: t.id, groupSize: '10+', groupType: 'Super Group', price: `US$ ${(base - 100).toLocaleString()}` },
       ],
     });
-    await prisma.trekSchedule.create({
+    await prisma.departure.create({
       data: {
+        tripType: 'trek',
         trekId: t.id,
         groupSize: '2 - 12 Pax',
-        dateRange: '15 Sep - 28 Sep',
-        status: 'Book',
+        startDate: new Date('2026-09-15'),
+        endDate: new Date('2026-09-28'),
+        status: 'Guaranteed',
       },
     });
   }
 
-  // 4. Seed Fixed Departures
-  await prisma.fixedDeparture.createMany({
-    data: [
-      {
-        title: 'Everest Base Camp Trek',
-        heroImage: 'https://images.unsplash.com/photo-1544735716-392fe2489ffa?q=80&w=800&auto=format&fit=crop',
-        durationDays: '14 Days',
-        startDate: '15 Sep 2026',
-        endDate: '28 Sep 2026',
-        status: 'Guaranteed',
-        seatsLeft: 5,
-        price: 1450,
-        originalPrice: 1600,
-        order: 1,
-      },
-      {
-        title: 'Annapurna Circuit Trek',
-        heroImage: 'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?q=80&w=800&auto=format&fit=crop',
-        durationDays: '16 Days',
-        startDate: '01 Oct 2026',
-        endDate: '16 Oct 2026',
-        status: 'Filling Fast',
-        seatsLeft: 3,
-        price: 1300,
-        originalPrice: 1450,
-        order: 2,
-      },
-      {
-        title: 'Langtang Valley Trek',
-        heroImage: 'https://images.unsplash.com/photo-1512343879784-a960bf40e7f2?q=80&w=800&auto=format&fit=crop',
-        durationDays: '10 Days',
-        startDate: '12 Oct 2026',
-        endDate: '21 Oct 2026',
-        status: 'Guaranteed',
-        seatsLeft: 8,
-        price: 950,
-        originalPrice: 1100,
-        order: 3,
-      },
-    ],
+  // 4. Seed Fixed Departures (linked to seeded treks)
+  const trekBySlug = new Map(seededTreks.map((t: any) => [t.slug, t.id]));
+  const fixedDepartureSeeds = [
+    { slug: 'everest-base-camp-trek', startDate: '2026-10-15', endDate: '2026-10-28', status: 'Guaranteed', seatsLeft: 5 },
+    { slug: 'annapurna-circuit-trek', startDate: '2026-11-01', endDate: '2026-11-16', status: 'Filling Fast', seatsLeft: 3 },
+    { slug: 'langtang-valley-trek', startDate: '2026-11-12', endDate: '2026-11-21', status: 'Guaranteed', seatsLeft: 8 },
+  ];
+  await prisma.departure.createMany({
+    data: fixedDepartureSeeds
+      .filter((s) => trekBySlug.has(s.slug))
+      .map((s) => ({
+        tripType: 'trek',
+        trekId: trekBySlug.get(s.slug),
+        groupSize: '2 - 12 Pax',
+        startDate: new Date(s.startDate),
+        endDate: new Date(s.endDate),
+        status: s.status,
+        seatsLeft: s.seatsLeft,
+      })),
   });
 
   // 5. Seed Welcome Section Data
@@ -835,11 +816,11 @@ itinerary: [
           { groupSize: '6 - 10 Pax', groupType: 'Super Group', price: 'US$ 1,199' },
         ],
       },
-      fixedSchedules: {
+      departures: {
         create: [
-          { groupSize: '2 - 12 Pax', dateRange: '15 Sep - 28 Sep', status: 'Book' },
-          { groupSize: '2 - 12 Pax', dateRange: '01 Oct - 14 Oct', status: 'Book' },
-          { groupSize: '2 - 12 Pax', dateRange: '15 Oct - 28 Oct', status: 'Filling Fast' },
+          { tripType: 'tour', groupSize: '2 - 12 Pax', startDate: new Date('2026-09-15'), endDate: new Date('2026-09-28'), status: 'Guaranteed' },
+          { tripType: 'tour', groupSize: '2 - 12 Pax', startDate: new Date('2026-10-01'), endDate: new Date('2026-10-14'), status: 'Guaranteed' },
+          { tripType: 'tour', groupSize: '2 - 12 Pax', startDate: new Date('2026-10-15'), endDate: new Date('2026-10-28'), status: 'Filling Fast' },
         ],
       },
     },
@@ -901,11 +882,11 @@ itinerary: [
           { groupSize: '6 - 10 Pax', groupType: 'Super Group', price: 'US$ 1,399' },
         ],
       },
-      fixedSchedules: {
+      departures: {
         create: [
-          { groupSize: '2 - 12 Pax', dateRange: '15 Sep - 28 Sep', status: 'Book' },
-          { groupSize: '2 - 12 Pax', dateRange: '01 Oct - 14 Oct', status: 'Filling Fast' },
-          { groupSize: '2 - 12 Pax', dateRange: '15 Oct - 28 Oct', status: 'Book' },
+          { tripType: 'tour', groupSize: '2 - 12 Pax', startDate: new Date('2026-09-15'), endDate: new Date('2026-09-28'), status: 'Guaranteed' },
+          { tripType: 'tour', groupSize: '2 - 12 Pax', startDate: new Date('2026-10-01'), endDate: new Date('2026-10-14'), status: 'Filling Fast' },
+          { tripType: 'tour', groupSize: '2 - 12 Pax', startDate: new Date('2026-10-15'), endDate: new Date('2026-10-28'), status: 'Guaranteed' },
         ],
       },
     },
@@ -967,11 +948,11 @@ itinerary: [
           { groupSize: '6 - 10 Pax', groupType: 'Super Group', price: 'US$ 1,499' },
         ],
       },
-      fixedSchedules: {
+      departures: {
         create: [
-          { groupSize: '2 - 12 Pax', dateRange: '15 Sep - 28 Sep', status: 'Book' },
-          { groupSize: '2 - 12 Pax', dateRange: '01 Oct - 14 Oct', status: 'Filling Fast' },
-          { groupSize: '2 - 12 Pax', dateRange: '15 Oct - 28 Oct', status: 'Book' },
+          { tripType: 'tour', groupSize: '2 - 12 Pax', startDate: new Date('2026-09-15'), endDate: new Date('2026-09-28'), status: 'Guaranteed' },
+          { tripType: 'tour', groupSize: '2 - 12 Pax', startDate: new Date('2026-10-01'), endDate: new Date('2026-10-14'), status: 'Filling Fast' },
+          { tripType: 'tour', groupSize: '2 - 12 Pax', startDate: new Date('2026-10-15'), endDate: new Date('2026-10-28'), status: 'Guaranteed' },
         ],
       },
     },

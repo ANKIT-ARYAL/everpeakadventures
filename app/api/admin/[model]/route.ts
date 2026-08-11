@@ -15,7 +15,7 @@ const modelMap: Record<string, any> = {
   'why-choose-us-features': prisma.whyChooseUsFeature,
   'welcome-features': prisma.welcomeFeature,
   'subpage-heroes': prisma.subpageHero,
-  departures: prisma.fixedDeparture,
+  departures: prisma.departure,
   'trust-items': prisma.trustItem,
 };
 

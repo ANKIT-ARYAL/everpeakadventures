@@ -1,5 +1,12 @@
+import { prisma } from "@/lib/prisma";
 import TrekForm from "../TrekForm";
 
-export default function NewTrekPage() {
-  return <TrekForm isEditing={false}/>;
+export const dynamic = 'force-dynamic';
+
+export default async function NewTrekPage() {
+  const categories = await prisma.trekCategory.findMany({
+    where: { published: true },
+    orderBy: { order: 'asc' },
+  });
+  return <TrekForm isEditing={false} categories={categories} />;
 }

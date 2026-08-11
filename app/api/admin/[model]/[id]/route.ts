@@ -14,8 +14,12 @@ const modelMap: Record<string, any> = {
   'why-choose-us-features': prisma.whyChooseUsFeature,
   'welcome-features': prisma.welcomeFeature,
   'subpage-heroes': prisma.subpageHero,
-  departures: prisma.fixedDeparture,
+  departures: prisma.departure,
   'trust-items': prisma.trustItem,
+  'trek-categories': prisma.trekCategory,
+  'tour-categories': prisma.tourCategory,
+  'page-categories': prisma.pageCategory,
+  pages: prisma.contentPage,
 };
 
 const resourceByModel: Record<string, string> = {
@@ -32,6 +36,10 @@ const resourceByModel: Record<string, string> = {
   'subpage-heroes': 'subpage-hero',
   departures: 'departures',
   'trust-items': 'trust-items',
+  'trek-categories': 'trek-categories',
+  'tour-categories': 'tour-categories',
+  'page-categories': 'page-categories',
+  pages: 'pages',
 };
 
 export async function PUT(

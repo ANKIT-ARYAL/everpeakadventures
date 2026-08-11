@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { requireAdmin } from "@/app/lib/require-admin";
+import { parseDepartureDate } from "@/lib/departures";
 
 export async function PUT(
   request: Request,
@@ -15,7 +16,7 @@ export async function PUT(
 
     const updatedTrek = await prisma.$transaction(async (tx) => {
       await tx.trekGroupPrice.deleteMany({ where: { trekId: id } });
-      await tx.trekSchedule.deleteMany({ where: { trekId: id } });
+      await tx.departure.deleteMany({ where: { trekId: id } });
 
       return tx.trek.update({
         where: { id },
@@ -42,6 +43,11 @@ export async function PUT(
           groupSize: body.groupSize,
           transport: body.transport,
           activity: body.activity,
+          startPoint: body.startPoint,
+          endPoint: body.endPoint,
+          rate: body.rate ? Number(body.rate) : null,
+          rating: body.rating ? Number(body.rating) : null,
+          altitudeData: body.altitudeData || [],
           highlights: body.highlights,
           inclusions: body.inclusions,
           exclusions: body.exclusions,
@@ -60,11 +66,15 @@ export async function PUT(
               price: g.price,
             })),
           },
-          fixedSchedules: {
-            create: (body.fixedSchedules || []).map((s: any) => ({
-              groupSize: s.groupSize,
-              dateRange: s.dateRange,
-              status: s.status,
+          departures: {
+            create: (body.departures || []).map((s: any) => ({
+              tripType: 'trek',
+              startDate: parseDepartureDate(s.startDate) || new Date(),
+              endDate: parseDepartureDate(s.endDate),
+              groupSize: s.groupSize || null,
+              status: s.status || 'Guaranteed',
+              seatsLeft: Number(s.seatsLeft) || 12,
+              recurring: !!s.recurring,
             })),
           },
         },

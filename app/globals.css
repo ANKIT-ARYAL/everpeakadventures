@@ -25,6 +25,23 @@ body {
   font-family: Arial, Helvetica, sans-serif;
 }
 
+/* Admin panel typography bump (larger, more readable admin panel/forms) */
+.admin-panel {
+  font-size: 15px;
+}
+.admin-panel .text-\[9px\]  { font-size: 10.5px; }
+.admin-panel .text-\[10px\] { font-size: 12px; }
+.admin-panel .text-\[11px\] { font-size: 13px; }
+.admin-panel .text-\[12px\] { font-size: 14px; }
+.admin-panel .text-\[13px\] { font-size: 15px; }
+.admin-panel .text-xs { font-size: 14px; line-height: 1.4; }
+.admin-panel .text-sm { font-size: 15.5px; }
+.admin-panel .text-base { font-size: 16.5px; }
+.admin-panel label { font-size: 15px; }
+.admin-panel input,
+.admin-panel select,
+.admin-panel textarea { font-size: 15.5px; }
+
 /* Styles for rich-text content rendered from the admin editor */
 .rich-content p {
   margin: 0 0 0.75rem;

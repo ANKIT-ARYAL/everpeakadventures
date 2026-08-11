@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { Save, ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
 import toast, { Toaster } from 'react-hot-toast';
+import MediaUploader from '@/app/components/admin/MediaUploader';
 
 type FooterLink = { label: string; href: string };
 type FooterColumn = { title: string; links: FooterLink[] };
@@ -184,13 +185,13 @@ export default function SiteSettingsPage() {
         <h2 className="font-bold text-gray-800 uppercase tracking-wider border-b pb-2">Logo</h2>
 
         <div>
-          <label className="block font-bold mb-1">Logo Image URL</label>
-          <input type="text" name="logoImage" value={form.logoImage} onChange={handleChange} className="w-full p-3 border rounded-lg text-sm font-medium focus:border-[#24a0ed] outline-none" placeholder="e.g. https://.../logo.png" />
+          <label className="block font-bold mb-1">Logo</label>
+          <MediaUploader value={form.logoImage} onChange={(url) => setForm(prev => ({ ...prev, logoImage: url }))} label="Upload Logo" heightClass="h-32" />
         </div>
 
         <div>
-          <label className="block font-bold mb-1">Footer Background Image URL</label>
-          <input type="text" name="footerBgImage" value={form.footerBgImage} onChange={handleChange} className="w-full p-3 border rounded-lg text-sm font-medium focus:border-[#24a0ed] outline-none" placeholder="e.g. https://.../bg.jpg" />
+          <label className="block font-bold mb-1">Footer Background</label>
+          <MediaUploader value={form.footerBgImage} onChange={(url) => setForm(prev => ({ ...prev, footerBgImage: url }))} label="Upload Footer Background" />
         </div>
       </div>
 
@@ -342,12 +343,11 @@ export default function SiteSettingsPage() {
                     placeholder="Label / alt text (e.g. TAAN)"
                     className={inputCls}
                   />
-                  <input
-                    type="text"
+                  <MediaUploader
                     value={logo.src}
-                    onChange={(e) => updateLogo(group, li, 'src', e.target.value)}
-                    placeholder="https://.../logo.png"
-                    className={monoCls}
+                    onChange={(url) => updateLogo(group, li, 'src', url)}
+                    label="Upload Logo Image"
+                    heightClass="h-24"
                   />
                   {group === 'associations' && (
                     <input

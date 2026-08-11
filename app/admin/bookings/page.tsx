@@ -36,12 +36,18 @@ export default async function AdminBookingsPage({
   const [bookings, treks, tours] = await Promise.all([
     prisma.bookingSubmission.findMany({ orderBy: { createdAt: "desc" } }),
     prisma.trek.findMany({
-      select: { id: true, title: true, slug: true, region: true, fixedSchedules: true },
+      select: { id: true, title: true, slug: true, region: true, departures: { where: { published: true }, select: { startDate: true }, orderBy: { startDate: 'asc' } } },
     }),
     prisma.tour.findMany({
-      select: { id: true, title: true, slug: true, destination: true, fixedSchedules: true },
+      select: { id: true, title: true, slug: true, destination: true, departures: { where: { published: true }, select: { startDate: true }, orderBy: { startDate: 'asc' } } },
     }),
   ]);
+
+  const todayDate = new Date();
+  const twoYearsFromNow = new Date();
+  twoYearsFromNow.setFullYear(twoYearsFromNow.getFullYear() + 2);
+  const fmtDate = (d: Date | null | undefined) =>
+    d ? d.toLocaleDateString("en-US", { day: "numeric", month: "short", year: "numeric" }) : "";
 
   const tripMeta = new Map<string, { title: string; url: string; country: string; fixedDate: string }>();
   for (const t of treks) {
@@ -49,7 +55,7 @@ export default async function AdminBookingsPage({
       title: t.title,
       url: t.slug ? `/trekking/${t.slug}` : "",
       country: t.region || "Nepal",
-      fixedDate: t.fixedSchedules?.[0]?.dateRange || "",
+      fixedDate: fmtDate(t.departures.find((d) => d.startDate >= todayDate && d.startDate <= twoYearsFromNow)?.startDate),
     });
   }
   for (const t of tours) {
@@ -57,14 +63,14 @@ export default async function AdminBookingsPage({
       title: t.title,
       url: `/tour/${t.slug}`,
       country: t.destination || "Nepal",
-      fixedDate: t.fixedSchedules?.[0]?.dateRange || "",
+      fixedDate: fmtDate(t.departures.find((d) => d.startDate >= todayDate && d.startDate <= twoYearsFromNow)?.startDate),
     });
   }
 
   const tripOptions = new Set<string>();
   for (const t of [...treks, ...tours]) tripOptions.add(t.title);
   const fixedTripTitles = new Set(
-    [...treks.filter((t) => t.fixedSchedules.length > 0), ...tours.filter((t) => t.fixedSchedules.length > 0)].map((t) =>
+    [...treks.filter((t) => t.departures.length > 0), ...tours.filter((t) => t.departures.length > 0)].map((t) =>
       t.title.toLowerCase()
     )
   );

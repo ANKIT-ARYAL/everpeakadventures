@@ -3,6 +3,7 @@ import { writeFile, mkdir } from 'node:fs/promises';
 import path from 'node:path';
 import { randomUUID } from 'node:crypto';
 import { requireAdmin } from "@/app/lib/require-admin";
+import { prisma } from '@/lib/prisma';
 
 const ALLOWED_IMAGE = ['image/jpeg', 'image/png', 'image/webp', 'image/gif', 'image/svg+xml', 'image/avif'];
 const ALLOWED_VIDEO = ['video/mp4', 'video/webm', 'video/ogg', 'video/quicktime'];
@@ -43,6 +44,12 @@ export async function POST(request: Request) {
     await writeFile(filepath, bytes);
 
     const url = `/uploads/${subdir}/${filename}`;
+    await prisma.mediaAsset.upsert({
+      where: { url },
+      create: { url, path: filepath, originalName: file.name, mime: file.type, size: file.size, kind: type === 'video' ? 'video' : 'image' },
+      update: { originalName: file.name, mime: file.type, size: file.size, kind: type === 'video' ? 'video' : 'image' },
+    });
+
     return NextResponse.json({ success: true, url, name: file.name, size: file.size });
   } catch (error: any) {
     console.error('Upload failed:', error);

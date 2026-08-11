@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { requireAdmin } from "@/app/lib/require-admin";
+import { parseDepartureDate } from "@/lib/departures";
 
 export async function GET() {
   const unauthorized = await requireAdmin("tours", "view");
@@ -11,7 +12,7 @@ export async function GET() {
       orderBy: { order: 'asc' },
       include: {
         groupPrices: true,
-        fixedSchedules: true,
+        departures: true,
       },
     });
     return NextResponse.json(tours);
@@ -58,6 +59,9 @@ export async function POST(request: Request) {
         activity: body.activity || null,
         groupSize: body.groupSize || null,
         transport: body.transport || null,
+        rate: body.rate ? Number(body.rate) : null,
+        rating: body.rating ? Number(body.rating) : null,
+        altitudeData: body.altitudeData || [],
         mapUrl: body.mapUrl || null,
         mapImage: body.mapImage || null,
         routeMap: body.routeMap ?? null,
@@ -81,11 +85,15 @@ export async function POST(request: Request) {
             price: g.price,
           })),
         },
-        fixedSchedules: {
-          create: (body.fixedSchedules || []).map((s: any) => ({
-            groupSize: s.groupSize,
-            dateRange: s.dateRange,
-            status: s.status,
+        departures: {
+          create: (body.departures || []).map((s: any) => ({
+            tripType: 'tour',
+            startDate: parseDepartureDate(s.startDate) || new Date(),
+            endDate: parseDepartureDate(s.endDate),
+            groupSize: s.groupSize || null,
+            status: s.status || 'Guaranteed',
+            seatsLeft: Number(s.seatsLeft) || 12,
+            recurring: !!s.recurring,
           })),
         },
       },
