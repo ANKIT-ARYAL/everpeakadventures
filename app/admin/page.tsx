@@ -3,6 +3,7 @@ import { auth } from "@/auth";
 import { hasPerm } from "@/lib/permissions";
 import type { PermAction } from "@/lib/permissions";
 import Link from 'next/link';
+import Greeting from "../admin/components/Greeting";
 import { 
   Compass, Layers, FileText, HelpCircle, MessageSquare, 
   Shield, Users, Briefcase, Mail, Database
@@ -48,7 +49,7 @@ export default async function AdminDashboardPage() {
     pushCard("tours", { title: 'Tour Packages', href: '/admin/tours', icon: Layers, color: 'text-amber-500', desc: 'View all tour packages' }, () => prisma.tour.count()),
     pushCard("testimonials", { title: 'Testimonials', href: '/admin/testimonials', icon: MessageSquare, color: 'text-purple-500', desc: 'View all client reviews' }, () => prisma.clientReview.count()),
     pushCard("faqs", { title: 'FAQs', href: '/admin/faqs', icon: HelpCircle, color: 'text-rose-500', desc: 'View all FAQs' }, () => prisma.fAQ.count()),
-    pushCard("departures", { title: 'Fixed Departures', href: '/admin/departures', icon: Briefcase, color: 'text-indigo-500', desc: 'View scheduled departures' }, () => prisma.fixedDeparture.count()),
+    pushCard("departures", { title: 'Fixed Departures', href: '/admin/departures', icon: Briefcase, color: 'text-indigo-500', desc: 'View scheduled departures' }, () => prisma.departure.count()),
     pushCard("team", { title: 'Team Members', href: '/admin/team', icon: Users, color: 'text-cyan-500', desc: 'View company staff & guides' }, () => prisma.teamMember.count()),
     pushCard("legal-documents", { title: 'Legal Documents', href: '/admin/legal-documents', icon: Shield, color: 'text-indigo-600', desc: 'View legal files & licenses' }, () => prisma.legalDocument.count()),
     pushCard("contact-submissions", { title: 'Contact Leads', href: '/admin/contact-submissions', icon: Mail, color: 'text-yellow-500', desc: 'View customer inquiries' }, () => prisma.contactSubmission.count()),
@@ -84,9 +85,7 @@ export default async function AdminDashboardPage() {
       {/* Top Welcome Banner */}
       <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
         <div>
-          <h1 className="text-xl font-black text-[#112233] oswald uppercase tracking-wide">
-            Good Morning, Ever Peak Adventures
-          </h1>
+          <Greeting />
           <p className="text-gray-500 mt-1">
             Your website overview, content shortcuts, database metrics, and system access status are here.
           </p>
@@ -154,7 +153,7 @@ export default async function AdminDashboardPage() {
                     <span className="text-[11px] font-bold text-gray-400 uppercase tracking-wider block mb-1">
                       {card.title}
                     </span>
-                    <span className="text-3xl font-black text-[#112233] oswald">
+                    <span className="text-2xl sm:text-4xl font-black text-[#112233] oswald">
                       {card.count}
                     </span>
                   </div>

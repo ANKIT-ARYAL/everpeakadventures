@@ -26,7 +26,7 @@ export default function EditButton({ href, resource }: EditButtonProps) {
       href={href}
       title="Edit Item"
       aria-label={`Edit ${resource ?? 'item'}`}
-      className="inline-flex items-center gap-1 px-2 py-1.5 rounded bg-blue-50 text-blue-600 hover:bg-blue-100 transition-colors"
+      className="inline-flex items-center gap-1 px-3 py-3 sm:px-2 sm:py-1.5 rounded bg-blue-50 text-blue-600 hover:bg-blue-100 transition-colors"
     >
       <Edit className="w-3.5 h-3.5" />
       <span className="hidden md:inline text-xs font-medium">Edit</span>

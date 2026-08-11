@@ -15,7 +15,7 @@ export default function ViewButton({ href, title = 'View on site' }: ViewButtonP
       rel="noopener noreferrer"
       title={title}
       aria-label={title}
-      className="inline-flex items-center gap-1 px-2 py-1.5 rounded bg-emerald-50 text-emerald-600 hover:bg-emerald-100 transition-colors"
+      className="inline-flex items-center gap-1 px-3 py-3 sm:px-2 sm:py-1.5 rounded bg-emerald-50 text-emerald-600 hover:bg-emerald-100 transition-colors"
     >
       <ExternalLink className="w-3.5 h-3.5" />
       <span className="hidden md:inline text-xs font-medium">View</span>

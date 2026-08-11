@@ -205,7 +205,7 @@ export default function AdminShell({
       </aside>
 
       {/* Main Content Viewport */}
-      <main className={`flex-1 p-4 md:p-8 transition-all duration-300 ${collapsed ? 'lg:ml-16' : 'lg:ml-64'}`}>
+      <main className={`flex-1 p-3 sm:p-5 lg:p-8 transition-all duration-300 ${collapsed ? 'lg:ml-16' : 'lg:ml-64'}`}>
         {/* Mobile top bar */}
         <div className="lg:hidden flex items-center gap-3 mb-4">
           <button
