@@ -4,6 +4,7 @@ import React, { useCallback, useEffect, useState } from "react";
 import { Plus, Pencil, Trash2, UserCheck, UserX, KeyRound, Copy, Check } from "lucide-react";
 import { useAdminPerms } from "../AdminPermsContext";
 import { hasPerm } from "@/lib/permissions";
+import ResponsiveTable from "@/app/components/admin/ResponsiveTable";
 
 type RoleRef = { id: string; name: string };
 type UserRow = {
@@ -390,93 +391,58 @@ export default function AdminUsersPage() {
         <div className="bg-red-50 text-red-700 border border-red-200 rounded-xl px-4 py-3 font-semibold">{loadError}</div>
       )}
 
-      {/* Desktop table */}
-      <div className="hidden md:block bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-        <div className="overflow-x-auto">
-          <table className="w-full text-left border-collapse">
-            <thead>
-              <tr className="bg-[#f8f9fa] border-b border-gray-200 text-gray-600 font-bold uppercase tracking-wider">
-                <th className="py-3 px-4">Username</th>
-                <th className="py-3 px-4">Name</th>
-                <th className="py-3 px-4">Role</th>
-                <th className="py-3 px-4 text-center">Status</th>
-                <th className="py-3 px-4">Last Login</th>
-                <th className="py-3 px-4 text-right">Actions</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-gray-100">
-              {users.length === 0 ? (
-                <tr>
-                  <td colSpan={6} className="py-12 text-center text-gray-400 font-medium">
-                    No users yet.
-                  </td>
-                </tr>
-              ) : (
-                users.map((user) => (
-                  <tr key={user.id} className="hover:bg-[#fcfcfc] transition-colors">
-                    <td className="py-3 px-4 font-bold text-[#112233]">{user.username}</td>
-                    <td className="py-3 px-4 text-gray-600 font-medium">{user.name || "—"}</td>
-                    <td className="py-3 px-4">
-                      <span className="bg-blue-50 text-blue-700 font-bold px-2 py-0.5 rounded-full text-[10px] uppercase tracking-wider">
-                        {roleName(user.roleId)}
-                      </span>
-                    </td>
-                    <td className="py-3 px-4 text-center">
-                      <span
-                        className={`inline-flex items-center gap-1 font-bold text-[10px] uppercase tracking-wider px-2 py-0.5 rounded-full ${
-                          user.active ? "bg-emerald-50 text-emerald-700" : "bg-gray-100 text-gray-500"
-                        }`}
-                      >
-                        {user.active ? "Active" : "Inactive"}
-                      </span>
-                    </td>
-                    <td className="py-3 px-4 text-gray-500">
-                      {user.lastLoginAt ? new Date(user.lastLoginAt).toLocaleString("en-US", { month: "short", day: "numeric", year: "numeric" }) : "Never"}
-                    </td>
-                    <td className="py-3 px-4 text-right">
-                      <div className="flex items-center justify-end gap-2">
-                        {canEdit && (
-                          <>
-                            <button type="button" onClick={() => openEdit(user)} title="Edit User" className="p-1.5 rounded bg-blue-50 text-blue-600 hover:bg-blue-100">
-                              <Pencil className="w-3.5 h-3.5" />
-                            </button>
-                            <button type="button" onClick={() => resetPassword(user)} title="Reset Password" className="p-1.5 rounded bg-amber-50 text-amber-600 hover:bg-amber-100">
-                              <KeyRound className="w-3.5 h-3.5" />
-                            </button>
-                            <button
-                              type="button"
-                              onClick={() => toggleActive(user)}
-                              title={user.active ? "Deactivate" : "Activate"}
-                              className={`p-1.5 rounded hover:opacity-80 ${user.active ? "bg-gray-100 text-gray-600" : "bg-emerald-50 text-emerald-600"}`}
-                            >
-                              {user.active ? <UserX className="w-3.5 h-3.5" /> : <UserCheck className="w-3.5 h-3.5" />}
-                            </button>
-                          </>
-                        )}
-                        {canDelete && (
-                          <button type="button" onClick={() => handleDelete(user)} title="Delete User" className="p-1.5 rounded bg-red-50 text-red-600 hover:bg-red-100">
-                            <Trash2 className="w-3.5 h-3.5" />
-                          </button>
-                        )}
-                      </div>
-                    </td>
-                  </tr>
-                ))
-              )}
-            </tbody>
-          </table>
-        </div>
-      </div>
-
-      {/* Mobile cards */}
-      <div className="md:hidden space-y-3">
-        {users.length === 0 ? (
-          <div className="bg-white rounded-xl shadow-sm border border-gray-100 py-12 text-center text-gray-400 font-medium">
-            No users yet.
-          </div>
-        ) : (
-          users.map((user) => (
-            <div key={user.id} className="bg-white rounded-xl shadow-sm border border-gray-100 p-4">
+      <ResponsiveTable
+        headers={['Username', 'Name', 'Role', 'Status', 'Last Login', 'Actions']}
+        rows={users.map((user) => [
+          <span key="u" className="font-bold text-[#112233]">{user.username}</span>,
+          <span key="n" className="text-gray-600 font-medium">{user.name || "—"}</span>,
+          <span key="r" className="bg-blue-50 text-blue-700 font-bold px-2 py-0.5 rounded-full text-[10px] uppercase tracking-wider">
+            {roleName(user.roleId)}
+          </span>,
+          <span
+            key="s"
+            className={`inline-flex items-center gap-1 font-bold text-[10px] uppercase tracking-wider px-2 py-0.5 rounded-full ${
+              user.active ? "bg-emerald-50 text-emerald-700" : "bg-gray-100 text-gray-500"
+            }`}
+          >
+            {user.active ? "Active" : "Inactive"}
+          </span>,
+          <span key="l" className="text-gray-500">
+            {user.lastLoginAt ? new Date(user.lastLoginAt).toLocaleString("en-US", { month: "short", day: "numeric", year: "numeric" }) : "Never"}
+          </span>,
+          <div key="a" className="flex items-center justify-end gap-2">
+            {canEdit && (
+              <>
+                <button type="button" onClick={() => openEdit(user)} title="Edit User" className="p-1.5 rounded bg-blue-50 text-blue-600 hover:bg-blue-100">
+                  <Pencil className="w-3.5 h-3.5" />
+                </button>
+                <button type="button" onClick={() => resetPassword(user)} title="Reset Password" className="p-1.5 rounded bg-amber-50 text-amber-600 hover:bg-amber-100">
+                  <KeyRound className="w-3.5 h-3.5" />
+                </button>
+                <button
+                  type="button"
+                  onClick={() => toggleActive(user)}
+                  title={user.active ? "Deactivate" : "Activate"}
+                  className={`p-1.5 rounded hover:opacity-80 ${user.active ? "bg-gray-100 text-gray-600" : "bg-emerald-50 text-emerald-600"}`}
+                >
+                  {user.active ? <UserX className="w-3.5 h-3.5" /> : <UserCheck className="w-3.5 h-3.5" />}
+                </button>
+              </>
+            )}
+            {canDelete && (
+              <button type="button" onClick={() => handleDelete(user)} title="Delete User" className="p-1.5 rounded bg-red-50 text-red-600 hover:bg-red-100">
+                <Trash2 className="w-3.5 h-3.5" />
+              </button>
+            )}
+          </div>,
+        ])}
+        data={users}
+        emptyText="No users yet."
+        columnClassNames={[undefined, undefined, undefined, 'text-center', undefined, 'text-right']}
+        mobileCards={(_row, data) => {
+          const user = data as UserRow;
+          return (
+            <>
               <div className="flex items-start justify-between gap-3">
                 <div className="min-w-0 flex-1">
                   <span className="block font-bold text-[#112233] truncate">{user.username}</span>
@@ -511,10 +477,10 @@ export default function AdminUsersPage() {
                   {user.active ? "Active" : "Inactive"}
                 </span>
               </div>
-            </div>
-          ))
-        )}
-      </div>
+            </>
+          );
+        }}
+      />
     </div>
   );
 }
