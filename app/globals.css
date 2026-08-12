@@ -28,7 +28,8 @@ body {
 /* Admin panel typography bump (larger, more readable admin panel/forms) */
 .admin-panel {
   font-size: 15px;
-  overflow-wrap: break-word;
+  overflow-wrap: anywhere;
+  overflow-x: clip;
 }
 .admin-panel .text-\[9px\]  { font-size: 10.5px; }
 .admin-panel .text-\[10px\] { font-size: 12px; }
@@ -49,6 +50,11 @@ body {
 
 /* Let grid items shrink so a long value can never force the grid wider than the screen */
 .admin-panel .grid > * {
+  min-width: 0;
+}
+
+/* Let flex children shrink (incl. the shell <main>) so rows/content fit the screen */
+.admin-panel .flex > * {
   min-width: 0;
 }
 
