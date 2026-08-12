@@ -183,7 +183,7 @@ export default function AdminShell({
   );
 
   return (
-    <div className="min-h-screen bg-[#f0f2f5] flex font-sans text-gray-800 admin-panel">
+    <div className="min-h-screen w-full max-w-full overflow-x-hidden bg-[#f0f2f5] flex font-sans text-gray-800 admin-panel">
 
       {/* Sidebar - fixed on desktop, drawer on mobile */}
       <aside className={`bg-[#101b25] text-gray-300 flex-col fixed inset-y-0 left-0 z-50 overflow-y-auto pb-10 hidden lg:flex transition-all duration-300 ${collapsed ? 'w-16' : 'w-64'}`}>
@@ -205,13 +205,13 @@ export default function AdminShell({
       </aside>
 
       {/* Main Content Viewport */}
-      <main className={`flex-1 p-3 sm:p-5 lg:p-8 transition-all duration-300 ${collapsed ? 'lg:ml-16' : 'lg:ml-64'}`}>
+      <main className={`flex-1 min-w-0 p-3 sm:p-5 lg:p-8 transition-all duration-300 ${collapsed ? 'lg:ml-16' : 'lg:ml-64'}`}>
         {/* Mobile top bar */}
         <div className="lg:hidden flex items-center gap-3 mb-4">
           <button
             type="button"
             onClick={() => setSidebarOpen(true)}
-            className="p-2 rounded-lg bg-white border border-gray-200 text-gray-700 hover:bg-gray-50"
+            className="p-2 rounded-lg bg-white border border-gray-200 text-gray-700 hover:bg-gray-50 shrink-0"
             aria-label="Open sidebar"
           >
             <Menu className="w-5 h-5" />
