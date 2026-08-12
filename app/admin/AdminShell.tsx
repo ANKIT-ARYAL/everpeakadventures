@@ -172,7 +172,7 @@ export default function AdminShell({
 
       {/* Navigation links */}
       <div className={`flex-1 py-4 space-y-1 ${collapsed ? 'px-1' : ''}`}>
-        {showBookings && <BookingsNotification collapsed={collapsed} />}
+        {showBookings && <BookingsNotification collapsed={collapsed} onNavigate={() => setSidebarOpen(false)} />}
         {filteredNav.map((item) => renderNavItem(item))}
 
         <div className="pt-4 border-t border-white/10 mt-4">

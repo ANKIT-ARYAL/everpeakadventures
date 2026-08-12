@@ -28,6 +28,7 @@ body {
 /* Admin panel typography bump (larger, more readable admin panel/forms) */
 .admin-panel {
   font-size: 15px;
+  overflow-wrap: break-word;
 }
 .admin-panel .text-\[9px\]  { font-size: 10.5px; }
 .admin-panel .text-\[10px\] { font-size: 12px; }
@@ -40,7 +41,11 @@ body {
 .admin-panel label { font-size: 15px; }
 .admin-panel input,
 .admin-panel select,
-.admin-panel textarea { font-size: 15.5px; }
+.admin-panel textarea {
+  font-size: 15.5px;
+  min-width: 0;
+  max-width: 100%;
+}
 
 /* Styles for rich-text content rendered from the admin editor */
 .rich-content p {

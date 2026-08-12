@@ -117,9 +117,9 @@ export function SectionPageView({
           <div className="w-12 h-12 rounded-xl bg-[#eef6fd] text-[#24a0ed] flex items-center justify-center shrink-0">
             <SectionIcon name={section.icon} className="w-6 h-6" />
           </div>
-          <div>
-            <h1 className="text-2xl font-black text-[#112233] uppercase tracking-wide">{section.label}</h1>
-            <p className="text-gray-500 mt-1">{section.description}</p>
+          <div className="min-w-0 flex-1">
+            <h1 className="text-2xl font-black text-[#112233] uppercase tracking-wide break-words">{section.label}</h1>
+            <p className="text-gray-500 mt-1 break-words">{section.description}</p>
           </div>
         </div>
       </div>

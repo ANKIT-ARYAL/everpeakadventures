@@ -4,7 +4,7 @@ import React, { useEffect, useState } from 'react';
 import { Bell } from 'lucide-react';
 import Link from 'next/link';
 
-export default function BookingsNotification({ collapsed = false }: { collapsed?: boolean }) {
+export default function BookingsNotification({ collapsed = false, onNavigate }: { collapsed?: boolean; onNavigate?: () => void }) {
   const [count, setCount] = useState<number | null>(null);
 
   useEffect(() => {
@@ -19,7 +19,7 @@ export default function BookingsNotification({ collapsed = false }: { collapsed?
   const base = `flex items-center gap-3 px-4 py-2.5 hover:bg-white/5 hover:text-white transition-colors ${collapsed ? 'justify-center px-2' : ''}`;
 
   return (
-    <Link href="/admin/bookings" className={base} title={collapsed ? 'Booking Requests' : undefined}>
+    <Link href="/admin/bookings" onClick={onNavigate} className={base} title={collapsed ? 'Booking Requests' : undefined}>
       <span className="relative">
         <Bell className="w-4 h-4 text-orange-400" />
         {count !== null && count > 0 && (

@@ -10,5 +10,5 @@ interface Props {
 
 export default function FieldGrid({ cols = 2, className = '', children }: Props) {
   const colsCls = cols === 4 ? 'lg:grid-cols-4' : cols === 3 ? 'lg:grid-cols-3' : 'lg:grid-cols-2';
-  return <div className={`grid grid-cols-1 sm:grid-cols-2 ${colsCls} gap-3 ${className}`}>{children}</div>;
+  return <div className={`grid grid-cols-1 sm:grid-cols-2 ${colsCls} gap-3 [&>*]:min-w-0 ${className}`}>{children}</div>;
 }
