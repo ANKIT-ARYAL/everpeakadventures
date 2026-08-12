@@ -23,6 +23,9 @@ const toDateInput = (v?: string | null) => {
   return `${y}-${m}-${day}`;
 };
 
+const slugify = (name: string) =>
+  name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+
 interface TrekFormProps {
   initialData?: any;
   isEditing?: boolean;
@@ -246,15 +249,31 @@ export default function TrekForm({ initialData, isEditing = false, categories }:
     setFormData(prev => {
       const has = prev.regions.includes(cat);
       const regions = has ? prev.regions.filter((r: string) => r !== cat) : [...prev.regions, cat];
-      const region = dynamicSlugMap[regions.find((r: string) => dynamicSlugMap[r]) || ''] || prev.region;
+      // Prefer the most specific category over the catch-all "All Trekking Packages"
+      const specific = regions.filter((r: string) => r !== 'All Trekking Packages');
+      const primary = specific.length > 0 ? specific[specific.length - 1] : regions[regions.length - 1] || '';
+      const region = primary ? (dynamicSlugMap[primary] || slugify(primary)) : prev.region;
       return { ...prev, regions, region };
     });
   };
 
-  const addCategory = () => {
+  const addCategory = async () => {
     const v = newCategory.trim();
     if (!v) return;
-    if (!allOptions.includes(v)) setCustomCategories((prev) => [...prev, v]);
+    const existsInDb = categoryOptions.includes(v);
+    if (!existsInDb && !customCategories.includes(v)) {
+      setCustomCategories((prev) => [...prev, v]);
+      try {
+        const res = await fetch('/api/trek-categories', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name: v }),
+        });
+        if (!res.ok) console.error('Failed to create trek category');
+      } catch (err) {
+        console.error(err);
+      }
+    }
     if (!formData.regions.includes(v)) toggleRegion(v);
     setNewCategory('');
   };
@@ -924,7 +943,7 @@ export default function TrekForm({ initialData, isEditing = false, categories }:
 
           {/* Categories group */}
           <div id="sec-categories" className="scroll-mt-24">
-          <SectionCard title="Trekking Categories">
+          <SectionCard title="Trekking Categories" defaultOpen>
             <div className="flex items-center justify-between border-b pb-2">
               <h3 className="font-bold text-gray-800 uppercase tracking-wider">Trekking Categories</h3>
               <Link href="/admin/trek-categories" className="text-[#24a0ed] font-bold text-xs hover:underline flex items-center gap-1">
