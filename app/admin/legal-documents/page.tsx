@@ -95,7 +95,7 @@ export default async function AdminLegalDocumentsPage() {
                 <span className="block text-[9px] font-bold text-gray-400 uppercase tracking-wider">Document URL</span>
                 <span className="block text-gray-500 font-medium truncate">{d.documentUrl || '-'}</span>
               </div>
-              <div className="flex items-center gap-2 mt-3 pt-3 border-t border-gray-100">
+              <div className="flex items-center gap-2 flex-wrap mt-3 pt-3 border-t border-gray-100">
                 <ToggleShow model="legal-documents" resource="legal-documents" id={d.id} published={d.published} />
                 <EditButton href={`/admin/legal-documents/${d.id}/edit`} />
                 <ViewButton href="/legal-document" />

@@ -150,7 +150,7 @@ export default async function AdminBlogsPage() {
                   <span className="text-gray-600 font-medium">{post.date}</span>
                 </div>
               </div>
-              <div className="flex items-center gap-2 mt-3 pt-3 border-t border-gray-100">
+              <div className="flex items-center gap-2 flex-wrap mt-3 pt-3 border-t border-gray-100">
                 <ToggleShow model="blogs" resource="blogs" id={post.id} published={post.published} />
                 <EditButton href={`/admin/blogs/${post.id}/edit`} />
                 <ViewButton href={`/blog/${post.slug}`} />

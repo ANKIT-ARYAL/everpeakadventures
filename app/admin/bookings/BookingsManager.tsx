@@ -466,7 +466,7 @@ export default function BookingsManager({
                     <span className="text-gray-500 font-medium">{formatDateLong(r.createdAt)}</span>
                   </div>
                 </div>
-                <div className="flex items-center gap-2 mt-3 pt-3 border-t border-gray-100">
+                <div className="flex items-center gap-2 flex-wrap mt-3 pt-3 border-t border-gray-100">
                   <button type="button" className="button ftb-view-booking" onClick={() => setOpenId(r.id)}>
                     View Details
                   </button>

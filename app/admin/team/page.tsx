@@ -95,7 +95,7 @@ export default async function AdminTeamPage() {
                 <span className="block text-[9px] font-bold text-gray-400 uppercase tracking-wider">Role</span>
                 <span className="font-semibold uppercase tracking-wider text-[#24a0ed]">{m.role}</span>
               </div>
-              <div className="flex items-center gap-2 mt-3 pt-3 border-t border-gray-100">
+              <div className="flex items-center gap-2 flex-wrap mt-3 pt-3 border-t border-gray-100">
                 <ToggleShow model="team" resource="team" id={m.id} published={m.published} />
                 <EditButton href={`/admin/team/${m.id}/edit`} />
                 <ViewButton href="/our-team" />

@@ -105,7 +105,7 @@ export default async function AdminSubpageHeroPage() {
                 <span className="block text-[9px] font-bold text-gray-400 uppercase tracking-wider mt-2">Subtitle</span>
                 <span className="text-gray-500 font-medium line-clamp-2">{hero.subtitle || '—'}</span>
               </div>
-              <div className="flex items-center gap-2 mt-3 pt-3 border-t border-gray-100">
+              <div className="flex items-center gap-2 flex-wrap mt-3 pt-3 border-t border-gray-100">
                 <ToggleShow model="subpage-heroes" resource="subpage-hero" id={hero.id} published={hero.published} />
                 <EditButton href={`/admin/subpage-hero/${hero.id}/edit`} />
                 <ViewButton href={`/${hero.slug}`} />

@@ -68,7 +68,7 @@ export default function DeleteButton({ id, model, title }: DeleteButtonProps) {
       disabled={loading}
       title="Delete Item"
       aria-label={`Delete ${title}`}
-      className="inline-flex items-center gap-1 px-3 py-3 sm:px-2 sm:py-1.5 rounded bg-red-50 text-red-600 hover:bg-red-100 transition-colors disabled:opacity-50"
+      className="inline-flex items-center gap-1 px-2.5 py-3 sm:px-2 sm:py-1.5 rounded bg-red-50 text-red-600 hover:bg-red-100 transition-colors disabled:opacity-50"
     >
       <Trash2 className="w-3.5 h-3.5" />
       <span className="hidden md:inline text-xs font-medium">Delete</span>

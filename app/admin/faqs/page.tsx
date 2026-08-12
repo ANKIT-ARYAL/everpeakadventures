@@ -143,8 +143,8 @@ export default async function AdminFaqsPage() {
                 <span className="bg-gray-100 text-gray-600 font-bold px-2 py-0.5 rounded-full text-[10px] shrink-0">#{faq.order}</span>
               </div>
               <p className="text-gray-600 font-medium mt-2 text-[11px] line-clamp-3">{stripHtml(faq.answer)}</p>
-              <div className="flex items-center justify-between gap-2 mt-3 pt-3 border-t border-gray-100">
-                <div>
+              <div className="flex items-center justify-between gap-2 flex-wrap mt-3 pt-3 border-t border-gray-100">
+                <div className="min-w-0">
                   {faq.relatedType ? (
                     <a
                       href={faq.relatedType === 'trek'

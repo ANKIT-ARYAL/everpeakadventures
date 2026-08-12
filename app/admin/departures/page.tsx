@@ -138,7 +138,7 @@ export default async function AdminDeparturesPage() {
                   )}
                 </div>
               </div>
-              <div className="flex items-center gap-2 mt-3 pt-3 border-t border-gray-100">
+              <div className="flex items-center gap-2 flex-wrap mt-3 pt-3 border-t border-gray-100">
                 <ToggleShow model="departures" resource="departures" id={departure.id} published={departure.published} />
                 <EditButton href={`/admin/departures/${departure.id}/edit`} />
                 <DeleteButton id={departure.id} model="departures" title={title} />

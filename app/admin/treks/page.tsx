@@ -162,7 +162,7 @@ export default async function AdminTreksPage() {
                   <span className="text-gray-600">{trek.bestSeason || 'N/A'}</span>
                 </div>
               </div>
-              <div className="flex items-center gap-2 mt-3 pt-3 border-t border-gray-100">
+              <div className="flex items-center gap-2 flex-wrap mt-3 pt-3 border-t border-gray-100">
                 <ToggleShow model="treks" resource="treks" id={trek.id} published={trek.published} />
                 <EditButton href={`/admin/treks/${trek.id}/edit`} />
                 {trek.slug && <ViewButton href={`/trekking/${trek.slug}`} />}

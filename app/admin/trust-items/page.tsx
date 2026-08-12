@@ -130,7 +130,7 @@ export default async function AdminTrustItemsPage() {
                   <span className="font-semibold uppercase tracking-wider text-[#24a0ed]">{item.iconName}</span>
                 </div>
               </div>
-              <div className="flex items-center gap-2 mt-3 pt-3 border-t border-gray-100">
+              <div className="flex items-center gap-2 flex-wrap mt-3 pt-3 border-t border-gray-100">
                 <ToggleShow model="trust-items" resource="trust-items" id={item.id} published={item.published} />
                 <EditButton href={`/admin/trust-items/${item.id}/edit`} />
                 <ViewButton href="/" />

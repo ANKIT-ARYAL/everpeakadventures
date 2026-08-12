@@ -125,7 +125,7 @@ export default async function AdminWhyChooseUsFeaturesPage() {
                 <span className="bg-gray-100 text-gray-600 font-bold px-2 py-0.5 rounded-full text-[10px] shrink-0">#{feature.order}</span>
               </div>
               <p className="text-gray-600 font-medium mt-3 text-[11px] line-clamp-3">{feature.description}</p>
-              <div className="flex items-center gap-2 mt-3 pt-3 border-t border-gray-100">
+              <div className="flex items-center gap-2 flex-wrap mt-3 pt-3 border-t border-gray-100">
                 <ToggleShow model="why-choose-us-features" resource="why-choose-us" id={feature.id} published={feature.published} />
                 <EditButton href={`/admin/why-choose-us/features/${feature.id}/edit`} />
                 <DeleteButton id={feature.id} model="why-choose-us-features" title={feature.title} />

@@ -145,7 +145,7 @@ export default async function AdminToursPage() {
                   <span className="text-gray-600">{tour.bestTime}</span>
                 </div>
               </div>
-              <div className="flex items-center gap-2 mt-3 pt-3 border-t border-gray-100">
+              <div className="flex items-center gap-2 flex-wrap mt-3 pt-3 border-t border-gray-100">
                 <ToggleShow model="tours" resource="tours" id={tour.id} published={tour.published} />
                 <EditButton href={`/admin/tours/${tour.id}/edit`} />
                 {tour.slug && <ViewButton href={`/tour/${tour.slug}`} />}

@@ -119,7 +119,7 @@ export default function CategoryList({
                   <AssignedList items={childrenByItem![item.id]} />
                 </div>
               )}
-              <div className="flex items-center gap-2 mt-3 pt-3 border-t border-gray-100">
+              <div className="flex items-center gap-2 flex-wrap mt-3 pt-3 border-t border-gray-100">
                 <ToggleShow model={model} resource={resource} id={item.id} published={item.published} />
                 <EditButton href={`/admin/${resource}/${item.id}/edit`} />
                 {viewPrefix && item.slug && <ViewButton href={`${viewPrefix}/${item.slug}`} />}

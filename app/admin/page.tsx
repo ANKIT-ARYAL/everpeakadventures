@@ -108,22 +108,22 @@ export default async function AdminDashboardPage() {
           <span className="text-[11px] text-gray-400">Live Database Record ID: {systemSetting.id.slice(0, 8)}</span>
         </div>
 
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-          <div className="p-4 rounded-lg bg-gray-50 border border-gray-100">
-            <span className="block text-[10px] text-gray-400 uppercase font-bold mb-1">Client Expiry</span>
-            <span className="font-bold text-gray-800 text-sm">{systemSetting.clientExpiry}</span>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div className="p-4 rounded-lg bg-gray-50 border border-gray-100 min-w-0">
+            <span className="block text-[10px] text-gray-400 uppercase font-bold mb-1 break-words">Client Expiry</span>
+            <span className="font-bold text-gray-800 text-sm break-words">{systemSetting.clientExpiry}</span>
           </div>
-          <div className="p-4 rounded-lg bg-gray-50 border border-gray-100">
-            <span className="block text-[10px] text-gray-400 uppercase font-bold mb-1">Package Type</span>
-            <span className="font-bold text-gray-800 text-sm">{systemSetting.packageType}</span>
+          <div className="p-4 rounded-lg bg-gray-50 border border-gray-100 min-w-0">
+            <span className="block text-[10px] text-gray-400 uppercase font-bold mb-1 break-words">Package Type</span>
+            <span className="font-bold text-gray-800 text-sm break-words">{systemSetting.packageType}</span>
           </div>
-          <div className="p-4 rounded-lg bg-gray-50 border border-gray-100">
-            <span className="block text-[10px] text-gray-400 uppercase font-bold mb-1">Database Storage</span>
-            <span className="font-bold text-emerald-600 text-sm">{systemSetting.databaseStatus}</span>
+          <div className="p-4 rounded-lg bg-gray-50 border border-gray-100 min-w-0">
+            <span className="block text-[10px] text-gray-400 uppercase font-bold mb-1 break-words">Database Storage</span>
+            <span className="font-bold text-emerald-600 text-sm break-words">{systemSetting.databaseStatus}</span>
           </div>
-          <div className="p-4 rounded-lg bg-gray-50 border border-gray-100">
-            <span className="block text-[10px] text-gray-400 uppercase font-bold mb-1">Days Left</span>
-            <span className="font-bold text-[#2271b1] text-sm">{systemSetting.daysLeft}</span>
+          <div className="p-4 rounded-lg bg-gray-50 border border-gray-100 min-w-0">
+            <span className="block text-[10px] text-gray-400 uppercase font-bold mb-1 break-words">Days Left</span>
+            <span className="font-bold text-[#2271b1] text-sm break-words">{systemSetting.daysLeft}</span>
           </div>
         </div>
       </div>
@@ -139,31 +139,31 @@ export default async function AdminDashboardPage() {
           <p className="text-gray-400 mt-0.5">Quick access to all your website content. Click any card to manage.</p>
         </div>
 
-        <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
           {overviewCards.map((card, idx) => {
             const Icon = card.icon;
             return (
               <Link 
                 key={idx}
                 href={card.href}
-                className="p-5 rounded-xl border border-gray-100 bg-[#fcfcfc] hover:bg-white hover:shadow-md hover:border-blue-200 transition-all flex flex-col justify-between group"
+                className="p-5 rounded-xl border border-gray-100 bg-[#fcfcfc] hover:bg-white hover:shadow-md hover:border-blue-200 transition-all flex flex-col justify-between group min-w-0"
               >
-                <div className="flex items-start justify-between mb-4">
-                  <div>
-                    <span className="text-[11px] font-bold text-gray-400 uppercase tracking-wider block mb-1">
+                <div className="flex items-start justify-between mb-4 gap-2">
+                  <div className="min-w-0">
+                    <span className="text-[11px] font-bold text-gray-400 uppercase tracking-wider block mb-1 break-words">
                       {card.title}
                     </span>
                     <span className="text-2xl sm:text-4xl font-black text-[#112233] oswald">
                       {card.count}
                     </span>
                   </div>
-                  <div className={`p-2.5 rounded-xl bg-white shadow-sm border border-gray-100 group-hover:scale-110 transition-transform ${card.color}`}>
+                  <div className={`p-2.5 rounded-xl bg-white shadow-sm border border-gray-100 group-hover:scale-110 transition-transform ${card.color} shrink-0`}>
                     <Icon className="w-5 h-5" />
                   </div>
                 </div>
 
                 <div className="pt-3 border-t border-gray-100 flex items-center justify-between text-[11px]">
-                  <span className="text-gray-500 font-medium group-hover:text-[#2271b1] transition-colors">
+                  <span className="text-gray-500 font-medium group-hover:text-[#2271b1] transition-colors break-words">
                     {card.desc} →
                   </span>
                 </div>

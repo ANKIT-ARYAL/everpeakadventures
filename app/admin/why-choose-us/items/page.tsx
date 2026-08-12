@@ -128,7 +128,7 @@ export default async function AdminWhyChooseUsItemsPage() {
                   <span className="font-semibold uppercase tracking-wider text-[#24a0ed]">{item.iconName}</span>
                 </div>
               </div>
-              <div className="flex items-center gap-2 mt-3 pt-3 border-t border-gray-100">
+              <div className="flex items-center gap-2 flex-wrap mt-3 pt-3 border-t border-gray-100">
                 <ToggleShow model="why-choose-us-items" resource="why-choose-us" id={item.id} published={item.published} />
                 <EditButton href={`/admin/why-choose-us/items/${item.id}/edit`} />
                 <DeleteButton id={item.id} model="why-choose-us-items" title={item.title} />

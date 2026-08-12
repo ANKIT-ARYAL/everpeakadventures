@@ -111,7 +111,7 @@ export default async function AdminTestimonialsPage() {
                   <span className="text-gray-600 font-medium line-clamp-3">“{stripHtml(r.quote)}”</span>
                 </div>
               </div>
-              <div className="flex items-center gap-2 mt-3 pt-3 border-t border-gray-100">
+              <div className="flex items-center gap-2 flex-wrap mt-3 pt-3 border-t border-gray-100">
                 <ToggleShow model="testimonials" resource="testimonials" id={r.id} published={r.published} />
                 <EditButton href={`/admin/testimonials/${r.id}/edit`} />
                 <ViewButton href="/testimonials" />

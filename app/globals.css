@@ -47,6 +47,11 @@ body {
   max-width: 100%;
 }
 
+/* Let grid items shrink so a long value can never force the grid wider than the screen */
+.admin-panel .grid > * {
+  min-width: 0;
+}
+
 /* Styles for rich-text content rendered from the admin editor */
 .rich-content p {
   margin: 0 0 0.75rem;
