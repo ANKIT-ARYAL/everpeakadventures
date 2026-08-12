@@ -6,6 +6,7 @@ import EditButton from "../components/EditButton";
 import DeleteButton from "../components/DeleteButton";
 import ViewButton from "../components/ViewButton";
 import ToggleShow from "../components/ToggleShow";
+import TourSearch from "./TourSearch";
 
 export const dynamic = "force-dynamic";
 
@@ -44,20 +45,12 @@ export default async function AdminToursPage() {
       </div>
 
       {/* Search */}
-      <div className="bg-white p-3 sm:p-4 rounded-xl shadow-sm border border-gray-100 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-        <span className="font-bold text-gray-700">
-          All ({tours.length})
-        </span>
+      <div className="bg-white p-3 sm:p-4 rounded-xl shadow-sm border border-gray-100 flex flex-col sm:flex-row sm:items-center justify-between gap-3 min-w-0">
 
-        <div className="relative w-full sm:w-64 lg:w-72">
-          <Search className="w-3.5 h-3.5 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
-
-          <input
-            type="text"
-            placeholder="Search tours..."
-            className="pl-9 pr-4 py-2.5 border border-gray-200 rounded-lg focus:outline-none focus:border-[#2271b1] w-full min-w-0 text-sm"
-          />
-        </div>
+  <span className="font-bold text-gray-700 whitespace-nowrap">
+    All ({tours.length})
+  </span>
+      <TourSearch />
       </div>
 
       {/* Desktop Table */}
@@ -108,9 +101,18 @@ export default async function AdminToursPage() {
             ) : (
               tours.map((tour, index) => (
                 <tr
-                  key={tour.id}
-                  className="hover:bg-[#fcfcfc] transition-colors group"
-                >
+  key={tour.id}
+  data-tour={[
+    tour.title,
+    tour.slug,
+    tour.destination,
+    tour.duration,
+    tour.bestTime,
+  ]
+    .filter(Boolean)
+    .join(" ")}
+  className="hover:bg-[#fcfcfc] transition-colors group"
+>
                   {/* Index */}
                   <td className="py-3 px-3 text-center text-gray-400 font-medium align-top whitespace-nowrap">
                     {index + 1}
@@ -194,9 +196,18 @@ export default async function AdminToursPage() {
         ) : (
           tours.map((tour, index) => (
             <div
-              key={tour.id}
-              className="bg-white rounded-xl shadow-sm border border-gray-100 p-3 sm:p-4 min-w-0 overflow-hidden"
-            >
+  key={tour.id}
+  data-tour={[
+    tour.title,
+    tour.slug,
+    tour.destination,
+    tour.duration,
+    tour.bestTime,
+  ]
+    .filter(Boolean)
+    .join(" ")}
+  className="bg-white rounded-xl shadow-sm border border-gray-100 p-3 sm:p-4 min-w-0 overflow-hidden"
+>
               {/* Card Header */}
               <div className="min-w-0">
                 <Link

@@ -6,6 +6,7 @@ import EditButton from "../components/EditButton";
 import DeleteButton from "../components/DeleteButton";
 import ViewButton from "../components/ViewButton";
 import ToggleShow from "../components/ToggleShow";
+import TrekSearch from "./TrekSearch";
 
 export const dynamic = "force-dynamic";
 
@@ -56,23 +57,13 @@ export default async function AdminTreksPage() {
       ========================================================= */}
       <div className="bg-white p-3 sm:p-4 rounded-xl shadow-sm border border-gray-100 flex flex-col sm:flex-row sm:items-center justify-between gap-3 min-w-0">
 
-        <span className="font-bold text-gray-700 whitespace-nowrap">
-          All ({treks.length})
-        </span>
+  <span className="font-bold text-gray-700 whitespace-nowrap">
+    All ({treks.length})
+  </span>
 
-        <div className="relative w-full sm:w-64 lg:w-72 min-w-0">
+  <TrekSearch />
 
-          <Search className="w-3.5 h-3.5 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
-
-          <input
-            type="text"
-            placeholder="Search treks..."
-            className="pl-9 pr-4 py-2.5 border border-gray-200 rounded-lg focus:outline-none focus:border-[#2271b1] w-full min-w-0 text-sm"
-          />
-
-        </div>
-
-      </div>
+</div>
 
       {/* =========================================================
           DESKTOP TABLE
@@ -160,10 +151,22 @@ export default async function AdminTreksPage() {
 
                 treks.map((trek, index) => (
 
-                  <tr
-                    key={trek.id}
-                    className="hover:bg-[#fcfcfc] transition-colors group"
-                  >
+                 <tr
+  key={trek.id}
+  data-trek={[
+    trek.title,
+    trek.slug,
+    trek.region,
+    trek.durationDays,
+    trek.price,
+    trek.discountedPrice,
+    trek.activity,
+    trek.bestSeason,
+  ]
+    .filter(Boolean)
+    .join(" ")}
+  className="hover:bg-[#fcfcfc] transition-colors group"
+>
 
                     {/* =================================================
                         INDEX
@@ -313,9 +316,21 @@ export default async function AdminTreksPage() {
           treks.map((trek, index) => (
 
             <div
-              key={trek.id}
-              className="bg-white rounded-xl shadow-sm border border-gray-100 p-3 sm:p-4 min-w-0 overflow-hidden"
-            >
+  key={trek.id}
+  data-trek={[
+    trek.title,
+    trek.slug,
+    trek.region,
+    trek.durationDays,
+    trek.price,
+    trek.discountedPrice,
+    trek.activity,
+    trek.bestSeason,
+  ]
+    .filter(Boolean)
+    .join(" ")}
+  className="bg-white rounded-xl shadow-sm border border-gray-100 p-3 sm:p-4 min-w-0 overflow-hidden"
+>
 
               {/* =================================================
                   CARD HEADER
