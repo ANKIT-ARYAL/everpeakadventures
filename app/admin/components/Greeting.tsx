@@ -13,7 +13,7 @@ export default function Greeting() {
   }, []);
 
   return (
-    <h1 className="text-xl font-black text-[#112233] oswald uppercase tracking-wide">
+    <h1 className="text-xl font-black text-[#112233] oswald uppercase tracking-wide w-fit">
       {greeting}, Ever Peak Adventures
     </h1>
   );

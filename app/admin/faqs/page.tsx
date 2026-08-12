@@ -22,12 +22,12 @@ export default async function AdminFaqsPage() {
   });
 
   return (
-    <div className="space-y-6 max-w-[1400px] mx-auto text-xs">
+    <div className="w-full max-w-full overflow-x-hidden space-y-6 max-w-[1400px] mx-auto text-xs pb-10">
       
       {/* Top Header Bar */}
       <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-        <div>
-          <div className="flex items-center gap-3">
+        <div className="min-w-0 flex-1">
+          <div className="flex items-center gap-3 flex-wrap">
             <h1 className="text-2xl font-black text-[#112233] oswald uppercase tracking-wide">FAQs</h1>
             <span className="bg-gray-100 text-gray-600 font-bold px-2.5 py-0.5 rounded-full">
               {faqs.length} items
@@ -54,16 +54,16 @@ export default async function AdminFaqsPage() {
 
       {/* Data Table - Desktop */}
       <div className="hidden md:block bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-        <div className="overflow-x-auto">
+        <div className="overflow-x-auto w-full">
           <table className="w-full text-left border-collapse">
             <thead>
               <tr className="bg-[#f8f9fa] border-b border-gray-200 text-gray-600 font-bold uppercase tracking-wider">
-                <th className="py-3 px-4 w-12 text-center">#</th>
-                <th className="py-3 px-4">Question</th>
-                <th className="py-3 px-4">Answer</th>
-                <th className="py-3 px-4 text-center">Order</th>
-                <th className="py-3 px-4">Show On Page</th>
-                <th className="py-3 px-4 text-right">Actions</th>
+                <th className="py-3 px-4 w-12 text-center whitespace-nowrap">#</th>
+                <th className="py-3 px-4 min-w-[200px]">Question</th>
+                <th className="py-3 px-4 min-w-[250px]">Answer</th>
+                <th className="py-3 px-4 text-center whitespace-nowrap">Order</th>
+                <th className="py-3 px-4 whitespace-nowrap">Show On Page</th>
+                <th className="py-3 px-4 text-right whitespace-nowrap">Actions</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100">
@@ -76,23 +76,23 @@ export default async function AdminFaqsPage() {
               ) : (
                 faqs.map((faq, index) => (
                   <tr key={faq.id} className="hover:bg-[#fcfcfc] transition-colors group">
-                    <td className="py-3 px-4 text-center text-gray-400 font-medium">{index + 1}</td>
+                    <td className="py-3 px-4 text-center text-gray-400 font-medium whitespace-nowrap">{index + 1}</td>
                     
-                    <td className="py-3 px-4 font-bold text-[#112233]">
-                      <Link href={`/admin/faqs/${faq.id}/edit`} className="hover:text-[#24a0ed]">
+                    <td className="py-3 px-4 font-bold text-[#112233] max-w-[250px]">
+                      <Link href={`/admin/faqs/${faq.id}/edit`} className="hover:text-[#24a0ed] block truncate">
                         {faq.question}
                       </Link>
                     </td>
                     
-                    <td className="py-3 px-4 text-gray-600 font-medium max-w-md">
+                    <td className="py-3 px-4 text-gray-600 font-medium max-w-[300px]">
                       <span className="line-clamp-2">{stripHtml(faq.answer)}</span>
                     </td>
                     
-                    <td className="py-3 px-4 text-center font-bold text-gray-700">
+                    <td className="py-3 px-4 text-center font-bold text-gray-700 whitespace-nowrap">
                       {faq.order}
                     </td>
 
-                    <td className="py-3 px-4">
+                    <td className="py-3 px-4 whitespace-nowrap">
                       {faq.relatedType ? (
                         <a
                           href={faq.relatedType === 'trek'
@@ -111,7 +111,7 @@ export default async function AdminFaqsPage() {
                       )}
                     </td>
                     
-                    <td className="py-3 px-4 text-right">
+                    <td className="py-3 px-4 text-right whitespace-nowrap">
                       <div className="flex items-center justify-end gap-2">
                         <ToggleShow model="faqs" resource="faqs" id={faq.id} published={faq.published} />
                         <EditButton href={`/admin/faqs/${faq.id}/edit`} />
@@ -154,7 +154,7 @@ export default async function AdminFaqsPage() {
                           : `/blog/${faq.relatedSlug}`}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="text-[11px] font-bold text-[#24a0ed] hover:text-[#112233]"
+                      className="text-[11px] font-bold text-[#24a0ed] hover:text-[#112233] truncate block"
                     >
                       {relatedTypeLabels[faq.relatedType] ?? faq.relatedType}
                     </a>
