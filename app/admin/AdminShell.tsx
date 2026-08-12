@@ -124,7 +124,7 @@ export default function AdminShell({
         ) : (
           <>
             <div className="flex items-center justify-between flex-1 min-w-0">
-              <Link href="/admin" className="font-bold text-white tracking-wider flex items-center gap-2">
+              <Link href="/admin" onClick={() => setSidebarOpen(false)} className="font-bold text-white tracking-wider flex items-center gap-2">
                 <img
                   src={logoImage || "https://ml978xhbpkuo.i.optimole.com/cb:t1g8.6c6/w:259/h:68/q:mauto/f:best/https://everpeakadventures.com/wp-content/uploads/2025/03/Untitled-design-123456-e1783511870519.png"}
                   alt="Ever Peak Adventures"
