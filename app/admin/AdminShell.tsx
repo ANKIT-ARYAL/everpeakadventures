@@ -186,7 +186,7 @@ export default function AdminShell({
     <div className="min-h-screen w-full max-w-full overflow-x-hidden bg-[#f0f2f5] flex font-sans text-gray-800 admin-panel">
 
       {/* Sidebar - fixed on desktop, drawer on mobile */}
-      <aside className={`bg-[#101b25] text-gray-300 flex-col fixed inset-y-0 left-0 z-50 overflow-y-auto pb-10 hidden lg:flex transition-all duration-300 ${collapsed ? 'w-16' : 'w-64'}`}>
+      <aside className={`bg-[#101b25] text-gray-300 flex-col fixed inset-y-0 left-0 z-50 overflow-y-auto pb-10 hidden lg:flex transition-all duration-300 ${collapsed ? 'w-16' : 'w-64 lg:w-64 xl:w-72'}`}>
         {renderNav()}
       </aside>
 
@@ -200,12 +200,12 @@ export default function AdminShell({
       )}
 
       {/* Mobile sidebar drawer */}
-      <aside className={`w-64 bg-[#101b25] text-gray-300 flex-col inset-y-0 left-0 z-50 overflow-y-auto pb-10 fixed transition-transform duration-300 lg:hidden ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}`}>
+      <aside className={`w-full max-w-64 bg-[#101b25] text-gray-300 flex-col inset-y-0 left-0 z-50 overflow-y-auto pb-10 fixed transition-transform duration-300 lg:hidden ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}`}>
         {renderNav()}
       </aside>
 
       {/* Main Content Viewport */}
-      <main className={`flex-1 min-w-0 p-3 sm:p-5 lg:p-8 transition-all duration-300 ${collapsed ? 'lg:ml-16' : 'lg:ml-64'}`}>
+      <main className={`flex-1 min-w-0 p-3 sm:p-4 lg:p-6 xl:p-8 transition-all duration-300 ${collapsed ? 'lg:ml-16 xl:ml-16' : 'lg:ml-64 xl:ml-72'}`}>
         {/* Mobile top bar */}
         <div className="lg:hidden flex items-center gap-3 mb-4">
           <button
@@ -219,7 +219,7 @@ export default function AdminShell({
           <img
             src={logoImage || "https://ml978xhbpkuo.i.optimole.com/cb:t1g8.6c6/w:259/h:68/q:mauto/f:best/https://everpeakadventures.com/wp-content/uploads/2025/03/Untitled-design-123456-e1783511870519.png"}
             alt="Ever Peak Adventures"
-            className="h-8 w-auto object-contain"
+            className="h-8 w-auto object-contain flex-shrink-0"
           />
         </div>
         <AdminPermsProvider value={{ isSuperAdmin, permissions }}>

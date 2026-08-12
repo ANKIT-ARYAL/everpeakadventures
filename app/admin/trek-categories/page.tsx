@@ -10,6 +10,7 @@ export default async function AdminTrekCategoriesPage() {
       select: { id: true, title: true, published: true, regions: true },
       orderBy: { title: 'asc' },
     }),
+    
   ]);
 
   const childrenByItem: Record<string, { id: string; label: string; href: string; published?: boolean }[]> = {};
@@ -23,6 +24,7 @@ export default async function AdminTrekCategoriesPage() {
         published: t.published,
       }));
     childrenByItem[cat.id] = assigned;
+    
   }
 
   return (

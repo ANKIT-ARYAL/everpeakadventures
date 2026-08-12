@@ -90,9 +90,9 @@ export default function CategoryForm({
     <form onSubmit={handleSubmit} className="space-y-6 max-w-[1000px] mx-auto">
       <Toaster position="top-right" />
 
-      <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div className="bg-white p-4 sm:p-6 rounded-xl shadow-sm border border-gray-100 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-black text-[#112233] uppercase tracking-wide">{title}</h1>
+          <h1 className="text-xl sm:text-2xl font-black text-[#112233] uppercase tracking-wide">{title}</h1>
           <p className="text-gray-500 mt-1">{subtitle}</p>
         </div>
         <div className="flex items-center gap-2">
@@ -109,10 +109,10 @@ export default function CategoryForm({
         </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
         {/* Main column */}
-        <div className="lg:col-span-2 space-y-6">
-          <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 space-y-4">
+        <div className="lg:col-span-2 space-y-4 sm:space-y-6 min-w-0">
+          <div className="bg-white p-4 sm:p-6 rounded-xl shadow-sm border border-gray-100 space-y-4">
             <h3 className="font-bold text-gray-800 uppercase tracking-wider border-b pb-2">Category Details</h3>
             <div>
               <label className={labelCls}>Name *</label>
@@ -139,12 +139,12 @@ export default function CategoryForm({
         </div>
 
         {/* Sidebar */}
-        <div className="space-y-6">
-          <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 space-y-4">
+        <div className="space-y-4 sm:space-y-6">
+          <div className="bg-white p-4 sm:p-6 rounded-xl shadow-sm border border-gray-100 space-y-4">
             <h3 className="font-bold text-gray-800 uppercase tracking-wider border-b pb-2">Featured Image</h3>
             <MediaUploader value={form.image} onChange={(url) => setForm(prev => ({ ...prev, image: url }))} heightClass="h-40" />
           </div>
-          <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 space-y-4">
+          <div className="bg-white p-4 sm:p-6 rounded-xl shadow-sm border border-gray-100 space-y-4">
             <h3 className="font-bold text-gray-800 uppercase tracking-wider border-b pb-2">Visibility</h3>
             <label className="flex items-center justify-between cursor-pointer bg-gray-50 border border-gray-200 rounded-lg px-3 py-2.5">
               <span className="font-bold text-gray-700">Published</span>

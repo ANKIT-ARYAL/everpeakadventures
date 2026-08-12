@@ -60,6 +60,15 @@ export default function TrekForm({ initialData, isEditing = false, categories }:
   const router = useRouter();
   const [loading, setLoading] = useState(false);
 
+  // Dynamic Slug Maps
+  const dynamicSlugMap = categories && categories.length > 0
+    ? Object.fromEntries(categories.map((c) => [c.name, c.slug]))
+    : REGION_SLUGS;
+
+  const dynamicNameMap = categories && categories.length > 0
+    ? Object.fromEntries(categories.map((c) => [c.slug, c.name]))
+    : REGION_FROM_SLUG;
+
   const categoryOptions = categories && categories.length > 0
     ? categories.map((c) => c.name)
     : REGION_CATEGORIES;
@@ -116,7 +125,7 @@ export default function TrekForm({ initialData, isEditing = false, categories }:
     regions: initialData?.regions?.length
       ? initialData.regions
       : initialData?.region
-        ? [REGION_FROM_SLUG[initialData.region] || 'All Trekking Packages']
+        ? [dynamicNameMap[initialData.region] || 'All Trekking Packages']
         : ['All Trekking Packages'],
 
     // Group Pricing Repeater (Advanced PageManager)
@@ -237,7 +246,7 @@ export default function TrekForm({ initialData, isEditing = false, categories }:
     setFormData(prev => {
       const has = prev.regions.includes(cat);
       const regions = has ? prev.regions.filter((r: string) => r !== cat) : [...prev.regions, cat];
-      const region = REGION_SLUGS[regions.find((r: string) => REGION_SLUGS[r]) || ''] || prev.region;
+      const region = dynamicSlugMap[regions.find((r: string) => dynamicSlugMap[r]) || ''] || prev.region;
       return { ...prev, regions, region };
     });
   };
@@ -389,12 +398,12 @@ export default function TrekForm({ initialData, isEditing = false, categories }:
     <form onSubmit={handleSubmit} className="max-w-[1200px] mx-auto space-y-6 pb-20 text-xs font-sans text-gray-800">
 
       {/* Top Header Actions */}
-      <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div className="flex items-center gap-3">
-          <Link href="/admin/treks" className="p-2 rounded-lg bg-gray-100 text-gray-600 hover:bg-gray-200 transition-colors">
+      <div className="bg-white p-4 sm:p-6 rounded-xl shadow-sm border border-gray-100 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div className="flex flex-col sm:flex-row sm:items-center gap-3">
+          <Link href="/admin/treks" className="self-start sm:self-auto p-2 rounded-lg bg-gray-100 text-gray-600 hover:bg-gray-200 transition-colors">
             <ArrowLeft className="w-4 h-4" />
           </Link>
-          <h1 className="text-xl font-black text-[#112233] oswald uppercase tracking-wider">
+          <h1 className="text-lg sm:text-xl font-black text-[#112233] oswald uppercase tracking-wider">
             {isEditing ? `Edit Trekking: ${initialData?.title}` : 'Add New Trekking Package'}
           </h1>
         </div>
@@ -423,10 +432,10 @@ export default function TrekForm({ initialData, isEditing = false, categories }:
 
       <StickySectionNav sections={['Overview', 'Pricing & Booking', 'Itinerary', 'Inclusions', 'Route Map', 'Media', 'Categories']} />
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
 
         {/* ============ LEFT / MAIN COLUMN ============ */}
-        <div className="lg:col-span-2 space-y-6">
+        <div className="lg:col-span-2 space-y-4 sm:space-y-6 min-w-0">
 
           {/* Overview group */}
           <div id="sec-overview" className="space-y-6 scroll-mt-24">
@@ -740,8 +749,8 @@ export default function TrekForm({ initialData, isEditing = false, categories }:
 
         </div>
 
-        {/* ============ RIGHT SIDEBAR ============ */}
-        <div className="space-y-6">
+{/* ============ RIGHT SIDEBAR ============ */}
+        <div className="space-y-4 sm:space-y-6 lg:sticky lg:top-24 lg:self-start">
 
           {/* Media group */}
           <div id="sec-media" className="scroll-mt-24">
@@ -753,9 +762,9 @@ export default function TrekForm({ initialData, isEditing = false, categories }:
             <div className="bg-emerald-50 border border-emerald-200 rounded-xl p-4 space-y-3">
               <div className="flex items-center justify-between">
                 <span className="font-bold text-emerald-800 uppercase tracking-wider text-[11px]">On-Page Preview</span>
-                <span className="text-[10px] font-semibold text-emerald-700 bg-emerald-100 px-2 py-0.5 rounded-full uppercase">Auto from Itinerary &amp; Pricing</span>
+                <span className="text-[10px] font-semibold text-emerald-700 bg-emerald-100 px-2 py-0.5 rounded-full uppercase">Auto from Itinerary & Pricing</span>
               </div>
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-1 min-[360px]:grid-cols-2 gap-3">
                 <div className="p-3 bg-white rounded-lg border border-emerald-100">
                   <div className="text-[10px] font-bold text-gray-500 uppercase mb-0.5">Price / Person</div>
                   <div className="text-base font-extrabold text-[#24a0ed]">{fmtUsd(derived.priceFrom)}</div>

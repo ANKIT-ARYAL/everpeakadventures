@@ -11,6 +11,18 @@ interface PageProps {
   }>;
 }
 
+// Region slug mapping for matching
+const REGION_SLUGS: Record<string, string> = {
+  'Everest Region': 'everest',
+  'Annapurna Region': 'annapurna',
+  'Manaslu Region': 'manaslu',
+  'Langtang Region': 'langtang',
+  'Mustang Region': 'mustang',
+  'Kanchenjunga Region': 'kanchenjunga-region-trekking',
+  'Makalu Region': 'makalu-region-trekking',
+  'Dolpo Region': 'dolpo',
+};
+
 export default async function TrekkingRegionPage({ params }: PageProps) {
   const { slug } = await params;
 
@@ -18,11 +30,16 @@ export default async function TrekkingRegionPage({ params }: PageProps) {
   const cleanSlug = slug.replace(/-region-trekking|-region/g, '').toLowerCase();
 
   // Fetch treks dynamically using multiple matching patterns so it never misses any region
+  // Now also checks the regions array field (new taxonomy)
   const treks = await prisma.trek.findMany({
     where: {
       OR: [
         { region: { contains: cleanSlug, mode: 'insensitive' } },
         { region: { contains: slug, mode: 'insensitive' } },
+        { regions: { has: cleanSlug } },
+        { regions: { has: slug } },
+        // Also match by category slug if it maps to a region name
+        { regions: { hasSome: Object.values(REGION_SLUGS).filter(v => v === cleanSlug || v === slug) } },
       ],
       published: true,
     },
@@ -36,7 +53,7 @@ export default async function TrekkingRegionPage({ params }: PageProps) {
     .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
     .join(' ') + ' Region';
 
-  const regionDescription = `Explore ${regionTitle}. It is one of Nepal's most breathtaking trekking destinations, featuring stunning Himalayan landscapes, rich local culture, and world-class trails designed for safety, comfort, and unforgettable memories.`;
+const regionDescription = `Explore ${regionTitle}. It is one of Nepal's most breathtaking trekking destinations, featuring stunning Himalayan landscapes, rich local culture, and world-class trails designed for safety, comfort, and unforgettable memories.`;
 
   return (
     <div className="min-h-screen bg-[#f8faf9] font-sans text-gray-800 pb-24">

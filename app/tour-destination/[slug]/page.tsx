@@ -14,9 +14,15 @@ export default async function TourDestinationPage({ params }: PageProps) {
   const destinationName = slug.charAt(0).toUpperCase() + slug.slice(1);
 
   // Fetch tours related to this destination dynamically
+  // Now also checks the regions array field (new taxonomy)
   const tours = await prisma.tour.findMany({
     where: {
-      destination: { equals: slug.toLowerCase(), mode: 'insensitive' },
+      OR: [
+        { destination: { equals: slug.toLowerCase(), mode: 'insensitive' } },
+        { primaryDestination: { equals: slug.toLowerCase(), mode: 'insensitive' } },
+        { regions: { has: slug.toLowerCase() } },
+        { regions: { has: destinationName } },
+      ],
       published: true,
     },
     orderBy: { order: 'asc' },

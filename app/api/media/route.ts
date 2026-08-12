@@ -25,9 +25,13 @@ async function collectContentImages() {
     ctaBanners,
     trustedPartner,
     siteSettings,
+    trekCategories,
+    tourCategories,
+    pages,
+    sections,
   ] = await Promise.all([
-    prisma.trek.findMany({ select: { heroImage: true, gallery: true, mapImage: true } }),
-    prisma.tour.findMany({ select: { heroImage: true, gallery: true, mapImage: true } }),
+    prisma.trek.findMany({ select: { heroImage: true, gallery: true, mapImage: true, itinerary: true } }),
+    prisma.tour.findMany({ select: { heroImage: true, gallery: true, mapImage: true, itinerary: true } }),
     prisma.blogPost.findMany({ select: { image: true } }),
     prisma.clientReview.findMany({ select: { avatar: true } }),
     prisma.teamMember.findMany({ select: { image: true } }),
@@ -38,10 +42,14 @@ async function collectContentImages() {
     prisma.ctaBannerContent.findMany({ select: { bgImage: true } }),
     prisma.trustedPartnerContent.findMany({ select: { storyImage: true, bgHeroImage: true } }),
     prisma.siteSettings.findMany({ select: { logoImage: true, footerBgImage: true } }),
+    prisma.trekCategory.findMany({ select: { image: true } }),
+    prisma.tourCategory.findMany({ select: { image: true } }),
+    prisma.page.findMany({ select: { heroImage: true } }),
+    prisma.section.findMany({ select: { image: true, icon: true } }),
   ]);
 
-  treks.forEach(t => { add(t.heroImage); add(t.gallery); add(t.mapImage); });
-  tours.forEach(t => { add(t.heroImage); add(t.gallery); add(t.mapImage); });
+  treks.forEach(t => { add(t.heroImage); add(t.gallery); add(t.mapImage); addItineraryGallery(t.itinerary); });
+  tours.forEach(t => { add(t.heroImage); add(t.gallery); add(t.mapImage); addItineraryGallery(t.itinerary); });
   blogs.forEach(b => add(b.image));
   reviews.forEach(r => add(r.avatar));
   team.forEach(m => add(m.image));
@@ -52,6 +60,21 @@ async function collectContentImages() {
   ctaBanners.forEach(c => add(c.bgImage));
   trustedPartner.forEach(t => { add(t.storyImage); add(t.bgHeroImage); });
   siteSettings.forEach(s => { add(s.logoImage); add(s.footerBgImage); });
+  trekCategories.forEach(c => add(c.image));
+  tourCategories.forEach(c => add(c.image));
+  pages.forEach(p => add(p.heroImage));
+  sections.forEach(s => { add(s.image); add(s.icon); });
+
+  // Extract gallery images from itinerary day gallery arrays
+  function addItineraryGallery(itinerary: unknown) {
+    if (!Array.isArray(itinerary)) return;
+    itinerary.forEach((day: unknown) => {
+      if (day && typeof day === 'object' && Array.isArray((day as { gallery?: unknown[] }).gallery)) {
+        const d = day as { gallery: string[] };
+        add(d.gallery);
+      }
+    });
+  }
 
   return urls;
 }

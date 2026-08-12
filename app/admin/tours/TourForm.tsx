@@ -67,6 +67,15 @@ export default function TourForm({ initialData, isEditing = false, categories }:
   const [newRegion, setNewRegion] = useState('');
   const [newPrimaryDestination, setNewPrimaryDestination] = useState('');
 
+  // Dynamic Slug Maps
+  const dynamicSlugMap = categories && categories.length > 0
+    ? Object.fromEntries(categories.map((c) => [c.name, c.slug]))
+    : REGION_SLUGS;
+
+  const dynamicNameMap = categories && categories.length > 0
+    ? Object.fromEntries(categories.map((c) => [c.slug, c.name]))
+    : REGION_FROM_SLUG;
+
   const categoryOptions = categories && categories.length > 0
     ? categories.map((c) => c.name)
     : REGION_CATEGORIES;
@@ -247,7 +256,16 @@ export default function TourForm({ initialData, isEditing = false, categories }:
     setFormData(prev => {
       const has = prev.regions.includes(cat);
       const regions = has ? prev.regions.filter((r: string) => r !== cat) : [...prev.regions, cat];
-      return { ...prev, regions };
+      // Sync primaryDestination and destination for backward compatibility
+      const primaryDestination = regions.find((r: string) => PRIMARY_DESTINATIONS.includes(r)) || prev.primaryDestination;
+      
+      // Update destination using dynamic mapping if possible, otherwise fallback
+      let newDestination = prev.destination;
+      if (regions.length > 0) {
+        newDestination = dynamicSlugMap[regions[0]] || regions[0].toLowerCase().replace(/\s+/g, '-');
+      }
+
+      return { ...prev, regions, primaryDestination, destination: newDestination };
     });
   };
 
@@ -400,26 +418,26 @@ export default function TourForm({ initialData, isEditing = false, categories }:
   }, [formData]);
 
   return (
-    <form onSubmit={handleSubmit} className="max-w-[1200px] mx-auto space-y-6 pb-20 text-xs font-sans text-gray-800">
+    <form onSubmit={handleSubmit} className="w-full max-w-[1400px] mx-auto px-3 sm:px-4 lg:px-6 xl:px-8 space-y-4 sm:space-y-6 pb-20 text-xs font-sans text-gray-800 min-w-0">
       {/* Top Header Actions */}
-      <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div className="flex items-center gap-3">
+      <div className="bg-white p-3 sm:p-4 lg:p-6 rounded-xl shadow-sm border border-gray-100 flex flex-col lg:flex-row lg:items-center justify-between gap-3 sm:gap-4 min-w-0">
+        <div className="flex items-center gap-2 sm:gap-3 min-w-0">
           <Link href="/admin/tours" className="p-2 rounded-lg bg-gray-100 text-gray-600 hover:bg-gray-200 transition-colors">
             <ArrowLeft className="w-4 h-4" />
           </Link>
-          <h1 className="text-xl font-black text-[#112233] oswald uppercase tracking-wider">
+          <h1 className="text-base sm:text-lg lg:text-xl font-black text-[#112233] oswald uppercase tracking-wider leading-tight break-words min-w-0">
             {isEditing ? `Edit Tour: ${initialData?.title}` : 'Add New Tour Package'}
           </h1>
         </div>
 
-        <div className="w-full sm:w-auto flex flex-wrap items-center gap-2">
+        <div className="w-full lg:w-auto flex flex-wrap items-stretch sm:items-center gap-2 min-w-0">
           {isEditing && <ToggleShow model="tours" resource="tours" id={initialData?.id as string} published={initialData?.published ?? true} />}
           {isEditing && formData.slug && (
             <Link
               href={`/tour/${formData.slug}`}
               target="_blank"
               rel="noopener noreferrer"
-              className="bg-emerald-50 hover:bg-emerald-100 text-emerald-700 font-bold px-4 py-2.5 rounded-lg flex items-center gap-2 transition-colors uppercase tracking-wider"
+              className="flex-1 sm:flex-none justify-center bg-emerald-50 hover:bg-emerald-100 text-emerald-700 font-bold px-3 sm:px-4 py-2.5 rounded-lg flex items-center gap-2 transition-colors uppercase tracking-wider whitespace-nowrap"
             >
               <ExternalLink className="w-4 h-4" /> View Live
             </Link>
@@ -427,18 +445,18 @@ export default function TourForm({ initialData, isEditing = false, categories }:
           <button
             type="submit"
             disabled={loading}
-            className="bg-[#24a0ed] hover:bg-[#1a85c6] text-white font-bold px-6 py-2.5 rounded-lg shadow-sm flex items-center gap-2 transition-colors uppercase tracking-wider disabled:opacity-50"
+            className="flex-1 sm:flex-none justify-center bg-[#24a0ed] hover:bg-[#1a85c6] text-white font-bold px-4 sm:px-6 py-2.5 rounded-lg shadow-sm flex items-center gap-2 transition-colors uppercase tracking-wider disabled:opacity-50 whitespace-nowrap"
           >
             <Save className="w-4 h-4" /> {loading ? 'Saving...' : (isEditing ? 'Update Tour' : 'Publish Tour')}
           </button>
         </div>
       </div>
 
-      <StickySectionNav sections={['Overview', 'Pricing & Booking', 'Itinerary', 'Inclusions', 'Route Map', 'Media', 'Categories', 'SEO']} />
+      <div className="min-w-0 overflow-x-auto -mx-3 px-3 sm:mx-0 sm:px-0">'Overview', 'Pricing & Booking', 'Itinerary', 'Inclusions', 'Route Map', 'Media', 'Categories', 'SEO' </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6 min-w-0">
         {/* ============ LEFT / MAIN COLUMN ============ */}
-        <div className="lg:col-span-2 space-y-6">
+        <div className="lg:col-span-2 space-y-4 sm:space-y-6 min-w-0">
 
           {/* Overview group */}
           <div id="sec-overview" className="space-y-6 scroll-mt-24">
@@ -480,7 +498,7 @@ export default function TourForm({ initialData, isEditing = false, categories }:
             {/* Desktop: Table-like Grid | Mobile: Stacked Cards */}
             <div className="space-y-3">
               {/* Desktop Header */}
-              <div className="hidden lg:grid grid-cols-4 gap-3 px-3 py-2 bg-gray-50 text-gray-500 uppercase text-[10px] tracking-wider font-bold rounded-t-lg border-b border-gray-100">
+              <div className="hidden xl:grid grid-cols-4 gap-3 px-3 py-2 bg-gray-50 text-gray-500 uppercase text-[10px] tracking-wider font-bold rounded-t-lg border-b border-gray-100">
                 <span>Pax / No. of Persons</span>
                 <span>Group Type</span>
                 <span>Price per Person</span>
@@ -488,14 +506,14 @@ export default function TourForm({ initialData, isEditing = false, categories }:
               </div>
 
               {formData.groupPrices.map((g: any, idx: number) => (
-                <div key={idx} className="p-3 rounded-lg border border-gray-100 bg-gray-50/50 lg:bg-transparent lg:rounded-none lg:border-t lg:border-gray-100 lg:p-2">
-                  <FieldGrid cols={4} className="items-end">
+                <div key={idx} className="p-3 rounded-lg border border-gray-100 bg-gray-50/50 xl:bg-transparent xl:rounded-none xl:border-t xl:border-gray-100 xl:p-2">
+                  <FieldGrid cols={4} className="items-end [&>*]:min-w-0">
                   <div>
-                    <label className="lg:hidden block text-[10px] font-bold text-gray-400 uppercase tracking-wider">Pax / No. of Persons</label>
+                    <label className="xl:hidden block text-[10px] font-bold text-gray-400 uppercase tracking-wider">Pax / No. of Persons</label>
                     <input type="text" value={g.groupSize} onChange={(e) => handleGroupPriceChange(idx, 'groupSize', e.target.value)} placeholder="2 - 4 Pax" className="w-full px-3 py-2 border border-gray-200 rounded-lg" />
                   </div>
                   <div>
-                    <label className="lg:hidden block text-[10px] font-bold text-gray-400 uppercase tracking-wider">Group Type</label>
+                    <label className="xl:hidden block text-[10px] font-bold text-gray-400 uppercase tracking-wider">Group Type</label>
                     <select value={g.groupType} onChange={(e) => handleGroupPriceChange(idx, 'groupType', e.target.value)} className="w-full px-3 py-2 border border-gray-200 rounded-lg bg-white">
                       <option>Small Group</option>
                       <option>Best Value</option>
@@ -503,7 +521,7 @@ export default function TourForm({ initialData, isEditing = false, categories }:
                     </select>
                   </div>
                   <div>
-                    <label className="lg:hidden block text-[10px] font-bold text-gray-400 uppercase tracking-wider">Price per Person</label>
+                    <label className="xl:hidden block text-[10px] font-bold text-gray-400 uppercase tracking-wider">Price per Person</label>
                     <input type="text" value={g.price} onChange={(e) => handleGroupPriceChange(idx, 'price', e.target.value)} placeholder="US$ 2,599" className="w-full px-3 py-2 border border-gray-200 rounded-lg" />
                   </div>
                   <div className="flex justify-end">
@@ -531,7 +549,7 @@ export default function TourForm({ initialData, isEditing = false, categories }:
             <p className="text-gray-400 text-[11px] -mt-2">Pick real dates with the calendar. Checking "Every Year" auto-creates an instance for each of the next 2 years.</p>
 
             {formData.departures.map((s: any, idx: number) => (
-              <div key={idx} className="flex flex-wrap items-end gap-3 p-4 rounded-xl border border-gray-100 bg-gray-50/50 relative">
+              <div key={idx} className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-[repeat(5,minmax(0,1fr))_auto_auto] items-end gap-3 p-3 sm:p-4 rounded-xl border border-gray-100 bg-gray-50/50 relative min-w-0">
                 <div>
                   <label className="block font-bold text-gray-600 mb-1 text-[10px] uppercase tracking-wider">Start Date</label>
                   <input type="date" value={s.startDate} onChange={(e) => handleScheduleChange(idx, 'startDate', e.target.value)} className="w-full px-3 py-2 border border-gray-200 rounded-lg bg-white" />
@@ -540,7 +558,7 @@ export default function TourForm({ initialData, isEditing = false, categories }:
                   <label className="block font-bold text-gray-600 mb-1 text-[10px] uppercase tracking-wider">End Date</label>
                   <input type="date" value={s.endDate} onChange={(e) => handleScheduleChange(idx, 'endDate', e.target.value)} className="w-full px-3 py-2 border border-gray-200 rounded-lg bg-white" />
                 </div>
-                <div className="min-w-[120px]">
+                <div className="min-w-0">
                   <label className="block font-bold text-gray-600 mb-1 text-[10px] uppercase tracking-wider">Group Size</label>
                   <input type="text" value={s.groupSize} onChange={(e) => handleScheduleChange(idx, 'groupSize', e.target.value)} placeholder="2 - 12 Pax" className="w-full px-3 py-2 border border-gray-200 rounded-lg bg-white" />
                 </div>
@@ -553,15 +571,15 @@ export default function TourForm({ initialData, isEditing = false, categories }:
                     <option>Sold Out</option>
                   </select>
                 </div>
-                <div className="w-20">
+                <div className="w-full sm:w-20">
                   <label className="block font-bold text-gray-600 mb-1 text-[10px] uppercase tracking-wider">Seats</label>
                   <NumberInput type="number" value={s.seatsLeft} onChange={(e) => handleScheduleChange(idx, 'seatsLeft', e.target.value)} className="w-full px-3 py-2 border border-gray-200 rounded-lg bg-white" />
                 </div>
-                <label className="flex items-center gap-1.5 pb-2 text-[11px] font-bold text-gray-600">
+                <label className="flex items-center gap-1.5 sm:pb-2 text-[11px] font-bold text-gray-600 min-h-9">
                   <input type="checkbox" checked={s.recurring} onChange={(e) => handleScheduleChange(idx, 'recurring', e.target.checked)} className="w-4 h-4 accent-[#24a0ed]" />
                   Every Year
                 </label>
-                <button type="button" onClick={() => removeScheduleRow(idx)} className="text-red-500 hover:bg-red-50 p-1.5 rounded flex items-center gap-1 font-bold">
+                <button type="button" onClick={() => removeScheduleRow(idx)} className="text-red-500 hover:bg-red-50 p-1.5 rounded flex items-center gap-1 font-bold justify-self-start xl:justify-self-end">
                   <Trash2 className="w-3.5 h-3.5" /> Remove
                 </button>
               </div>
@@ -579,7 +597,7 @@ export default function TourForm({ initialData, isEditing = false, categories }:
               </button>
             </div>
             {formData.itinerary.map((dayObj: any, idx: number) => (
-              <div key={idx} className="p-4 rounded-xl border border-gray-100 bg-gray-50/50 space-y-3 relative">
+              <div key={idx} className="p-3 sm:p-4 rounded-xl border border-gray-100 bg-gray-50/50 space-y-3 relative min-w-0">
                 <div className="flex items-center justify-between">
                   <span className="font-bold text-gray-700">Day {dayObj.day || idx + 1}</span>
                   {formData.itinerary.length > 1 && (
@@ -589,7 +607,7 @@ export default function TourForm({ initialData, isEditing = false, categories }:
                   )}
                 </div>
                 <input type="text" value={dayObj.title} onChange={(e) => handleItineraryChange(idx, 'title', e.target.value)} placeholder="Day title (e.g. Arrival in Kathmandu)" className="w-full px-3 py-2 border border-gray-200 rounded-lg bg-white" />
-                <FieldGrid cols={4}>
+                <FieldGrid cols={4} className="[&>*]:min-w-0">
                   <div>
                     <label className="block font-bold text-gray-600 mb-1 text-[10px] uppercase tracking-wider">Starting Point</label>
                     <input type="text" value={dayObj.startPoint ?? ''} onChange={(e) => handleItineraryChange(idx, 'startPoint', e.target.value)} placeholder="Kathmandu" className="w-full px-3 py-2 border border-gray-200 rounded-lg bg-white" />
@@ -659,7 +677,7 @@ export default function TourForm({ initialData, isEditing = false, categories }:
             </div>
             <p className="text-gray-400 text-[11px] -mt-2">Use day number to control order. Empty rows are ignored on save.</p>
             {formData.altitudeData.map((ad: any, idx: number) => (
-              <div key={idx} className="p-4 rounded-xl border border-gray-100 bg-gray-50/50 space-y-3 relative">
+              <div key={idx} className="p-3 sm:p-4 rounded-xl border border-gray-100 bg-gray-50/50 space-y-3 relative min-w-0">
                 <div className="flex items-center justify-between">
                   <span className="font-bold text-gray-700">Day {ad.day || idx + 1}</span>
                   {formData.altitudeData.length > 1 && (
@@ -668,7 +686,7 @@ export default function TourForm({ initialData, isEditing = false, categories }:
                     </button>
                   )}
                 </div>
-                <FieldGrid cols={3}>
+                <FieldGrid cols={3} className="[&>*]:min-w-0">
                   <div>
                     <label className="block font-bold text-gray-600 mb-1 text-[10px] uppercase tracking-wider">Place</label>
                     <input type="text" value={ad.place ?? ''} onChange={(e) => handleAltitudeChange(idx, 'place', e.target.value)} placeholder="e.g. Koto" className="w-full px-3 py-2 border border-gray-200 rounded-lg bg-white" />
@@ -733,7 +751,7 @@ export default function TourForm({ initialData, isEditing = false, categories }:
                 <Plus className="w-3.5 h-3.5" /> Add Image
               </button>
             </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4 min-w-0">
               {formData.gallery.map((imgUrl: string, idx: number) => (
                 <div key={idx} className="p-3 bg-gray-50 border border-gray-100 rounded-xl space-y-2 relative">
                   <div className="flex items-center justify-between">
@@ -751,7 +769,7 @@ export default function TourForm({ initialData, isEditing = false, categories }:
         </div>
 
         {/* ============ RIGHT SIDEBAR ============ */}
-        <div className="space-y-6">
+        <div className="space-y-4 sm:space-y-6 lg:sticky lg:top-24 lg:self-start min-w-0">
 
           {/* Media group */}
           <div id="sec-media" className="scroll-mt-24">
@@ -765,7 +783,7 @@ export default function TourForm({ initialData, isEditing = false, categories }:
                 <span className="font-bold text-emerald-800 uppercase tracking-wider text-[11px]">On-Page Preview</span>
                 <span className="text-[10px] font-semibold text-emerald-700 bg-emerald-100 px-2 py-0.5 rounded-full uppercase">Auto from Itinerary &amp; Pricing</span>
               </div>
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-1 min-[360px]:grid-cols-2 gap-2 sm:gap-3">
                 <div className="p-3 bg-white rounded-lg border border-emerald-100">
                   <div className="text-[10px] font-bold text-gray-500 uppercase mb-0.5">Price / Person</div>
                   <div className="text-base font-extrabold text-[#24a0ed]">{fmtUsd(derived.priceFrom)}</div>
@@ -778,7 +796,7 @@ export default function TourForm({ initialData, isEditing = false, categories }:
                 </div>
                 <div className="p-3 bg-white rounded-lg border border-emerald-100">
                   <div className="text-[10px] font-bold text-gray-500 uppercase mb-0.5">Price Range</div>
-                  <div className="font-bold text-emerald-800 truncate">{derived.range || '—'}</div>
+                  <div className="font-bold text-emerald-800 truncate min-w-0">{derived.range || '—'}</div>
                 </div>
                 <div className="p-3 bg-white rounded-lg border border-emerald-100">
                   <div className="text-[10px] font-bold text-gray-500 uppercase mb-0.5">Group Size</div>
@@ -800,7 +818,7 @@ export default function TourForm({ initialData, isEditing = false, categories }:
               </p>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 min-[480px]:grid-cols-2 gap-3 min-w-0">
               <div>
                 <label className="block font-bold text-gray-700 mb-1">Regular Price</label>
                 <NumberInput type="number" name="originalPrice" value={formData.originalPrice} onChange={handleChange} placeholder="2975" className="w-full px-3 py-2 border border-gray-200 rounded-lg font-bold text-gray-400" />
@@ -885,7 +903,7 @@ export default function TourForm({ initialData, isEditing = false, categories }:
           </SectionCard>
 
           <SectionCard title="Trek Video">
-            <div className="flex gap-3">
+            <div className="flex flex-col min-[420px]:flex-row gap-2 sm:gap-3">
               <button
                 type="button"
                 onClick={() => setFormData(prev => ({ ...prev, videoType: 'youtube' }))}
@@ -945,7 +963,7 @@ export default function TourForm({ initialData, isEditing = false, categories }:
                 </label>
               ))}
             </div>
-            <div className="flex items-center gap-2 pt-2 border-t border-gray-100">
+            <div className="flex flex-col min-[420px]:flex-row items-stretch min-[420px]:items-center gap-2 pt-2 border-t border-gray-100">
               <input
                 type="text"
                 value={newRegion}
@@ -954,7 +972,7 @@ export default function TourForm({ initialData, isEditing = false, categories }:
                 placeholder="Add a new category name…"
                 className="flex-1 px-3 py-2 border border-gray-200 rounded-lg text-sm outline-none focus:border-[#24a0ed]"
               />
-              <button type="button" onClick={addNewRegion} className="bg-[#112233] text-white px-3 py-2 rounded-lg text-xs font-bold whitespace-nowrap hover:bg-[#1e3a52]">
+              <button type="button" onClick={addNewRegion} className="bg-[#112233] text-white px-3 py-2 rounded-lg text-xs font-bold whitespace-nowrap hover:bg-[#1e3a52] w-full min-[420px]:w-auto">
                 + Add
               </button>
             </div>
