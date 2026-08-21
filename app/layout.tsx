@@ -7,6 +7,7 @@ import NavbarWrapper from "./components/wrappers/NavbarWrapper";
 import ContactWidgetWrapper from "./components/widget/ContactWidgetWrapper";
 import HomeLoader from "./components/loading/HomeLoader";
 import { MotionProvider } from "./components/animations/Motion";
+import SmoothScrollProvider from "./components/SmoothScrollProvider";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -35,13 +36,15 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">
-        <MotionProvider>
-          {!isAdmin && <NavbarWrapper />}
-          {children}
-          {!isAdmin && <Footer />}
-          {!isAdmin && <ContactWidgetWrapper />}
-          <HomeLoader />
-        </MotionProvider>
+        <SmoothScrollProvider>
+          <MotionProvider>
+            {!isAdmin && <NavbarWrapper />}
+            {children}
+            {!isAdmin && <Footer />}
+            {!isAdmin && <ContactWidgetWrapper />}
+            <HomeLoader />
+          </MotionProvider>
+        </SmoothScrollProvider>
       </body>
     </html>
   );
