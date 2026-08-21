@@ -108,7 +108,7 @@ export default function DepartureForm({ initialData, isEditing = false, treks = 
   };
 
   return (
-    <form onSubmit={handleSubmit} className="max-w-4xl mx-auto space-y-6 text-xs text-gray-800">
+    <form onSubmit={handleSubmit} className="max-w-4xl xl:max-w-none mx-auto space-y-6 text-xs text-gray-800">
       <Toaster position="top-center" />
 
       <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 flex flex-col sm:flex-row sm:items-center justify-between gap-4">

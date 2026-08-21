@@ -169,7 +169,7 @@ export default function CategoryList({
   ]);
 
   return (
-    <div className="w-full max-w-[1400px] mx-auto px-3 sm:px-4 lg:px-6 xl:px-8 space-y-4 sm:space-y-6 pb-10 text-xs min-w-0 overflow-x-hidden">
+    <div className="w-full max-w-[1400px] xl:max-w-none mx-auto px-3 sm:px-4 lg:px-6 xl:px-8 space-y-4 sm:space-y-6 pb-10 text-xs min-w-0 overflow-x-hidden">
 
       {/* =========================================================
           HEADER

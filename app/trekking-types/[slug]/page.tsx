@@ -103,42 +103,47 @@ const regionDescription = `Explore ${regionTitle}. It is one of Nepal's most bre
                 key={trek.id}
                 className="bg-white rounded-2xl overflow-hidden border border-gray-100 shadow-[0_4px_20px_rgba(0,0,0,0.03)] flex flex-col justify-between group hover:shadow-xl transition-all duration-300"
               >
-                <div>
-                  {/* Trek Image & Badges */}
-                  <div className="relative h-52 bg-gray-100 overflow-hidden">
-                    <img 
-                      src={trek.heroImage || 'https://images.unsplash.com/photo-1544735716-392fe2489ffa?q=80&w=600&auto=format&fit=crop'} 
-                      alt={trek.title}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                    />
-                    
-                    {/* Floating Info Pills */}
-                    <div className="absolute bottom-3 left-3 right-3 flex items-center justify-between gap-2">
-                      <span className="bg-[#112233]/80 backdrop-blur-md text-white text-[11px] font-bold px-3 py-1 rounded-full flex items-center gap-1 shadow">
-                        <Clock className="w-3 h-3 text-[#f59e0b]" />
-                        {trek.durationDays}
-                      </span>
-                      <span className="bg-[#f59e0b] text-[#112233] text-[11px] font-extrabold px-3 py-1 rounded-full flex items-center gap-1 shadow">
-                        <Tag className="w-3 h-3" />
-                        ${trek.price}
-                      </span>
+                <Link
+                  href={`/trekking/${trek.slug ? trek.slug : trek.id}`}
+                  className="flex flex-col flex-1"
+                >
+                  <div>
+                    {/* Trek Image & Badges */}
+                    <div className="relative h-52 bg-gray-100 overflow-hidden">
+                      <img
+                        src={trek.heroImage || 'https://images.unsplash.com/photo-1544735716-392fe2489ffa?q=80&w=600&auto=format&fit=crop'}
+                        alt={trek.title}
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                      />
+
+                      {/* Floating Info Pills */}
+                      <div className="absolute bottom-3 left-3 right-3 flex items-center justify-between gap-2">
+                        <span className="bg-[#112233]/80 backdrop-blur-md text-white text-[11px] font-bold px-3 py-1 rounded-full flex items-center gap-1 shadow">
+                          <Clock className="w-3 h-3 text-[#f59e0b]" />
+                          {trek.durationDays}
+                        </span>
+                        <span className="bg-[#f59e0b] text-[#112233] text-[11px] font-extrabold px-3 py-1 rounded-full flex items-center gap-1 shadow">
+                          <Tag className="w-3 h-3" />
+                          ${trek.price}
+                        </span>
+                      </div>
+                    </div>
+
+                    {/* Trek Content */}
+                    <div className="p-5">
+                      <h3 className="font-bold text-[#222222] text-base oswald uppercase tracking-tight mb-2 group-hover:text-[#24a0ed] transition-colors line-clamp-1">
+                        {trek.title}
+                      </h3>
+                      <p className="text-gray-500 text-xs leading-relaxed line-clamp-2">
+                        {stripHtml(trek.description)}
+                      </p>
                     </div>
                   </div>
-
-                  {/* Trek Content */}
-                  <div className="p-5">
-                    <h3 className="font-bold text-[#222222] text-base oswald uppercase tracking-tight mb-2 group-hover:text-[#24a0ed] transition-colors line-clamp-1">
-                      {trek.title}
-                    </h3>
-                    <p className="text-gray-500 text-xs leading-relaxed line-clamp-2">
-                      {stripHtml(trek.description)}
-                    </p>
-                  </div>
-                </div>
+                </Link>
 
                 {/* Action Footer */}
                 <div className="p-5 pt-0">
-                  <Link 
+                  <Link
                     href={`/trekking/${trek.slug ? trek.slug : trek.id}`}
                     className="w-full bg-[#f8faf9] hover:bg-[#f59e0b] hover:text-[#112233] text-gray-800 border border-gray-200 text-xs font-bold py-2.5 px-4 rounded-xl transition-all flex items-center justify-between group/btn"
                   >

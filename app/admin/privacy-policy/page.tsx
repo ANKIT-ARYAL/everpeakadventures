@@ -72,7 +72,7 @@ export default function PrivacyPolicyPage() {
 
   if (loading) {
     return (
-      <div className="max-w-5xl mx-auto space-y-6 text-xs text-gray-800 font-sans pb-20">
+      <div className="max-w-5xl xl:max-w-none mx-auto space-y-6 text-xs text-gray-800 font-sans pb-20">
         <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 animate-pulse">
           <div className="h-6 bg-gray-200 rounded w-1/4 mb-4"></div>
           <div className="h-4 bg-gray-200 rounded w-full"></div>
@@ -82,7 +82,7 @@ export default function PrivacyPolicyPage() {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="max-w-5xl mx-auto space-y-6 text-xs text-gray-800 font-sans pb-20">
+    <form onSubmit={handleSubmit} className="max-w-5xl xl:max-w-none mx-auto space-y-6 text-xs text-gray-800 font-sans pb-20">
       <Toaster position="top-center" />
       
       <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">

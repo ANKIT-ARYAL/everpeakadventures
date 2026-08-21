@@ -30,7 +30,7 @@ export default async function EditTourPage({ params }: PageProps) {
   if (!tour) notFound();
 
   return (
-    <main className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
+    <main className="w-full max-w-7xl xl:max-w-none mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
       <div className="mb-6">
         <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-gray-900">
           Edit Tour

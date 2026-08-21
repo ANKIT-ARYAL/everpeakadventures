@@ -1,4 +1,6 @@
-import React from 'react';
+"use client";
+
+import React, { useEffect } from 'react';
 import Link from 'next/link';
 import SubpageHero from './SubpageHero';
 import { Stagger, StaggerItem } from '../animations/Motion';
@@ -26,8 +28,12 @@ interface TrekkingPageProps {
 }
 
 export default function TrekkingPage({ treks = [], currentPage = 1, totalPages = 1, heroTitle, heroSubtitle, heroImage }: TrekkingPageProps) {
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'instant' });
+  }, [currentPage]);
+
   return (
-    <div className="min-h-screen bg-[#f7f9f7] font-sans text-gray-800">
+    <div className="journey-listing min-h-screen bg-[#f7f9f7] font-sans text-gray-800">
       
       {/* HERO SECTION */}
       <SubpageHero
@@ -49,7 +55,7 @@ export default function TrekkingPage({ treks = [], currentPage = 1, totalPages =
               {treks.map((trek) => (
                 <StaggerItem
                   key={trek.id} 
-                  className="bg-white rounded-xl overflow-hidden border border-gray-100 shadow-[0_4px_20px_rgba(0,0,0,0.04)] flex flex-col justify-between group hover:shadow-lg transition-all hover:scale-105"
+                  className="journey-card bg-white rounded-xl overflow-hidden border border-gray-100 shadow-[0_4px_20px_rgba(0,0,0,0.04)] flex flex-col justify-between group hover:shadow-lg transition-all"
                 >
                   <Link 
                         href={`/trekking/${trek.slug ? trek.slug : trek.id}`}>
@@ -77,7 +83,7 @@ export default function TrekkingPage({ treks = [], currentPage = 1, totalPages =
 
                     <div className="pt-4 border-t border-gray-100 flex items-center justify-between text-xs text-gray-500 font-medium">
                       <span>Duration : {trek.durationDays}</span>
-                      <span className="text-[#24a0ed] hover:underline font-bold">
+                      <span className="journey-action text-[#24a0ed] hover:underline font-bold">
                         Explore →
                       </span>
                     </div>

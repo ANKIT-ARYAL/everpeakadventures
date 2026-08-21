@@ -148,8 +148,9 @@ export default async function BlogPostDetailPage({ params }: PageProps) {
           </Reveal>
           <Stagger className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {relatedPosts.map((item) => (
-              <StaggerItem
+              <Link
                 key={item.id}
+                href={`/blog/${item.slug}`}
                 className="bg-white rounded-xl overflow-hidden border border-gray-100 shadow-sm flex flex-col justify-between group"
               >
                 <div className="h-44 overflow-hidden bg-gray-100">
@@ -162,15 +163,12 @@ export default async function BlogPostDetailPage({ params }: PageProps) {
                       {item.title}
                     </h3>
                   </div>
-                  <Link
-                    href={`/blog/${item.slug}`}
-                    className="inline-flex items-center gap-2 text-xs font-bold text-[#24a0ed] uppercase tracking-wider transition-colors"
-                  >
+                  <span className="inline-flex items-center gap-2 text-xs font-bold text-[#24a0ed] uppercase tracking-wider transition-colors">
                     <span>Read More</span>
                     <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
-                  </Link>
+                  </span>
                 </div>
-              </StaggerItem>
+              </Link>
             ))}
           </Stagger>
         </section>

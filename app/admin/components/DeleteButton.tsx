@@ -56,6 +56,7 @@ export default function DeleteButton({ id, model, title }: DeleteButtonProps) {
 
       router.refresh();
     } catch (error) {
+      console.error(error);
       alert('Error deleting item.');
     } finally {
       setLoading(false);

@@ -208,7 +208,7 @@ export default function AdminUsersPage() {
   const roleName = (roleId: string) => roles.find((r) => r.id === roleId)?.name ?? "—";
 
   return (
-    <div className="space-y-6 max-w-[1400px] mx-auto text-xs">
+    <div className="space-y-6 max-w-[1400px] xl:max-w-none mx-auto text-xs">
       {(formOpen || revealedPassword) && (
         <div className="fixed inset-0 z-[60] bg-black/50 flex items-start justify-center overflow-y-auto p-4">
           <div className="bg-white rounded-xl w-full max-w-lg my-16 shadow-2xl">

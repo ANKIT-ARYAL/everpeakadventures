@@ -25,7 +25,7 @@ export default async function AdminPageCategoriesPage() {
   }
 
   return (
-    <div className="space-y-6 max-w-[1100px] mx-auto text-sm">
+    <div className="space-y-6 max-w-[1100px] xl:max-w-none mx-auto text-sm">
       <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h1 className="text-2xl font-black text-[#112233] uppercase tracking-wide flex items-center gap-3">

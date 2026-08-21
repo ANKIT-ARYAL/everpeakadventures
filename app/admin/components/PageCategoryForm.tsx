@@ -70,7 +70,7 @@ export default function PageCategoryForm({ parents = [], initialData, isEditing 
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6 max-w-[1000px] mx-auto">
+    <form onSubmit={handleSubmit} className="space-y-6 max-w-[1000px] xl:max-w-none mx-auto">
       <Toaster position="top-right" />
 
       <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 flex flex-col sm:flex-row sm:items-center justify-between gap-4">

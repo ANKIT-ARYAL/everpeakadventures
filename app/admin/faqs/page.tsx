@@ -22,7 +22,7 @@ export default async function AdminFaqsPage() {
   });
 
   return (
-    <div className="w-full max-w-full overflow-x-hidden space-y-6 max-w-[1400px] mx-auto text-xs pb-10">
+    <div className="w-full max-w-full overflow-x-hidden space-y-6 max-w-[1400px] xl:max-w-none mx-auto text-xs pb-10">
       
       {/* Top Header Bar */}
       <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">

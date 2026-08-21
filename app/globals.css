@@ -25,6 +25,74 @@ body {
   font-family: Arial, Helvetica, sans-serif;
 }
 
+/* Journey surfaces: motion-only enhancements for trek and tour discovery.
+   Brand colors remain owned by the existing Tailwind classes. */
+@keyframes journey-hero-drift {
+  from { transform: scale(1.04); }
+  to { transform: scale(1.12); }
+}
+
+@keyframes journey-title-rise {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.journey-page .journey-hero img {
+  animation: journey-hero-drift 12s ease-out both;
+  will-change: transform;
+}
+
+.journey-page .journey-hero h1 {
+  animation: journey-title-rise 700ms cubic-bezier(0.16, 1, 0.3, 1) 100ms both;
+}
+
+.journey-page .journey-panel {
+  transition: transform 280ms ease, box-shadow 280ms ease;
+}
+
+@media (hover: hover) {
+  .journey-page .journey-panel:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 14px 28px rgba(17, 34, 51, 0.12);
+  }
+
+  .journey-listing .journey-card:hover img {
+    transform: scale(1.07);
+  }
+
+  .journey-listing .journey-card:hover .journey-action {
+    transform: translateX(4px);
+  }
+}
+
+.journey-listing .journey-card img,
+.journey-listing .journey-action {
+  transition: transform 500ms cubic-bezier(0.16, 1, 0.3, 1), background-color 200ms ease, color 200ms ease;
+}
+
+.journey-page .journey-itinerary details {
+  transition: transform 220ms ease, box-shadow 220ms ease;
+}
+
+.journey-page .journey-itinerary details[open] {
+  transform: translateX(4px);
+  box-shadow: 0 8px 20px rgba(17, 34, 51, 0.08);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .journey-page .journey-hero img,
+  .journey-page .journey-hero h1 {
+    animation: none;
+  }
+
+  .journey-page .journey-panel,
+  .journey-listing .journey-card img,
+  .journey-listing .journey-action,
+  .journey-page .journey-itinerary details {
+    transition: none;
+  }
+}
+
 /* Admin panel typography bump (larger, more readable admin panel/forms) */
 .admin-panel {
   font-size: 15px;

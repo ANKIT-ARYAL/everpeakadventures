@@ -91,10 +91,10 @@ export default async function TourDetailPage({ params }: PageProps) {
   const minPriceDisplay = minPrice > 0 ? minPrice : (tour.discountedPrice ?? tour.price);
 
   return (
-    <div className="min-h-screen bg-[#f4f6f8] font-sans text-gray-800 pb-24">
+    <div className="journey-page min-h-screen bg-[#f4f6f8] font-sans text-gray-800 pb-24">
       
       {/* 1. TOP HERO TITLE BANNER */}
-      <section className="relative py-20 bg-[#112233] text-white text-center overflow-hidden">
+      <section className="journey-hero relative py-20 bg-[#112233] text-white text-center overflow-hidden">
         <div className="absolute inset-0 z-0 opacity-30">
           <img src={tour.heroImage} alt={tour.title} className="w-full h-full object-cover" />
         </div>
@@ -113,7 +113,7 @@ export default async function TourDetailPage({ params }: PageProps) {
           
           {/* LEFT SIDEBAR: EXACT MATCH BOOKING & GROUP PRICE TABLE */}
           <div className="space-y-6 md:sticky top-6">
-            <div className="bg-white rounded-xl shadow-lg border border-gray-100 p-6 space-y-5">
+            <div className="journey-panel bg-white rounded-xl shadow-lg border border-gray-100 p-6 space-y-5">
               
               {/* Header Price display */}
               <div className="border-b pb-5">
@@ -325,7 +325,7 @@ export default async function TourDetailPage({ params }: PageProps) {
             {/* Highlights */}
             {tour.highlights && (<>
               <div id="highlights" className="scroll-mt-[118px]" />
-              <Reveal className="bg-white rounded-xl p-8 shadow-sm border border-gray-100 space-y-4">
+              <Reveal className="journey-panel bg-white rounded-xl p-8 shadow-sm border border-gray-100 space-y-4">
                 <h2 className="text-xl font-bold oswald uppercase text-[#112233] border-b pb-3">
                   Highlights
                 </h2>
@@ -340,7 +340,7 @@ export default async function TourDetailPage({ params }: PageProps) {
                 <h2 className="text-xl font-bold oswald uppercase text-[#112233] border-b pb-3">
                   Itinerary
                 </h2>
-                <div className="space-y-3">
+                <div className="journey-itinerary space-y-3">
                   {itineraryDays.map((day: any, i: number) => (
                     <details key={i} className="group rounded-xl bg-gray-50 border border-gray-200 overflow-hidden">
                       <summary className="list-none font-bold text-xs text-[#112233] cursor-pointer flex items-center justify-between gap-2 px-4 py-3.5 transition-colors hover:bg-gray-100">

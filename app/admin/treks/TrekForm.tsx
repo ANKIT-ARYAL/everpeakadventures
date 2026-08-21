@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 'use client';
 
 import React, { useMemo, useState } from 'react';
@@ -360,6 +361,7 @@ export default function TrekForm({ initialData, isEditing = false, categories }:
       router.push('/admin/treks');
       router.refresh();
     } catch (error) {
+      console.error(error);
       alert('Error saving trekking package.');
     } finally {
       setLoading(false);
@@ -414,7 +416,7 @@ export default function TrekForm({ initialData, isEditing = false, categories }:
   }, [formData]);
 
   return (
-    <form onSubmit={handleSubmit} className="max-w-[1200px] mx-auto space-y-6 pb-20 text-xs font-sans text-gray-800">
+    <form onSubmit={handleSubmit} className="max-w-[1200px] xl:max-w-none mx-auto space-y-6 pb-20 text-xs font-sans text-gray-800">
 
       {/* Top Header Actions */}
       <div className="bg-white p-4 sm:p-6 rounded-xl shadow-sm border border-gray-100 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
@@ -532,7 +534,7 @@ export default function TrekForm({ initialData, isEditing = false, categories }:
 
               {formData.groupPrices.length === 0 && (
                 <div className="text-center py-8 text-gray-400 text-sm">
-                  No group pricing rows yet. Click "Add Row" to add pricing tiers.
+                  No group pricing rows yet. Click &quot;Add Row&quot; to add pricing tiers.
                 </div>
               )}
             </div>
@@ -545,7 +547,7 @@ export default function TrekForm({ initialData, isEditing = false, categories }:
                 <Plus className="w-3.5 h-3.5" /> Add Row
               </button>
             </div>
-            <p className="text-gray-400 text-[11px] -mt-2">Pick real dates with the calendar. Checking "Every Year" auto-creates an instance for each of the next 2 years.</p>
+            <p className="text-gray-400 text-[11px] -mt-2">Pick real dates with the calendar. Checking &quot;Every Year&quot; auto-creates an instance for each of the next 2 years.</p>
 
             {formData.departures.map((s: any, idx: number) => (
               <div key={idx} className="flex flex-wrap items-end gap-3 p-4 rounded-xl border border-gray-100 bg-gray-50/50 relative">

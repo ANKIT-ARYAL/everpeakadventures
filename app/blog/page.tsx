@@ -34,14 +34,15 @@ export default async function BlogPage() {
           ) : (
             <Stagger className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
               {posts.map((post) => (
-                <StaggerItem
+                <Link
                   key={post.id}
+                  href={`/blog/${post.slug}`}
                   className="bg-white rounded-2xl overflow-hidden border border-gray-100 shadow-[0_4px_25px_rgba(0,0,0,0.04)] flex flex-col justify-between group hover:shadow-lg transition-all"
                 >
                   {/* Blog Image */}
                   <div className="relative h-56 overflow-hidden bg-gray-100">
-                    <img 
-                      src={post.image} 
+                    <img
+                      src={post.image}
                       alt={post.title}
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                     />
@@ -54,7 +55,7 @@ export default async function BlogPage() {
                         <Calendar className="w-3.5 h-3.5" />
                         <span>{post.date}</span>
                       </div>
-                      
+
                       <h3 className="font-bold text-[#222222] text-base md:text-lg line-clamp-2 mb-3 group-hover:text-[#24a0ed] transition-colors">
                         {post.title}
                       </h3>
@@ -65,18 +66,15 @@ export default async function BlogPage() {
                     </div>
 
                     <div className="pt-4 border-t border-gray-100">
-                      <Link 
-                        href={`/blog/${post.slug}`}
-                        className="inline-flex items-center gap-2 text-xs font-bold text-[#222222] group-hover:text-[#24a0ed] uppercase tracking-wider transition-colors"
-                      >
+                      <span className="inline-flex items-center gap-2 text-xs font-bold text-[#222222] group-hover:text-[#24a0ed] uppercase tracking-wider transition-colors">
                         <span>Read More</span>
                         <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
-                      </Link>
+                      </span>
                     </div>
 
                   </div>
 
-                </StaggerItem>
+                </Link>
               ))}
             </Stagger>
           )}

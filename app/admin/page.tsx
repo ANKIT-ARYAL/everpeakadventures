@@ -6,7 +6,7 @@ import Link from 'next/link';
 import Greeting from "../admin/components/Greeting";
 import { 
   Compass, Layers, FileText, HelpCircle, MessageSquare, 
-  Shield, Users, Briefcase, Mail, Database
+  Shield, Users, Briefcase, Mail
 } from 'lucide-react';
 
 export const dynamic = 'force-dynamic';
@@ -22,7 +22,7 @@ export default async function AdminDashboardPage() {
     title: string;
     count: number;
     href: string;
-    icon: any;
+    icon: React.ElementType;
     color: string;
     desc: string;
   }[];
@@ -32,7 +32,7 @@ export default async function AdminDashboardPage() {
     card: {
       title: string;
       href: string;
-      icon: any;
+      icon: React.ElementType;
       color: string;
       desc: string;
     },
@@ -99,36 +99,7 @@ export default async function AdminDashboardPage() {
         </div>
       </div>
 
-      {/* Dynamic System & Hosting Summary Box */}
-      {systemSetting && (
-      <div className="bg-white rounded-xl p-4 sm:p-6 shadow-sm border border-gray-100 overflow-hidden">
-        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 mb-4">
-          <h2 className="font-bold text-gray-800 uppercase tracking-wider flex items-center gap-2 text-xs sm:text-sm">
-            <Database className="w-4 h-4 text-[#2271b1] shrink-0" /> System & Hosting Summary (Dynamic)
-          </h2>
-          <span className="text-[11px] text-gray-400 truncate">Live Database Record ID: {systemSetting.id}</span>
-        </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
-          <div className="p-3.5 sm:p-4 rounded-lg bg-gray-50 border border-gray-100 min-w-0">
-            <span className="block text-[10px] text-gray-400 uppercase font-bold mb-1 truncate">Client Expiry</span>
-            <span className="font-bold text-gray-800 text-xs sm:text-sm truncate block">{systemSetting.clientExpiry}</span>
-          </div>
-          <div className="p-3.5 sm:p-4 rounded-lg bg-gray-50 border border-gray-100 min-w-0">
-            <span className="block text-[10px] text-gray-400 uppercase font-bold mb-1 truncate">Package Type</span>
-            <span className="font-bold text-gray-800 text-xs sm:text-sm truncate block">{systemSetting.packageType}</span>
-          </div>
-          <div className="p-3.5 sm:p-4 rounded-lg bg-gray-50 border border-gray-100 min-w-0">
-            <span className="block text-[10px] text-gray-400 uppercase font-bold mb-1 truncate">Database Storage</span>
-            <span className="font-bold text-emerald-600 text-xs sm:text-sm truncate block">{systemSetting.databaseStatus}</span>
-          </div>
-          <div className="p-3.5 sm:p-4 rounded-lg bg-gray-50 border border-gray-100 min-w-0">
-            <span className="block text-[10px] text-gray-400 uppercase font-bold mb-1 truncate">Days Left</span>
-            <span className="font-bold text-[#2271b1] text-xs sm:text-sm truncate block">{systemSetting.daysLeft}</span>
-          </div>
-        </div>
-      </div>
-      )}
 
       {/* Website Content Overview Grid */}
       {overviewCards.length > 0 && (

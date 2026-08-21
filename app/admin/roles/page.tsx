@@ -69,7 +69,7 @@ export default function AdminRolesPage() {
   };
 
   return (
-    <div className="space-y-6 max-w-[1400px] mx-auto text-xs">
+    <div className="space-y-6 max-w-[1400px] xl:max-w-none mx-auto text-xs">
       {formOpen && (
         <RoleForm
           initial={editing

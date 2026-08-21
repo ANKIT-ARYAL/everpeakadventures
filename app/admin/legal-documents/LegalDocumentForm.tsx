@@ -60,7 +60,7 @@ export default function LegalDocumentForm({ initialData, isEditing = false }: Pr
   };
 
   return (
-    <form onSubmit={handleSubmit} className="max-w-5xl mx-auto space-y-6 text-xs text-gray-800 font-sans pb-20">
+    <form onSubmit={handleSubmit} className="max-w-5xl xl:max-w-none mx-auto space-y-6 text-xs text-gray-800 font-sans pb-20">
       <Toaster position="top-center" />
       
       {/* Top Bar */}

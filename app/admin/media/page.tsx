@@ -175,7 +175,7 @@ export default async function AdminMediaPage() {
   const usedCount = files.filter((f) => f.usedIn.length > 0).length;
 
   return (
-    <div className="space-y-6 max-w-[1400px] mx-auto text-sm">
+    <div className="space-y-6 max-w-[1400px] xl:max-w-none mx-auto text-sm">
       <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h1 className="text-2xl font-black text-[#112233] uppercase tracking-wide flex items-center gap-3">
@@ -192,7 +192,7 @@ export default async function AdminMediaPage() {
         </div>
       </div>
 
-      <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden max-w-6xl mx-auto">
+      <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden max-w-6xl xl:max-w-none mx-auto">
         <div className="flex items-center justify-between px-5 py-4 border-b border-gray-200 bg-[#f8f9fa]">
           <h3 className="font-bold text-[#112233] uppercase tracking-wide">Files</h3>
         </div>

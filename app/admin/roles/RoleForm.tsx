@@ -71,7 +71,7 @@ export default function RoleForm({ initial, onClose, onSaved }: RoleFormProps) {
 
   return (
     <div className="fixed inset-0 z-[60] bg-black/50 flex items-start justify-center overflow-y-auto p-4">
-      <div className="bg-white rounded-xl w-full max-w-4xl my-8 shadow-2xl max-h-[90vh] overflow-hidden flex flex-col">
+      <div className="bg-white rounded-xl w-full max-w-4xl xl:max-w-none my-8 shadow-2xl max-h-[90vh] overflow-hidden flex flex-col">
         <div className="px-6 py-4 border-b border-gray-200 flex items-center justify-between">
           <h2 className="text-lg font-black text-[#112233] oswald uppercase tracking-wide">
             {isEdit ? "Edit Role" : "Create Role"}

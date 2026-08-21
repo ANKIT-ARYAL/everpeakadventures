@@ -87,7 +87,7 @@ export default function CategoryForm({
   const labelCls = 'block font-bold text-gray-700 mb-1';
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6 max-w-[1000px] mx-auto">
+    <form onSubmit={handleSubmit} className="space-y-6 max-w-[1000px] xl:max-w-none mx-auto">
       <Toaster position="top-right" />
 
       <div className="bg-white p-4 sm:p-6 rounded-xl shadow-sm border border-gray-100 flex flex-col sm:flex-row sm:items-center justify-between gap-4">

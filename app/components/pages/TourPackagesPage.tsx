@@ -1,4 +1,6 @@
-import React from 'react';
+"use client";
+
+import React, { useEffect } from 'react';
 import Link from 'next/link';
 import SubpageHero from './SubpageHero';
 import { Stagger, StaggerItem } from '../animations/Motion';
@@ -22,8 +24,12 @@ interface TourPackagesProps {
 }
 
 export default function TourPackagesPage({ packages = [], currentPage = 1, totalPages = 1, heroTitle, heroSubtitle, heroImage }: TourPackagesProps) {
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'instant' });
+  }, [currentPage]);
+
   return (
-    <div className="min-h-screen bg-[#f7f9f7] font-sans text-gray-800">
+    <div className="journey-listing min-h-screen bg-[#f7f9f7] font-sans text-gray-800">
       
       {/* HERO SECTION */}
       <SubpageHero
@@ -45,7 +51,7 @@ export default function TourPackagesPage({ packages = [], currentPage = 1, total
               {packages.map((pkg) => (
                 <StaggerItem
                   key={pkg.id} 
-                  className="bg-white rounded-lg overflow-hidden border border-gray-100 shadow-[0_4px_25px_rgba(0,0,0,0.04)] flex flex-col justify-between group hover:shadow-lg transition-shadow"
+                  className="journey-card bg-white rounded-lg overflow-hidden border border-gray-100 shadow-[0_4px_25px_rgba(0,0,0,0.04)] flex flex-col justify-between group hover:shadow-lg transition-shadow"
                 >
                   <Link 
                       href={`/tour/${pkg.slug}`}>
@@ -80,7 +86,7 @@ export default function TourPackagesPage({ packages = [], currentPage = 1, total
 
                     {/* Action Button */}
                     <span                      
-                      className="w-full bg-[#1c2e40] hover:bg-[#24a0ed] text-white font-bold text-xs py-2.5 rounded-lg text-center transition-colors uppercase tracking-wider block"
+                      className="journey-action w-full bg-[#1c2e40] hover:bg-[#24a0ed] text-white font-bold text-xs py-2.5 rounded-lg text-center transition-colors uppercase tracking-wider block"
                     >
                       View Details
                     </span>

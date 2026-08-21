@@ -36,7 +36,7 @@ export default async function Hero() {
     mediaType !== "youtube" ? hero.heroMediaUrl : undefined;
 
   return (
-    <section className="relative w-screen h-[75vh] overflow-hidden">
+    <section className="relative w-screen h-[90vh] overflow-hidden">
 
       {/* MEDIA (youtube video | uploaded video | image) */}
       <HeroMedia
@@ -46,7 +46,7 @@ export default async function Hero() {
       />
 
       {/* OVERLAY */}
-      <div className="absolute inset-0 bg-black/25" />
+      <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/30 to-black/10" />
 
       {/* CONTENT */}
       <HeroContent hero={hero} trustItems={trustItems} />

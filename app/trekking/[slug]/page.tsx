@@ -217,12 +217,12 @@ export default async function TrekDetailPage({ params }: PageProps) {
       : (trek.discountedPrice ?? trek.price);
 
   return (
-    <div className="min-h-screen bg-[#f4f6f8] font-sans text-gray-800 pb-24">
+    <div className="journey-page min-h-screen bg-[#f4f6f8] font-sans text-gray-800 pb-24">
 
       {/* =========================================================
           TOP HERO TITLE BANNER
       ========================================================= */}
-      <section className="relative py-20 bg-[#112233] text-white text-center overflow-hidden">
+      <section className="journey-hero relative py-20 bg-[#112233] text-white text-center overflow-hidden">
         <div className="absolute inset-0 z-0 opacity-30">
           <img
             src={heroImage}
@@ -252,7 +252,7 @@ export default async function TrekDetailPage({ params }: PageProps) {
           <div className="space-y-6 md:sticky top-6">
 
             {/* Booking / Pricing */}
-            <div className="bg-white rounded-xl shadow-lg border border-gray-100 p-6 space-y-5">
+            <div className="journey-panel bg-white rounded-xl shadow-lg border border-gray-100 p-6 space-y-5">
 
               {/* Price */}
               <div className="border-b pb-5">
@@ -682,7 +682,7 @@ export default async function TrekDetailPage({ params }: PageProps) {
                   className="scroll-mt-[118px]"
                 />
 
-                <Reveal className="bg-white rounded-xl p-8 shadow-sm border border-gray-100 space-y-4">
+                <Reveal className="journey-panel bg-white rounded-xl p-8 shadow-sm border border-gray-100 space-y-4">
 
                   <h2 className="text-xl font-bold oswald uppercase text-[#112233] border-b pb-3">
                     Highlights
@@ -715,7 +715,7 @@ export default async function TrekDetailPage({ params }: PageProps) {
                     Itinerary
                   </h2>
 
-                  <div className="space-y-3">
+                  <div className="journey-itinerary space-y-3">
 
                     {itineraryDays.map(
                       (day: any, index: number) => (

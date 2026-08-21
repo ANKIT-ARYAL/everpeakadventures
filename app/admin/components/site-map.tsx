@@ -108,7 +108,7 @@ export function SectionPageView({
   const links = (grouped ? [] : section.links ?? []).filter(canView);
 
   return (
-    <div className="space-y-6 max-w-[1200px] mx-auto text-sm">
+    <div className="space-y-6 max-w-[1200px] xl:max-w-none mx-auto text-sm">
       <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
         <Link href="/admin/pages" className="text-xs font-bold text-[#24a0ed] hover:text-blue-700 uppercase tracking-wide">
           ← All Pages

@@ -14,7 +14,7 @@ export default async function AdminSubpageHeroPage() {
   });
 
   return (
-    <div className="space-y-6 max-w-[1400px] mx-auto text-xs">
+    <div className="space-y-6 max-w-[1400px] xl:max-w-none mx-auto text-xs">
       
       {/* Top Header Bar */}
       <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">

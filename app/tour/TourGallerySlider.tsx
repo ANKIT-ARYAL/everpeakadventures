@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
 
 interface Props {
   mainImage: string;
@@ -9,6 +10,7 @@ interface Props {
 }
 
 export default function TourGallerySlider({ mainImage, galleryImages }: Props) {
+  const reducedMotion = useReducedMotion();
   const firstGallery = galleryImages && galleryImages.length > 0 ? galleryImages[0] : null;
   const images = [firstGallery, mainImage].filter(Boolean) as string[];
 
@@ -35,11 +37,18 @@ export default function TourGallerySlider({ mainImage, galleryImages }: Props) {
 
   return (
     <div className="relative bg-black rounded-xl overflow-hidden shadow-sm border border-gray-100 h-[340px] group w-full">
-      <img 
-        src={images[currentSlide]} 
-        alt={`Tour slide ${currentSlide + 1}`} 
-        className="w-full h-full object-cover transition-opacity duration-700 ease-in-out"
-      />
+      <AnimatePresence initial={false} mode="wait">
+        <motion.img
+          key={images[currentSlide]}
+          src={images[currentSlide]}
+          alt={`Tour slide ${currentSlide + 1}`}
+          className="absolute inset-0 w-full h-full object-cover"
+          initial={reducedMotion ? false : { opacity: 0, scale: 1.035 }}
+          animate={{ opacity: 1, scale: 1 }}
+          exit={reducedMotion ? undefined : { opacity: 0, scale: 1.015 }}
+          transition={{ duration: reducedMotion ? 0 : 0.65, ease: [0.16, 1, 0.3, 1] }}
+        />
+      </AnimatePresence>
       
       {images.length > 1 && (
         <>

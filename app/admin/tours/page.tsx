@@ -1,6 +1,5 @@
 import { prisma } from "@/lib/prisma";
 import Link from "next/link";
-import { Search } from "lucide-react";
 import AddNewButton from "../components/AddNewButton";
 import EditButton from "../components/EditButton";
 import DeleteButton from "../components/DeleteButton";
@@ -16,7 +15,7 @@ export default async function AdminToursPage() {
   });
 
   return (
-    <div className="w-full max-w-[1200px] mx-auto px-3 sm:px-4 lg:px-6 space-y-4 sm:space-y-6 pb-10 text-xs min-w-0 overflow-x-hidden">
+    <div className="w-full max-w-[1200px] xl:max-w-none mx-auto px-3 sm:px-4 lg:px-6 space-y-4 sm:space-y-6 pb-10 text-xs min-w-0 overflow-x-hidden">
 
       {/* Header */}
       <div className="bg-white p-4 sm:p-5 lg:p-6 rounded-xl shadow-sm border border-gray-100 flex flex-col lg:flex-row lg:items-center justify-between gap-4 min-w-0">

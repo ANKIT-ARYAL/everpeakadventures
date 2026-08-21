@@ -54,50 +54,80 @@ export default async function LegalDocumentsPage() {
       <section className="max-w-[1200px] mx-auto px-5 pt-16">
         <Stagger className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
           {displayDocuments.map((doc) => (
-            <StaggerItem
-              key={doc.id}
-              className="bg-white rounded-2xl overflow-hidden border border-gray-100 shadow-[0_4px_20px_rgba(0,0,0,0.03)] flex flex-col group hover:shadow-lg transition-all"
-            >
-              {/* Document Image Thumbnail Preview */}
-              <div className="relative h-64 bg-gray-100 overflow-hidden border-b border-gray-100 flex items-center justify-center">
-                <img 
-                  src={doc.image} 
-                  alt={doc.title}
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                />
-                <div className="absolute inset-0 bg-black/10 group-hover:bg-black/0 transition-colors"></div>
-              </div>
+              <StaggerItem
+                key={doc.id}
+                className="bg-white rounded-2xl overflow-hidden border border-gray-100 shadow-[0_4px_20px_rgba(0,0,0,0.03)] flex flex-col group hover:shadow-lg transition-all"
+              >
+                {doc.documentUrl ? (
+                  <a
+                    href={doc.documentUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex flex-col flex-1"
+                  >
+                    {/* Document Image Thumbnail Preview */}
+                    <div className="relative h-64 bg-gray-100 overflow-hidden border-b border-gray-100 flex items-center justify-center">
+                      <img
+                        src={doc.image}
+                        alt={doc.title}
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                      />
+                      <div className="absolute inset-0 bg-black/10 group-hover:bg-black/0 transition-colors"></div>
+                    </div>
 
-              {/* Card Body */}
-              <div className="p-6 flex flex-col flex-1 justify-between gap-4">
-                <div className="flex items-start gap-3">
-                  <div className="p-2 bg-blue-50 text-[#24a0ed] rounded-xl shrink-0 mt-0.5">
-                    <FileText className="w-5 h-5" />
-                  </div>
-                  <h3 className="font-bold text-[#222222] text-base oswald uppercase tracking-tight leading-snug">
-                    {doc.title}
-                  </h3>
-                </div>
+                    {/* Card Body */}
+                    <div className="p-6 flex flex-col flex-1 justify-between gap-4">
+                      <div className="flex items-start gap-3">
+                        <div className="p-2 bg-blue-50 text-[#24a0ed] rounded-xl shrink-0 mt-0.5">
+                          <FileText className="w-5 h-5" />
+                        </div>
+                        <h3 className="font-bold text-[#222222] text-base oswald uppercase tracking-tight leading-snug">
+                          {doc.title}
+                        </h3>
+                      </div>
 
-                {/* Actions / View Button */}
-                <div className="pt-4 border-t border-gray-100 flex items-center justify-between">
-                  <span className="text-xs text-gray-400 font-medium">Verified Certificate</span>
-                  {doc.documentUrl ? (
-                    <a 
-                      href={doc.documentUrl} 
-                      target="_blank" 
-                      rel="noopener noreferrer"
-                      className="inline-flex items-center gap-1.5 text-xs font-bold text-[#24a0ed] hover:underline"
-                    >
-                      <span>View Document</span>
-                      <ExternalLink className="w-3.5 h-3.5" />
-                    </a>
-                  ) : (
-                    <span className="text-xs font-bold text-gray-400">Official Record</span>
-                  )}
-                </div>
-              </div>
-            </StaggerItem>
+                      {/* Actions / View Button */}
+                      <div className="pt-4 border-t border-gray-100 flex items-center justify-between">
+                        <span className="text-xs text-gray-400 font-medium">Verified Certificate</span>
+                        <span className="inline-flex items-center gap-1.5 text-xs font-bold text-[#24a0ed] hover:underline">
+                          <span>View Document</span>
+                          <ExternalLink className="w-3.5 h-3.5" />
+                        </span>
+                      </div>
+                    </div>
+                  </a>
+                ) : (
+                  <>
+                    {/* Document Image Thumbnail Preview */}
+                    <div className="relative h-64 bg-gray-100 overflow-hidden border-b border-gray-100 flex items-center justify-center">
+                      <img
+                        src={doc.image}
+                        alt={doc.title}
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                      />
+                      <div className="absolute inset-0 bg-black/10 group-hover:bg-black/0 transition-colors"></div>
+                    </div>
+
+                    {/* Card Body */}
+                    <div className="p-6 flex flex-col flex-1 justify-between gap-4">
+                      <div className="flex items-start gap-3">
+                        <div className="p-2 bg-blue-50 text-[#24a0ed] rounded-xl shrink-0 mt-0.5">
+                          <FileText className="w-5 h-5" />
+                        </div>
+                        <h3 className="font-bold text-[#222222] text-base oswald uppercase tracking-tight leading-snug">
+                          {doc.title}
+                        </h3>
+                      </div>
+
+                      {/* Actions / View Button */}
+                      <div className="pt-4 border-t border-gray-100 flex items-center justify-between">
+                        <span className="text-xs text-gray-400 font-medium">Verified Certificate</span>
+                        <span className="text-xs font-bold text-gray-400">Official Record</span>
+                      </div>
+                    </div>
+                  </>
+                )}
+              </StaggerItem>
           ))}
         </Stagger>
       </section>
