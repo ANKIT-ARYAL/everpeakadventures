@@ -2,6 +2,7 @@
   "name": "everpeakadventures",
   "version": "0.1.0",
   "private": true,
+  "packageManager": "pnpm@10.28.0",
   "scripts": {
     "dev": "next dev",
     "build": "next build --webpack",
@@ -13,6 +14,7 @@
   "dependencies": {
     "@prisma/adapter-pg": "^7.9.1",
     "@prisma/client": "^7.9.1",
+    "@tiptap/core": "^3.30.2",
     "@tiptap/extension-color": "^3.29.2",
     "@tiptap/extension-highlight": "^3.29.2",
     "@tiptap/extension-image": "^3.29.2",
@@ -32,16 +34,19 @@
     "lucide-react": "^1.28.0",
     "next": "16.3.0",
     "next-auth": "^4.24.15",
+    "pg": "^8.23.0",
     "prisma": "^7.9.1",
     "react": "19.2.8",
     "react-dom": "19.2.8",
     "react-hot-toast": "^2.6.0",
     "react-icons": "^5.7.0",
-    "react-select": "^5.10.2"
+    "react-select": "^5.10.2",
+    "zod": "^4.4.3"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
+    "@types/pg": "^8.23.1",
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "eslint": "^9",

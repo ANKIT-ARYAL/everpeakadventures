@@ -9,11 +9,11 @@ const bookingSchema = z.object({
   groupSize: z.string().trim().min(1, 'Group size is required'),
   fullName: z.string().trim().min(2, 'Full name must be at least 2 characters'),
   email: z.string().trim().email('Invalid email address'),
-  phone: z.string().trim().refine((val) => isValidPhoneNumber(val), {
+  phone: z.string().trim().refine((val: string) => isValidPhoneNumber(val), {
     message: 'Enter a valid phone number.',
   }),
   country: z.string().trim().min(2, 'Country is required'),
-  travelDate: z.string().refine((date) => new Date(date) >= new Date(new Date().toDateString()), {
+  travelDate: z.string().refine((date: string) => new Date(date) >= new Date(new Date().toDateString()), {
     message: 'Travel date cannot be in the past',
   }),
   adultMale: z.number().min(0),
@@ -35,7 +35,7 @@ export async function POST(request: Request) {
     const validationResult = bookingSchema.safeParse(body);
     if (!validationResult.success) {
       // Return all issues so the user sees exactly which fields are wrong
-      const errorMessages = validationResult.error.issues.map((issue) => issue.message);
+      const errorMessages = validationResult.error.issues.map((issue: z.ZodIssue) => issue.message);
       const message = errorMessages.length > 1
         ? `Please fix the following: ${errorMessages.join('; ')}`
         : errorMessages[0] || 'Validation failed';

@@ -14,6 +14,9 @@ importers:
       '@prisma/client':
         specifier: ^7.9.1
         version: 7.9.1(prisma@7.9.1(@types/react-dom@19.2.4(@types/react@19.2.18))(@types/react@19.2.18)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)(typescript@5.9.3))(typescript@5.9.3)
+      '@tiptap/core':
+        specifier: ^3.30.2
+        version: 3.30.2(@tiptap/pm@3.30.2)
       '@tiptap/extension-color':
         specifier: ^3.29.2
         version: 3.30.2(@tiptap/extension-text-style@3.30.2(@tiptap/core@3.30.2(@tiptap/pm@3.30.2)))
@@ -71,6 +74,9 @@ importers:
       next-auth:
         specifier: ^4.24.15
         version: 4.24.15(next@16.3.0(@babel/core@7.29.7)(@types/node@20.19.43)(react-dom@19.2.8(react@19.2.8))(react@19.2.8))(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
+      pg:
+        specifier: ^8.23.0
+        version: 8.23.0
       prisma:
         specifier: ^7.9.1
         version: 7.9.1(@types/react-dom@19.2.4(@types/react@19.2.18))(@types/react@19.2.18)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)(typescript@5.9.3)
@@ -89,6 +95,9 @@ importers:
       react-select:
         specifier: ^5.10.2
         version: 5.10.2(@types/react@19.2.18)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
+      zod:
+        specifier: ^4.4.3
+        version: 4.4.3
     devDependencies:
       '@tailwindcss/postcss':
         specifier: ^4
@@ -96,6 +105,9 @@ importers:
       '@types/node':
         specifier: ^20
         version: 20.19.43
+      '@types/pg':
+        specifier: ^8.23.1
+        version: 8.23.1
       '@types/react':
         specifier: ^19
         version: 19.2.18
