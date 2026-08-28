@@ -1,0 +1,194 @@
+import NextAuth from "next-auth";
+import type { NextAuthOptions } from "next-auth";
+import { getServerSession } from "next-auth";
+import CredentialsProvider from "next-auth/providers/credentials";
+import { prisma } from "@/lib/prisma";
+import { verifyPassword } from "@/lib/password";
+
+const SESSION_MAX_AGE = 8 * 60 * 60;
+const SESSION_ABSOLUTE_MAX_AGE = 24 * 60 * 60;
+const SECURE_COOKIES = process.env.NODE_ENV === "production";
+const COOKIE_PREFIX = SECURE_COOKIES ? "__Secure-" : "";
+
+// Brute-force protection: max failed attempts for a given username within a window.
+const MAX_LOGIN_ATTEMPTS = 5;
+const LOGIN_WINDOW_MS = 10 * 60 * 1000;
+const loginFailures = new Map<string, { count: number; firstAt: number }>();
+
+function isLoginLocked(username: string): boolean {
+  const entry = loginFailures.get(username);
+  if (!entry) return false;
+  if (Date.now() - entry.firstAt >= LOGIN_WINDOW_MS) {
+    loginFailures.delete(username);
+    return false;
+  }
+  return entry.count >= MAX_LOGIN_ATTEMPTS;
+}
+
+function recordLoginFailure(username: string) {
+  const now = Date.now();
+  const entry = loginFailures.get(username) || { count: 0, firstAt: now };
+  if (now - entry.firstAt >= LOGIN_WINDOW_MS) {
+    entry.count = 0;
+    entry.firstAt = now;
+  }
+  entry.count += 1;
+  loginFailures.set(username, entry);
+}
+
+function clearLoginFailures(username: string) {
+  loginFailures.delete(username);
+}
+
+const cookieOptions = {
+  httpOnly: true,
+  sameSite: "lax" as const,
+  secure: SECURE_COOKIES,
+  path: "/",
+};
+
+export const authOptions: NextAuthOptions = {
+  providers: [
+    CredentialsProvider({
+      name: "Admin",
+      credentials: {
+        username: { label: "Username", type: "text" },
+        password: { label: "Password", type: "password" },
+      },
+      async authorize(credentials) {
+        const username = credentials?.username as string | undefined;
+
+        if (!username) return null;
+
+        if (isLoginLocked(username)) {
+          return null;
+        }
+
+        const password = credentials?.password as string | undefined;
+
+        if (
+          password &&
+          username === process.env.ADMIN_USERNAME &&
+          password === process.env.ADMIN_PASSWORD
+        ) {
+          clearLoginFailures(username);
+          return {
+            id: "super-admin",
+            name: username,
+            email: process.env.ADMIN_EMAIL || null,
+            username,
+            isSuperAdmin: true,
+            permissions: ["*"],
+          };
+        }
+
+        try {
+          const user = await prisma.user.findUnique({
+            where: { username },
+            include: { role: true },
+          });
+
+          if (user && user.active && password) {
+            const valid = await verifyPassword(password, user.passwordHash);
+            if (valid) {
+              clearLoginFailures(username);
+              try {
+                await prisma.user.update({
+                  where: { id: user.id },
+                  data: { lastLoginAt: new Date() },
+                });
+              } catch {
+                // Non-fatal: lastLoginAt tracking failure should not block login.
+              }
+              return {
+                id: user.id,
+                name: user.name ?? user.username,
+                email: user.email ?? null,
+                username: user.username,
+                role: user.role.name,
+                roleId: user.role.id,
+                isSuperAdmin: false,
+                permissions: user.role.permissions,
+              };
+            }
+          }
+        } catch {
+          // DB unavailable: fall through to lockout behavior.
+        }
+
+        recordLoginFailure(username);
+        return null;
+      },
+    }),
+  ],
+  session: {
+    strategy: "jwt",
+    maxAge: SESSION_MAX_AGE,
+  },
+  jwt: {
+    maxAge: SESSION_MAX_AGE,
+  },
+  cookies: {
+    sessionToken: {
+      name: `${COOKIE_PREFIX}next-auth.session-token`,
+      options: cookieOptions,
+    },
+    callbackUrl: {
+      name: `${COOKIE_PREFIX}next-auth.callback-url`,
+      options: cookieOptions,
+    },
+    csrfToken: {
+      name: `${COOKIE_PREFIX}next-auth.csrf-token`,
+      options: cookieOptions,
+    },
+  },
+  callbacks: {
+    async jwt({ token, user, trigger, session }) {
+      if (trigger === "update") {
+        if (session?.permissions) token.permissions = session.permissions;
+        if (session?.name) token.name = session.name;
+        if (session?.email) token.email = session.email;
+      }
+
+      if (user) {
+        token.authTime = Math.floor(Date.now() / 1000);
+        token.sub = user.id;
+        token.username = user.username;
+        token.email = user.email;
+        token.role = user.role;
+        token.roleId = user.roleId;
+        token.isSuperAdmin = user.isSuperAdmin;
+        token.permissions = user.permissions;
+      }
+
+      const authTime = token.authTime as number | undefined;
+      if (authTime && Date.now() / 1000 - authTime > SESSION_ABSOLUTE_MAX_AGE) {
+        throw new Error("Session expired");
+      }
+
+      return token;
+    },
+    async session({ session, token }) {
+      session.user = {
+        id: (token.sub as string | undefined) ?? undefined,
+        name: (token.name as string | undefined) ?? "admin",
+        email: (token.email as string | undefined) ?? "admin",
+        username: token.username,
+        role: token.role,
+        roleId: token.roleId,
+        isSuperAdmin: token.isSuperAdmin,
+        permissions: token.permissions ?? [],
+      };
+      return session;
+    },
+  },
+  pages: { signIn: "/admin/login" },
+  secret: process.env.AUTH_SECRET,
+};
+
+const handler = NextAuth(authOptions);
+export { handler as GET, handler as POST };
+
+export function auth() {
+  return getServerSession(authOptions);
+}

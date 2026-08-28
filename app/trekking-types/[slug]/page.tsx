@@ -1,0 +1,114 @@
+/* eslint-disable @next/next/no-img-element */
+import React from 'react';
+import { prisma } from '@/lib/prisma';
+import { Clock, Tag, ArrowRight } from 'lucide-react';
+import Link from 'next/link';
+import { Reveal, Stagger, StaggerItem } from '@/app/components/animations/Motion';
+import { stripHtml } from '@/lib/stripHtml';
+import TrekCard from '@/app/components/ui/TrekCard';
+
+interface PageProps {
+  params: Promise<{
+    slug: string;
+  }>;
+}
+
+// Region slug mapping for matching
+const REGION_SLUGS: Record<string, string> = {
+  'Everest Region': 'everest',
+  'Annapurna Region': 'annapurna',
+  'Manaslu Region': 'manaslu',
+  'Langtang Region': 'langtang',
+  'Mustang Region': 'mustang',
+  'Kanchenjunga Region': 'kanchenjunga-region-trekking',
+  'Makalu Region': 'makalu-region-trekking',
+  'Dolpo Region': 'dolpo',
+};
+
+export default async function TrekkingRegionPage({ params }: PageProps) {
+  const { slug } = await params;
+
+  // Clean up the URL slug to generate flexible search keys
+  const cleanSlug = slug.replace(/-region-trekking|-region/g, '').toLowerCase();
+
+  // Fetch treks dynamically using multiple matching patterns so it never misses any region
+  // Now also checks the regions array field (new taxonomy)
+  const treks = await prisma.trek.findMany({
+    where: {
+      OR: [
+        { region: { contains: cleanSlug, mode: 'insensitive' } },
+        { region: { contains: slug, mode: 'insensitive' } },
+        { regions: { has: cleanSlug } },
+        { regions: { has: slug } },
+        // Also match by category slug if it maps to a region name
+        { regions: { hasSome: Object.values(REGION_SLUGS).filter(v => v === cleanSlug || v === slug) } },
+      ],
+      published: true,
+    },
+    orderBy: { order: 'asc' },
+  });
+
+  // Generate a clean, human-readable title from the URL slug
+  const regionTitle = slug
+    .replace(/-region-trekking|-region/g, ' ')
+    .split('-')
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(' ') + ' Region';
+
+const regionDescription = `Explore ${regionTitle}. It is one of Nepal's most breathtaking trekking destinations, featuring stunning Himalayan landscapes, rich local culture, and world-class trails designed for safety, comfort, and unforgettable memories.`;
+
+  return (
+    <div className="min-h-screen bg-[#f8faf9] font-sans text-gray-800 pb-24">
+      
+      {/* Hero Banner Section */}
+      <section className="relative h-[340px] bg-[#112233] flex items-center justify-center text-center overflow-hidden">
+        <div className="absolute inset-0 z-0">
+          <img 
+            src="https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?q=80&w=2000&auto=format&fit=crop" 
+            alt={regionTitle} 
+            className="w-full h-full object-cover opacity-35"
+          />
+        </div>
+        <div className="relative z-10 px-5 lg:px-20">
+          <h1 className="text-4xl md:text-5xl font-black text-white oswald uppercase tracking-wider mb-2">
+            {regionTitle}
+          </h1>
+        </div>
+      </section>
+
+      {/* Region Overview Box */}
+      <section className="-mt-14 relative z-20 mb-16 px-5 lg:px-20">
+        <Reveal className="bg-white rounded-[2rem] p-8 md:p-10 shadow-[0_10px_40px_rgba(0,0,0,0.04)] border border-gray-100">
+          <h2 className="text-xl md:text-2xl font-black text-[#222222] oswald uppercase tracking-tight mb-4">
+            {regionTitle}
+          </h2>
+          <div className="text-gray-600 text-lg leading-relaxed space-y-4">
+            <p className="font-medium text-gray-700">{regionDescription}</p>
+            <p className="text-lg text-gray-500">
+              At Ever Peak Adventures, we carefully design every itinerary for safety, comfort, and excitement. Our experienced local guides ensure proper acclimatization throughout the trek, providing quality accommodation and personalized service.
+            </p>
+          </div>
+        </Reveal>
+      </section>
+
+      {/* Treks Grid Section */}
+      <section className="px-5 lg:px-20">
+        {treks.length === 0 ? (
+          <div className="bg-white rounded-2xl p-12 text-center border border-gray-100 shadow-sm">
+            <h3 className="text-lg font-bold text-gray-700 oswald uppercase mb-2">No Treks Found in {regionTitle}</h3>
+            <p className="text-md text-gray-400">We are currently updating our packages for this region. Check back soon!</p>
+          </div>
+        ) : (
+          <Stagger className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {treks.map((trek) => (
+              <StaggerItem key={trek.id}>
+                <TrekCard trek={trek} />
+              </StaggerItem>
+            ))}
+          </Stagger>
+        )}
+      </section>
+
+    </div>
+  );
+}

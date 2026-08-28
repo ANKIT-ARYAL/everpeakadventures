@@ -1,0 +1,316 @@
+@import "tailwindcss";
+
+:root {
+  --background: #112233;
+  --foreground: #EFE6D8;
+  --accent-green: #1F5E3D;
+  --accent-amber: #f59e0b;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-accent-green: var(--accent-green);
+  --color-accent-amber: var(--accent-amber);
+  --font-sans: var(--font-manrope);
+  --font-display: var(--font-outfit);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #0b1521;
+    --foreground: #EFE6D8;
+    --accent-green: #1F5E3D;
+    --accent-amber: #f59e0b;
+  }
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-sans);
+}
+
+/* Journey surfaces: motion-only enhancements for trek and tour discovery.
+   Brand colors remain owned by the existing Tailwind classes. */
+@keyframes journey-hero-drift {
+  from { transform: scale(1.04); }
+  to { transform: scale(1.12); }
+}
+
+@keyframes journey-title-rise {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.journey-page .journey-hero img {
+  animation: journey-hero-drift 12s ease-out both;
+  will-change: transform;
+}
+
+.journey-page .journey-hero h1 {
+  animation: journey-title-rise 700ms cubic-bezier(0.16, 1, 0.3, 1) 100ms both;
+}
+
+.journey-page .journey-panel {
+  transition: transform 280ms ease, box-shadow 280ms ease;
+}
+
+@media (hover: hover) {
+  .journey-page .journey-panel:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 14px 28px rgba(17, 34, 51, 0.12);
+  }
+
+  .journey-listing .journey-card:hover img {
+    transform: scale(1.07);
+  }
+
+  .journey-listing .journey-card:hover .journey-action {
+    transform: translateX(4px);
+  }
+}
+
+.journey-listing .journey-card img,
+.journey-listing .journey-action {
+  transition: transform 500ms cubic-bezier(0.16, 1, 0.3, 1), background-color 200ms ease, color 200ms ease;
+}
+
+.journey-page .journey-itinerary details {
+  transition: transform 220ms ease, box-shadow 220ms ease;
+}
+
+.journey-page .journey-itinerary details[open] {
+  transform: translateX(4px);
+  box-shadow: 0 8px 20px rgba(17, 34, 51, 0.08);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .journey-page .journey-hero img,
+  .journey-page .journey-hero h1 {
+    animation: none;
+  }
+
+  .journey-page .journey-panel,
+  .journey-listing .journey-card img,
+  .journey-listing .journey-action,
+  .journey-page .journey-itinerary details {
+    transition: none;
+  }
+}
+
+/* Admin panel typography bump (larger, more readable admin panel/forms) */
+.admin-panel {
+  font-size: 15px;
+  overflow-wrap: anywhere;
+  overflow-x: clip;
+}
+.admin-panel .text-\[9px\]  { font-size: 10.5px; }
+.admin-panel .text-\[10px\] { font-size: 12px; }
+.admin-panel .text-\[11px\] { font-size: 13px; }
+.admin-panel .text-\[12px\] { font-size: 14px; }
+.admin-panel .text-\[13px\] { font-size: 15px; }
+.admin-panel .text-md { font-size: 14px; line-height: 1.4; }
+.admin-panel .text-lg { font-size: 15.5px; }
+.admin-panel .text-base { font-size: 16.5px; }
+.admin-panel label { font-size: 15px; }
+.admin-panel input,
+.admin-panel select,
+.admin-panel textarea {
+  font-size: 15.5px;
+  min-width: 0;
+  max-width: 100%;
+}
+
+/* Let grid items shrink so a long value can never force the grid wider than the screen */
+.admin-panel .grid > * {
+  min-width: 0;
+}
+
+/* Let flex children shrink (incl. the shell <main>) so rows/content fit the screen */
+.admin-panel .flex > * {
+  min-width: 0;
+}
+
+/* Styles for rich-text content rendered from the admin editor */
+.rich-content p {
+  margin: 0 0 0.75rem;
+}
+.rich-content p:last-child {
+  margin-bottom: 0;
+}
+.rich-content h1,
+.rich-content h2,
+.rich-content h3,
+.rich-content h4 {
+  font-weight: 700;
+  color: #112233;
+  margin: 1rem 0 0.5rem;
+  line-height: 1.3;
+}
+.rich-content strong {
+  font-weight: 700;
+  color: #112233;
+}
+.rich-content a {
+  color: #24a0ed;
+  text-decoration: underline;
+}
+.rich-content ul,
+.rich-content ol {
+  padding-left: 1.25rem;
+  margin: 0 0 0.75rem;
+  list-style: revert;
+}
+.rich-content li {
+  margin-bottom: 0.35rem;
+}
+.rich-content br {
+  display: block;
+}
+
+/* Homepage loader: the logo drops in with a bounce, then continuously zooms
+ * toward the viewer until the split-open reveal lifts the two door panels. */
+@keyframes home-bounce {
+  0%   { opacity: 0; transform: translateY(-45%) scale(0.35); }
+  55%  { opacity: 1; transform: translateY(7%)  scale(1.06); }
+  72%  { transform: translateY(-3%) scale(0.98); }
+  86%  { transform: translateY(2%)  scale(1.02); }
+  100% { transform: translateY(0)   scale(1); }
+}
+
+@keyframes home-zoom {
+  from { transform: scale(1); }
+  to   { transform: scale(1.14); }
+}
+
+/* Homepage loader: progress bar */
+@keyframes home-bar {
+  from { width: 0%; }
+  to   { width: 100%; }
+}
+
+/* Highlights list exact styling */
+.highlights-list ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.highlights-list li {
+  position: relative;
+  padding: 1rem 0 1rem 2.5rem;
+  border-bottom: 1px dashed #d1d5db;
+  color: #112233;
+  font-size: 15px;
+  line-height: 1.5;
+}
+.highlights-list li:last-child {
+  border-bottom: none;
+}
+.highlights-list li::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 1.15rem;
+  width: 1.25rem;
+  height: 1.25rem;
+  background-color: #1e857c;
+  border-radius: 50%;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='20 6 9 17 4 12'%3E%3C/polyline%3E%3C/svg%3E");
+  background-size: 60%;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+.exclusions-list ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.exclusions-list li {
+  position: relative;
+  padding: 1rem 0 1rem 2.5rem;
+  border-bottom: 1px dashed #d1d5db;
+  color: #112233;
+  font-size: 15px;
+  line-height: 1.5;
+}
+.exclusions-list li:last-child {
+  border-bottom: none;
+}
+.exclusions-list li::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 1.15rem;
+  width: 1.25rem;
+  height: 1.25rem;
+  background-color: #c84c31;
+  border-radius: 50%;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cline x1='18' y1='6' x2='6' y2='18'%3E%3C/line%3E%3Cline x1='6' y1='6' x2='18' y2='18'%3E%3C/line%3E%3C/svg%3E");
+  background-size: 60%;
+  background-position: center;
+  background-repeat: no-repeat;
+}
+
+@layer utilities {
+  .site-container {
+    @apply w-full px-5 sm:px-6 lg:px-20;
+  }
+  .site-container-narrow {
+    @apply w-full px-5 sm:px-6 lg:px-20;
+  }
+  .site-container-wide {
+    @apply w-full px-5 sm:px-6 lg:px-20;
+  }
+  
+  /* Responsive text utilities */
+  .text-responsive-xl {
+    @apply text-xl sm:text-2xl lg:text-3xl xl:text-4xl;
+  }
+  .text-responsive-2xl {
+    @apply text-2xl sm:text-3xl lg:text-4xl xl:text-5xl;
+  }
+  .text-responsive-3xl {
+    @apply text-3xl sm:text-4xl lg:text-5xl xl:text-6xl;
+  }
+  .text-responsive-4xl {
+    @apply text-4xl sm:text-5xl lg:text-6xl xl:text-7xl;
+  }
+  
+  /* Prevent horizontal overflow on zoom */
+  html {
+    max-width: 100%;
+    overflow-x: hidden;
+  }
+  
+  /* Ensure images never exceed container width */
+  img {
+    max-width: 100%;
+    height: auto;
+  }
+  
+  /* Better grid overflow handling */
+  .grid > * {
+    min-width: 0;
+  }
+  
+  .flex > * {
+    min-width: 0;
+  }
+}
+
+/* ============================ IMAGE COLLAGE ============================ */
+.image-collage { width: 100%; margin: 2rem 0; display: block; }
+.image-collage-grid { display: grid; gap: 0.75rem; width: 100%; overflow: hidden; border-radius: 1rem; }
+.image-collage-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.image-collage-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.image-collage-4 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.image-collage-item { aspect-ratio: 1 / 1; overflow: hidden; border-radius: 0.75rem; background: #f3f4f6; margin: 0 !important; }
+.image-collage-item img { width: 100%; height: 100%; max-width: none !important; object-fit: cover; display: block; border-radius: 0 !important; margin: 0 !important; transition: transform 0.4s ease; }
+.image-collage-item:hover img { transform: scale(1.04); }
+@media (max-width: 640px) {
+  .image-collage { margin: 1.5rem 0; }
+  .image-collage-grid { gap: 0.5rem; }
+  .image-collage-3 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}

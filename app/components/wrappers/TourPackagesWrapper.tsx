@@ -1,0 +1,49 @@
+import { prisma } from "@/lib/prisma";
+import TourPackagesPage from "../pages/TourPackagesPage";
+
+export const dynamic = 'force-dynamic';
+
+import { unstable_cache } from 'next/cache';
+
+const getCachedTours = unstable_cache(
+  async () => prisma.tour.findMany({ where: { published: true }, orderBy: { createdAt: 'desc' } }),
+  ['all-published-tours'],
+  { revalidate: 60, tags: ['tours'] }
+);
+
+const getCachedHero = unstable_cache(
+  async () => prisma.subpageHero.findFirst({ where: { slug: 'tour', published: true } }),
+  ['subpage-hero-tour'],
+  { revalidate: 60, tags: ['hero'] }
+);
+
+interface PageProps {
+  searchParams: Promise<{
+    page?: string;
+  }>;
+}
+
+export default async function TourPackagesWrapper({ searchParams }: PageProps) {
+  const resolvedParams = await searchParams;
+  const currentPage = Number(resolvedParams?.page) || 1;
+  const pageSize = 12;
+
+  const allTours = await getCachedTours();
+
+  const totalPages = Math.ceil(allTours.length / pageSize) || 1;
+  const startIndex = (currentPage - 1) * pageSize;
+  const paginatedTours = allTours.slice(startIndex, startIndex + pageSize);
+
+  const hero = await getCachedHero();
+
+  return (
+    <TourPackagesPage 
+      packages={paginatedTours} 
+      currentPage={currentPage} 
+      totalPages={totalPages} 
+      heroTitle={hero?.title}
+      heroSubtitle={hero?.subtitle ?? undefined}
+      heroImage={hero?.image ?? undefined}
+    />
+  );
+}
