@@ -66,14 +66,6 @@ interface PageProps {
   }>;
 }
 
-/*
- * Keep this as a real image that exists in /public.
- *
- * Example:
- * public/images/placeholder.jpg
- *
- * Do NOT use an empty string here.
- */
 const FALLBACK_IMAGE = "https://ml978xhbpkuo.i.optimole.com/cb:t1g8.6c6/w:259/h:68/q:mauto/f:best/https://everpeakadventures.com/wp-content/uploads/2025/03/Untitled-design-123456-e1783511870519.png";
 
 export default async function TrekDetailPage({ params }: PageProps) {
@@ -94,10 +86,6 @@ export default async function TrekDetailPage({ params }: PageProps) {
     notFound();
   }
 
-  /*
-   * heroImage is string | null in Prisma.
-   * Convert it into a guaranteed string once.
-   */
   const heroImage = trek.heroImage || FALLBACK_IMAGE;
 
   await ensureRecurringInstances();
@@ -171,9 +159,8 @@ export default async function TrekDetailPage({ params }: PageProps) {
     ? (trek.itinerary as any[])
     : [];
 
-const packingItems = trek.packingItems || [];
+  const packingItems = trek.packingItems || [];
    
-  // FIX: Fetch the packing categories (PackingCategory model has no 'order' field)
   const packingCategories = await prisma.packingCategory.findMany();
 
   const parsePrice = (value?: string | null) => {
@@ -186,14 +173,6 @@ const packingItems = trek.packingItems || [];
 
   const groupPricesArr = (trek.groupPrices || []) as any[];
 
-  const routeMap =
-    trek.routeMap &&
-    typeof trek.routeMap === "object" &&
-    !Array.isArray(trek.routeMap)
-      ? (trek.routeMap as RouteMapData)
-      : null;
-
-  // Build elevation profile from elevationProfile (new) or altitudeData (legacy)
   const trekData = trek as any;
   const elevationProfile: ElevationPoint[] = Array.isArray(trekData.elevationProfile) && trekData.elevationProfile.length > 0
     ? (trekData.elevationProfile as any[]).map((ep: any, i: number) => ({
@@ -212,24 +191,6 @@ const packingItems = trek.packingItems || [];
         }))
       : [];
 
-  const routeMapItinerary = elevationProfile.length > 0
-    ? elevationProfile.map((ep) => ({
-        day: ep.day,
-        title: ep.location,
-        elev: ep.elevation,
-        desc: ep.note,
-      }))
-    : itineraryDays;
-
-  const buildElevationData = (itinerary: any[]) =>
-    (itinerary || [])
-      .filter((day) => day && day.title)
-      .map((day) => ({
-        day: day.day,
-        location: day.title,
-        elevation: Number(day.elev) || 0,
-      }));
-
   const validGroupPrices = groupPricesArr
     .map((group) => parsePrice(group.price))
     .filter((price) => price > 0);
@@ -244,7 +205,6 @@ const packingItems = trek.packingItems || [];
       : minPrice;
 
   const saveAmount = regularPrice - minPrice;
-
 
   const minPriceDisplay =
     minPrice > 0
@@ -509,100 +469,97 @@ const packingItems = trek.packingItems || [];
               <div className="line-clamp-3 overflow-hidden text-ellipsis [&>p]:inline" dangerouslySetInnerHTML={{ __html: toHtml(trek.overview) }} />
             </div>
 
-            <section className=" mt-10">
-{/* ===================================================
-                QUICK FACTS (Unified Card UI)
-            =================================================== */}
-            <div id="key-points" className="scroll-mt-[118px]" />
+            <section className="mt-10">
+              {/* ===================================================
+                  QUICK FACTS (Unified Card UI) - Fully Responsive Grid
+              =================================================== */}
+              <div id="key-points" className="scroll-mt-[118px]" />
 
-            <div className="bg-white rounded-3xl p-6 md:p-8 shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-gray-100">
-  {/* Changed gap-y-8 to gap-6 md:gap-8 for equal horizontal and vertical spacing */}
-  <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 md:gap-6">
-    
-    <div className="flex items-start gap-4">
-      <MapPin className="w-6 h-6 text-gray-700 shrink-0 stroke-[1.5]" />
-      <div className="flex flex-col">
-        <span className="text-[16px] text-gray-500 font-bold mb-1">Destination</span>
-        <span className="text-[15px] font-bold text-[#112233]">{trek.startPoint || "Nepal"}</span>
-      </div>
-    </div>
+              <div className="bg-white rounded-3xl p-5 sm:p-6 md:p-8 shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-gray-100 min-w-0">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-5 md:gap-6 min-w-0">
+                  
+                  <div className="flex items-start gap-3.5 min-w-0">
+                    <MapPin className="w-5 h-5 sm:w-6 sm:h-6 text-gray-700 shrink-0 stroke-[1.5] mt-0.5" />
+                    <div className="flex flex-col min-w-0 overflow-hidden">
+                      <span className="text-xs sm:text-[14px] text-gray-500 font-bold mb-0.5 uppercase tracking-wider">Destination</span>
+                      <span className="text-sm sm:text-[15px] font-bold text-[#112233] truncate" title={trek.startPoint || "Nepal"}>{trek.startPoint || "Nepal"}</span>
+                    </div>
+                  </div>
 
-    <div className="flex items-start gap-4">
-      <Calendar className="w-6 h-6 text-gray-700 shrink-0 stroke-[1.5]" />
-      <div className="flex flex-col">
-        <span className="text-[16px] text-gray-500 font-bold mb-1">Duration</span>
-        <span className="text-[15px] font-bold text-[#112233]">{trek.durationDays}</span>
-      </div>
-    </div>
+                  <div className="flex items-start gap-3.5 min-w-0">
+                    <Calendar className="w-5 h-5 sm:w-6 sm:h-6 text-gray-700 shrink-0 stroke-[1.5] mt-0.5" />
+                    <div className="flex flex-col min-w-0 overflow-hidden">
+                      <span className="text-xs sm:text-[14px] text-gray-500 font-bold mb-0.5 uppercase tracking-wider">Duration</span>
+                      <span className="text-sm sm:text-[15px] font-bold text-[#112233] truncate" title={String(trek.durationDays)}>{trek.durationDays}</span>
+                    </div>
+                  </div>
 
-    <div className="flex items-start gap-4">
-      <ActivityIcon className="w-6 h-6 text-gray-700 shrink-0 stroke-[1.5]" />
-      <div className="flex flex-col">
-        <span className="text-[16px] text-gray-500 font-bold mb-1">Trip Difficulty</span>
-        <span className="text-[15px] font-bold text-amber-600">{trek.difficulty}</span>
-      </div>
-    </div>
+                  <div className="flex items-start gap-3.5 min-w-0">
+                    <ActivityIcon className="w-5 h-5 sm:w-6 sm:h-6 text-gray-700 shrink-0 stroke-[1.5] mt-0.5" />
+                    <div className="flex flex-col min-w-0 overflow-hidden">
+                      <span className="text-xs sm:text-[14px] text-gray-500 font-bold mb-0.5 uppercase tracking-wider">Trip Difficulty</span>
+                      <span className="text-sm sm:text-[15px] font-bold text-amber-600 truncate" title={String(trek.difficulty)}>{trek.difficulty}</span>
+                    </div>
+                  </div>
 
-    <div className="flex items-start gap-4">
-      <Home className="w-6 h-6 text-gray-700 shrink-0 stroke-[1.5]" />
-      <div className="flex flex-col">
-        <span className="text-[16px] text-gray-500 font-bold mb-1">Accommodation</span>
-        <span className="text-[15px] font-bold text-[#112233]">{trek.accommodation || "Hotel / Guesthouse"}</span>
-      </div>
-    </div>
+                  <div className="flex items-start gap-3.5 min-w-0">
+                    <Home className="w-5 h-5 sm:w-6 sm:h-6 text-gray-700 shrink-0 stroke-[1.5] mt-0.5" />
+                    <div className="flex flex-col min-w-0 overflow-hidden">
+                      <span className="text-xs sm:text-[14px] text-gray-500 font-bold mb-0.5 uppercase tracking-wider">Accommodation</span>
+                      <span className="text-sm sm:text-[15px] font-bold text-[#112233] truncate" title={trek.accommodation || "Hotel / Guesthouse"}>{trek.accommodation || "Hotel / Guesthouse"}</span>
+                    </div>
+                  </div>
 
-    <div className="flex items-start gap-4">
-      <Utensils className="w-6 h-6 text-gray-700 shrink-0 stroke-[1.5]" />
-      <div className="flex flex-col">
-        <span className="text-[16px] text-gray-500 font-bold mb-1">Meals</span>
-        <span className="text-[15px] font-bold text-[#112233] flex items-center gap-1">
-          {trek.meals || "B, L, D"}
-          <div className="w-3.5 h-3.5 rounded-full border border-gray-400 flex items-center justify-center text-[8px] text-gray-400 font-bold cursor-help" title="Breakfast, Lunch, Dinner">i</div>
-        </span>
-      </div>
-    </div>
+                  <div className="flex items-start gap-3.5 min-w-0">
+                    <Utensils className="w-5 h-5 sm:w-6 sm:h-6 text-gray-700 shrink-0 stroke-[1.5] mt-0.5" />
+                    <div className="flex flex-col min-w-0 overflow-hidden">
+                      <span className="text-xs sm:text-[14px] text-gray-500 font-bold mb-0.5 uppercase tracking-wider">Meals</span>
+                      <span className="text-sm sm:text-[15px] font-bold text-[#112233] flex items-center gap-1 truncate">
+                        <span className="truncate" title={trek.meals || "B, L, D"}>{trek.meals || "B, L, D"}</span>
+                        <div className="w-3.5 h-3.5 rounded-full border border-gray-400 flex items-center justify-center text-[8px] text-gray-400 font-bold cursor-help shrink-0" title="Breakfast, Lunch, Dinner">i</div>
+                      </span>
+                    </div>
+                  </div>
 
-    <div className="flex items-start gap-4">
-      <svg className="w-6 h-6 text-gray-700 shrink-0 stroke-[1.5]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path strokeLinecap="round" strokeLinejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
-      </svg>
-      <div className="flex flex-col">
-        <span className="text-[16px] text-gray-500 font-bold mb-1">Group Size</span>
-        <span className="text-[15px] font-bold text-[#112233]">Min. 1 Pax</span>
-      </div>
-    </div>
+                  <div className="flex items-start gap-3.5 min-w-0">
+                    <svg className="w-5 h-5 sm:w-6 sm:h-6 text-gray-700 shrink-0 stroke-[1.5] mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                    </svg>
+                    <div className="flex flex-col min-w-0 overflow-hidden">
+                      <span className="text-xs sm:text-[14px] text-gray-500 font-bold mb-0.5 uppercase tracking-wider">Group Size</span>
+                      <span className="text-sm sm:text-[15px] font-bold text-[#112233] truncate">Min. 1 Pax</span>
+                    </div>
+                  </div>
 
-    <div className="flex items-start gap-4">
-      <svg className="w-6 h-6 text-gray-700 shrink-0 stroke-[1.5]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path strokeLinecap="round" strokeLinejoin="round" d="M3 15a4 4 0 004 4h9a5 5 0 10-.1-9.999 5.002 5.002 0 10-9.78 2.096A4.001 4.001 0 003 15z" />
-      </svg>
-      <div className="flex flex-col">
-        <span className="text-[16px] text-gray-500 font-bold mb-1">Best Time</span>
-        <span className="text-[15px] font-bold text-[#112233]">{trek.bestSeason || "Mar - May & Sept - Dec"}</span>
-      </div>
-    </div>
+                  <div className="flex items-start gap-3.5 min-w-0">
+                    <svg className="w-5 h-5 sm:w-6 sm:h-6 text-gray-700 shrink-0 stroke-[1.5] mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M3 15a4 4 0 004 4h9a5 5 0 10-.1-9.999 5.002 5.002 0 10-9.78 2.096A4.001 4.001 0 003 15z" />
+                    </svg>
+                    <div className="flex flex-col min-w-0 overflow-hidden">
+                      <span className="text-xs sm:text-[14px] text-gray-500 font-bold mb-0.5 uppercase tracking-wider">Best Time</span>
+                      <span className="text-sm sm:text-[15px] font-bold text-[#112233] truncate" title={trek.bestSeason || "Mar - May & Sept - Dec"}>{trek.bestSeason || "Mar - May & Sept - Dec"}</span>
+                    </div>
+                  </div>
 
-    <div className="flex items-start gap-4">
-      <Mountain className="w-6 h-6 text-gray-700 shrink-0 stroke-[1.5]" />
-      <div className="flex flex-col">
-        <span className="text-[16px] text-gray-500 font-bold mb-1">Max. Elevation</span>
-        <span className="text-[15px] font-bold text-[#112233]">{trek.maxAltitude}</span>
-      </div>
-    </div>
+                  <div className="flex items-start gap-3.5 min-w-0">
+                    <Mountain className="w-5 h-5 sm:w-6 sm:h-6 text-gray-700 shrink-0 stroke-[1.5] mt-0.5" />
+                    <div className="flex flex-col min-w-0 overflow-hidden">
+                      <span className="text-xs sm:text-[14px] text-gray-500 font-bold mb-0.5 uppercase tracking-wider">Max. Elevation</span>
+                      <span className="text-sm sm:text-[15px] font-bold text-[#112233] truncate" title={String(trek.maxAltitude)}>{trek.maxAltitude}</span>
+                    </div>
+                  </div>
 
-    <div className="flex items-start gap-4">
-      <Flag className="w-6 h-6 text-gray-700 shrink-0 stroke-[1.5]" />
-      <div className="flex flex-col">
-        <span className="text-[16px] text-gray-500 font-bold mb-1">Activities</span>
-        <span className="text-[15px] font-bold text-[#112233]">{trek.activity || "Trekking"}</span>
-      </div>
-    </div>
+                  <div className="flex items-start gap-3.5 min-w-0">
+                    <Flag className="w-5 h-5 sm:w-6 sm:h-6 text-gray-700 shrink-0 stroke-[1.5] mt-0.5" />
+                    <div className="flex flex-col min-w-0 overflow-hidden">
+                      <span className="text-xs sm:text-[14px] text-gray-500 font-bold mb-0.5 uppercase tracking-wider">Activities</span>
+                      <span className="text-sm sm:text-[15px] font-bold text-[#112233] truncate" title={trek.activity || "Trekking"}>{trek.activity || "Trekking"}</span>
+                    </div>
+                  </div>
 
-  </div>
-</div>
-
-            
-</section>
+                </div>
+              </div>
+            </section>
 
             {/* ===================================================
                 TRIP OVERVIEW
@@ -917,15 +874,15 @@ const packingItems = trek.packingItems || [];
                 FIXED DEPARTURES
             ========================================================= */}
             {shapedDepartures.length > 0 && (
-  <div id="departures" className="scroll-mt-[118px] min-w-0 overflow-hidden">
-    <FixedDepartures
-      data={shapedDepartures as any[]}
-      label="Departure Dates"
-      title={`${trek.title} – Fixed Departures`}
-      embedded
-    />
-  </div>
-)}
+              <div id="departures" className="scroll-mt-[118px] min-w-0 overflow-hidden">
+                <FixedDepartures
+                  data={shapedDepartures as any[]}
+                  label="Departure Dates"
+                  title={`${trek.title} – Fixed Departures`}
+                  embedded
+                />
+              </div>
+            )}
 
             {/* =========================================================
                 TREK VIDEO WITH SYNCED ELEVATION PROFILE
@@ -944,7 +901,7 @@ const packingItems = trek.packingItems || [];
         </div>
       </section>
 
-{/* =========================================================
+      {/* =========================================================
           RELATED TREKS
       ========================================================= */}
       {relatedTreks.length > 0 && (
