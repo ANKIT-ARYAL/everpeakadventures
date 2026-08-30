@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 import { prisma } from "@/lib/prisma";
 import Link from 'next/link';
 import { Search } from 'lucide-react';
@@ -7,6 +8,8 @@ import DeleteButton from "../components/DeleteButton";
 import ViewButton from "../components/ViewButton";
 import ToggleShow from "../components/ToggleShow";
 import { stripHtml } from "@/lib/stripHtml";
+import ResponsiveTable from "@/app/components/admin/ResponsiveTable";
+import AdminPageLayout from "../components/AdminPageLayout";
 
 export const dynamic = 'force-dynamic';
 
@@ -21,130 +24,94 @@ export default async function AdminFaqsPage() {
     orderBy: { order: 'asc' },
   });
 
+  const tableRows = faqs.map((faq, index) => [
+    <span key="n" className="text-gray-400 font-medium whitespace-nowrap">{index + 1}</span>,
+    <div key="question" className="min-w-0">
+      <Link href={`/admin/faqs/${faq.id}/edit`} className="font-bold text-[#112233] hover:text-[#24a0ed] block break-words">
+        {faq.question}
+      </Link>
+    </div>,
+    <span key="answer" className="text-gray-600 font-medium block max-w-md line-clamp-2 break-words">
+      {stripHtml(faq.answer)}
+    </span>,
+    <span key="order" className="font-bold text-gray-700 whitespace-nowrap">{faq.order}</span>,
+    <div key="related" className="whitespace-nowrap">
+      {faq.relatedType ? (
+        <a
+          href={faq.relatedType === 'trek'
+            ? `/trekking/${faq.relatedSlug}`
+            : faq.relatedType === 'tour'
+              ? `/tour/${faq.relatedSlug}`
+              : `/blog/${faq.relatedSlug}`}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-xs font-bold text-[#24a0ed] hover:text-[#112233]"
+        >
+          {relatedTypeLabels[faq.relatedType] ?? faq.relatedType}
+        </a>
+      ) : (
+        <span className="text-gray-400 text-xs">—</span>
+      )}
+    </div>,
+    <div key="actions" className="flex items-center justify-end gap-2 whitespace-nowrap">
+      <ToggleShow model="faqs" resource="faqs" id={faq.id} published={faq.published} />
+      <EditButton href={`/admin/faqs/${faq.id}/edit`} />
+      <ViewButton href="/faq" />
+      <DeleteButton id={faq.id} model="faqs" title={faq.question} />
+    </div>,
+  ]);
+
   return (
-    <div className="w-full max-w-full overflow-x-hidden space-y-6 max-w-[1400px] xl:max-w-none mx-auto text-md pb-10">
-      
-      {/* Top Header Bar */}
-      <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-        <div className="min-w-0 flex-1">
-          <div className="flex items-center gap-3 flex-wrap">
-            <h1 className="text-2xl font-black text-[#112233] oswald uppercase tracking-wide">FAQs</h1>
-            <span className="bg-gray-100 text-gray-600 font-bold px-2.5 py-0.5 rounded-full">
-              {faqs.length} items
-            </span>
+    <AdminPageLayout
+      title="FAQs"
+      description="Manage frequently asked questions and their display order."
+      actions={
+        <div className="flex items-center gap-4">
+          <span className="bg-gray-100 text-gray-600 font-bold px-2.5 py-1 rounded-full text-sm whitespace-nowrap">
+            {faqs.length} items
+          </span>
+          <AddNewButton href="/admin/faqs/new" label="Add New FAQ" />
+        </div>
+      }
+    >
+      <div className="flex flex-col gap-6 pb-10 min-w-0">
+
+        {/* Filter / Search Bar */}
+        <div className="bg-white p-3 sm:p-4 rounded-xl shadow-sm border border-gray-200 flex flex-col sm:flex-row sm:items-center justify-between gap-3 min-w-0">
+          <span className="font-bold text-gray-700 whitespace-nowrap text-sm">
+            All ({faqs.length})
+          </span>
+          <div className="relative w-full sm:w-auto">
+            <Search className="w-3.5 h-3.5 text-gray-400 absolute left-3 top-2.5" />
+            <input 
+              type="text" 
+              placeholder="Search FAQs..." 
+              className="pl-9 pr-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:border-[#24a0ed] w-full sm:w-64 text-sm"
+            />
           </div>
-          <p className="text-gray-500 mt-1">Manage frequently asked questions and their display order.</p>
         </div>
 
-        <AddNewButton href="/admin/faqs/new" label="Add New FAQ" />
-      </div>
-
-      {/* Filter / Search Bar */}
-      <div className="bg-white p-4 rounded-xl shadow-sm border border-gray-100 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
-        <span className="font-bold text-gray-700">All ({faqs.length})</span>
-        <div className="relative w-full sm:w-auto">
-          <Search className="w-3.5 h-3.5 text-gray-400 absolute left-3 top-2.5" />
-          <input 
-            type="text" 
-            placeholder="Search FAQs..." 
-            className="pl-9 pr-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:border-[#24a0ed] w-full sm:w-64"
-          />
-        </div>
-      </div>
-
-      {/* Data Table - Desktop */}
-      <div className="hidden md:block bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-        <div className="overflow-x-auto w-full">
-          <table className="w-full text-left border-collapse">
-            <thead>
-              <tr className="bg-[#f8f9fa] border-b border-gray-200 text-gray-600 font-bold uppercase tracking-wider">
-                <th className="py-3 px-4 w-12 text-center whitespace-nowrap">#</th>
-                <th className="py-3 px-4 min-w-[200px]">Question</th>
-                <th className="py-3 px-4 min-w-[250px]">Answer</th>
-                <th className="py-3 px-4 text-center whitespace-nowrap">Order</th>
-                <th className="py-3 px-4 whitespace-nowrap">Show On Page</th>
-                <th className="py-3 px-4 text-right whitespace-nowrap">Actions</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-gray-100">
-              {faqs.length === 0 ? (
-                <tr>
-                  <td colSpan={6} className="py-12 text-center text-gray-400 font-medium">
-                    No FAQs found.
-                  </td>
-                </tr>
-              ) : (
-                faqs.map((faq, index) => (
-                  <tr key={faq.id} className="hover:bg-[#fcfcfc] transition-colors group">
-                    <td className="py-3 px-4 text-center text-gray-400 font-medium whitespace-nowrap">{index + 1}</td>
-                    
-                    <td className="py-3 px-4 font-bold text-[#112233] max-w-[250px]">
-                      <Link href={`/admin/faqs/${faq.id}/edit`} className="hover:text-[#24a0ed] block truncate">
-                        {faq.question}
-                      </Link>
-                    </td>
-                    
-                    <td className="py-3 px-4 text-gray-600 font-medium max-w-[300px]">
-                      <span className="line-clamp-2">{stripHtml(faq.answer)}</span>
-                    </td>
-                    
-                    <td className="py-3 px-4 text-center font-bold text-gray-700 whitespace-nowrap">
-                      {faq.order}
-                    </td>
-
-                    <td className="py-3 px-4 whitespace-nowrap">
-                      {faq.relatedType ? (
-                        <a
-                          href={faq.relatedType === 'trek'
-                            ? `/trekking/${faq.relatedSlug}`
-                            : faq.relatedType === 'tour'
-                              ? `/tour/${faq.relatedSlug}`
-                              : `/blog/${faq.relatedSlug}`}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="text-[11px] font-bold text-[#24a0ed] hover:text-[#112233]"
-                        >
-                          {relatedTypeLabels[faq.relatedType] ?? faq.relatedType}
-                        </a>
-                      ) : (
-                        <span className="text-gray-400 text-[11px]">—</span>
-                      )}
-                    </td>
-                    
-                    <td className="py-3 px-4 text-right whitespace-nowrap">
-                      <div className="flex items-center justify-end gap-2">
-                        <ToggleShow model="faqs" resource="faqs" id={faq.id} published={faq.published} />
-                        <EditButton href={`/admin/faqs/${faq.id}/edit`} />
-                        <ViewButton href="/faq" />
-                        <DeleteButton id={faq.id} model="faqs" title={faq.question} />
-                      </div>
-                    </td>
-                  </tr>
-                ))
-              )}
-            </tbody>
-          </table>
-        </div>
-      </div>
-
-      {/* Mobile Cards */}
-      <div className="md:hidden space-y-3">
-        {faqs.length === 0 ? (
-          <div className="bg-white rounded-xl shadow-sm border border-gray-100 py-12 text-center text-gray-400 font-medium">
-            No FAQs found.
-          </div>
-        ) : (
-          faqs.map((faq, index) => (
-            <div key={faq.id} className="bg-white rounded-xl shadow-sm border border-gray-100 p-4">
+        <ResponsiveTable
+          headers={['#', 'Question', 'Answer', 'Order', 'Show On Page', 'Actions']}
+          rows={tableRows}
+          data={faqs}
+          emptyText="No FAQs found."
+          columnClassNames={['w-16 text-center whitespace-nowrap', 'w-[250px]', 'w-[350px]', 'w-24 text-center whitespace-nowrap', 'w-36 whitespace-nowrap', 'text-right whitespace-nowrap']}
+          mobileCards={(_row, faq, index) => (
+            <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-4 sm:p-5 min-w-0 overflow-hidden">
               <div className="flex items-start justify-between gap-3">
-                <Link href={`/admin/faqs/${faq.id}/edit`} className="font-bold text-[#112233] hover:text-[#24a0ed] min-w-0 flex-1 block">
-                  <span className="block truncate">#{index + 1} · {faq.question}</span>
+                <Link href={`/admin/faqs/${faq.id}/edit`} className="font-bold text-[#112233] hover:text-[#24a0ed] min-w-0 flex-1 block text-lg sm:text-xl leading-tight break-words">
+                  <span>#{index + 1} · {faq.question}</span>
                 </Link>
-                <span className="bg-gray-100 text-gray-600 font-bold px-2 py-0.5 rounded-full text-[10px] shrink-0">#{faq.order}</span>
+                <span className="bg-gray-100 text-gray-600 font-bold px-2 py-0.5 rounded-full text-xs shrink-0">Order: {faq.order}</span>
               </div>
-              <p className="text-gray-600 font-medium mt-2 text-[11px] line-clamp-3">{stripHtml(faq.answer)}</p>
-              <div className="flex items-center justify-between gap-2 flex-wrap mt-3 pt-3 border-t border-gray-100">
-                <div className="min-w-0">
+
+              <div className="mt-3 text-xs sm:text-sm text-gray-600 font-medium line-clamp-3 break-words">
+                {stripHtml(faq.answer)}
+              </div>
+
+              <div className="flex items-center justify-between gap-2 flex-wrap mt-4 pt-3 border-t border-gray-100 text-xs">
+                <div>
                   {faq.relatedType ? (
                     <a
                       href={faq.relatedType === 'trek'
@@ -154,15 +121,15 @@ export default async function AdminFaqsPage() {
                           : `/blog/${faq.relatedSlug}`}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="text-[11px] font-bold text-[#24a0ed] hover:text-[#112233] truncate block"
+                      className="font-bold text-[#24a0ed] hover:text-[#112233] truncate block"
                     >
                       {relatedTypeLabels[faq.relatedType] ?? faq.relatedType}
                     </a>
                   ) : (
-                    <span className="text-gray-400 text-[11px]">Not linked</span>
+                    <span className="text-gray-400">Not linked</span>
                   )}
                 </div>
-                <div className="flex items-center gap-2 shrink-0">
+                <div className="flex items-center gap-2 shrink-0 flex-wrap">
                   <ToggleShow model="faqs" resource="faqs" id={faq.id} published={faq.published} />
                   <EditButton href={`/admin/faqs/${faq.id}/edit`} />
                   <ViewButton href="/faq" />
@@ -170,10 +137,10 @@ export default async function AdminFaqsPage() {
                 </div>
               </div>
             </div>
-          ))
-        )}
-      </div>
+          )}
+        />
 
-    </div>
+      </div>
+    </AdminPageLayout>
   );
 }

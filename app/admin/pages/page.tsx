@@ -9,6 +9,7 @@ import EditButton from "../components/EditButton";
 import DeleteButton from "../components/DeleteButton";
 import ViewButton from "../components/ViewButton";
 import ToggleShow from "../components/ToggleShow";
+import AdminPageLayout from "../components/AdminPageLayout";
 
 export const dynamic = 'force-dynamic';
 
@@ -64,89 +65,86 @@ export default async function AdminPagesPage() {
   );
 
   return (
-    <div className="space-y-6 max-w-[1200px] xl:max-w-none mx-auto text-lg">
-      <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div>
-          <h1 className="text-2xl font-black text-[#112233] uppercase tracking-wide flex items-center gap-3">
-            <FileStack className="w-6 h-6 text-indigo-500" /> All Pages
-          </h1>
-          <p className="text-gray-500 mt-1">
-            Every page on the website in one place. Choose a section below to open its pages.
-          </p>
-        </div>
+    <AdminPageLayout
+      title="All Pages"
+      description="Every page on the website in one place. Choose a section below to open its pages."
+      actions={
         <div className="flex items-center gap-2">
-          <Link href="/admin/pages/categories" className="px-4 py-2.5 rounded-lg border border-gray-200 bg-white text-gray-700 hover:bg-gray-50 font-bold flex items-center gap-2">
+          <Link href="/admin/pages/categories" className="px-4 py-2.5 rounded-lg border border-gray-200 bg-white text-gray-700 hover:bg-gray-50 font-bold flex items-center gap-2 text-xs sm:text-sm">
             <FolderTree className="w-4 h-4" /> Categories
           </Link>
           <AddNewButton href="/admin/pages/new" label="Add New Page" />
         </div>
-      </div>
+      }
+    >
+      <div className="space-y-6 pb-10 min-w-0">
 
-      <div>
-        <h2 className="text-md font-black uppercase tracking-widest text-gray-500 mb-3 px-1">Website Sections</h2>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {SITEMAP_SECTIONS.filter((s) =>
-            sectionChildren(s).some((l) => can(l.perm))
-          ).map((section) => (
-            <SectionCard
-              key={section.key}
-              section={section}
-              count={sectionChildren(section).filter((l) => can(l.perm)).length}
-            />
-          ))}
+        <div>
+          <h2 className="text-md font-black uppercase tracking-widest text-gray-500 mb-3 px-1">Website Sections</h2>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            {SITEMAP_SECTIONS.filter((s) =>
+              sectionChildren(s).some((l) => can(l.perm))
+            ).map((section) => (
+              <SectionCard
+                key={section.key}
+                section={section}
+                count={sectionChildren(section).filter((l) => can(l.perm)).length}
+              />
+            ))}
+          </div>
         </div>
-      </div>
 
-      <div>
-        <h2 className="text-md font-black uppercase tracking-widest text-gray-500 mb-3 px-1">Custom Pages</h2>
-        <div className="space-y-4">
-          {roots.length === 0 && categories.length === 0 ? (
-            <div className="bg-white rounded-xl shadow-sm border border-gray-100 py-12 text-center text-gray-400 font-medium">
-              <p>No categories yet. Start by creating a main category, then add pages inside it.</p>
-              <Link href="/admin/pages/categories/new" className="inline-flex items-center gap-2 mt-3 text-indigo-600 font-bold">
-                <Folder className="w-4 h-4" /> Create first category
-              </Link>
-            </div>
-          ) : null}
-
-          {roots.map((root) => (
-            <div key={root.id} className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-              <div className="flex items-center justify-between p-4 bg-[#f8f9fa] border-b border-gray-200">
-                <div className="flex items-center gap-3 min-w-0">
-                  <FolderTree className="w-5 h-5 text-indigo-500 shrink-0" />
-                  <div className="font-bold text-[#112233] truncate">{root.name}</div>
-                </div>
-                <Link href="/admin/pages/new" className="text-indigo-600 font-bold text-md px-2 py-1.5 rounded hover:bg-indigo-50 flex items-center gap-1 shrink-0">
-                  <FilePlus2 className="w-3.5 h-3.5" /> Add Page
+        <div>
+          <h2 className="text-md font-black uppercase tracking-widest text-gray-500 mb-3 px-1">Custom Pages</h2>
+          <div className="space-y-4">
+            {roots.length === 0 && categories.length === 0 ? (
+              <div className="bg-white rounded-xl shadow-sm border border-gray-100 py-12 text-center text-gray-400 font-medium">
+                <p>No categories yet. Start by creating a main category, then add pages inside it.</p>
+                <Link href="/admin/pages/categories/new" className="inline-flex items-center gap-2 mt-3 text-indigo-600 font-bold">
+                  <Folder className="w-4 h-4" /> Create first category
                 </Link>
               </div>
+            ) : null}
 
-              {(childrenByParent.get(root.id) || []).map((child) => (
-                <div key={child.id}>
-                  <div className="flex items-center gap-3 pl-10 pr-4 py-2.5 bg-indigo-50/40 border-b border-gray-100">
-                    <Folder className="w-4 h-4 text-indigo-400 shrink-0" />
-                    <span className="font-semibold text-[#112233]">{child.name}</span>
-                    <span className="text-md text-gray-400">({(pagesByCategory.get(child.id) || []).length} pages)</span>
+            {roots.map((root) => (
+              <div key={root.id} className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+                <div className="flex items-center justify-between p-4 bg-[#f8f9fa] border-b border-gray-200">
+                  <div className="flex items-center gap-3 min-w-0">
+                    <FolderTree className="w-5 h-5 text-indigo-500 shrink-0" />
+                    <div className="font-bold text-[#112233] truncate">{root.name}</div>
                   </div>
-                  {(pagesByCategory.get(child.id) || []).map(renderPage)}
+                  <Link href="/admin/pages/new" className="text-indigo-600 font-bold text-md px-2 py-1.5 rounded hover:bg-indigo-50 flex items-center gap-1 shrink-0">
+                    <FilePlus2 className="w-3.5 h-3.5" /> Add Page
+                  </Link>
                 </div>
-              ))}
 
-              {(pagesByCategory.get(root.id) || []).map(renderPage)}
-            </div>
-          ))}
+                {(childrenByParent.get(root.id) || []).map((child) => (
+                  <div key={child.id}>
+                    <div className="flex items-center gap-3 pl-10 pr-4 py-2.5 bg-indigo-50/40 border-b border-gray-100">
+                      <Folder className="w-4 h-4 text-indigo-400 shrink-0" />
+                      <span className="font-semibold text-[#112233]">{child.name}</span>
+                      <span className="text-md text-gray-400">({(pagesByCategory.get(child.id) || []).length} pages)</span>
+                    </div>
+                    {(pagesByCategory.get(child.id) || []).map(renderPage)}
+                  </div>
+                ))}
 
-          {uncategorized.length > 0 && (
-            <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-              <div className="flex items-center justify-between p-4 bg-[#f8f9fa] border-b border-gray-200">
-                <div className="font-bold text-[#112233]">Uncategorized Pages</div>
-                <span className="text-md text-gray-400">({uncategorized.length})</span>
+                {(pagesByCategory.get(root.id) || []).map(renderPage)}
               </div>
-              {uncategorized.map(renderPage)}
-            </div>
-          )}
+            ))}
+
+            {uncategorized.length > 0 && (
+              <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+                <div className="flex items-center justify-between p-4 bg-[#f8f9fa] border-b border-gray-200">
+                  <div className="font-bold text-[#112233]">Uncategorized Pages</div>
+                  <span className="text-md text-gray-400">({uncategorized.length})</span>
+                </div>
+                {uncategorized.map(renderPage)}
+              </div>
+            )}
+          </div>
         </div>
       </div>
-    </div>
+    </AdminPageLayout>
   );
 }

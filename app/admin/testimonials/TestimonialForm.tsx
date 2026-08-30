@@ -1,15 +1,16 @@
-
+/* eslint-disable @typescript-eslint/no-explicit-any */
 'use client';
 
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Save, ArrowLeft, Quote } from 'lucide-react';
+import { Save, ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
 import toast, { Toaster } from 'react-hot-toast';
 import TipTapEditor from '@/app/components/admin/TipTapEditor';
 import MediaUploader from '@/app/components/admin/MediaUploader';
 import ToggleShow from '../components/ToggleShow';
 import NumberInput from '@/app/components/NumberInput';
+import SectionCard from '@/app/components/admin/SectionCard';
 
 interface Props {
   initialData?: any;
@@ -22,6 +23,7 @@ export default function TestimonialForm({ initialData, sectionData, isEditing = 
   const [loading, setLoading] = useState(false);
 
   const [form, setForm] = useState({
+    published: initialData?.published ?? true,
     quote: initialData?.quote || '',
     name: initialData?.name || '',
     location: initialData?.location || '',
@@ -51,6 +53,7 @@ export default function TestimonialForm({ initialData, sectionData, isEditing = 
 
     try {
       const reviewPayload = {
+        published: form.published,
         quote: form.quote,
         name: form.name,
         location: form.location,
@@ -88,94 +91,92 @@ export default function TestimonialForm({ initialData, sectionData, isEditing = 
   };
 
   return (
-    <form onSubmit={handleSubmit} className="max-w-5xl xl:max-w-none mx-auto space-y-6 text-md text-gray-800 font-sans pb-20">
+    <form onSubmit={handleSubmit} className="w-full flex flex-col gap-6 pb-20 text-md font-sans text-gray-800 min-w-0">
       <Toaster position="top-center" />
       
-      {/* Top Bar */}
-      <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-        <div className="flex items-center gap-3">
-          <Link href="/admin/testimonials" className="p-2 bg-gray-100 rounded-lg hover:bg-gray-200">
+      {/* Top Header Actions */}
+      <div className="bg-white p-4 sm:p-6 rounded-xl shadow-sm border border-gray-100 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div className="flex flex-col sm:flex-row sm:items-center gap-3">
+          <Link href="/admin/testimonials" className="self-start sm:self-auto p-2 rounded-lg bg-gray-100 text-gray-600 hover:bg-gray-200 transition-colors">
             <ArrowLeft className="w-4 h-4" />
           </Link>
-          <h1 className="text-xl font-black uppercase text-[#112233]">
+          <h1 className="text-lg sm:text-xl font-black text-[#112233] oswald uppercase tracking-wider">
             {isEditing ? `Edit Testimonial: ${initialData?.name}` : 'Add New Testimonial'}
           </h1>
         </div>
-        <div className="flex items-center gap-2">
-          {isEditing && <ToggleShow model="testimonials" resource="testimonials" id={initialData?.id as string} published={initialData?.published ?? true} />}
+
+        <div className="w-full sm:w-auto flex flex-wrap items-center gap-2">
+          {isEditing && <ToggleShow model="testimonials" resource="testimonials" id={initialData?.id as string} published={form.published ?? true} />}
           <button 
             type="submit" 
             disabled={loading}
-            className="bg-[#24a0ed] hover:bg-[#1a85c6] text-white font-bold px-6 py-2.5 rounded-lg flex items-center gap-2 disabled:opacity-50 uppercase tracking-wider"
+            className="bg-[#24a0ed] hover:bg-[#1a85c6] text-white font-bold px-6 py-2.5 rounded-lg shadow-sm flex items-center gap-2 transition-colors uppercase tracking-wider text-xs sm:text-sm disabled:opacity-50"
           >
             <Save className="w-4 h-4" /> {loading ? 'Saving...' : (isEditing ? 'Update Testimonial' : 'Publish Testimonial')}
           </button>
         </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 xl:grid-cols-3 gap-4 sm:gap-6 min-w-0">
         
         {/* Left Column */}
-        <div className="lg:col-span-2 space-y-6">
+        <div className="xl:col-span-2 space-y-4 sm:space-y-6 min-w-0">
           
           {/* Section Headings */}
-          <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 space-y-4">
-            <h2 className="font-bold text-gray-800 uppercase tracking-wider border-b pb-2">Section Headings</h2>
-            
-            <div>
-              <label className="block font-bold mb-1">Main Heading</label>
-              <input type="text" name="title" value={section.title} onChange={handleSectionChange} className="w-full p-3 border rounded-lg text-lg font-medium focus:border-[#24a0ed] outline-none" placeholder="WHAT OUR CLIENT SAY ABOUT US ?" />
-            </div>
+          <SectionCard title="Section Headings" defaultOpen>
+            <div className="space-y-4">
+              <div>
+                <label className="block font-bold text-gray-700 mb-1">Main Heading</label>
+                <input type="text" name="title" value={section.title} onChange={handleSectionChange} className="w-full px-4 py-2.5 border border-gray-200 rounded-lg text-lg font-medium focus:outline-none focus:border-[#24a0ed]" placeholder="WHAT OUR CLIENT SAY ABOUT US ?" />
+              </div>
 
-            <div>
-              <label className="block font-bold mb-1">Subtitle</label>
-              <input type="text" name="subtitle" value={section.subtitle} onChange={handleSectionChange} className="w-full p-2.5 border rounded-lg focus:border-[#24a0ed] outline-none" placeholder="Real experiences shared by travelers who trusted us." />
-            </div>
+              <div>
+                <label className="block font-bold text-gray-700 mb-1">Subtitle</label>
+                <input type="text" name="subtitle" value={section.subtitle} onChange={handleSectionChange} className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:border-[#24a0ed]" placeholder="Real experiences shared by travelers who trusted us." />
+              </div>
 
-            <div>
-              <label className="block font-bold mb-1">Background Watermark Text</label>
-              <input type="text" name="watermark" value={section.watermark} onChange={handleSectionChange} className="w-full p-2.5 border rounded-lg focus:border-[#24a0ed] outline-none" placeholder="CLIENTS REVIEWS" />
+              <div>
+                <label className="block font-bold text-gray-700 mb-1">Background Watermark Text</label>
+                <input type="text" name="watermark" value={section.watermark} onChange={handleSectionChange} className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:border-[#24a0ed]" placeholder="CLIENTS REVIEWS" />
+              </div>
             </div>
-          </div>
+          </SectionCard>
 
           {/* Review Details */}
-          <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 space-y-4">
-            <h2 className="font-bold text-gray-800 uppercase tracking-wider border-b pb-2">Review Details</h2>
-            
-            <div>
-              <label className="block font-bold mb-1">Quote *</label>
-              <TipTapEditor value={form.quote} onChange={(html) => setForm(prev => ({ ...prev, quote: html }))} placeholder="What did the client say?" minHeight="160px" />
-            </div>
+          <SectionCard title="Review Details" defaultOpen>
+            <div className="space-y-4">
+              <div>
+                <label className="block font-bold text-gray-700 mb-1">Quote *</label>
+                <TipTapEditor value={form.quote} onChange={(html) => setForm(prev => ({ ...prev, quote: html }))} placeholder="What did the client say?" minHeight="160px" />
+              </div>
 
-            <div>
-              <label className="block font-bold mb-1">Client Name *</label>
-              <input type="text" name="name" required value={form.name} onChange={handleChange} className="w-full p-3 border rounded-lg focus:border-[#24a0ed] outline-none" placeholder="e.g. Sarah Jenkins" />
-            </div>
+              <div>
+                <label className="block font-bold text-gray-700 mb-1">Client Name *</label>
+                <input type="text" name="name" required value={form.name} onChange={handleChange} className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:border-[#24a0ed]" placeholder="e.g. Sarah Jenkins" />
+              </div>
 
-            <div>
-              <label className="block font-bold mb-1">Location</label>
-              <input type="text" name="location" value={form.location} onChange={handleChange} className="w-full p-2.5 border rounded-lg focus:border-[#24a0ed] outline-none" placeholder="e.g. United Kingdom" />
+              <div>
+                <label className="block font-bold text-gray-700 mb-1">Location</label>
+                <input type="text" name="location" value={form.location} onChange={handleChange} className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:border-[#24a0ed]" placeholder="e.g. United Kingdom" />
+              </div>
             </div>
-          </div>
+          </SectionCard>
 
         </div>
 
         {/* Right Sidebar */}
-        <div className="space-y-6">
+        <div className="space-y-4 sm:space-y-6 xl:sticky xl:top-24 xl:self-start min-w-0">
           
-          <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 space-y-4">
-            <h3 className="font-bold text-gray-800 uppercase tracking-wider border-b pb-2">Client Avatar</h3>
-            <MediaUploader value={form.avatar} onChange={(url) => setForm(prev => ({ ...prev, avatar: url }))} label="Upload Avatar" heightClass="h-24" />
-          </div>
+          <SectionCard title="Client Avatar">
+            <MediaUploader value={form.avatar} onChange={(url) => setForm(prev => ({ ...prev, avatar: url }))} label="Upload Avatar" heightClass="h-36" />
+          </SectionCard>
 
-          <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 space-y-4">
-            <h3 className="font-bold text-gray-800 uppercase tracking-wider border-b pb-2">Review Attributes</h3>
-
+          <SectionCard title="Review Attributes">
             <div>
-              <label className="block font-bold mb-1">Display Order</label>
-              <NumberInput type="number" name="order" value={form.order} onChange={handleChange} className="w-full p-2.5 border rounded-lg outline-none bg-gray-50" />
+              <label className="block font-bold text-gray-700 mb-1">Display Order</label>
+              <NumberInput type="number" name="order" value={form.order} onChange={handleChange} className="w-full px-3 py-2 border border-gray-200 rounded-lg bg-gray-50 focus:outline-none" />
             </div>
-          </div>
+          </SectionCard>
 
         </div>
 

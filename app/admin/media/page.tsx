@@ -1,9 +1,12 @@
+/* eslint-disable @next/next/no-img-element */
 import { prisma } from "@/lib/prisma";
 import { readdir } from "node:fs/promises";
 import path from "node:path";
 import { Images } from "lucide-react";
 import MediaGalleryGrid, { GalleryFile } from "@/app/components/admin/MediaGalleryGrid";
 import { IMAGE_SLOTS } from "@/lib/media-slots";
+import AdminPageLayout from "../components/AdminPageLayout";
+
 
 export const dynamic = 'force-dynamic';
 
@@ -104,8 +107,6 @@ export default async function AdminMediaPage() {
     usedIn: u.usage[a.url] || [],
   }));
 
-  // Content-referenced images (e.g. Unsplash heroes, galleries) that are not
-  // in the media library yet, so the gallery reflects every image used on the site.
   for (const url of Object.keys(u.usage)) {
     if (!known.has(url)) {
       files.push({
@@ -177,29 +178,25 @@ export default async function AdminMediaPage() {
   const usedCount = files.filter((f) => f.usedIn.length > 0).length;
 
   return (
-    <div className="space-y-6 max-w-[1400px] xl:max-w-none mx-auto text-lg">
-      <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div>
-          <h1 className="text-2xl font-black text-[#112233] uppercase tracking-wide flex items-center gap-3">
-            <Images className="w-6 h-6 text-pink-500" /> All Gallery
-          </h1>
-          <p className="text-gray-500 mt-1">
-            Every image and video uploaded through the admin, with where each one is used.
-          </p>
+    <AdminPageLayout
+      title="All Gallery"
+      description="Every image and video uploaded through the admin, with where each one is used."
+      actions={
+        <div className="flex flex-wrap items-center gap-2 sm:gap-3">
+          <span className="bg-gray-100 text-gray-600 font-bold px-3 py-1.5 rounded-full text-xs sm:text-sm whitespace-nowrap">{totalFiles} files</span>
+          <span className="bg-emerald-50 text-emerald-700 font-bold px-3 py-1.5 rounded-full text-xs sm:text-sm whitespace-nowrap">{usedCount} in use</span>
+          <span className="bg-orange-50 text-orange-600 font-bold px-3 py-1.5 rounded-full text-xs sm:text-sm whitespace-nowrap">{totalFiles - usedCount} unused</span>
         </div>
-        <div className="flex flex-wrap items-center gap-3">
-          <span className="bg-gray-100 text-gray-600 font-bold px-3 py-1.5 rounded-full">{totalFiles} files</span>
-          <span className="bg-emerald-50 text-emerald-700 font-bold px-3 py-1.5 rounded-full">{usedCount} in use</span>
-          <span className="bg-orange-50 text-orange-600 font-bold px-3 py-1.5 rounded-full">{totalFiles - usedCount} unused</span>
+      }
+    >
+      <div className="flex flex-col gap-6 pb-10 min-w-0">
+        <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden min-w-0">
+          <div className="flex items-center justify-between px-5 py-4 border-b border-gray-200 bg-[#f8f9fa]">
+            <h3 className="font-bold text-[#112233] uppercase tracking-wide text-sm">Files</h3>
+          </div>
+          <MediaGalleryGrid files={files} slots={slots} />
         </div>
       </div>
-
-      <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden max-w-6xl xl:max-w-none mx-auto">
-        <div className="flex items-center justify-between px-5 py-4 border-b border-gray-200 bg-[#f8f9fa]">
-          <h3 className="font-bold text-[#112233] uppercase tracking-wide">Files</h3>
-        </div>
-        <MediaGalleryGrid files={files} slots={slots} />
-      </div>
-    </div>
+    </AdminPageLayout>
   );
 }

@@ -1,10 +1,14 @@
-"use client";
+/* eslint-disable react-hooks/set-state-in-effect */
+/* eslint-disable @typescript-eslint/no-explicit-any */
+'use client';
 
 import React, { useCallback, useEffect, useState } from "react";
-import { Plus, Pencil, Trash2, UserCheck, UserX, KeyRound, Copy, Check } from "lucide-react";
+import { Plus, Pencil, Trash2, UserCheck, UserX, KeyRound, Copy, Check, Search, X } from "lucide-react";
 import { useAdminPerms } from "../AdminPermsContext";
 import { hasPerm } from "@/lib/permissions";
 import ResponsiveTable from "@/app/components/admin/ResponsiveTable";
+import AdminPageLayout from "../components/AdminPageLayout";
+
 
 type RoleRef = { id: string; name: string };
 type UserRow = {
@@ -42,6 +46,7 @@ export default function AdminUsersPage() {
   const [formError, setFormError] = useState("");
   const [revealedPassword, setRevealedPassword] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
 
   const { isSuperAdmin, permissions } = useAdminPerms();
   const canCreate = isSuperAdmin || hasPerm(permissions, "users", "create");
@@ -169,7 +174,6 @@ export default function AdminUsersPage() {
       alert(data.error || "Failed to reset password");
       return;
     }
-    // The server regenerates internally; return a fresh password by calling generate? Simpler: prompt a new random.
     setRevealedPassword(data.generatedPassword ?? null);
     load();
   };
@@ -212,295 +216,335 @@ export default function AdminUsersPage() {
 
   const roleName = (roleId: string) => roles.find((r) => r.id === roleId)?.name ?? "—";
 
-  return (
-    <div className="space-y-6 max-w-[1400px] xl:max-w-none mx-auto text-md">
-      {(formOpen || revealedPassword) && (
-        <div className="fixed inset-0 z-[60] bg-black/50 flex items-start justify-center overflow-y-auto p-4">
-          <div className="bg-white rounded-xl w-full max-w-lg my-16 shadow-2xl">
-            <div className="px-6 py-4 border-b border-gray-200 flex items-center justify-between">
-              <h2 className="text-lg font-black text-[#112233] oswald uppercase tracking-wide">
-                {revealedPassword ? "Credentials" : isEdit ? "Edit User" : "Create User"}
-              </h2>
-              <button
-                type="button"
-                onClick={() => {
-                  setFormOpen(false);
-                  setRevealedPassword(null);
-                }}
-                className="text-gray-400 hover:text-gray-700"
-                aria-label="Close"
-              >
-                ✕
-              </button>
-            </div>
+  const filteredUsers = users.filter((u) => {
+    const q = searchQuery.toLowerCase();
+    return (
+      u.username.toLowerCase().includes(q) ||
+      (u.email && u.email.toLowerCase().includes(q)) ||
+      (u.name && u.name.toLowerCase().includes(q))
+    );
+  });
 
-            <div className="p-6 space-y-4">
-              {revealedPassword && (
-                <div className="bg-emerald-50 border border-emerald-200 rounded-xl p-4">
-                  <p className="font-bold text-emerald-800 mb-1">User created successfully!</p>
-                  <p className="text-emerald-700 text-[11px] mb-3">
-                    Share these credentials once — the password is shown now only:
-                  </p>
-                  <div className="flex items-center gap-2">
-                    <code className="flex-1 bg-white border border-emerald-200 rounded-lg px-3 py-2 text-lg font-black text-emerald-900 break-all">
-                      {revealedPassword}
-                    </code>
+  const tableRows = filteredUsers.map((user) => [
+    <span key="u" className="font-bold text-[#112233] break-words">{user.username}</span>,
+    <span key="e" className="text-gray-600 break-all">{user.email || "—"}</span>,
+    <span key="n" className="text-gray-600 font-medium break-words">{user.name || "—"}</span>,
+    <span key="r" className="bg-blue-50 text-blue-700 font-bold px-2.5 py-1 rounded-full text-xs uppercase tracking-wider whitespace-nowrap">
+      {roleName(user.roleId)}
+    </span>,
+    <span
+      key="s"
+      className={`inline-flex items-center gap-1 font-bold text-xs uppercase tracking-wider px-2.5 py-1 rounded-full whitespace-nowrap ${
+        user.active ? "bg-emerald-50 text-emerald-700" : "bg-gray-100 text-gray-500"
+      }`}
+    >
+      {user.active ? "Active" : "Inactive"}
+    </span>,
+    <span key="l" className="text-gray-500 whitespace-nowrap text-xs">
+      {user.lastLoginAt ? new Date(user.lastLoginAt).toLocaleString("en-US", { month: "short", day: "numeric", year: "numeric" }) : "Never"}
+    </span>,
+    <div key="a" className="flex items-center justify-end gap-1.5 whitespace-nowrap">
+      {canEdit && (
+        <>
+          <button type="button" onClick={() => openEdit(user)} title="Edit User" className="p-1.5 rounded-lg bg-blue-50 text-blue-600 hover:bg-blue-100 transition-colors">
+            <Pencil className="w-3.5 h-3.5" />
+          </button>
+          <button type="button" onClick={() => resetPassword(user)} title="Reset Password" className="p-1.5 rounded-lg bg-amber-50 text-amber-600 hover:bg-amber-100 transition-colors">
+            <KeyRound className="w-3.5 h-3.5" />
+          </button>
+          <button
+            type="button"
+            onClick={() => toggleActive(user)}
+            title={user.active ? "Deactivate" : "Activate"}
+            className={`p-1.5 rounded-lg transition-colors ${user.active ? "bg-gray-100 text-gray-600 hover:bg-gray-200" : "bg-emerald-50 text-emerald-600 hover:bg-emerald-100"}`}
+          >
+            {user.active ? <UserX className="w-3.5 h-3.5" /> : <UserCheck className="w-3.5 h-3.5" />}
+          </button>
+        </>
+      )}
+      {canDelete && (
+        <button type="button" onClick={() => handleDelete(user)} title="Delete User" className="p-1.5 rounded-lg bg-red-50 text-red-600 hover:bg-red-100 transition-colors">
+          <Trash2 className="w-3.5 h-3.5" />
+        </button>
+      )}
+    </div>,
+  ]);
+
+  return (
+    <AdminPageLayout
+      title="Users"
+      description="Create admin accounts, assign roles, and control access."
+      actions={
+        <div className="flex items-center gap-4">
+          <span className="bg-gray-100 text-gray-600 font-bold px-2.5 py-1 rounded-full text-sm whitespace-nowrap">
+            {users.length} users
+          </span>
+          {canCreate && (
+            <button
+              type="button"
+              onClick={openCreate}
+              className="bg-[#2271b1] hover:bg-[#135e96] text-white font-bold text-xs sm:text-sm px-4 py-2.5 rounded-lg shadow-sm flex items-center gap-2 uppercase tracking-wider whitespace-nowrap transition-colors"
+            >
+              <Plus className="w-4 h-4" /> Add User
+            </button>
+          )}
+        </div>
+      }
+    >
+      <div className="space-y-6 pb-10 min-w-0">
+        {(formOpen || revealedPassword) && (
+          <div className="fixed inset-0 z-[9999] bg-black/70 backdrop-blur-sm flex items-center justify-center p-3 sm:p-4 overflow-y-auto">
+            <div className="bg-white rounded-2xl w-full max-w-lg shadow-2xl overflow-hidden my-auto border border-gray-100 animate-in fade-in zoom-in duration-200">
+              <div className="px-6 py-4 bg-gray-50 border-b border-gray-200 flex items-center justify-between">
+                <h2 className="text-base sm:text-lg font-black text-[#112233] oswald uppercase tracking-wide">
+                  {revealedPassword ? "Credentials" : isEdit ? "Edit User" : "Create User"}
+                </h2>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setFormOpen(false);
+                    setRevealedPassword(null);
+                  }}
+                  className="w-8 h-8 rounded-lg bg-gray-200/60 hover:bg-gray-200 text-gray-500 hover:text-gray-800 flex items-center justify-center transition-colors"
+                  aria-label="Close"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+              </div>
+
+              <div className="p-6 space-y-4 max-h-[75vh] overflow-y-auto">
+                {revealedPassword && (
+                  <div className="bg-emerald-50 border border-emerald-200 rounded-xl p-4">
+                    <p className="font-bold text-emerald-800 mb-1 text-sm">User created successfully!</p>
+                    <p className="text-emerald-700 text-xs mb-3">
+                      Share these credentials once — the password is shown now only:
+                    </p>
+                    <div className="flex items-center gap-2">
+                      <code className="flex-1 bg-white border border-emerald-200 rounded-lg px-3 py-2 text-base font-black text-emerald-900 break-all">
+                        {revealedPassword}
+                      </code>
+                      <button
+                        type="button"
+                        onClick={copyPassword}
+                        className="p-2.5 rounded-lg bg-emerald-600 text-white hover:bg-emerald-700 transition-colors shrink-0"
+                        title="Copy password"
+                      >
+                        {copied ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
+                      </button>
+                    </div>
                     <button
                       type="button"
-                      onClick={copyPassword}
-                      className="p-2 rounded-lg bg-emerald-600 text-white hover:bg-emerald-700"
-                      title="Copy password"
+                      onClick={() => setRevealedPassword(null)}
+                      className="mt-4 w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs sm:text-sm px-4 py-2.5 rounded-lg uppercase tracking-wider transition-colors"
                     >
-                      {copied ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
+                      Done
                     </button>
                   </div>
+                )}
+
+                {formOpen && !revealedPassword && (
+                  <>
+                    {formError && (
+                      <p className="bg-red-50 text-red-700 border border-red-200 rounded-lg px-4 py-2.5 font-semibold text-xs sm:text-sm">
+                        {formError}
+                      </p>
+                    )}
+
+                    <div>
+                      <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1" htmlFor="user-username">
+                        Username *
+                      </label>
+                      <input
+                        id="user-username"
+                        type="text"
+                        value={form.username}
+                        onChange={(e) => setForm({ ...form, username: e.target.value })}
+                        className="w-full px-3.5 py-2.5 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-[#24a0ed]"
+                        placeholder="e.g. johndoe"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1" htmlFor="user-email">
+                        Email
+                      </label>
+                      <input
+                        id="user-email"
+                        type="email"
+                        value={form.email}
+                        onChange={(e) => setForm({ ...form, email: e.target.value })}
+                        className="w-full px-3.5 py-2.5 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-[#24a0ed]"
+                        placeholder="Required for password resets"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1" htmlFor="user-name">
+                        Display Name
+                      </label>
+                      <input
+                        id="user-name"
+                        type="text"
+                        value={form.name}
+                        onChange={(e) => setForm({ ...form, name: e.target.value })}
+                        className="w-full px-3.5 py-2.5 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-[#24a0ed]"
+                        placeholder="Optional"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1" htmlFor="user-role">
+                        Role *
+                      </label>
+                      <select
+                        id="user-role"
+                        value={form.roleId}
+                        onChange={(e) => setForm({ ...form, roleId: e.target.value })}
+                        className="w-full px-3.5 py-2.5 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-[#24a0ed] bg-white"
+                      >
+                        <option value="">Select a role…</option>
+                        {roles.map((r) => (
+                          <option key={r.id} value={r.id}>
+                            {r.name}
+                          </option>
+                        ))}
+                      </select>
+                      {roles.length === 0 && (
+                        <p className="text-xs text-amber-600 mt-1 font-semibold">
+                          No roles yet — create a role first.
+                        </p>
+                      )}
+                    </div>
+
+                    <div>
+                      <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1" htmlFor="user-password">
+                        Password
+                      </label>
+                      <input
+                        id="user-password"
+                        type="text"
+                        value={form.password}
+                        onChange={(e) => setForm({ ...form, password: e.target.value })}
+                        className="w-full px-3.5 py-2.5 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-[#24a0ed]"
+                        placeholder={isEdit ? "Leave blank to keep current" : "Leave blank to auto-generate"}
+                      />
+                    </div>
+
+                    <label className="flex items-center gap-2.5 font-bold text-gray-700 text-sm cursor-pointer pt-1">
+                      <input
+                        type="checkbox"
+                        checked={form.active}
+                        onChange={(e) => setForm({ ...form, active: e.target.checked })}
+                        className="w-4 h-4 accent-[#2271b1]"
+                      />
+                      Active (can sign in)
+                    </label>
+                  </>
+                )}
+              </div>
+
+              {formOpen && !revealedPassword && (
+                <div className="px-6 py-4 bg-gray-50 border-t border-gray-200 flex items-center justify-end gap-3">
                   <button
                     type="button"
-                    onClick={() => setRevealedPassword(null)}
-                    className="mt-4 w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-md px-4 py-2.5 rounded-lg uppercase tracking-wider"
+                    onClick={() => setFormOpen(false)}
+                    className="px-4 py-2.5 rounded-lg border border-gray-200 bg-white text-gray-600 font-bold hover:bg-gray-50 text-xs sm:text-sm transition-colors cursor-pointer"
                   >
-                    Done
+                    Cancel
+                  </button>
+                  <button
+                    type="button"
+                    onClick={handleSave}
+                    disabled={busy}
+                    className="bg-[#2271b1] hover:bg-[#135e96] text-white font-bold text-xs sm:text-sm px-5 py-2.5 rounded-lg shadow-sm flex items-center gap-2 uppercase tracking-wider disabled:opacity-60 transition-colors cursor-pointer"
+                  >
+                    {busy ? "Saving…" : isEdit ? "Save Changes" : "Create User"}
                   </button>
                 </div>
               )}
-
-              {formOpen && !revealedPassword && (
-                <>
-                  {formError && (
-                    <p className="bg-red-50 text-red-700 border border-red-200 rounded-lg px-4 py-2 font-semibold">
-                      {formError}
-                    </p>
-                  )}
-
-                  <div>
-                    <label className="block text-[11px] font-bold text-gray-500 uppercase tracking-wider mb-1" htmlFor="user-username">
-                      Username
-                    </label>
-                    <input
-                      id="user-username"
-                      type="text"
-                      value={form.username}
-                      onChange={(e) => setForm({ ...form, username: e.target.value })}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg text-lg focus:outline-none focus:border-[#24a0ed]"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-[11px] font-bold text-gray-500 uppercase tracking-wider mb-1" htmlFor="user-email">
-                      Email
-                    </label>
-                    <input
-                      id="user-email"
-                      type="email"
-                      value={form.email}
-                      onChange={(e) => setForm({ ...form, email: e.target.value })}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg text-lg focus:outline-none focus:border-[#24a0ed]"
-                      placeholder="Required for password resets"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-[11px] font-bold text-gray-500 uppercase tracking-wider mb-1" htmlFor="user-name">
-                      Display Name
-                    </label>
-                    <input
-                      id="user-name"
-                      type="text"
-                      value={form.name}
-                      onChange={(e) => setForm({ ...form, name: e.target.value })}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg text-lg focus:outline-none focus:border-[#24a0ed]"
-                      placeholder="Optional"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-[11px] font-bold text-gray-500 uppercase tracking-wider mb-1" htmlFor="user-role">
-                      Role
-                    </label>
-                    <select
-                      id="user-role"
-                      value={form.roleId}
-                      onChange={(e) => setForm({ ...form, roleId: e.target.value })}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg text-lg focus:outline-none focus:border-[#24a0ed] bg-white"
-                    >
-                      <option value="">Select a role…</option>
-                      {roles.map((r) => (
-                        <option key={r.id} value={r.id}>
-                          {r.name}
-                        </option>
-                      ))}
-                    </select>
-                    {roles.length === 0 && (
-                      <p className="text-[11px] text-amber-600 mt-1 font-semibold">
-                        No roles yet — create a role first.
-                      </p>
-                    )}
-                  </div>
-
-                  <div>
-                    <label className="block text-[11px] font-bold text-gray-500 uppercase tracking-wider mb-1" htmlFor="user-password">
-                      Password
-                    </label>
-                    <input
-                      id="user-password"
-                      type="text"
-                      value={form.password}
-                      onChange={(e) => setForm({ ...form, password: e.target.value })}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg text-lg focus:outline-none focus:border-[#24a0ed]"
-                      placeholder={isEdit ? "Leave blank to keep current" : "Leave blank to auto-generate"}
-                    />
-                  </div>
-
-                  <label className="flex items-center gap-2 font-bold text-gray-700">
-                    <input
-                      type="checkbox"
-                      checked={form.active}
-                      onChange={(e) => setForm({ ...form, active: e.target.checked })}
-                      className="accent-[#2271b1]"
-                    />
-                    Active (can sign in)
-                  </label>
-                </>
-              )}
             </div>
-
-            {formOpen && !revealedPassword && (
-              <div className="px-6 py-4 border-t border-gray-200 flex items-center justify-end gap-3">
-                <button
-                  type="button"
-                  onClick={() => setFormOpen(false)}
-                  className="px-4 py-2 rounded-lg border border-gray-200 text-gray-600 font-bold hover:bg-gray-50"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="button"
-                  onClick={handleSave}
-                  disabled={busy}
-                  className="bg-[#2271b1] hover:bg-[#135e96] text-white font-bold text-md px-5 py-2.5 rounded-lg shadow-sm flex items-center gap-2 uppercase tracking-wider disabled:opacity-60"
-                >
-                  {busy ? "Saving…" : isEdit ? "Save Changes" : "Create User"}
-                </button>
-              </div>
-            )}
           </div>
-        </div>
-      )}
-
-      <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-        <div>
-          <div className="flex items-center gap-3">
-            <h1 className="text-2xl font-black text-[#112233] oswald uppercase tracking-wide">Users</h1>
-            <span className="bg-gray-100 text-gray-600 font-bold px-2.5 py-0.5 rounded-full">{users.length} users</span>
-          </div>
-          <p className="text-gray-500 mt-1">Create admin accounts, assign roles, and control access.</p>
-        </div>
-        {canCreate && (
-          <button
-            type="button"
-            onClick={openCreate}
-            className="bg-[#2271b1] hover:bg-[#135e96] text-white font-bold text-md px-4 py-2.5 rounded-lg shadow-sm flex items-center gap-2 uppercase tracking-wider"
-          >
-            <Plus className="w-4 h-4" /> Add User
-          </button>
         )}
-      </div>
 
-      {loadError && (
-        <div className="bg-red-50 text-red-700 border border-red-200 rounded-xl px-4 py-3 font-semibold">{loadError}</div>
-      )}
+        {loadError && (
+          <div className="bg-red-50 text-red-700 border border-red-200 rounded-xl px-4 py-3 font-semibold text-sm">{loadError}</div>
+        )}
 
-      <ResponsiveTable
-        headers={['Username', 'Email', 'Name', 'Role', 'Status', 'Last Login', 'Actions']}
-        rows={users.map((user) => [
-          <span key="u" className="font-bold text-[#112233]">{user.username}</span>,
-          <span key="e" className="text-gray-600">{user.email || "—"}</span>,
-          <span key="n" className="text-gray-600 font-medium">{user.name || "—"}</span>,
-          <span key="r" className="bg-blue-50 text-blue-700 font-bold px-2 py-0.5 rounded-full text-[10px] uppercase tracking-wider">
-            {roleName(user.roleId)}
-          </span>,
-          <span
-            key="s"
-            className={`inline-flex items-center gap-1 font-bold text-[10px] uppercase tracking-wider px-2 py-0.5 rounded-full ${
-              user.active ? "bg-emerald-50 text-emerald-700" : "bg-gray-100 text-gray-500"
-            }`}
-          >
-            {user.active ? "Active" : "Inactive"}
-          </span>,
-          <span key="l" className="text-gray-500">
-            {user.lastLoginAt ? new Date(user.lastLoginAt).toLocaleString("en-US", { month: "short", day: "numeric", year: "numeric" }) : "Never"}
-          </span>,
-          <div key="a" className="flex items-center justify-end gap-2">
-            {canEdit && (
-              <>
-                <button type="button" onClick={() => openEdit(user)} title="Edit User" className="p-1.5 rounded bg-blue-50 text-blue-600 hover:bg-blue-100">
-                  <Pencil className="w-3.5 h-3.5" />
-                </button>
-                <button type="button" onClick={() => resetPassword(user)} title="Reset Password" className="p-1.5 rounded bg-amber-50 text-amber-600 hover:bg-amber-100">
-                  <KeyRound className="w-3.5 h-3.5" />
-                </button>
-                <button
-                  type="button"
-                  onClick={() => toggleActive(user)}
-                  title={user.active ? "Deactivate" : "Activate"}
-                  className={`p-1.5 rounded hover:opacity-80 ${user.active ? "bg-gray-100 text-gray-600" : "bg-emerald-50 text-emerald-600"}`}
-                >
-                  {user.active ? <UserX className="w-3.5 h-3.5" /> : <UserCheck className="w-3.5 h-3.5" />}
-                </button>
-              </>
-            )}
-            {canDelete && (
-              <button type="button" onClick={() => handleDelete(user)} title="Delete User" className="p-1.5 rounded bg-red-50 text-red-600 hover:bg-red-100">
-                <Trash2 className="w-3.5 h-3.5" />
-              </button>
-            )}
-          </div>,
-        ])}
-        data={users}
-        emptyText="No users yet."
-        columnClassNames={[undefined, undefined, undefined, undefined, 'text-center', undefined, 'text-right']}
-        mobileCards={(_row, data) => {
-          const user = data as UserRow;
-          return (
-            <>
-              <div className="flex items-start justify-between gap-3">
-                <div className="min-w-0 flex-1">
-                  <span className="block font-bold text-[#112233] truncate">{user.username}</span>
-                  <span className="block text-gray-500 mt-0.5 text-[11px] truncate">{user.email || "No email"} • {user.name || "No display name"}</span>
+        {/* Filter / Search Bar */}
+        <div className="bg-white p-3 sm:p-4 rounded-xl shadow-sm border border-gray-200 flex flex-col sm:flex-row sm:items-center justify-between gap-3 min-w-0">
+          <span className="font-bold text-gray-700 whitespace-nowrap text-sm">
+            All ({filteredUsers.length})
+          </span>
+          <div className="relative w-full sm:w-auto">
+            <Search className="w-3.5 h-3.5 text-gray-400 absolute left-3 top-3" />
+            <input 
+              type="text" 
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="Search users..." 
+              className="pl-9 pr-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:border-[#24a0ed] w-full sm:w-64 text-sm"
+            />
+          </div>
+        </div>
+
+        <ResponsiveTable
+          headers={['Username', 'Email', 'Name', 'Role', 'Status', 'Last Login', 'Actions']}
+          rows={tableRows}
+          data={filteredUsers}
+          emptyText="No users found."
+          columnClassNames={['w-[180px]', 'w-[220px]', 'w-[180px]', 'w-32 whitespace-nowrap', 'w-28 text-center whitespace-nowrap', 'w-32 whitespace-nowrap', 'text-right whitespace-nowrap']}
+          mobileCards={(_row, data) => {
+            const user = data as UserRow;
+            return (
+              <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-4 sm:p-5 min-w-0 overflow-hidden">
+                <div className="flex items-start justify-between gap-3 min-w-0">
+                  <div className="min-w-0 flex-1">
+                    <span className="block font-bold text-[#112233] text-base sm:text-lg truncate">{user.username}</span>
+                    <span className="block text-[#24a0ed] text-xs font-semibold truncate mt-0.5">{user.email || "No email"}</span>
+                    <span className="block text-gray-500 text-xs truncate mt-0.5">{user.name || "No display name"}</span>
+                  </div>
                 </div>
-                <div className="flex items-center gap-2 shrink-0">
+
+                <div className="grid grid-cols-2 gap-x-4 gap-y-3 mt-4 text-xs">
+                  <div className="min-w-0">
+                    <span className="block text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-0.5">Role</span>
+                    <span className="bg-blue-50 text-blue-700 font-bold px-2.5 py-1 rounded-full text-xs uppercase tracking-wider inline-block">
+                      {roleName(user.roleId)}
+                    </span>
+                  </div>
+                  <div className="min-w-0">
+                    <span className="block text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-0.5">Status</span>
+                    <span className={`font-bold text-xs uppercase tracking-wider px-2.5 py-1 rounded-full inline-block ${user.active ? "bg-emerald-50 text-emerald-700" : "bg-gray-100 text-gray-500"}`}>
+                      {user.active ? "Active" : "Inactive"}
+                    </span>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-2 flex-wrap mt-4 pt-3 border-t border-gray-100">
                   {canEdit && (
                     <>
-                      <button type="button" onClick={() => openEdit(user)} title="Edit" className="p-1.5 rounded bg-blue-50 text-blue-600">
-                        <Pencil className="w-3.5 h-3.5" />
+                      <button type="button" onClick={() => openEdit(user)} title="Edit" className="p-2 rounded-lg bg-blue-50 text-blue-600 hover:bg-blue-100 transition-colors">
+                        <Pencil className="w-4 h-4" />
                       </button>
-                      <button type="button" onClick={() => resetPassword(user)} title="Reset Password" className="p-1.5 rounded bg-amber-50 text-amber-600">
-                        <KeyRound className="w-3.5 h-3.5" />
+                      <button type="button" onClick={() => resetPassword(user)} title="Reset Password" className="p-2 rounded-lg bg-amber-50 text-amber-600 hover:bg-amber-100 transition-colors">
+                        <KeyRound className="w-4 h-4" />
                       </button>
-                      <button type="button" onClick={() => toggleActive(user)} title={user.active ? "Deactivate" : "Activate"} className={`p-1.5 rounded ${user.active ? "bg-gray-100 text-gray-600" : "bg-emerald-50 text-emerald-600"}`}>
-                        {user.active ? <UserX className="w-3.5 h-3.5" /> : <UserCheck className="w-3.5 h-3.5" />}
+                      <button type="button" onClick={() => toggleActive(user)} title={user.active ? "Deactivate" : "Activate"} className={`p-2 rounded-lg transition-colors ${user.active ? "bg-gray-100 text-gray-600 hover:bg-gray-200" : "bg-emerald-50 text-emerald-600 hover:bg-emerald-100"}`}>
+                        {user.active ? <UserX className="w-4 h-4" /> : <UserCheck className="w-4 h-4" />}
                       </button>
                     </>
                   )}
                   {canDelete && (
-                    <button type="button" onClick={() => handleDelete(user)} title="Delete" className="p-1.5 rounded bg-red-50 text-red-600">
-                      <Trash2 className="w-3.5 h-3.5" />
+                    <button type="button" onClick={() => handleDelete(user)} title="Delete" className="p-2 rounded-lg bg-red-50 text-red-600 hover:bg-red-100 transition-colors">
+                      <Trash2 className="w-4 h-4" />
                     </button>
                   )}
                 </div>
               </div>
-              <div className="flex items-center justify-between mt-3 pt-3 border-t border-gray-100 text-[11px]">
-                <span className="bg-blue-50 text-blue-700 font-bold px-2 py-0.5 rounded-full text-[10px] uppercase tracking-wider">
-                  {roleName(user.roleId)}
-                </span>
-                <span className={`font-bold text-[10px] uppercase tracking-wider px-2 py-0.5 rounded-full ${user.active ? "bg-emerald-50 text-emerald-700" : "bg-gray-100 text-gray-500"}`}>
-                  {user.active ? "Active" : "Inactive"}
-                </span>
-              </div>
-            </>
-          );
-        }}
-      />
-    </div>
+            );
+          }}
+        />
+      </div>
+    </AdminPageLayout>
   );
 }

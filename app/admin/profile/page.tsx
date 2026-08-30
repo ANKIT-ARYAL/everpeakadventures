@@ -1,9 +1,14 @@
+/* eslint-disable react-hooks/set-state-in-effect */
+/* eslint-disable @typescript-eslint/no-explicit-any */
 'use client';
 
 import React, { useEffect, useState } from 'react';
 import { useSession, SessionProvider } from 'next-auth/react';
 import { Save } from 'lucide-react';
 import toast, { Toaster } from 'react-hot-toast';
+
+import SectionCard from '@/app/components/admin/SectionCard';
+import AdminPageLayout from '../components/AdminPageLayout';
 
 function ProfileForm() {
   const { data: session, update } = useSession();
@@ -47,66 +52,83 @@ function ProfileForm() {
     }
   };
 
+  const inputCls = 'w-full px-3.5 py-2.5 border border-gray-200 rounded-lg text-sm font-medium focus:outline-none focus:border-[#24a0ed] bg-white';
+
   return (
-    <div className="max-w-2xl mx-auto space-y-6 text-lg text-gray-800 p-6">
+    <form onSubmit={handleSubmit} className="w-full flex flex-col gap-6 pb-20 text-md font-sans text-gray-800 min-w-0">
       <Toaster position="top-center" />
-      
-      <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 flex items-center justify-between">
-        <h1 className="text-xl font-black uppercase text-[#112233]">My Profile</h1>
+
+      <div className="grid grid-cols-1 xl:grid-cols-3 gap-4 sm:gap-6 min-w-0">
+        
+        {/* Left Column */}
+        <div className="xl:col-span-2 space-y-4 sm:space-y-6 min-w-0">
+          <SectionCard title="Personal Information" defaultOpen>
+            <div className="space-y-4">
+              <div>
+                <label className="block font-bold text-gray-700 mb-1 text-sm">Display Name</label>
+                <input
+                  type="text"
+                  value={form.name}
+                  onChange={(e) => setForm({ ...form, name: e.target.value })}
+                  className={inputCls}
+                  placeholder="Your name"
+                />
+              </div>
+
+              <div>
+                <label className="block font-bold text-gray-700 mb-1 text-sm">Recovery Email</label>
+                <input
+                  type="email"
+                  value={form.email}
+                  onChange={(e) => setForm({ ...form, email: e.target.value })}
+                  className={inputCls}
+                  placeholder="e.g. admin@example.com (used for password reset)"
+                />
+              </div>
+            </div>
+          </SectionCard>
+        </div>
+
+        {/* Right Sidebar */}
+        <div className="space-y-4 sm:space-y-6 xl:sticky xl:top-24 xl:self-start min-w-0">
+          <SectionCard title="Security">
+            <div className="space-y-4">
+              <div>
+                <label className="block font-bold text-gray-700 mb-1 text-sm">New Password</label>
+                <input
+                  type="password"
+                  value={form.password}
+                  onChange={(e) => setForm({ ...form, password: e.target.value })}
+                  className={inputCls}
+                  placeholder="Leave blank to keep current"
+                />
+              </div>
+
+              <button
+                type="submit"
+                disabled={loading}
+                className="w-full bg-[#24a0ed] hover:bg-[#1a85c6] text-white font-bold px-5 py-2.5 rounded-xl shadow-sm flex items-center justify-center gap-2 uppercase tracking-wider text-xs sm:text-sm disabled:opacity-50 transition-colors cursor-pointer mt-2"
+              >
+                <Save className="w-4 h-4" /> {loading ? 'Saving...' : 'Save Profile'}
+              </button>
+            </div>
+          </SectionCard>
+        </div>
+
       </div>
-
-      <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
-        <form onSubmit={handleSubmit} className="space-y-6">
-          <div>
-            <label className="block font-bold mb-1">Display Name</label>
-            <input
-              type="text"
-              value={form.name}
-              onChange={(e) => setForm({ ...form, name: e.target.value })}
-              className="w-full p-3 border rounded-lg focus:border-[#24a0ed] outline-none"
-              placeholder="Your name"
-            />
-          </div>
-
-          <div>
-            <label className="block font-bold mb-1">Recovery Email</label>
-            <input
-              type="email"
-              value={form.email}
-              onChange={(e) => setForm({ ...form, email: e.target.value })}
-              className="w-full p-3 border rounded-lg focus:border-[#24a0ed] outline-none"
-              placeholder="e.g. admin@example.com (used for password reset)"
-            />
-          </div>
-
-          <div>
-            <label className="block font-bold mb-1">New Password</label>
-            <input
-              type="password"
-              value={form.password}
-              onChange={(e) => setForm({ ...form, password: e.target.value })}
-              className="w-full p-3 border rounded-lg focus:border-[#24a0ed] outline-none"
-              placeholder="Leave blank to keep current password"
-            />
-          </div>
-
-          <button
-            type="submit"
-            disabled={loading}
-            className="w-full bg-[#24a0ed] hover:bg-[#1a85c6] text-white font-bold px-6 py-3 rounded-lg flex items-center justify-center gap-2 uppercase disabled:opacity-50"
-          >
-            <Save className="w-4 h-4" /> {loading ? 'Saving...' : 'Save Profile'}
-          </button>
-        </form>
-      </div>
-    </div>
+    </form>
   );
 }
 
 export default function AdminProfilePage() {
   return (
     <SessionProvider>
-      <ProfileForm />
+      <AdminPageLayout
+        title="My Profile"
+        description="Manage your admin account details and credentials."
+      >
+        <ProfileForm />
+      </AdminPageLayout>
     </SessionProvider>
   );
 }

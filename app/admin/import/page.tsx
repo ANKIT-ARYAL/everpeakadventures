@@ -3,6 +3,8 @@
 import React, { useState } from 'react';
 import { Upload, AlertCircle, Database, RefreshCw, PlusCircle, CheckCircle2 } from 'lucide-react';
 import toast, { Toaster } from 'react-hot-toast';
+import AdminPageLayout from '../components/AdminPageLayout';
+import SectionCard from '@/app/components/admin/SectionCard';
 
 const IMPORT_TYPES = [
   { id: 'all', label: 'All Data (Auto-Detect)' },
@@ -67,124 +69,123 @@ export default function DataImportPage() {
   };
 
   return (
-    <div className="max-w-4xl mx-auto space-y-6 text-lg pb-20">
-      <Toaster position="top-center" />
+    <AdminPageLayout
+      title="Data Importer"
+      description="Import bulk data from WordPress or other JSON exports into the system."
+    >
+      <div className="w-full space-y-6 pb-20 min-w-0">
+        <Toaster position="top-center" />
 
-      {/* Header */}
-      <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-black text-[#112233] uppercase tracking-wide flex items-center gap-3">
-            <Database className="w-6 h-6 text-[#24a0ed]" /> Data Importer
-          </h1>
-          <p className="text-gray-500 mt-1">
-            Import bulk data from WordPress or other JSON exports into the system.
-          </p>
-        </div>
-      </div>
+        <SectionCard title="Import Configuration" defaultOpen>
+          <div className="space-y-6">
+            
+            {/* Settings */}
+            <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
+              <div>
+                <label className="block font-bold text-gray-700 mb-2 uppercase tracking-wider text-xs">Target Data Type</label>
+                <select
+                  value={dataType}
+                  onChange={(e) => setDataType(e.target.value)}
+                  className="w-full px-4 py-2.5 border border-gray-200 rounded-lg text-sm font-medium focus:outline-none focus:border-[#24a0ed] bg-gray-50/50"
+                >
+                  {IMPORT_TYPES.map((t) => (
+                    <option key={t.id} value={t.id}>
+                      {t.label}
+                    </option>
+                  ))}
+                </select>
+                <p className="text-xs text-gray-400 mt-1.5">Only the selected table will be modified.</p>
+              </div>
 
-      <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 space-y-8">
-        
-        {/* Settings */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div>
-            <label className="block font-bold text-gray-800 mb-2 uppercase tracking-wider">Target Data Type</label>
-            <select
-              value={dataType}
-              onChange={(e) => setDataType(e.target.value)}
-              className="w-full p-3 border rounded-lg text-lg font-medium focus:border-[#24a0ed] outline-none bg-gray-50"
-            >
-              {IMPORT_TYPES.map((t) => (
-                <option key={t.id} value={t.id}>
-                  {t.label}
-                </option>
-              ))}
-            </select>
-            <p className="text-md text-gray-400 mt-2">Only the selected table will be modified.</p>
-          </div>
+              <div>
+                <label className="block font-bold text-gray-700 mb-2 uppercase tracking-wider text-xs">Import Mode</label>
+                <div className="flex bg-gray-100 p-1 rounded-xl">
+                  <button
+                    type="button"
+                    className={`flex-1 py-2 px-3 rounded-lg font-bold text-xs transition-colors flex items-center justify-center gap-2 cursor-pointer ${
+                      mode === 'append' ? 'bg-white shadow-sm text-[#24a0ed]' : 'text-gray-500 hover:text-gray-800'
+                    }`}
+                    onClick={() => setMode('append')}
+                  >
+                    <PlusCircle className="w-4 h-4" /> Append Data
+                  </button>
+                  <button
+                    type="button"
+                    className={`flex-1 py-2 px-3 rounded-lg font-bold text-xs transition-colors flex items-center justify-center gap-2 cursor-pointer ${
+                      mode === 'overwrite' ? 'bg-rose-500 shadow-sm text-white' : 'text-gray-500 hover:text-gray-800'
+                    }`}
+                    onClick={() => setMode('overwrite')}
+                  >
+                    <RefreshCw className="w-4 h-4" /> Overwrite All
+                  </button>
+                </div>
+                <p className="text-xs text-gray-400 mt-1.5">
+                  {mode === 'overwrite' ? 'Warning: All existing records for this type will be deleted.' : 'New records will be added alongside existing ones.'}
+                </p>
+              </div>
+            </div>
 
-          <div>
-            <label className="block font-bold text-gray-800 mb-2 uppercase tracking-wider">Import Mode</label>
-            <div className="flex bg-gray-100 p-1 rounded-lg">
+            {/* File Upload Area */}
+            <div className="border-2 border-dashed border-gray-200 rounded-xl p-6 sm:p-8 text-center bg-gray-50/50 hover:bg-gray-50 transition-colors">
+              <input
+                type="file"
+                id="file-upload"
+                accept=".json,.xml"
+                onChange={handleFileChange}
+                className="hidden"
+              />
+              <label htmlFor="file-upload" className="cursor-pointer flex flex-col items-center justify-center space-y-3">
+                <div className="w-14 h-14 bg-blue-50 text-[#24a0ed] rounded-2xl flex items-center justify-center border border-blue-100 shadow-sm">
+                  {file ? <CheckCircle2 className="w-7 h-7 text-emerald-500" /> : <Upload className="w-7 h-7" />}
+                </div>
+                <div>
+                  <span className="block font-bold text-base sm:text-lg text-[#112233] mb-1">
+                    {file ? file.name : 'Click to select JSON file'}
+                  </span>
+                  <span className="text-xs sm:text-sm text-gray-400">
+                    {file ? `${(file.size / 1024).toFixed(1)} KB` : 'Only JSON format is currently supported'}
+                  </span>
+                </div>
+              </label>
+            </div>
+
+            {/* Info Box */}
+            <div className="bg-blue-50/60 border border-blue-100 rounded-xl p-4 flex gap-3 text-blue-900">
+              <AlertCircle className="w-5 h-5 shrink-0 text-[#24a0ed] mt-0.5" />
+              <div className="text-xs sm:text-sm space-y-1">
+                <p className="font-bold">Data Schema Mapping</p>
+                <p className="text-blue-700/80 leading-relaxed">
+                  The keys in your JSON file must match our database schema. If you are uploading a WordPress export for the first time, you may need your developer to align the mapping first. 
+                  If the schema does not match, the import will fail to prevent data corruption.
+                </p>
+              </div>
+            </div>
+
+            {/* Submit Button */}
+            <div className="pt-2">
               <button
-                className={`flex-1 py-2 rounded-md font-bold transition-colors flex items-center justify-center gap-2 ${
-                  mode === 'append' ? 'bg-white shadow-sm text-[#24a0ed]' : 'text-gray-500 hover:text-gray-800'
-                }`}
-                onClick={() => setMode('append')}
+                suppressHydrationWarning
+                type="button"
+                onClick={handleImport}
+                disabled={!mounted || loading || !file}
+                className="w-full bg-[#24a0ed] hover:bg-[#1a85c6] text-white font-bold py-3.5 px-6 rounded-xl shadow-sm flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed uppercase tracking-wider text-xs sm:text-sm transition-colors cursor-pointer"
               >
-                <PlusCircle className="w-4 h-4" /> Append Data
+                {loading ? (
+                  <>
+                    <RefreshCw className="w-4 h-4 animate-spin" /> Processing...
+                  </>
+                ) : (
+                  <>
+                    <Database className="w-4 h-4" /> Execute Import
+                  </>
+                )}
               </button>
-              <button
-                className={`flex-1 py-2 rounded-md font-bold transition-colors flex items-center justify-center gap-2 ${
-                  mode === 'overwrite' ? 'bg-red-500 shadow-sm text-white' : 'text-gray-500 hover:text-gray-800'
-                }`}
-                onClick={() => setMode('overwrite')}
-              >
-                <RefreshCw className="w-4 h-4" /> Overwrite All
-              </button>
             </div>
-            <p className="text-md text-gray-400 mt-2">
-              {mode === 'overwrite' ? 'Warning: All existing records for this type will be deleted.' : 'New records will be added alongside existing ones.'}
-            </p>
+
           </div>
-        </div>
-
-        {/* File Upload Area */}
-        <div className="border-2 border-dashed border-gray-200 rounded-xl p-8 text-center bg-gray-50 hover:bg-gray-100 transition-colors">
-          <input
-            type="file"
-            id="file-upload"
-            accept=".json,.xml"
-            onChange={handleFileChange}
-            className="hidden"
-          />
-          <label htmlFor="file-upload" className="cursor-pointer flex flex-col items-center justify-center space-y-4">
-            <div className="w-16 h-16 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center">
-              {file ? <CheckCircle2 className="w-8 h-8 text-emerald-500" /> : <Upload className="w-8 h-8" />}
-            </div>
-            <div>
-              <span className="block font-bold text-lg text-gray-800 mb-1">
-                {file ? file.name : 'Click to select JSON file'}
-              </span>
-              <span className="text-gray-500">
-                {file ? `${(file.size / 1024).toFixed(1)} KB` : 'Only JSON format is currently supported'}
-              </span>
-            </div>
-          </label>
-        </div>
-
-        {/* Info Box */}
-        <div className="bg-blue-50 border border-blue-100 rounded-xl p-4 flex gap-3 text-blue-800">
-          <AlertCircle className="w-5 h-5 shrink-0 mt-0.5" />
-          <div>
-            <p className="font-bold mb-1">Data Schema Mapping</p>
-            <p className="text-md">
-              The keys in your JSON file must match our database schema. If you are uploading a WordPress export for the first time, you may need your developer to align the mapping first. 
-              If the schema does not match, the import will fail to prevent data corruption.
-            </p>
-          </div>
-        </div>
-
-        {/* Submit Button */}
-        <div className="pt-4 border-t">
-          <button
-            suppressHydrationWarning
-            onClick={handleImport}
-            disabled={!mounted || loading || !file}
-            className="w-full bg-[#24a0ed] hover:bg-[#1a85c6] text-white font-bold py-4 rounded-xl flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed uppercase tracking-wider text-base"
-          >
-            {loading ? (
-              <>
-                <RefreshCw className="w-5 h-5 animate-spin" /> Processing...
-              </>
-            ) : (
-              <>
-                <Database className="w-5 h-5" /> Execute Import
-              </>
-            )}
-          </button>
-        </div>
+        </SectionCard>
 
       </div>
-    </div>
+    </AdminPageLayout>
   );
 }

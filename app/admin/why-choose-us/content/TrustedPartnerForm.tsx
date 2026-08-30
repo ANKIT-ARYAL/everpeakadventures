@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 'use client';
 
 import React, { useState } from 'react';
@@ -59,43 +60,46 @@ export default function TrustedPartnerForm({ initialData }: Props) {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="max-w-5xl xl:max-w-none mx-auto space-y-6 text-md text-gray-800 font-sans pb-20">
+    <form onSubmit={handleSubmit} className="w-full flex flex-col gap-6 pb-20 text-md font-sans text-gray-800 min-w-0">
       <Toaster position="top-center" />
       
-      {/* Top Bar */}
-      <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-        <div className="flex items-center gap-3">
-          <Link href="/admin/why-choose-us" className="p-2 bg-gray-100 rounded-lg hover:bg-gray-200">
+      {/* Top Header Actions */}
+      <div className="bg-white p-4 sm:p-6 rounded-xl shadow-sm border border-gray-100 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div className="flex flex-col sm:flex-row sm:items-center gap-3">
+          <Link href="/admin/why-choose-us" className="self-start sm:self-auto p-2 rounded-lg bg-gray-100 text-gray-600 hover:bg-gray-200 transition-colors">
             <ArrowLeft className="w-4 h-4" />
           </Link>
-          <h1 className="text-xl font-black uppercase text-[#112233]">Section Content</h1>
+          <h1 className="text-lg sm:text-xl font-black text-[#112233] oswald uppercase tracking-wider">
+            Section Content
+          </h1>
         </div>
-        <div className="flex items-center gap-2">
+
+        <div className="w-full sm:w-auto flex flex-wrap items-center gap-2">
           <ToggleShow model="trusted-partner" resource="why-choose-us" id="__single__" published={form.published ?? true} />
           <button 
             type="submit" 
             disabled={loading}
-            className="bg-[#24a0ed] hover:bg-[#1a85c6] text-white font-bold px-6 py-2.5 rounded-lg flex items-center gap-2 disabled:opacity-50 uppercase tracking-wider"
+            className="bg-[#24a0ed] hover:bg-[#1a85c6] text-white font-bold px-6 py-2.5 rounded-lg shadow-sm flex items-center gap-2 transition-colors uppercase tracking-wider text-xs sm:text-sm disabled:opacity-50"
           >
             <Save className="w-4 h-4" /> {loading ? 'Saving...' : 'Save Content'}
           </button>
         </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 xl:grid-cols-3 gap-4 sm:gap-6 min-w-0">
         
         {/* Left Column */}
-        <div className="lg:col-span-2 space-y-6">
+        <div className="xl:col-span-2 space-y-4 sm:space-y-6 min-w-0">
           
           {/* Main Content */}
           <SectionCard title="Main Content" defaultOpen>
             <div>
-              <label className="block font-bold mb-1">Main Title *</label>
-              <input type="text" name="mainTitle" required value={form.mainTitle} onChange={handleChange} className="w-full p-3 border rounded-lg text-lg font-medium focus:border-[#24a0ed] outline-none" placeholder="Your Trusted Partner For Himalayan Adventures" />
+              <label className="block font-bold text-gray-700 mb-1">Main Title *</label>
+              <input type="text" name="mainTitle" required value={form.mainTitle} onChange={handleChange} className="w-full px-4 py-2.5 border border-gray-200 rounded-lg text-lg font-medium focus:outline-none focus:border-[#24a0ed]" placeholder="Your Trusted Partner For Himalayan Adventures" />
             </div>
 
             <div>
-              <label className="block font-bold mb-1">Description *</label>
+              <label className="block font-bold text-gray-700 mb-1">Description *</label>
               <TipTapEditor value={form.description} onChange={(html) => setForm(prev => ({ ...prev, description: html }))} placeholder="Short section description..." minHeight="120px" />
             </div>
           </SectionCard>
@@ -103,30 +107,30 @@ export default function TrustedPartnerForm({ initialData }: Props) {
           {/* Badge */}
           <SectionCard title="Badge">
             <div>
-              <label className="block font-bold mb-1">Badge Title</label>
-              <input type="text" name="badgeTitle" value={form.badgeTitle} onChange={handleChange} className="w-full p-3 border rounded-lg focus:border-[#24a0ed] outline-none" placeholder="Traveler's Choice" />
+              <label className="block font-bold text-gray-700 mb-1">Badge Title</label>
+              <input type="text" name="badgeTitle" value={form.badgeTitle} onChange={handleChange} className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:border-[#24a0ed]" placeholder="Traveler's Choice" />
             </div>
 
             <div>
-              <label className="block font-bold mb-1">Badge Subtitle</label>
+              <label className="block font-bold text-gray-700 mb-1">Badge Subtitle</label>
               <TipTapEditor value={form.badgeSubtitle} onChange={(html) => setForm(prev => ({ ...prev, badgeSubtitle: html }))} placeholder="Badge description..." />
             </div>
 
             <div>
-              <label className="block font-bold mb-1">Review Count Text</label>
-              <input type="text" name="reviewCountText" value={form.reviewCountText} onChange={handleChange} className="w-full p-3 border rounded-lg focus:border-[#24a0ed] outline-none" placeholder="Reviews 5/5" />
+              <label className="block font-bold text-gray-700 mb-1">Review Count Text</label>
+              <input type="text" name="reviewCountText" value={form.reviewCountText} onChange={handleChange} className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:border-[#24a0ed]" placeholder="Reviews 5/5" />
             </div>
           </SectionCard>
 
           {/* Traveler Story */}
           <SectionCard title="Traveler Story">
             <div>
-              <label className="block font-bold mb-1">Story Title</label>
-              <input type="text" name="storyTitle" value={form.storyTitle} onChange={handleChange} className="w-full p-3 border rounded-lg focus:border-[#24a0ed] outline-none" placeholder="Traveler Story" />
+              <label className="block font-bold text-gray-700 mb-1">Story Title</label>
+              <input type="text" name="storyTitle" value={form.storyTitle} onChange={handleChange} className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:border-[#24a0ed]" placeholder="Traveler Story" />
             </div>
 
             <div>
-              <label className="block font-bold mb-1">Story Description</label>
+              <label className="block font-bold text-gray-700 mb-1">Story Description</label>
               <TipTapEditor value={form.storyDescription} onChange={(html) => setForm(prev => ({ ...prev, storyDescription: html }))} placeholder="Story text..." minHeight="120px" />
             </div>
           </SectionCard>
@@ -134,7 +138,7 @@ export default function TrustedPartnerForm({ initialData }: Props) {
         </div>
 
         {/* Right Sidebar */}
-        <div className="space-y-6">
+        <div className="space-y-4 sm:space-y-6 xl:sticky xl:top-24 xl:self-start min-w-0">
           
           <SectionCard title="Story Image">
             <MediaUploader value={form.storyImage} onChange={(url) => setForm(prev => ({ ...prev, storyImage: url }))} label="Upload Story Image" heightClass="h-36" />

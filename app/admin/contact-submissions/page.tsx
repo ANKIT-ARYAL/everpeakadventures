@@ -1,4 +1,8 @@
+/* eslint-disable @next/next/no-img-element */
 import { prisma } from "@/lib/prisma";
+import DeleteButton from "../components/DeleteButton";
+import ResponsiveTable from "@/app/components/admin/ResponsiveTable";
+import AdminPageLayout from "../components/AdminPageLayout";
 
 export const dynamic = 'force-dynamic';
 
@@ -7,127 +11,91 @@ export default async function AdminContactSubmissionsPage() {
     orderBy: { createdAt: 'desc' },
   });
 
+  const tableRows = submissions.map((sub, index) => [
+    <span key="index" className="text-gray-400 font-medium whitespace-nowrap">{index + 1}</span>,
+    <div key="name" className="font-bold text-[#112233] break-words">
+      {sub.firstName} {sub.lastName}
+    </div>,
+    <span key="email" className="text-[#24a0ed] font-semibold break-all">
+      {sub.email}
+    </span>,
+    <span key="phone" className="text-gray-600 font-medium whitespace-nowrap">
+      {sub.phone}
+    </span>,
+    <span key="method" className="font-semibold uppercase tracking-wider text-gray-700 whitespace-nowrap">
+      {sub.contactMethod}
+    </span>,
+    <span key="time" className="text-gray-600 font-medium whitespace-nowrap">
+      {sub.bestTime}
+    </span>,
+    <span key="msg" className="text-gray-600 font-medium block max-w-xs line-clamp-2 break-words">
+      {sub.message}
+    </span>,
+    <span key="date" className="text-gray-500 font-medium whitespace-nowrap">
+      {new Date(sub.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+    </span>,
+    <div key="actions" className="flex items-center justify-end gap-2 whitespace-nowrap">
+      <DeleteButton id={sub.id} model="contact-submissions" title={`${sub.firstName} ${sub.lastName}`} />
+    </div>,
+  ]);
+
   return (
-    <div className="space-y-6 max-w-[1400px] xl:max-w-none mx-auto text-md">
-
-      {/* Top Header Bar */}
-      <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-        <div className="flex items-center gap-3">
-          <h1 className="text-2xl font-black text-[#112233] oswald uppercase tracking-wide">Contact Submissions</h1>
-          <span className="bg-gray-100 text-gray-600 font-bold px-2.5 py-0.5 rounded-full">
-            {submissions.length} items
-          </span>
-        </div>
-        <p className="text-gray-500 mt-1">Inquiries submitted via the contact form.</p>
-      </div>
-
-      {/* Data Table - Desktop */}
-      <div className="hidden md:block bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-        <div className="overflow-x-auto">
-          <table className="w-full text-left border-collapse">
-            <thead>
-              <tr className="bg-[#f8f9fa] border-b border-gray-200 text-gray-600 font-bold uppercase tracking-wider">
-                <th className="py-3 px-4 w-12 text-center">#</th>
-                <th className="py-3 px-4">Name</th>
-                <th className="py-3 px-4">Email</th>
-                <th className="py-3 px-4">Phone</th>
-                <th className="py-3 px-4">Contact Method</th>
-                <th className="py-3 px-4">Best Time</th>
-                <th className="py-3 px-4">Message</th>
-                <th className="py-3 px-4">Submitted</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-gray-100">
-              {submissions.length === 0 ? (
-                <tr>
-                  <td colSpan={8} className="py-12 text-center text-gray-400 font-medium">
-                    No submissions found.
-                  </td>
-                </tr>
-              ) : (
-                submissions.map((submission, index) => (
-                  <tr key={submission.id} className="hover:bg-[#fcfcfc] transition-colors">
-                    <td className="py-3 px-4 text-center text-gray-400 font-medium">{index + 1}</td>
-
-                    <td className="py-3 px-4 font-bold text-[#112233]">
-                      {submission.firstName} {submission.lastName}
-                    </td>
-
-                    <td className="py-3 px-4 text-[#24a0ed] font-semibold">
-                      {submission.email}
-                    </td>
-
-                    <td className="py-3 px-4 text-gray-600 font-medium">
-                      {submission.phone}
-                    </td>
-
-                    <td className="py-3 px-4 font-semibold uppercase tracking-wider text-gray-700">
-                      {submission.contactMethod}
-                    </td>
-
-                    <td className="py-3 px-4 text-gray-600 font-medium">
-                      {submission.bestTime}
-                    </td>
-
-                    <td className="py-3 px-4 text-gray-600 font-medium max-w-xs">
-                      <span className="line-clamp-2">{submission.message}</span>
-                    </td>
-
-                    <td className="py-3 px-4 text-gray-500 font-medium whitespace-nowrap">
-                      {new Date(submission.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
-                    </td>
-                  </tr>
-                ))
-              )}
-            </tbody>
-          </table>
-        </div>
-      </div>
-
-      {/* Mobile Cards */}
-      <div className="md:hidden space-y-3">
-        {submissions.length === 0 ? (
-          <div className="bg-white rounded-xl shadow-sm border border-gray-100 py-12 text-center text-gray-400 font-medium">
-            No submissions found.
-          </div>
-        ) : (
-          submissions.map((submission, index) => (
-            <div key={submission.id} className="bg-white rounded-xl shadow-sm border border-gray-100 p-4">
+    <AdminPageLayout
+      title="Contact Submissions"
+      description="Inquiries submitted via the contact form."
+      actions={
+        <span className="bg-gray-100 text-gray-600 font-bold px-2.5 py-1 rounded-full text-sm whitespace-nowrap">
+          {submissions.length} items
+        </span>
+      }
+    >
+      <div className="flex flex-col gap-6 pb-10 min-w-0">
+        <ResponsiveTable
+          headers={['#', 'Name', 'Email', 'Phone', 'Contact Method', 'Best Time', 'Message', 'Submitted', 'Actions']}
+          rows={tableRows}
+          data={submissions}
+          emptyText="No submissions found."
+          columnClassNames={['w-16 text-center whitespace-nowrap', 'w-[180px]', 'w-[200px]', 'w-32 whitespace-nowrap', 'w-36 whitespace-nowrap', 'w-32 whitespace-nowrap', 'w-[250px]', 'w-32 whitespace-nowrap', 'text-right whitespace-nowrap']}
+          mobileCards={(_row, sub, index) => (
+            <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-4 sm:p-5 min-w-0 overflow-hidden">
               <div className="flex items-start justify-between gap-3">
                 <div className="min-w-0 flex-1">
-                  <span className="block font-bold text-[#112233] truncate">
-                    {submission.firstName} {submission.lastName}
+                  <span className="block font-bold text-[#112233] text-lg sm:text-xl truncate">
+                    {sub.firstName} {sub.lastName}
                   </span>
-                  <span className="block text-[#24a0ed] font-semibold text-lg truncate">{submission.email}</span>
-                  <span className="block text-gray-500 mt-0.5 text-[11px] truncate">#{index + 1} · {submission.phone}</span>
+                  <span className="block text-[#24a0ed] font-semibold text-sm truncate">{sub.email}</span>
+                  <span className="block text-gray-400 mt-0.5 text-xs">#{index + 1} · Phone: {sub.phone}</span>
                 </div>
-                <span className="bg-gray-100 text-gray-600 font-bold px-2 py-0.5 rounded-full text-[10px] shrink-0">#{index + 1}</span>
               </div>
-              <div className="grid grid-cols-2 gap-x-4 gap-y-2 mt-3 text-[11px]">
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-3 mt-4 text-xs">
                 <div className="min-w-0">
-                  <span className="block text-[9px] font-bold text-gray-400 uppercase tracking-wider">Contact Method</span>
-                  <span className="font-semibold uppercase tracking-wider text-gray-700 truncate block">{submission.contactMethod}</span>
+                  <span className="block text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-0.5">Contact Method</span>
+                  <span className="font-semibold uppercase tracking-wider text-gray-700 block">{sub.contactMethod}</span>
                 </div>
                 <div className="min-w-0">
-                  <span className="block text-[9px] font-bold text-gray-400 uppercase tracking-wider">Best Time</span>
-                  <span className="text-gray-600 font-medium">{submission.bestTime}</span>
+                  <span className="block text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-0.5">Best Time</span>
+                  <span className="text-gray-600 font-medium block">{sub.bestTime}</span>
                 </div>
-                <div className="min-w-0 col-span-2">
-                  <span className="block text-[9px] font-bold text-gray-400 uppercase tracking-wider">Message</span>
-                  <span className="text-gray-600 line-clamp-2">{submission.message}</span>
+                <div className="min-w-0 sm:col-span-2">
+                  <span className="block text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-0.5">Message</span>
+                  <span className="text-gray-600 line-clamp-3 break-words">{sub.message}</span>
                 </div>
-                <div className="min-w-0 col-span-2">
-                  <span className="block text-[9px] font-bold text-gray-400 uppercase tracking-wider">Submitted</span>
+                <div className="min-w-0 sm:col-span-2">
+                  <span className="block text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-0.5">Submitted</span>
                   <span className="text-gray-500 font-medium whitespace-nowrap">
-                    {new Date(submission.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                    {new Date(sub.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
                   </span>
                 </div>
+              </div>
+
+              <div className="flex items-center gap-2 flex-wrap mt-4 pt-3 border-t border-gray-100">
+                <DeleteButton id={sub.id} model="contact-submissions" title={`${sub.firstName} ${sub.lastName}`} />
               </div>
             </div>
-          ))
-        )}
+          )}
+        />
       </div>
-
-    </div>
+    </AdminPageLayout>
   );
 }

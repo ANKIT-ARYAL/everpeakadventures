@@ -95,7 +95,7 @@ export default function ActivityForm({ initialData, isEditing = false }: Props) 
             disabled={loading}
             className="bg-[#24a0ed] hover:bg-[#1a85c6] text-white font-bold px-6 py-2.5 rounded-lg flex items-center gap-2 disabled:opacity-50 uppercase tracking-wider"
           >
-            <Save className="w-4 h-4" /> {loading ? 'Saving...' : (isEditing ? 'Update Hero' : 'Publish Hero')}
+            <Save className="w-4 h-4" /> {loading ? 'Saving...' : (isEditing ? 'Update Hero' : 'Publish Activity')}
           </button>
         </div>
       </div>
