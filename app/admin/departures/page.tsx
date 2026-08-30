@@ -102,6 +102,7 @@ export default async function AdminDeparturesPage() {
           const title = trip?.title ?? '—';
           const image = trip?.heroImage ?? '';
           const duration = departure.tripType === 'trek' ? trip?.durationDays : trip?.duration;
+          const tripHref = departure.tripType === 'trek' && trip?.slug ? `/trekking/${trip.slug}` : trip?.slug ? `/tour/${trip.slug}` : null;
           return (
             <>
               <div className="flex items-start gap-3">
@@ -140,6 +141,7 @@ export default async function AdminDeparturesPage() {
               </div>
               <div className="flex items-center gap-2 flex-wrap mt-3 pt-3 border-t border-gray-100">
                 <ToggleShow model="departures" resource="departures" id={departure.id} published={departure.published} />
+                {tripHref && <ViewButton href={tripHref} />}
                 <EditButton href={`/admin/departures/${departure.id}/edit`} />
                 <DeleteButton id={departure.id} model="departures" title={title} />
               </div>

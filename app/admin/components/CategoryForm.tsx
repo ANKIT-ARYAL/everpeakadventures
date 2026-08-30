@@ -87,7 +87,7 @@ export default function CategoryForm({
   const labelCls = 'block font-bold text-gray-700 mb-1';
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6 max-w-[1000px] xl:max-w-none mx-auto">
+    <form onSubmit={handleSubmit} className="space-y-6 w-full mx-auto">
       <Toaster position="top-right" />
 
       <div className="bg-white p-4 sm:p-6 rounded-xl shadow-sm border border-gray-100 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
@@ -109,7 +109,7 @@ export default function CategoryForm({
         </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
+      <div className="grid grid-cols-1 xl:grid-cols-3 gap-4 sm:gap-6">
         {/* Main column */}
         <div className="lg:col-span-2 space-y-4 sm:space-y-6 min-w-0">
           <div className="bg-white p-4 sm:p-6 rounded-xl shadow-sm border border-gray-100 space-y-4">

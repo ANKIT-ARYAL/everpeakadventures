@@ -17,6 +17,9 @@ importers:
       '@supabase/supabase-js':
         specifier: ^2.112.4
         version: 2.112.4
+      '@tailwindcss/postcss':
+        specifier: ^4
+        version: 4.3.3
       '@tiptap/core':
         specifier: ^3.30.2
         version: 3.30.2(@tiptap/pm@3.30.2)
@@ -56,6 +59,9 @@ importers:
       '@tiptap/starter-kit':
         specifier: ^3.29.2
         version: 3.30.2
+      '@types/nodemailer':
+        specifier: ^8.0.1
+        version: 8.0.1
       fast-xml-parser:
         specifier: ^5.11.0
         version: 5.11.0
@@ -79,10 +85,10 @@ importers:
         version: 16.3.0(@babel/core@7.29.7)(@types/node@20.19.43)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
       next-auth:
         specifier: ^4.24.15
-        version: 4.24.15(next@16.3.0(@babel/core@7.29.7)(@types/node@20.19.43)(react-dom@19.2.8(react@19.2.8))(react@19.2.8))(nodemailer@9.0.5)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
+        version: 4.24.15(next@16.3.0(@babel/core@7.29.7)(@types/node@20.19.43)(react-dom@19.2.8(react@19.2.8))(react@19.2.8))(nodemailer@7.0.13)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
       nodemailer:
-        specifier: ^9.0.5
-        version: 9.0.5
+        specifier: ^7.0.7
+        version: 7.0.13
       pg:
         specifier: ^8.23.0
         version: 8.23.0
@@ -107,6 +113,9 @@ importers:
       react-select:
         specifier: ^5.10.2
         version: 5.10.2(@types/react@19.2.18)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
+      tailwindcss:
+        specifier: ^4
+        version: 4.3.3
       yet-another-react-lightbox:
         specifier: ^3.32.2
         version: 3.32.2(@types/react-dom@19.2.4(@types/react@19.2.18))(@types/react@19.2.18)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
@@ -114,15 +123,9 @@ importers:
         specifier: ^4.4.3
         version: 4.4.3
     devDependencies:
-      '@tailwindcss/postcss':
-        specifier: ^4
-        version: 4.3.3
       '@types/node':
         specifier: ^20
         version: 20.19.43
-      '@types/nodemailer':
-        specifier: ^8.0.1
-        version: 8.0.1
       '@types/pg':
         specifier: ^8.23.1
         version: 8.23.1
@@ -141,9 +144,6 @@ importers:
       puppeteer-core:
         specifier: ^25.5.0
         version: 25.8.0
-      tailwindcss:
-        specifier: ^4
-        version: 4.3.3
       tsx:
         specifier: ^4.23.5
         version: 4.23.12
@@ -2745,8 +2745,8 @@ packages:
     resolution: {integrity: sha512-D9UOmYG3UH1V+ENW56t5QXBwJw1YEY18ruVeus89Rw+SyIgjPkCO84bRzO3uNIYosJbNwiabWVn48o3uJLjxFQ==}
     engines: {node: '>=18'}
 
-  nodemailer@9.0.5:
-    resolution: {integrity: sha512-wvjiKvjczmsN7U/8006JOdXubgBk2XFAbioDMbT+sM7cPs0QrhJTa6KBRX7P5REGGkDcLUz/EarWidb8G8C1jQ==}
+  nodemailer@7.0.13:
+    resolution: {integrity: sha512-PNDFSJdP+KFgdsG3ZzMXCgquO7I6McjY2vlqILjtJd0hy8wEvtugS9xKRF2NWlPNGxvLCXlTNIae4serI7dinw==}
     engines: {node: '>=6.0.0'}
 
   oauth@0.9.15:
@@ -6195,7 +6195,7 @@ snapshots:
 
   natural-compare@1.4.0: {}
 
-  next-auth@4.24.15(next@16.3.0(@babel/core@7.29.7)(@types/node@20.19.43)(react-dom@19.2.8(react@19.2.8))(react@19.2.8))(nodemailer@9.0.5)(react-dom@19.2.8(react@19.2.8))(react@19.2.8):
+  next-auth@4.24.15(next@16.3.0(@babel/core@7.29.7)(@types/node@20.19.43)(react-dom@19.2.8(react@19.2.8))(react@19.2.8))(nodemailer@7.0.13)(react-dom@19.2.8(react@19.2.8))(react@19.2.8):
     dependencies:
       '@babel/runtime': 7.29.7
       '@panva/hkdf': 1.2.1
@@ -6210,7 +6210,7 @@ snapshots:
       react-dom: 19.2.8(react@19.2.8)
       uuid: 11.1.1
     optionalDependencies:
-      nodemailer: 9.0.5
+      nodemailer: 7.0.13
 
   next@16.3.0(@babel/core@7.29.7)(@types/node@20.19.43)(react-dom@19.2.8(react@19.2.8))(react@19.2.8):
     dependencies:
@@ -6246,7 +6246,7 @@ snapshots:
 
   node-releases@2.0.53: {}
 
-  nodemailer@9.0.5: {}
+  nodemailer@7.0.13: {}
 
   oauth@0.9.15: {}
 

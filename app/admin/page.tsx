@@ -3,7 +3,6 @@ import { auth } from "@/auth";
 import { hasPerm } from "@/lib/permissions";
 import type { PermAction } from "@/lib/permissions";
 import Link from 'next/link';
-import Greeting from "../admin/components/Greeting";
 import { 
   Compass, Layers, FileText, HelpCircle, MessageSquare, 
   Shield, Users, Briefcase, Mail

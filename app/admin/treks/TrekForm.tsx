@@ -497,7 +497,7 @@ export default function TrekForm({ initialData, isEditing = false, categories }:
   }, [formData]);
 
   return (
-    <form onSubmit={handleSubmit} className="max-w-[1200px] xl:max-w-none mx-auto space-y-6 pb-20 text-md font-sans text-gray-800">
+    <form onSubmit={handleSubmit} className="w-full mx-auto space-y-6 pb-20 text-md font-sans text-gray-800">
 
       {/* Top Header Actions */}
       <div className="bg-white p-4 sm:p-6 rounded-xl shadow-sm border border-gray-100 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
@@ -534,7 +534,7 @@ export default function TrekForm({ initialData, isEditing = false, categories }:
 
       <StickySectionNav sections={['Overview', 'Pricing & Booking', 'Itinerary', 'Inclusions', 'Reviews', 'Elevation Profile', 'Media', 'Categories']} />
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
+      <div className="grid grid-cols-1 xl:grid-cols-3 gap-4 sm:gap-6">
 
         {/* ============ LEFT / MAIN COLUMN ============ */}
         <div className="lg:col-span-2 space-y-4 sm:space-y-6 min-w-0">
@@ -868,7 +868,7 @@ export default function TrekForm({ initialData, isEditing = false, categories }:
         </div>
 
 {/* ============ RIGHT SIDEBAR ============ */}
-        <div className="space-y-4 sm:space-y-6 lg:sticky lg:top-24 lg:self-start">
+        <div className="space-y-4 sm:space-y-6 xl:sticky xl:top-24 xl:self-start">
 
           {/* Media group */}
           <div id="sec-media" className="scroll-mt-24">

@@ -54,11 +54,7 @@ export default function CategoryList({
 
   /*
    * Desktop table columns.
-   *
-   * Name gets enough room for the action buttons:
-   * [Show] [Edit] [View] [Delete]
-   *
-   * The table itself remains responsive through ResponsiveTable.
+   * Added break-normal to all columns to prevent text from crushing on large screens.
    */
   const tableHeaders = hasChildren
     ? ["#", "Name", "Slug", "Description", childrenLabel ?? "Assigned"]
@@ -66,17 +62,17 @@ export default function CategoryList({
 
   const tableColumnClassNames = hasChildren
     ? [
-        "w-12 text-center whitespace-nowrap",
-        "w-[260px]",
-        "w-[180px]",
-        "w-[280px]",
-        "w-[280px]",
+        "w-12 text-center whitespace-nowrap break-normal",
+        "w-[260px] break-normal",
+        "w-[180px] break-normal",
+        "w-[280px] break-normal",
+        "w-[280px] break-normal",
       ]
     : [
-        "w-12 text-center whitespace-nowrap",
-        "w-[280px]",
-        "w-[220px]",
-        "w-[320px]",
+        "w-12 text-center whitespace-nowrap break-normal",
+        "w-[280px] break-normal",
+        "w-[220px] break-normal",
+        "w-[320px] break-normal",
       ];
 
   /*
@@ -88,7 +84,7 @@ export default function CategoryList({
      */
     <span
       key="n"
-      className="text-gray-400 font-medium whitespace-nowrap"
+      className="text-gray-400 font-medium whitespace-nowrap break-normal"
     >
       {index + 1}
     </span>,
@@ -101,7 +97,7 @@ export default function CategoryList({
       className="min-w-0"
     >
       <span
-        className="font-bold text-[#112233] block break-words"
+        className="font-bold text-[#112233] block break-words break-normal"
         title={item.name}
       >
         {item.name}
@@ -139,7 +135,7 @@ export default function CategoryList({
      */
     <span
       key="slug"
-      className="text-gray-500 text-md break-words"
+      className="text-gray-500 text-md break-words break-normal"
       title={item.slug || undefined}
     >
       {item.slug || "—"}
@@ -150,7 +146,7 @@ export default function CategoryList({
      */
     <span
       key="desc"
-      className="text-gray-600 line-clamp-2 block max-w-[320px] break-words"
+      className="text-gray-600 line-clamp-2 block max-w-[320px] break-words break-normal"
     >
       <RichTextInline html={item.description || ""} />
     </span>,
@@ -169,7 +165,9 @@ export default function CategoryList({
   ]);
 
   return (
-    <div className="w-full max-w-[1400px] xl:max-w-none mx-auto px-3 sm:px-4 lg:px-6 xl:px-8 space-y-4 sm:space-y-6 pb-10 text-md min-w-0 overflow-x-hidden">
+    // CRITICAL FIX: Removed px-* and max-w-* limits here. 
+    // Replaced space-y with gap-4 flex-col to match AdminPageLayout perfectly.
+    <div className="w-full flex flex-col gap-4 sm:gap-6 min-w-0 max-w-full pb-10">
 
       {/* =========================================================
           HEADER
@@ -305,7 +303,7 @@ function AssignedList({
 }) {
   if (!items || items.length === 0) {
     return (
-      <span className="text-md text-gray-400 italic">
+      <span className="text-md text-gray-400 italic break-normal">
         No items assigned
       </span>
     );
