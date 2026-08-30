@@ -13,21 +13,20 @@ export async function POST(request: Request) {
       return NextResponse.json({ success: false, error: 'Invalid payload' }, { status: 400 });
     }
 
-    const name = String(body.name || '').trim();
     const email = String(body.email || '').trim();
 
-    if (!name || !email) {
-      return NextResponse.json({ success: false, error: 'Name and email are required' }, { status: 400 });
+    if (!email) {
+      return NextResponse.json({ success: false, error: 'Please enter your email.' }, { status: 400 });
     }
 
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-      return NextResponse.json({ success: false, error: 'Invalid email address' }, { status: 400 });
+      return NextResponse.json({ success: false, error: 'Please enter a valid email address.' }, { status: 400 });
     }
 
     const subscriber = await prisma.newsletterSubscriber.upsert({
       where: { email },
-      update: { name },
-      create: { name, email },
+      update: {},
+      create: { email, name: email.split('@')[0] },
     });
 
     return NextResponse.json({ success: true, data: subscriber }, { status: 201 });

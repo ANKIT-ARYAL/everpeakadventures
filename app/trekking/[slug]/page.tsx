@@ -306,7 +306,7 @@ const packingItems = trek.packingItems || [];
                   From
                 </div>
                 <div className="flex items-baseline gap-1">
-                  <span className="text-5xl font-black text-[#112233] tracking-tighter">
+                  <span className="text-[40px] font-black text-[#112233] tracking-tighter">
                     US$ {minPriceDisplay.toLocaleString()}
                   </span>
                   <span className="text-sm font-semibold text-gray-500 ml-1">/ person</span>
@@ -523,7 +523,7 @@ const packingItems = trek.packingItems || [];
       <MapPin className="w-6 h-6 text-gray-700 shrink-0 stroke-[1.5]" />
       <div className="flex flex-col">
         <span className="text-[16px] text-gray-500 font-bold mb-1">Destination</span>
-        <span className="text-[20px] font-bold text-[#112233]">{trek.startPoint || "Nepal"}</span>
+        <span className="text-[15px] font-bold text-[#112233]">{trek.startPoint || "Nepal"}</span>
       </div>
     </div>
 
@@ -531,7 +531,7 @@ const packingItems = trek.packingItems || [];
       <Calendar className="w-6 h-6 text-gray-700 shrink-0 stroke-[1.5]" />
       <div className="flex flex-col">
         <span className="text-[16px] text-gray-500 font-bold mb-1">Duration</span>
-        <span className="text-[20px] font-bold text-[#112233]">{trek.durationDays}</span>
+        <span className="text-[15px] font-bold text-[#112233]">{trek.durationDays}</span>
       </div>
     </div>
 
@@ -539,7 +539,7 @@ const packingItems = trek.packingItems || [];
       <ActivityIcon className="w-6 h-6 text-gray-700 shrink-0 stroke-[1.5]" />
       <div className="flex flex-col">
         <span className="text-[16px] text-gray-500 font-bold mb-1">Trip Difficulty</span>
-        <span className="text-[20px] font-bold text-amber-600">{trek.difficulty}</span>
+        <span className="text-[15px] font-bold text-amber-600">{trek.difficulty}</span>
       </div>
     </div>
 
@@ -547,7 +547,7 @@ const packingItems = trek.packingItems || [];
       <Home className="w-6 h-6 text-gray-700 shrink-0 stroke-[1.5]" />
       <div className="flex flex-col">
         <span className="text-[16px] text-gray-500 font-bold mb-1">Accommodation</span>
-        <span className="text-[20px] font-bold text-[#112233]">{trek.accommodation || "Hotel / Guesthouse"}</span>
+        <span className="text-[15px] font-bold text-[#112233]">{trek.accommodation || "Hotel / Guesthouse"}</span>
       </div>
     </div>
 
@@ -555,7 +555,7 @@ const packingItems = trek.packingItems || [];
       <Utensils className="w-6 h-6 text-gray-700 shrink-0 stroke-[1.5]" />
       <div className="flex flex-col">
         <span className="text-[16px] text-gray-500 font-bold mb-1">Meals</span>
-        <span className="text-[20px] font-bold text-[#112233] flex items-center gap-1">
+        <span className="text-[15px] font-bold text-[#112233] flex items-center gap-1">
           {trek.meals || "B, L, D"}
           <div className="w-3.5 h-3.5 rounded-full border border-gray-400 flex items-center justify-center text-[8px] text-gray-400 font-bold cursor-help" title="Breakfast, Lunch, Dinner">i</div>
         </span>
@@ -568,7 +568,7 @@ const packingItems = trek.packingItems || [];
       </svg>
       <div className="flex flex-col">
         <span className="text-[16px] text-gray-500 font-bold mb-1">Group Size</span>
-        <span className="text-[20px] font-bold text-[#112233]">Min. 1 Pax</span>
+        <span className="text-[15px] font-bold text-[#112233]">Min. 1 Pax</span>
       </div>
     </div>
 
@@ -578,7 +578,7 @@ const packingItems = trek.packingItems || [];
       </svg>
       <div className="flex flex-col">
         <span className="text-[16px] text-gray-500 font-bold mb-1">Best Time</span>
-        <span className="text-[20px] font-bold text-[#112233]">{trek.bestSeason || "Mar - May & Sept - Dec"}</span>
+        <span className="text-[15px] font-bold text-[#112233]">{trek.bestSeason || "Mar - May & Sept - Dec"}</span>
       </div>
     </div>
 
@@ -586,7 +586,7 @@ const packingItems = trek.packingItems || [];
       <Mountain className="w-6 h-6 text-gray-700 shrink-0 stroke-[1.5]" />
       <div className="flex flex-col">
         <span className="text-[16px] text-gray-500 font-bold mb-1">Max. Elevation</span>
-        <span className="text-[20px] font-bold text-[#112233]">{trek.maxAltitude}</span>
+        <span className="text-[15px] font-bold text-[#112233]">{trek.maxAltitude}</span>
       </div>
     </div>
 
@@ -594,7 +594,7 @@ const packingItems = trek.packingItems || [];
       <Flag className="w-6 h-6 text-gray-700 shrink-0 stroke-[1.5]" />
       <div className="flex flex-col">
         <span className="text-[16px] text-gray-500 font-bold mb-1">Activities</span>
-        <span className="text-[20px] font-bold text-[#112233]">{trek.activity || "Trekking"}</span>
+        <span className="text-[15px] font-bold text-[#112233]">{trek.activity || "Trekking"}</span>
       </div>
     </div>
 
@@ -917,15 +917,15 @@ const packingItems = trek.packingItems || [];
                 FIXED DEPARTURES
             ========================================================= */}
             {shapedDepartures.length > 0 && (
-              <section id="departures" className="scroll-mt-[118px]">
-                <FixedDepartures
-                  data={shapedDepartures as any[]}
-                  label="Departure Dates"
-                  title={`${trek.title} – Fixed Departures`}
-                  embedded
-                />
-              </section>
-            )}
+  <div id="departures" className="scroll-mt-[118px] min-w-0 overflow-hidden">
+    <FixedDepartures
+      data={shapedDepartures as any[]}
+      label="Departure Dates"
+      title={`${trek.title} – Fixed Departures`}
+      embedded
+    />
+  </div>
+)}
 
             {/* =========================================================
                 TREK VIDEO WITH SYNCED ELEVATION PROFILE

@@ -147,8 +147,8 @@ export default async function Footer() {
                 <Send className="w-6 h-6 text-accent-amber -ml-1 mt-1" />
               </div>
               <div>
-                <h3 className="text-xl lg:text-2xl font-black oswald uppercase tracking-wider mb-2">Subscribe to Our Newsletter</h3>
-                <p className="text-base lg:text-lg text-[#EFE6D8]/70">Get the latest treks, travel tips & exclusive offers straight to your inbox.</p>
+                <h3 className="text-[1rem] font-black oswald tracking-wider mb-2">Subscribe to Our Newsletter</h3>
+                <p className="text-[1rem] text-[#EFE6D8]/70">Get the latest treks, travel tips & exclusive offers straight to your inbox.</p>
               </div>
             </div>
             <div className="w-full md:w-auto md:min-w-[320px]">

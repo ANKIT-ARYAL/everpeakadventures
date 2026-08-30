@@ -102,12 +102,11 @@ const getNavbarData = unstable_cache(
 
     const nepalTrekkingTabs = targetTrekRegions.map(region => {
       const cleanSlug = region.slug.toLowerCase();
-      let matchedTreks = allTreks.filter(t => {
+      const matchedTreks = allTreks.filter(t => {
         const inRegions = t.regions && t.regions.some(r => r.toLowerCase().includes(cleanSlug) || r.toLowerCase().includes(region.name.toLowerCase()));
         const inRegion = t.region && (t.region.toLowerCase().includes(cleanSlug) || t.region.toLowerCase().includes(region.name.toLowerCase()));
         return inRegions || inRegion;
       }).slice(0, 8);
-      // NO FALLBACK
 
       return {
         name: region.name,
@@ -134,15 +133,14 @@ const getNavbarData = unstable_cache(
 
     const nepalToursTabs = targetTourCategories.map(cat => {
       const cleanSlug = cat.slug.toLowerCase();
-      let matchedTours = allTours.filter(t => {
-        // Match if the tour has this category checked in its regions array
+      const matchedTours = allTours.filter(t => {
         return t.regions && t.regions.some(r => r.toLowerCase().includes(cleanSlug) || r.toLowerCase().includes(cat.name.toLowerCase()));
       }).slice(0, 8);
 
       return {
         name: cat.name,
         slug: cat.slug,
-        href: `/tour-category/${cat.slug}`, // Assuming a generic category route if needed
+        href: `/tour-category/${cat.slug}`,
         tours: matchedTours.map(t => ({
           ...t,
           lowestPrice: getMinPrice(t),
@@ -158,8 +156,7 @@ const getNavbarData = unstable_cache(
     ];
     
     const tibetBhutanMenu = tibetBhutanTabs.map(tab => {
-      let items = allTours.filter(t => (t.destination || '').toLowerCase().includes(tab.dest) || (t.primaryDestination || '').toLowerCase().includes(tab.dest)).slice(0, 8);
-      // NO FALLBACK
+      const items = allTours.filter(t => (t.destination || '').toLowerCase().includes(tab.dest) || (t.primaryDestination || '').toLowerCase().includes(tab.dest)).slice(0, 8);
 
       return {
         name: tab.name,

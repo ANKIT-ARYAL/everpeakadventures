@@ -40,27 +40,27 @@ export default function FixedDepartures({ data = [], label, title, embedded = fa
       id="departures"
       className={
         embedded
-          ? "scroll-mt-[118px] rounded-2xl bg-foreground p-5 md:p-8 overflow-hidden"
-          : "scroll-mt-[118px] py-24 px-6 bg-foreground"
+          ? "scroll-mt-[118px] rounded-2xl bg-foreground p-5 md:p-8 overflow-hidden min-w-0"
+          : "scroll-mt-[118px] py-24 px-6 bg-foreground min-w-0"
       }
     >
-      <div className={embedded ? "" : "px-5 lg:px-20"}>
+      <div className={embedded ? "min-w-0" : "px-5 lg:px-20 min-w-0"}>
         
         {/* Header Section */}
-        <Reveal className="flex flex-col md:flex-row justify-between items-start md:items-end mb-12 gap-6">
-          <div>
-            <h2 className={`${embedded ? 'text-2xl md:text-3xl' : 'text-4xl md:text-5xl'} font-display font-medium text-background tracking-tight mb-4`}>
+        <Reveal className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4 min-w-0">
+          <div className="min-w-0 flex-1">
+            <h2 className={`${embedded ? 'text-2xl md:text-3xl' : 'text-4xl md:text-5xl'} font-display font-medium text-background tracking-tight mb-2 break-words`}>
               {title ?? 'Fixed Departures'}
             </h2>
-            <p className="font-sans text-background/70 text-lg">
+            <p className="font-sans text-background/70 text-base md:text-lg break-words">
               {label ?? 'Join a scheduled group trek and share the adventure.'}
             </p>
           </div>
 
-          <div className="flex items-center gap-3 w-full md:w-auto">
+          <div className="flex items-center gap-3 w-full md:w-auto shrink-0 flex-wrap">
             <button 
               onClick={() => setSelectedMonth('All')}
-              className={`px-6 py-3 rounded-full text-lg font-semibold transition-colors ${
+              className={`px-5 py-2.5 rounded-full text-sm sm:text-base font-semibold transition-colors cursor-pointer ${
                 selectedMonth === 'All' 
                   ? 'bg-background text-foreground' 
                   : 'bg-background/10 text-background hover:bg-background/20'
@@ -73,14 +73,14 @@ export default function FixedDepartures({ data = [], label, title, embedded = fa
               <select 
                 value={selectedMonth}
                 onChange={(e) => setSelectedMonth(e.target.value)}
-                className="appearance-none bg-background/10 text-background px-6 py-3 pr-12 rounded-full text-lg font-semibold outline-none cursor-pointer hover:bg-background/20 transition-colors border border-transparent"
+                className="appearance-none bg-background/10 text-background px-5 py-2.5 pr-10 rounded-full text-sm sm:text-base font-semibold outline-none cursor-pointer hover:bg-background/20 transition-colors border border-transparent"
               >
-                <option value="All">Filter by Month</option>
+                <option value="All" className="text-gray-900 bg-white">Filter by Month</option>
                 {availableMonths.map((month) => (
-                  <option key={month} value={month}>{month}</option>
+                  <option key={month} value={month} className="text-gray-900 bg-white">{month}</option>
                 ))}
               </select>
-              <div className="absolute right-5 top-1/2 -translate-y-1/2 pointer-events-none text-background/50">
+              <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-background/50">
                 <svg viewBox="0 0 24 24" className="w-4 h-4 fill-current"><path d="M7 10l5 5 5-5z"/></svg>
               </div>
             </div>
@@ -88,8 +88,8 @@ export default function FixedDepartures({ data = [], label, title, embedded = fa
         </Reveal>
 
         {/* List Section */}
-        <div className="border-t border-background/10">
-          <Stagger className="flex flex-col">
+        <div className="border-t border-background/10 min-w-0">
+          <Stagger className="flex flex-col min-w-0">
             {filteredData.length === 0 ? (
               <div className="py-24 text-center text-background/50 font-sans">
                 No departures found for {selectedMonth}.
@@ -98,53 +98,52 @@ export default function FixedDepartures({ data = [], label, title, embedded = fa
               filteredData.map((trip) => (
                 <StaggerItem
                   key={trip.id} 
-                  className="group flex flex-col md:flex-row md:items-center justify-between gap-6 py-6 border-b border-background/10 hover:bg-background/5 transition-colors px-4 -mx-4 rounded-xl"
+                  className="group grid grid-cols-1 md:grid-cols-12 items-center gap-4 py-5 border-b border-background/10 hover:bg-background/5 transition-colors px-4 -mx-4 rounded-xl min-w-0 overflow-hidden"
                 >
-                  <div className="flex items-center gap-6 md:w-2/5">
-                    <div className="w-20 h-20 rounded-lg overflow-hidden shrink-0 bg-background/10">
+                  {/* Column 1: Image & Title (Span 5) */}
+                  <div className="flex items-center gap-4 md:col-span-5 min-w-0">
+                    <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-xl overflow-hidden shrink-0 bg-background/10 border border-background/10 flex items-center justify-center">
                       <img 
                         src={trip.heroImage || "https://ml978xhbpkuo.i.optimole.com/cb:t1g8.6c6/w:259/h:68/q:mauto/f:best/https://everpeakadventures.com/wp-content/uploads/2025/03/Untitled-design-123456-e1783511870519.png"} 
                         alt={trip.title}
-                        className={`w-full h-full ${!trip.heroImage ? 'object-contain p-4' : 'object-cover'} group-hover:scale-110 transition-transform duration-700`}
+                        className={`w-full h-full ${!trip.heroImage ? 'object-contain p-3' : 'object-cover'} group-hover:scale-110 transition-transform duration-700`}
                       />
                     </div>
-                    <div>
-                      <h3 className="text-lg font-display font-medium text-background group-hover:text-accent-amber transition-colors">
+                    <div className="min-w-0 flex-1">
+                      <h3 className="text-base sm:text-lg font-display font-medium text-background group-hover:text-accent-amber transition-colors truncate" title={trip.title}>
                         {trip.title}
-                      </h3>
-                      <div className="flex items-center gap-3 text-lg text-background/60 font-sans mt-1">
-                        <span>{trip.durationDays}</span>
-                        <span className="w-1 h-1 rounded-full bg-background/30" />
-                        <span>{trip.difficulty}</span>
-                      </div>
+                      </h3>                      
                     </div>
                   </div>
 
-                  <div className="flex flex-col md:w-1/5">
-                    <span className="text-lg font-medium text-background font-sans">
+                  {/* Column 2: Date & Seats (Span 2) */}
+                  <div className="flex flex-col md:col-span-2 min-w-0 pl-20 md:pl-0">
+                    <span className="text-sm sm:text-base font-medium text-background font-sans truncate">
                       {trip.startDate}
                     </span>
-                    <span className="text-lg text-background/50 font-sans">
+                    <span className="text-xs sm:text-sm text-background/50 font-sans truncate mt-0.5">
                       {trip.seatsLeft ?? 12} Seats Left
                     </span>
                   </div>
 
-                  <div className="flex flex-col md:w-1/5">
-                    <span className="text-lg font-display font-medium text-accent-amber">
+                  {/* Column 3: Price & Status (Span 2) */}
+                  <div className="flex flex-col md:col-span-2 min-w-0 pl-20 md:pl-0">
+                    <span className="text-base sm:text-lg font-display font-medium text-accent-amber truncate">
                       ${(trip.price ?? 0).toLocaleString()}
                     </span>
                     <div className="flex items-center gap-1.5 mt-0.5">
-                      <span className="w-2 h-2 rounded-full bg-accent-amber"></span>
-                      <span className="text-md text-background/60 font-sans font-medium uppercase tracking-wider">
+                      <span className="w-2 h-2 rounded-full bg-accent-amber shrink-0"></span>
+                      <span className="text-xs sm:text-sm text-background/60 font-sans font-medium uppercase tracking-wider truncate">
                         {trip.status || "Guaranteed"}
                       </span>
                     </div>
                   </div>
 
-                  <div className="md:w-auto">
+                  {/* Column 4: Join Button (Span 3) */}
+                  <div className="flex md:justify-end md:col-span-3 min-w-0 pl-20 md:pl-0">
                     <Link 
                       href={`/booking-form/?trip_id=${trip.trip_id}&departure_id=${trip.departureId || `dep_${trip.id}`}&departure_start=${trip.startDate}&pp=${trip.price}`}
-                      className="inline-block border border-background/30 hover:border-accent-amber text-background hover:bg-accent-amber hover:text-white text-center transition-all duration-300 px-6 py-3 rounded-full text-lg font-semibold w-full md:w-auto cursor-pointer"
+                      className="inline-flex items-center justify-center border border-background/30 hover:border-accent-amber text-background hover:bg-accent-amber hover:text-white text-center transition-all duration-300 px-6 py-2.5 rounded-full text-sm sm:text-base font-semibold w-full md:w-auto cursor-pointer"
                     >
                       Join Trip
                     </Link>

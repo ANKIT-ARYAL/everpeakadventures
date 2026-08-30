@@ -26,7 +26,7 @@ const LINKS = [
   { id: 'departures', label: 'Departures & Price', icon: CalendarDays },
 ];
 
-const NAV_OFFSET = 150; // fixed header + sticky section nav + a little breathing room
+const NAV_OFFSET = 120;
 
 interface StickySectionNavProps {
   sectionIds?: string[];
@@ -47,10 +47,8 @@ export default function StickySectionNav({ sectionIds }: StickySectionNavProps) 
 
     const onScroll = () => {
       const y = window.scrollY;
-      // Show nav once we've scrolled past the hero banner, hide when near the very top
       setVisible(y > 118);
 
-      // Find the section currently in view (its top is near the top of the viewport)
       let current = '';
       for (const s of sections) {
         if (s.getBoundingClientRect().top <= NAV_OFFSET + 12) current = s.id;
@@ -76,12 +74,12 @@ export default function StickySectionNav({ sectionIds }: StickySectionNavProps) 
   return (
     <nav
       aria-label="Section navigation"
-      className={`fixed top-20 left-0 right-0 z-30 bg-white/95 backdrop-blur border-y border-gray-100 shadow-sm transition-all duration-300 ${
+      className={`fixed top-16 lg:top-20 left-0 right-0 z-30 bg-white/95 backdrop-blur border-y border-gray-100 shadow-md transition-all duration-300 ${
         visible ? 'translate-y-0 opacity-100' : '-translate-y-[200%] opacity-0 pointer-events-none'
       }`}
     >
-      <div className="overflow-x-auto no-scrollbar px-5 lg:px-20">
-        <div className="flex items-center min-w-max h-[60px]">
+      <div className="w-full px-4 sm:px-6 lg:px-20 overflow-x-auto no-scrollbar">
+        <div className="flex items-center w-max min-w-full justify-start lg:justify-center h-[52px] lg:h-[60px]">
           {availableLinks.map((l) => {
             const Icon = l.icon;
             const isActive = active === l.id;
@@ -90,14 +88,14 @@ export default function StickySectionNav({ sectionIds }: StickySectionNavProps) 
                 key={l.id}
                 onClick={() => scrollTo(l.id)}
                 aria-current={isActive ? 'true' : undefined}
-                className={`group relative flex items-center gap-2 h-full px-5 transition-colors focus:outline-none ${
+                className={`group relative flex items-center gap-2 h-full px-4 sm:px-5 transition-colors focus:outline-none shrink-0 ${
                   isActive
                     ? 'text-[#1e857c]'
                     : 'text-[#112233] hover:text-[#1e857c]'
                 }`}
               >
-                <Icon className={`w-[18px] h-[18px] transition-colors ${isActive ? 'text-[#1e857c]' : 'text-gray-400 group-hover:text-[#1e857c]'}`} />
-                <span className="text-[14px] font-semibold whitespace-nowrap">
+                <Icon className={`w-4 h-4 sm:w-[18px] sm:h-[18px] transition-colors ${isActive ? 'text-[#1e857c]' : 'text-gray-400 group-hover:text-[#1e857c]'}`} />
+                <span className="text-[13px] sm:text-[14px] font-semibold whitespace-nowrap">
                   {l.label}
                 </span>
                 
