@@ -32,10 +32,10 @@ export default async function AdminLayout({ children }: { children: ReactNode })
   if (resource && !isSuperAdmin && !hasPerm(permissions, resource, "view")) {
     return (
       <div className="min-h-screen bg-[#f0f2f5] flex font-sans text-gray-800">
-        <main className="flex-1 p-8">
-          <div className="max-w-md mx-auto mt-16 bg-white rounded-xl border border-gray-200 p-8 text-center">
+        <main className="flex-1 p-4 sm:p-6">
+          <div className="max-w-md mx-auto mt-16 bg-white rounded-xl border border-gray-200 p-6 sm:p-8 text-center">
             <h1 className="text-lg font-bold text-[#112233] mb-2">No Access</h1>
-            <p className="text-lg text-gray-500">
+            <p className="text-sm sm:text-base text-gray-500">
               Your role does not grant access to this section. Contact an administrator if you
               believe this is a mistake.
             </p>
@@ -56,7 +56,7 @@ export default async function AdminLayout({ children }: { children: ReactNode })
       isSuperAdmin={isSuperAdmin}
       permissions={permissions}
       logoImage={site?.logoImage}
-    >
+    >      
       {children}
     </AdminShell>
   );
