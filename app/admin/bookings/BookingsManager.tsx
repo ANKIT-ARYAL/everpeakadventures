@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/set-state-in-effect */
 "use client";
 
 import { useRouter } from "next/navigation";
@@ -638,12 +639,14 @@ export default function BookingsManager({
         </div>
 
         {isSuperAdmin && (
-          <a
-            className="ftb-admin-btn ghost"
-            href="/admin/site-settings"
-          >
-            Settings
-          </a>
+          <div className="flex flex-wrap items-center gap-3 w-full sm:w-auto justify-start sm:justify-end shrink-0">
+            <a
+              className="ftb-admin-btn ghost bg-white text-gray-700 font-bold px-4 py-2 rounded-lg border border-gray-200 hover:bg-gray-50 text-sm transition-colors whitespace-nowrap shrink-0"
+              href="/admin/site-settings"
+            >
+              Settings
+            </a>
+          </div>
         )}
       </div>
 

@@ -255,7 +255,7 @@ body {
 
 @layer utilities {
   .site-container {
-    @apply w-full px-5 sm:px-6 lg:px-20;
+    @apply w-full px-5 sm:px-6 lg:px-8;
   }
   .site-container-narrow {
     @apply w-full px-5 sm:px-6 lg:px-20;
