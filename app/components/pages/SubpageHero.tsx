@@ -38,11 +38,11 @@ export default function SubpageHero({ title, subtitle, image }: SubpageHeroProps
         style={{ opacity }}
         className="relative z-20 text-center mt-16 px-5 lg:px-20"
       >
-        <h1 className="text-5xl md:text-7xl font-display font-black text-white tracking-tight drop-shadow-xl mb-4">
+        <h1 className="text-[2.5rem]  font-display font-black text-white tracking-tight drop-shadow-xl mb-4">
           {title}
         </h1>
         {subtitle && (
-          <p className="text-xl md:text-2xl text-white/90 font-sans font-medium drop-shadow-md">
+          <p className="text-[1.5rem] text-white/90 font-sans font-medium drop-shadow-md">
             {subtitle}
           </p>
         )}

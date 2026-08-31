@@ -1,10 +1,10 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 import toast, { Toaster } from 'react-hot-toast';
 import { CheckCircle2, Info } from 'lucide-react';
-import Select from 'react-select';
+import Select from '@/app/components/ui/ClientSelect';
 import { getCountries, getCountryCallingCode, isValidPhoneNumber, AsYouType } from 'libphonenumber-js';
 import NumberInput from '@/app/components/NumberInput';
 
@@ -36,16 +36,13 @@ interface Props {
 export default function BookingFormClient({ trips, logoImage }: Props) {
   const searchParams = useSearchParams();
   
-  // URL Parameters
   const tripIdParam = searchParams.get('trip_id');
   const departureIdParam = searchParams.get('departure_id');
   const departureStartParam = searchParams.get('departure_start');
   const pricePerPersonParam = Number(searchParams.get('pp'));
 
-  // Fixed departures are locked: destination and date come from the departure link.
   const isFixedDeparture = !!departureIdParam || !!departureStartParam;
 
-  // Find selected trip
   const selectedTrip = trips.find(t => t.id === tripIdParam) || trips[0] || {
     id: 'default',
     title: 'Nepal Heritage, Wildlife & Himalayan Discovery Tour',
@@ -55,7 +52,6 @@ export default function BookingFormClient({ trips, logoImage }: Props) {
     image: 'https://images.unsplash.com/photo-1544644181-1484b3fdfc62?q=80&w=600&auto=format&fit=crop'
   };
 
-  // Determine the actual base price (URL override for Fixed Departures vs Standard Price)
   const basePrice = pricePerPersonParam > 0 ? pricePerPersonParam : selectedTrip.price;
 
   const [form, setForm] = useState<{
@@ -77,7 +73,7 @@ export default function BookingFormClient({ trips, logoImage }: Props) {
     email: '',
     phone: '',
     country: '',
-    travelDate: departureStartParam || '', // Pre-fill if fixed departure
+    travelDate: departureStartParam || '',
     adultMale: 1,
     adultFemale: 0,
     childMale: 0,
@@ -90,12 +86,10 @@ export default function BookingFormClient({ trips, logoImage }: Props) {
   const [submitting, setSubmitting] = useState(false);
   const [success, setSuccess] = useState(false);
 
-  // Determine the trip type from the currently selected trip in the dropdown
   const selectedTripType = trips.find(t => t.title === form.tripTitle)?.type || selectedTrip.type;
 
   const totalTravellers = Number(form.adultMale || 0) + Number(form.adultFemale || 0) + Number(form.childMale || 0) + Number(form.childFemale || 0);
 
-  // Derive group size tier from traveller count (aligns with how Admin displays bookings)
   const derivedGroupSize =
     totalTravellers >= 5
       ? `5+ Pax - Group Discount (${totalTravellers} travellers)`
@@ -103,7 +97,6 @@ export default function BookingFormClient({ trips, logoImage }: Props) {
         ? `2-4 Pax - Small Group (${totalTravellers} travellers)`
         : `1 Pax - Solo Traveller`;
   
-  // Calculate total price based on active base price and travelers
   const estimatedTotalNum = basePrice * (totalTravellers || 1);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
@@ -119,13 +112,11 @@ export default function BookingFormClient({ trips, logoImage }: Props) {
     }
   };
 
-  // Handle generic trip selection change
   const handleTripChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     if (isFixedDeparture) return;
     const newTrip = trips.find(t => t.title === e.target.value);
-    if (newTrip) {      setForm(prev => ({ ...prev, tripTitle: newTrip.title }));
-      // We don't change URL params dynamically here to keep it simple, 
-      // but it correctly updates the local state form value.
+    if (newTrip) {
+      setForm(prev => ({ ...prev, tripTitle: newTrip.title }));
     }
   };
 
@@ -202,13 +193,13 @@ export default function BookingFormClient({ trips, logoImage }: Props) {
 
   if (success) {
     return (
-      <div className="min-h-[70vh] flex items-center justify-center px-5">
+      <div className="w-full max-w-4xl mx-auto px-4 sm:px-6">
         <Toaster position="top-center" />
-        <div className="bg-white p-10 rounded-2xl shadow-sm border border-gray-100 w-full text-center space-y-4 px-5 lg:px-20">
-          <CheckCircle2 className="w-16 h-16 text-emerald-500 mx-auto" />
-          <h2 className="text-2xl font-black oswald uppercase text-[#112233]">Booking Request Received!</h2>
-          <p className="text-md text-gray-500 leading-relaxed">
-            Thank you, <span className="font-bold text-gray-800">{form.fullName}</span>. Our team will contact you shortly.
+        <div className="bg-white p-8 sm:p-12 rounded-3xl shadow-sm border border-gray-100 text-center space-y-5">
+          <CheckCircle2 className="w-20 h-20 text-emerald-500 mx-auto" />
+          <h2 className="text-3xl sm:text-4xl font-black oswald uppercase text-[#112233]">Booking Request Received!</h2>
+          <p className="text-lg text-gray-600 leading-relaxed max-w-xl mx-auto">
+            Thank you, <span className="font-bold text-gray-900">{form.fullName}</span>. Our team will review your details and contact you shortly.
           </p>
           <button 
             onClick={() => { 
@@ -220,7 +211,7 @@ export default function BookingFormClient({ trips, logoImage }: Props) {
                 adultMale: 1, adultFemale: 0, childMale: 0, childFemale: 0, notes: '', agreed: false 
               }); 
             }} 
-            className="w-full bg-[#112233] text-white font-bold text-md py-3 rounded-xl uppercase tracking-wider mt-4"
+            className="w-full sm:w-auto px-8 bg-[#112233] hover:bg-[#1a2b44] text-white font-bold text-lg py-4 rounded-xl uppercase tracking-wider transition-colors"
           >
             Submit Another Booking
           </button>
@@ -230,22 +221,22 @@ export default function BookingFormClient({ trips, logoImage }: Props) {
   }
 
   return (
-    <div className="min-h-screen bg-[#f0f4f8] py-12 px-4 font-sans text-md text-gray-800">
+    <div className="w-full max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 font-sans text-gray-800">
       <Toaster position="top-center" />
-      <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden px-5 lg:px-20">
+      <div className="bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden">
         
         {/* Top Header Block */}
-        <div className="p-8 border-b border-gray-100 flex items-center gap-4">
+        <div className="p-6 sm:p-10 border-b border-gray-100 flex flex-col sm:flex-row items-start sm:items-center gap-5 bg-gray-50/50">
           <img
             src={logoImage || "https://everpeakadventures.com/wp-content/uploads/2025/03/Untitled-design-123456-e1783511870519.png"}
             alt="Ever Peak Adventures"
-            className="w-14 h-14 object-contain"
+            className="w-16 h-16 object-contain"
           />
           <div>
-            <h1 className="text-2xl font-black text-[#112233]">
+            <h1 className="text-3xl sm:text-4xl font-black text-[#112233]">
               {selectedTripType === 'tour' ? 'Book Your Tour' : 'Book Your Trek'}
             </h1>
-            <p className="text-gray-500 text-lg mt-1">
+            <p className="text-gray-600 text-lg sm:text-xl mt-1">
               {selectedTripType === 'tour'
                 ? 'Send your tour booking request. Our team will review and contact you shortly.'
                 : 'Send your trek booking request. Our team will review and contact you shortly.'}
@@ -253,35 +244,35 @@ export default function BookingFormClient({ trips, logoImage }: Props) {
           </div>
         </div>
 
-        <form onSubmit={handleSubmit} className="p-8 space-y-8">
+        <form onSubmit={handleSubmit} className="p-6 sm:p-10 space-y-8">
 
           {/* Selected Trip Overview */}
-          <div className="bg-gray-50/50 p-4 rounded-xl border border-gray-100 grid grid-cols-1 md:grid-cols-[auto_1fr_auto_auto] gap-6 items-center">
-            <img src={selectedTrip.image} alt={selectedTrip.title} className="w-16 h-12 rounded-lg object-cover" />
+          <div className="bg-[#f8fafc] p-5 sm:p-6 rounded-2xl border border-gray-100 grid grid-cols-1 sm:grid-cols-[auto_1fr_auto_auto] gap-4 sm:gap-6 items-center">
+            <img src={selectedTrip.image} alt={selectedTrip.title} className="w-full sm:w-24 h-20 rounded-xl object-cover" />
             <div>
-              <span className="block text-[10px] text-gray-400 font-bold uppercase tracking-wider mb-0.5">Selected Trip</span>
-              <span className="font-bold text-[#112233]">{selectedTrip.title}</span>
+              <span className="block text-xs text-gray-400 font-bold uppercase tracking-wider mb-1">Selected Trip</span>
+              <span className="text-lg font-black text-[#112233]">{selectedTrip.title}</span>
             </div>
             <div>
-              <span className="block text-[10px] text-gray-400 font-bold uppercase tracking-wider mb-0.5">Duration</span>
-              <span className="font-bold text-[#112233]">{selectedTrip.duration}</span>
+              <span className="block text-xs text-gray-400 font-bold uppercase tracking-wider mb-1">Duration</span>
+              <span className="text-lg font-bold text-[#112233]">{selectedTrip.duration}</span>
             </div>
             <div>
-              <span className="block text-[10px] text-gray-400 font-bold uppercase tracking-wider mb-0.5">From</span>
-              <span className="font-bold text-[#112233]">US$ {basePrice} PP</span>
+              <span className="block text-xs text-gray-400 font-bold uppercase tracking-wider mb-1">From</span>
+              <span className="text-lg font-bold text-[#112233]">US$ {basePrice} PP</span>
             </div>
           </div>
 
           {/* Core Selection Fields */}
-          <div className="space-y-5">
+          <div className="space-y-6">
             <div>
-              <label className="block text-md font-bold text-gray-700 mb-2">Choose Trek / Tour <span className="text-red-500">*</span></label>
+              <label className="block text-lg font-bold text-gray-700 mb-2">Choose Trek / Tour <span className="text-red-500">*</span></label>
               <select
                 name="tripTitle"
                 value={form.tripTitle}
                 onChange={handleTripChange}
                 disabled={isFixedDeparture}
-                className={`w-full p-3 border border-gray-200 rounded-lg text-lg focus:border-[#1a5b88] focus:outline-none ${
+                className={`w-full p-4 border border-gray-200 rounded-xl text-lg sm:text-xl focus:border-[#1a5b88] focus:outline-none ${
                   isFixedDeparture ? 'bg-gray-50 text-gray-600 cursor-not-allowed' : 'bg-white'
                 }`}
               >
@@ -289,7 +280,7 @@ export default function BookingFormClient({ trips, logoImage }: Props) {
                   <option key={t.id} value={t.title}>{t.title}</option>
                 ))}
               </select>
-              <p className="text-[10px] text-gray-400 mt-1.5">
+              <p className="text-xs text-gray-400 mt-2">
                 {isFixedDeparture ? 'Destination is fixed to this fixed-departure trip.' : 'Direct booking URL includes this trek/tour automatically.'}
               </p>
             </div>
@@ -298,22 +289,22 @@ export default function BookingFormClient({ trips, logoImage }: Props) {
             {departureStartParam ? (
               <>
                 <div>
-                  <label className="block text-md font-bold text-gray-700 mb-2">Selected Travel Date <span className="text-red-500">*</span></label>
-                  <select disabled className="w-full p-3 border border-gray-200 rounded-lg text-lg bg-gray-50 text-gray-600 focus:outline-none cursor-not-allowed">
+                  <label className="block text-lg font-bold text-gray-700 mb-2">Selected Travel Date <span className="text-red-500">*</span></label>
+                  <select disabled className="w-full p-4 border border-gray-200 rounded-xl text-lg sm:text-xl bg-gray-50 text-gray-600 focus:outline-none cursor-not-allowed">
                     <option>Guaranteed - From {departureStartParam} - US$ {basePrice} PP</option>
                   </select>
-                  <p className="text-[10px] text-gray-400 mt-1.5">Available fixed departure dates for selected trek/tour. Start and end dates are saved with the booking.</p>
+                  <p className="text-xs text-gray-400 mt-2">Available fixed departure dates for selected trek/tour. Start and end dates are saved with the booking.</p>
                 </div>
 
-                <div className="bg-[#f0f7fb] border border-[#d2eaf7] p-4 rounded-xl">
-                  <span className="block text-[10px] text-[#1a5b88] font-bold uppercase tracking-wider mb-1">Selected Fixed Departure</span>
-                  <h4 className="font-bold text-[#112233] text-lg">Guaranteed - From {departureStartParam}</h4>
-                  <p className="text-[#1a5b88] text-lg font-bold mt-1">US$ {basePrice} PP</p>
+                <div className="bg-[#f0f7fb] border border-[#d2eaf7] p-5 rounded-2xl">
+                  <span className="block text-xs text-[#1a5b88] font-bold uppercase tracking-wider mb-1">Selected Fixed Departure</span>
+                  <h4 className="font-bold text-[#112233] text-xl">Guaranteed - From {departureStartParam}</h4>
+                  <p className="text-[#1a5b88] text-xl font-bold mt-1">US$ {basePrice} PP</p>
                 </div>
               </>
             ) : (
               <div>
-                <label className="block text-md font-bold text-gray-700 mb-2">Preferred Travel Date <span className="text-red-500">*</span></label>
+                <label className="block text-lg font-bold text-gray-700 mb-2">Preferred Travel Date <span className="text-red-500">*</span></label>
                 <input 
                   type="date" 
                   name="travelDate"
@@ -321,24 +312,24 @@ export default function BookingFormClient({ trips, logoImage }: Props) {
                   min={new Date().toISOString().split('T')[0]}
                   value={form.travelDate}
                   onChange={handleChange}
-                  className="w-full p-3 border border-gray-200 rounded-lg text-lg bg-white focus:border-[#1a5b88] focus:outline-none"
+                  className="w-full p-4 border border-gray-200 rounded-xl text-lg sm:text-xl bg-white focus:border-[#1a5b88] focus:outline-none"
                 />
               </div>
             )}
           </div>
 
           {/* Personal Information */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 pt-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-2">
             <div>
-              <label className="block text-md font-bold text-gray-700 mb-2">Full Name <span className="text-red-500">*</span></label>
-              <input type="text" name="fullName" required value={form.fullName} onChange={handleChange} placeholder="Your full name" className="w-full p-3 border border-gray-200 rounded-lg text-lg focus:border-[#1a5b88] focus:outline-none" />
+              <label className="block text-lg font-bold text-gray-700 mb-2">Full Name <span className="text-red-500">*</span></label>
+              <input type="text" name="fullName" required value={form.fullName} onChange={handleChange} placeholder="Your full name" className="w-full p-4 border border-gray-200 rounded-xl text-lg sm:text-xl focus:border-[#1a5b88] focus:outline-none" />
             </div>
             <div>
-              <label className="block text-md font-bold text-gray-700 mb-2">Email Address <span className="text-red-500">*</span></label>
-              <input type="email" name="email" required value={form.email} onChange={handleChange} placeholder="you@example.com" className="w-full p-3 border border-gray-200 rounded-lg text-lg focus:border-[#1a5b88] focus:outline-none" />
+              <label className="block text-lg font-bold text-gray-700 mb-2">Email Address <span className="text-red-500">*</span></label>
+              <input type="email" name="email" required value={form.email} onChange={handleChange} placeholder="you@example.com" className="w-full p-4 border border-gray-200 rounded-xl text-lg sm:text-xl focus:border-[#1a5b88] focus:outline-none" />
             </div>
             <div>
-              <label className="block text-md font-bold text-gray-700 mb-2">Country <span className="text-red-500">*</span></label>
+              <label className="block text-lg font-bold text-gray-700 mb-2">Country <span className="text-red-500">*</span></label>
               <Select
                 options={countryOptions}
                 value={selectedCountryOption}
@@ -348,10 +339,10 @@ export default function BookingFormClient({ trips, logoImage }: Props) {
                 styles={{
                   control: (base) => ({
                     ...base,
-                    borderRadius: '0.5rem',
-                    padding: '2px',
+                    borderRadius: '0.75rem',
+                    padding: '8px',
                     borderColor: '#e5e7eb',
-                    fontSize: '0.875rem',
+                    fontSize: '1.125rem',
                     boxShadow: 'none',
                     '&:hover': { borderColor: '#1a5b88' }
                   }),
@@ -359,81 +350,81 @@ export default function BookingFormClient({ trips, logoImage }: Props) {
               />
             </div>
             <div>
-              <label className="block text-md font-bold text-gray-700 mb-2">Phone / WhatsApp <span className="text-red-500">*</span></label>
-              <input type="tel" name="phone" required value={form.phone} onChange={handlePhoneChange} placeholder="Select country first" className="w-full p-3 border border-gray-200 rounded-lg text-lg focus:border-[#1a5b88] focus:outline-none" />
+              <label className="block text-lg font-bold text-gray-700 mb-2">Phone / WhatsApp <span className="text-red-500">*</span></label>
+              <input type="tel" name="phone" required value={form.phone} onChange={handlePhoneChange} placeholder="Select country first" className="w-full p-4 border border-gray-200 rounded-xl text-lg sm:text-xl focus:border-[#1a5b88] focus:outline-none" />
             </div>
           </div>
 
           {/* Traveler Details */}
           <div>
-            <label className="block text-md font-bold text-gray-700 mb-3">Traveller Details <span className="text-red-500">*</span></label>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 bg-gray-50/50 p-4 border border-gray-100 rounded-xl">
+            <label className="block text-lg font-bold text-gray-700 mb-3">Traveller Details <span className="text-red-500">*</span></label>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 bg-gray-50 p-5 border border-gray-100 rounded-2xl">
               <div>
-                <span className="block text-[10px] text-gray-500 font-bold mb-1">Adult Male</span>
-                <NumberInput type="number" min="0" name="adultMale" value={form.adultMale} onChange={handleChange} className="w-full p-2.5 border border-gray-200 rounded-lg text-lg focus:border-[#1a5b88] focus:outline-none" />
+                <span className="block text-xs text-gray-500 font-bold mb-1 uppercase tracking-wider">Adult Male</span>
+                <NumberInput type="number" min="0" name="adultMale" value={form.adultMale} onChange={handleChange} className="w-full p-3 border border-gray-200 rounded-xl text-lg focus:border-[#1a5b88] focus:outline-none bg-white" />
               </div>
               <div>
-                <span className="block text-[10px] text-gray-500 font-bold mb-1">Adult Female</span>
-                <NumberInput type="number" min="0" name="adultFemale" value={form.adultFemale} onChange={handleChange} className="w-full p-2.5 border border-gray-200 rounded-lg text-lg focus:border-[#1a5b88] focus:outline-none" />
+                <span className="block text-xs text-gray-500 font-bold mb-1 uppercase tracking-wider">Adult Female</span>
+                <NumberInput type="number" min="0" name="adultFemale" value={form.adultFemale} onChange={handleChange} className="w-full p-3 border border-gray-200 rounded-xl text-lg focus:border-[#1a5b88] focus:outline-none bg-white" />
               </div>
               <div>
-                <span className="block text-[10px] text-gray-500 font-bold mb-1">Child Male</span>
-                <NumberInput type="number" min="0" name="childMale" value={form.childMale} onChange={handleChange} className="w-full p-2.5 border border-gray-200 rounded-lg text-lg focus:border-[#1a5b88] focus:outline-none" />
+                <span className="block text-xs text-gray-500 font-bold mb-1 uppercase tracking-wider">Child Male</span>
+                <NumberInput type="number" min="0" name="childMale" value={form.childMale} onChange={handleChange} className="w-full p-3 border border-gray-200 rounded-xl text-lg focus:border-[#1a5b88] focus:outline-none bg-white" />
               </div>
               <div>
-                <span className="block text-[10px] text-gray-500 font-bold mb-1">Child Female</span>
-                <NumberInput type="number" min="0" name="childFemale" value={form.childFemale} onChange={handleChange} className="w-full p-2.5 border border-gray-200 rounded-lg text-lg focus:border-[#1a5b88] focus:outline-none" />
+                <span className="block text-xs text-gray-500 font-bold mb-1 uppercase tracking-wider">Child Female</span>
+                <NumberInput type="number" min="0" name="childFemale" value={form.childFemale} onChange={handleChange} className="w-full p-3 border border-gray-200 rounded-xl text-lg focus:border-[#1a5b88] focus:outline-none bg-white" />
               </div>
             </div>
-            <p className="text-[10px] text-gray-400 mt-2 flex items-center gap-1">
-              <Info className="w-3 h-3" /> Total travellers: <strong className="text-gray-700">{totalTravellers}</strong>.
+            <p className="text-sm text-gray-500 mt-2.5 flex items-center gap-1.5">
+              <Info className="w-4 h-4" /> Total travellers: <strong className="text-gray-800">{totalTravellers}</strong>.
             </p>
           </div>
 
           {/* Notes */}
           <div>
-            <label className="block text-md font-bold text-gray-700 mb-2">Notes / Special Request</label>
+            <label className="block text-lg font-bold text-gray-700 mb-2">Notes / Special Request</label>
             <textarea 
               name="notes"
               value={form.notes}
               onChange={handleChange}
               rows={4} 
               placeholder="Tell us about your travel plan, arrival date, hotel, or any custom request."
-              className="w-full p-3 border border-gray-200 rounded-xl text-lg focus:border-[#1a5b88] focus:outline-none resize-none"
+              className="w-full p-4 border border-gray-200 rounded-2xl text-lg focus:border-[#1a5b88] focus:outline-none resize-none"
             ></textarea>
           </div>
 
           {/* Estimated Total Block */}
-          <div className="bg-gray-50 border border-gray-200 p-6 rounded-xl flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+          <div className="bg-gray-50 border border-gray-200 p-6 sm:p-8 rounded-2xl flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
             <div>
-              <span className="block text-md text-gray-500 font-bold uppercase tracking-wider mb-1">Estimated Total</span>
-              <div className="text-3xl font-black text-[#112233]">
+              <span className="block text-sm text-gray-500 font-bold uppercase tracking-wider mb-1">Estimated Total</span>
+              <div className="text-3xl sm:text-4xl font-black text-[#112233]">
                 US$ {estimatedTotalNum.toLocaleString()}
               </div>
             </div>
-            <div className="text-md text-gray-500 md:text-right md: px-5 lg:px-20">
+            <div className="text-base text-gray-500 md:text-right max-w-md">
               US$ {basePrice} × {totalTravellers} traveller(s). Final price may change after confirmation, availability, and custom requests.
             </div>
           </div>
 
           {/* Terms & Submit */}
-          <div className="pt-2">
-            <label className="flex items-center gap-3 cursor-pointer mb-6">
+          <div className="pt-4">
+            <label className="flex items-center gap-3 cursor-pointer mb-8">
               <input 
                 type="checkbox" 
                 name="agreed"
                 checked={form.agreed}
                 onChange={handleChange}
                 required
-                className="w-4 h-4 text-[#1a5b88] border-gray-300 rounded focus:ring-[#1a5b88]"
+                className="w-5 h-5 text-[#1a5b88] border-gray-300 rounded focus:ring-[#1a5b88]"
               />
-              <span className="text-lg text-gray-600 font-medium">I agree to be contacted about this booking request.</span>
+              <span className="text-lg text-gray-700 font-medium">I agree to be contacted about this booking request.</span>
             </label>
 
             <button 
               type="submit" 
               disabled={submitting}
-              className="bg-[#113255] hover:bg-[#1a5b88] text-white px-8 py-3.5 rounded-lg font-bold text-lg shadow-md transition-colors disabled:opacity-50"
+              className="w-full sm:w-auto bg-[#113255] hover:bg-[#1a5b88] text-white px-10 py-4 rounded-xl font-bold text-xl shadow-md transition-colors disabled:opacity-50"
             >
               {submitting ? 'Submitting...' : 'Submit Booking Request'}
             </button>

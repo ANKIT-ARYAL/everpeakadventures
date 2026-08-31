@@ -83,8 +83,8 @@ const regionDescription = `Explore ${regionTitle}. It is one of Nepal's most bre
             {regionTitle}
           </h2>
           <div className="text-gray-600 text-lg leading-relaxed space-y-4">
-            <p className="font-medium text-gray-700">{regionDescription}</p>
-            <p className="text-lg text-gray-500">
+            <p className="text-[1rem] font-medium text-gray-700">{regionDescription}</p>
+            <p className="text-[1rem] text-gray-500">
               At Ever Peak Adventures, we carefully design every itinerary for safety, comfort, and excitement. Our experienced local guides ensure proper acclimatization throughout the trek, providing quality accommodation and personalized service.
             </p>
           </div>
