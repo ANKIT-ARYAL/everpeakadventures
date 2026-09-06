@@ -51,7 +51,7 @@ export default function CategoryLanding({
                     <img src={categoryImage} alt={title} className="w-full h-64 object-cover" />
                   </div>
                 )}
-                <div className="rich-content text-[15px] leading-relaxed text-gray-600">
+                <div className="rich-content text-[15px] leading-relaxed text-gray-600 text-justify">
                   <RichText html={descriptionHtml} />
                 </div>
               </div>

@@ -51,7 +51,7 @@ export default function TrekCard({ trek }: { trek: TrekCardProps }) {
             </span>
           </div>
           <div className="h-0 overflow-hidden group-hover:h-auto opacity-0 group-hover:opacity-100 transition-all duration-300">
-            <p className="text-white/80 text-[14px] font-sans line-clamp-2 pt-3 border-t border-white/20 mt-2">
+            <p className="text-white/80 text-[14px] font-sans line-clamp-2 pt-3 border-t border-white/20 mt-2 text-justify">
               {stripHtml(trek.overview || trek.description).replace(/^(trip overview|overview|highlights)[\s:]*/i, '').trim()}
             </p>
           </div>
