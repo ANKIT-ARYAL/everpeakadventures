@@ -117,7 +117,7 @@ export default function WelcomeSection({
           </Reveal>
 
           <Reveal delay={0.15}>
-            <p className="text-background/70 text-lg font-sans leading-relaxed mb-12">
+            <p className="text-background/70 text-lg font-sans leading-relaxed mb-12 text-justify">
               {description}
             </p>
           </Reveal>

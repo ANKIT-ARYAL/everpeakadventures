@@ -466,7 +466,7 @@ export default async function TrekDetailPage({ params }: PageProps) {
 
             {/* Short Description */}
             <div className="text-lg text-gray-600 leading-relaxed pb-4">
-              <div className="line-clamp-3 overflow-hidden text-ellipsis [&>p]:inline" dangerouslySetInnerHTML={{ __html: toHtml(trek.overview) }} />
+              <div className="line-clamp-3 overflow-hidden text-ellipsis [&>p]:inline text-justify" dangerouslySetInnerHTML={{ __html: toHtml(trek.overview) }} />
             </div>
 
             <section className="mt-10">
@@ -576,7 +576,7 @@ export default async function TrekDetailPage({ params }: PageProps) {
               </h2>
 
               <div
-                className="text-gray-600 text-md md:text-lg leading-relaxed rich-content"
+                className="text-gray-600 text-md md:text-lg leading-relaxed rich-content text-justify"
                 dangerouslySetInnerHTML={{
                   __html: toHtml(trek.overview),
                 }}
@@ -591,7 +591,7 @@ export default async function TrekDetailPage({ params }: PageProps) {
               <>
                 <div
                   id="highlights"
-                  className="scroll-mt-[118px]"
+                  className="scroll-mt-[118px] text-justify"
                 />
 
                 <Reveal className="journey-panel bg-white rounded-xl p-8 shadow-sm border border-gray-100">
@@ -725,7 +725,7 @@ export default async function TrekDetailPage({ params }: PageProps) {
                           {day.note && (
                             <div className="flex items-start gap-4 p-5 rounded-xl border border-[#f26522]/30 bg-[#fff8f4] mb-6">
                               <AlertCircle className="w-6 h-6 text-[#f26522] shrink-0 mt-0.5" />
-                              <div>
+                              <div className="text-justify">
                                 <div className="font-bold text-[#f26522] text-[15px] mb-1">Important Note</div>
                                 <div className="text-[13px] text-gray-700 leading-relaxed">{day.note}</div>
                               </div>
@@ -783,7 +783,7 @@ export default async function TrekDetailPage({ params }: PageProps) {
 
                 {trek.inclusions && (
                   <div
-                    className="highlights-list"
+                    className="highlights-list text-justify"
                     dangerouslySetInnerHTML={{
                       __html: toHtml(trek.inclusions),
                     }}
@@ -811,7 +811,7 @@ export default async function TrekDetailPage({ params }: PageProps) {
 
                 {trek.exclusions && (
                   <div
-                    className="exclusions-list"
+                    className="exclusions-list text-justify"
                     dangerouslySetInnerHTML={{
                       __html: toHtml(trek.exclusions),
                     }}

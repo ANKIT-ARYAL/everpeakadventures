@@ -26,7 +26,7 @@ interface AboutPageProps {
 
 export default function AboutUsPage({ data }: AboutPageProps) {
   return (
-    <div className="min-h-screen font-sans bg-white text-slate-900">
+    <div className="min-h-screen font-sans bg-white text-slate-900 text-justify">
       
       {/* HERO SECTION */}
       <PageHero 

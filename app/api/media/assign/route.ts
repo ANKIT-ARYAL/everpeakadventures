@@ -1,14 +1,14 @@
 import { NextResponse } from 'next/server';
 import { requireAdmin } from '@/app/lib/require-admin';
 import { prisma } from '@/lib/prisma';
-import { IMAGE_SLOTS, type ImageSlotKey } from '@/lib/media-slots';
+import { STATIC_IMAGE_SLOTS, type ImageSlotKey } from '@/lib/media-slots';
 
 type SlotTarget = {
   read: () => Promise<string | null>;
   write: (value: string) => Promise<unknown>;
 };
 
-const SLOT_TARGETS: Record<ImageSlotKey, SlotTarget> = {
+const STATIC_SLOT_TARGETS: Record<string, SlotTarget> = {
   logo: {
     read: async () => (await prisma.siteSettings.findFirst())?.logoImage ?? null,
     write: (v) => prisma.siteSettings.updateMany({ data: { logoImage: v } }),
@@ -45,7 +45,61 @@ const SLOT_TARGETS: Record<ImageSlotKey, SlotTarget> = {
     read: async () => (await prisma.trustedPartnerContent.findFirst())?.bgHeroImage ?? null,
     write: (v) => prisma.trustedPartnerContent.updateMany({ data: { bgHeroImage: v } }),
   },
+  bookingHero: {
+    read: async () => (await prisma.subpageHero.findFirst({ where: { slug: 'booking-form' } }))?.image ?? null,
+    write: async (v) => {
+      const existing = await prisma.subpageHero.findFirst({ where: { slug: 'booking-form' } });
+      if (existing) {
+        return prisma.subpageHero.update({ where: { id: existing.id }, data: { image: v } });
+      } else {
+        return prisma.subpageHero.create({
+          data: {
+            slug: 'booking-form',
+            title: 'Book Your Adventure',
+            subtitle: 'Ready for the Himalayas? Fill out the form below to request a booking or customize your trip.',
+            image: v,
+            published: true,
+          }
+        });
+      }
+    }
+  },
 };
+
+// Helper function to dynamically resolve read/write functions for a given slot key
+function getTargetForSlot(slot: string): SlotTarget | null {
+  if (STATIC_SLOT_TARGETS[slot]) {
+    return STATIC_SLOT_TARGETS[slot];
+  }
+  
+  const [model, id] = slot.split(':');
+  if (!model || !id) return null;
+
+  switch (model) {
+    case 'subpageHero':
+      return {
+        read: async () => (await prisma.subpageHero.findUnique({ where: { id } }))?.image ?? null,
+        write: (v) => prisma.subpageHero.update({ where: { id }, data: { image: v } }),
+      };
+    case 'contentPage':
+      return {
+        read: async () => (await prisma.contentPage.findUnique({ where: { id } }))?.heroImage ?? null,
+        write: (v) => prisma.contentPage.update({ where: { id }, data: { heroImage: v } }),
+      };
+    case 'tour':
+      return {
+        read: async () => (await prisma.tour.findUnique({ where: { id } }))?.heroImage ?? null,
+        write: (v) => prisma.tour.update({ where: { id }, data: { heroImage: v } }),
+      };
+    case 'trek':
+      return {
+        read: async () => (await prisma.trek.findUnique({ where: { id } }))?.heroImage ?? null,
+        write: (v) => prisma.trek.update({ where: { id }, data: { heroImage: v } }),
+      };
+    default:
+      return null;
+  }
+}
 
 export async function POST(request: Request) {
   const unauthorized = await requireAdmin('media', 'edit');
@@ -58,30 +112,31 @@ export async function POST(request: Request) {
       return NextResponse.json({ success: false, error: 'Missing url' }, { status: 400 });
     }
 
-    const requested = Array.isArray(body.slots)
-      ? new Set(body.slots.filter((s: unknown): s is ImageSlotKey => {
-          return typeof s === 'string' && Object.prototype.hasOwnProperty.call(SLOT_TARGETS, s);
-        }))
-      : new Set<ImageSlotKey>();
+    const requested = Array.isArray(body.slots) ? new Set<string>(body.slots) : new Set<string>();
+    const availableSlots = Array.isArray(body.availableSlots) ? body.availableSlots : [];
 
     let applied = 0;
     const results: { slot: string; action: 'assigned' | 'cleared' | 'unchanged' }[] = [];
 
-    for (const slot of IMAGE_SLOTS) {
-      const target = SLOT_TARGETS[slot.key];
+    for (const slot of availableSlots) {
+      if (typeof slot !== 'string') continue;
+      
+      const target = getTargetForSlot(slot);
+      if (!target) continue;
+
       const current = await target.read();
-      const desired = requested.has(slot.key);
+      const desired = requested.has(slot);
 
       if (desired && current !== url) {
         await target.write(url);
         applied++;
-        results.push({ slot: slot.key, action: 'assigned' });
+        results.push({ slot, action: 'assigned' });
       } else if (!desired && current === url) {
         await target.write('');
         applied++;
-        results.push({ slot: slot.key, action: 'cleared' });
+        results.push({ slot, action: 'cleared' });
       } else {
-        results.push({ slot: slot.key, action: 'unchanged' });
+        results.push({ slot, action: 'unchanged' });
       }
     }
 

@@ -60,7 +60,7 @@ export default async function BlogPage() {
                         {post.title}
                       </h3>
 
-                      <p className="text-gray-600 text-md md:text-lg line-clamp-3 mb-6 leading-relaxed">
+                      <p className="text-gray-600 text-md md:text-lg line-clamp-3 mb-6 leading-relaxed text-justify">
                         {stripHtml(post.excerpt)}
                       </p>
                     </div>

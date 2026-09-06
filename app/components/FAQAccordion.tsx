@@ -16,7 +16,7 @@ export default function FAQAccordion({ faqs, title = 'FAQs' }: FAQAccordionProps
   if (!faqs || faqs.length === 0) return null;
 
   return (
-    <Reveal className="bg-white rounded-xl p-8 shadow-sm border border-gray-100 space-y-4">
+    <Reveal className="bg-white rounded-xl p-8 shadow-sm border border-gray-100 space-y-4 text-justify">
       <h2 className="text-xl font-bold oswald uppercase text-[#112233] border-b pb-3">
         {title}
       </h2>

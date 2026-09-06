@@ -33,8 +33,8 @@ export default function Home() {
 
       
       <CtaBannerWrapper />
-      <ExploreBlogsWrapper />
-      <ClientReviewsWrapper />
+      <ExploreBlogsWrapper />      
+      <ClientReviewsWrapper />      
       <BlueBannerWrapper />
     </main>
   );

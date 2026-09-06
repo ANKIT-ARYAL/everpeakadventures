@@ -207,6 +207,7 @@ export function FileLightbox({ file, slots, onClose }: { file: GalleryFile; slot
   const [selectedSlots, setSelectedSlots] = useState<ImageSlotKey[]>(() =>
     slots.filter((s) => s.value === file.url).map((s) => s.key)
   );
+  const [slotSearch, setSlotSearch] = useState('');
   const [nameValue, setNameValue] = useState(() => file.originalName || file.url.split('/').pop() || '');
   const [copied, setCopied] = useState(false);
   const [savingSlots, setSavingSlots] = useState(false);
@@ -242,7 +243,7 @@ export function FileLightbox({ file, slots, onClose }: { file: GalleryFile; slot
       const res = await fetch('/api/media/assign', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ url: file.url, slots: selectedSlots }),
+        body: JSON.stringify({ url: file.url, slots: selectedSlots, availableSlots: slots.map(s => s.key) }),
       });
       const data = await res.json();
       if (!res.ok || !data.success) throw new Error(data.error || 'Save failed');
@@ -378,8 +379,22 @@ export function FileLightbox({ file, slots, onClose }: { file: GalleryFile; slot
                 <ImageIcon className="w-4 h-4 text-[#24a0ed]" /> Assign to website sections
               </h4>
               <p className="text-xs text-gray-500">Check the sections that should show this image. Saving overrides those sections.</p>
+              
+              <div className="relative">
+                <Search className="w-3.5 h-3.5 text-gray-400 absolute left-3 top-2.5" />
+                <input
+                  type="text"
+                  value={slotSearch}
+                  onChange={(e) => setSlotSearch(e.target.value)}
+                  placeholder="Quick search sections..."
+                  className="w-full pl-9 pr-3 py-2 border border-gray-200 rounded-lg text-xs outline-none focus:border-[#24a0ed] bg-gray-50"
+                />
+              </div>
+
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 max-h-60 overflow-y-auto pr-1">
-                {slots.map((slot) => {
+                {slots
+                  .filter(slot => slot.label.toLowerCase().includes(slotSearch.toLowerCase()))
+                  .map((slot) => {
                   const active = selectedSlots.includes(slot.key);
                   return (
                     <label key={slot.key} className={`flex items-center gap-3 border rounded-xl p-2.5 cursor-pointer transition-colors ${active ? 'border-[#24a0ed] bg-blue-50/50' : 'border-gray-200 hover:border-gray-300 bg-white'}`}>

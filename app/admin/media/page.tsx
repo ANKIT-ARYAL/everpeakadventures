@@ -4,7 +4,7 @@ import { readdir } from "node:fs/promises";
 import path from "node:path";
 import { Images } from "lucide-react";
 import MediaGalleryGrid, { GalleryFile } from "@/app/components/admin/MediaGalleryGrid";
-import { IMAGE_SLOTS } from "@/lib/media-slots";
+import { STATIC_IMAGE_SLOTS } from "@/lib/media-slots";
 import AdminPageLayout from "../components/AdminPageLayout";
 
 
@@ -157,8 +157,9 @@ export default async function AdminMediaPage() {
   const about = aboutContent[0] ?? null;
   const dirMsg = director[0] ?? null;
   const trusted = trustedPartner[0] ?? null;
+  const bookingHeroEntry = await prisma.subpageHero.findFirst({ where: { slug: 'booking-form' } });
 
-  const slots = IMAGE_SLOTS.map((slot) => {
+  const slots: any[] = STATIC_IMAGE_SLOTS.map((slot) => {
     let value: string | null = null;
     switch (slot.key) {
       case 'logo': value = siteSettings?.logoImage ?? null; break;
@@ -170,8 +171,49 @@ export default async function AdminMediaPage() {
       case 'founder': value = dirMsg?.founderImage ?? null; break;
       case 'trustedStory': value = trusted?.storyImage ?? null; break;
       case 'trustedHero': value = trusted?.bgHeroImage ?? null; break;
+      case 'bookingHero': value = bookingHeroEntry?.image ?? null; break;
     }
     return { ...slot, value };
+  });
+
+  // Dynamically add all Subpages
+  subpageHeroes.forEach((s) => {
+    slots.push({
+      key: `subpageHero:${s.id}`,
+      label: `${s.title} (Subpage)`,
+      group: 'Dynamic Pages',
+      value: s.image ?? null
+    });
+  });
+
+  // Dynamically add all Content Pages
+  contentPages.forEach((p) => {
+    slots.push({
+      key: `contentPage:${p.id}`,
+      label: `${p.title} (Page)`,
+      group: 'Dynamic Pages',
+      value: p.heroImage ?? null
+    });
+  });
+
+  // Dynamically add all Tours
+  tours.forEach((t) => {
+    slots.push({
+      key: `tour:${t.id}`,
+      label: `${t.title} (Tour)`,
+      group: 'Trips',
+      value: t.heroImage ?? null
+    });
+  });
+
+  // Dynamically add all Treks
+  treks.forEach((t) => {
+    slots.push({
+      key: `trek:${t.id}`,
+      label: `${t.title} (Trek)`,
+      group: 'Trips',
+      value: t.heroImage ?? null
+    });
   });
 
   const totalFiles = files.length;

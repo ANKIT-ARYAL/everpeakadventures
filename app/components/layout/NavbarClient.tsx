@@ -184,19 +184,28 @@ export default function NavbarClient({
                     {nepalTabs[activeNepalTabIdx] && (
                       <div className="animate-in fade-in slide-in-from-right-4 duration-300">
                         {/* Header */}
-                        <div className="flex items-center gap-4 mb-6 pb-4 border-b border-gray-100">
-                          <div className="w-12 h-12 rounded-full border border-gray-200 flex items-center justify-center bg-gray-50 text-accent-amber">
-                            <Mountain className="w-6 h-6" />
-                          </div>
-                          <div>
-                            <div className="text-[11px] font-bold text-[#112233]/50 uppercase tracking-widest mb-1">
-                              Featured {nepalTabs[activeNepalTabIdx].name}
+                        <div className="flex items-center justify-between mb-6 pb-4 border-b border-gray-100">
+                          <div className="flex items-center gap-4">
+                            <div className="w-12 h-12 rounded-full border border-gray-200 flex items-center justify-center bg-gray-50 text-accent-amber">
+                              <Mountain className="w-6 h-6" />
                             </div>
-                            <h3 className="text-2xl font-bold text-[#112233] normal-case tracking-tight">
-                              Handpicked{" "}
-                              {nepalTabs[activeNepalTabIdx].name.toLowerCase()}
-                            </h3>
+                            <div>
+                              <div className="text-[11px] font-bold text-[#112233]/50 uppercase tracking-widest mb-1">
+                                Featured {nepalTabs[activeNepalTabIdx].name}
+                              </div>
+                              <h3 className="text-2xl font-bold text-[#112233] normal-case tracking-tight">
+                                Handpicked{" "}
+                                {nepalTabs[activeNepalTabIdx].name.toLowerCase()}
+                              </h3>
+                            </div>
                           </div>
+                          <Link
+                            href={nepalTabs[activeNepalTabIdx].href}
+                            onClick={closeDesktopMenu}
+                            className="text-xs font-bold uppercase tracking-wider text-[#1e857c] hover:text-[#112233] bg-[#eaf4f1] px-4 py-2 rounded-lg transition-colors whitespace-nowrap"
+                          >
+                            View All {nepalTabs[activeNepalTabIdx].name} →
+                          </Link>
                         </div>
 
                         {/* Grid */}
@@ -393,21 +402,30 @@ export default function NavbarClient({
                         key={activeToursTabIdx}
                         className="animate-in fade-in slide-in-from-right-4 duration-300"
                       >
-                        <div className="flex items-center gap-4 mb-6 pb-4 border-b border-gray-100">
-                          <div className="w-12 h-12 rounded-full border border-gray-200 flex items-center justify-center bg-gray-50 text-accent-amber">
-                            <Sun className="w-6 h-6" />
-                          </div>
-                          <div>
-                            <div className="text-[11px] font-bold text-[#112233]/50 uppercase tracking-widest mb-1">
-                              Featured Tours
+                        <div className="flex items-center justify-between mb-6 pb-4 border-b border-gray-100">
+                          <div className="flex items-center gap-4">
+                            <div className="w-12 h-12 rounded-full border border-gray-200 flex items-center justify-center bg-gray-50 text-accent-amber">
+                              <Sun className="w-6 h-6" />
                             </div>
-                            <h3 className="text-2xl font-bold text-[#112233] normal-case tracking-tight">
-                              Handpicked{" "}
-                              {nepalToursTabs[
-                                activeToursTabIdx
-                              ].name.toLowerCase()}
-                            </h3>
+                            <div>
+                              <div className="text-[11px] font-bold text-[#112233]/50 uppercase tracking-widest mb-1">
+                                Featured Tours
+                              </div>
+                              <h3 className="text-2xl font-bold text-[#112233] normal-case tracking-tight">
+                                Handpicked{" "}
+                                {nepalToursTabs[
+                                  activeToursTabIdx
+                                ].name.toLowerCase()}
+                              </h3>
+                            </div>
                           </div>
+                          <Link
+                            href={nepalToursTabs[activeToursTabIdx].href}
+                            onClick={closeDesktopMenu}
+                            className="text-xs font-bold uppercase tracking-wider text-[#1e857c] hover:text-[#112233] bg-[#eaf4f1] px-4 py-2 rounded-lg transition-colors whitespace-nowrap"
+                          >
+                            View All {nepalToursTabs[activeToursTabIdx].name} →
+                          </Link>
                         </div>
 
                         <div className="grid grid-cols-2 gap-x-6 gap-y-3 mb-8">
@@ -486,22 +504,31 @@ export default function NavbarClient({
                     {tibetBhutanMenu[activeTibetBhutanTabIdx] && (
                       <div className="animate-in fade-in slide-in-from-right-4 duration-300">
                         {/* Header */}
-                        <div className="flex items-center gap-4 mb-6 pb-4 border-b border-gray-100">
-                          <div className="w-12 h-12 rounded-full border border-gray-200 flex items-center justify-center bg-gray-50 text-accent-amber">
-                            <Mountain className="w-6 h-6" />
-                          </div>
-                          <div>
-                            <div className="text-[11px] font-bold text-[#112233]/50 uppercase tracking-widest mb-1">
-                              Featured{" "}
-                              {tibetBhutanMenu[activeTibetBhutanTabIdx].name}
+                        <div className="flex items-center justify-between mb-6 pb-4 border-b border-gray-100">
+                          <div className="flex items-center gap-4">
+                            <div className="w-12 h-12 rounded-full border border-gray-200 flex items-center justify-center bg-gray-50 text-accent-amber">
+                              <Mountain className="w-6 h-6" />
                             </div>
-                            <h3 className="text-2xl font-bold text-[#112233] normal-case tracking-tight">
-                              Handpicked{" "}
-                              {tibetBhutanMenu[
-                                activeTibetBhutanTabIdx
-                              ].name.toLowerCase()}
-                            </h3>
+                            <div>
+                              <div className="text-[11px] font-bold text-[#112233]/50 uppercase tracking-widest mb-1">
+                                Featured{" "}
+                                {tibetBhutanMenu[activeTibetBhutanTabIdx].name}
+                              </div>
+                              <h3 className="text-2xl font-bold text-[#112233] normal-case tracking-tight">
+                                Handpicked{" "}
+                                {tibetBhutanMenu[
+                                  activeTibetBhutanTabIdx
+                                ].name.toLowerCase()}
+                              </h3>
+                            </div>
                           </div>
+                          <Link
+                            href={tibetBhutanMenu[activeTibetBhutanTabIdx].href}
+                            onClick={closeDesktopMenu}
+                            className="text-xs font-bold uppercase tracking-wider text-[#1e857c] hover:text-[#112233] bg-[#eaf4f1] px-4 py-2 rounded-lg transition-colors whitespace-nowrap"
+                          >
+                            View All {tibetBhutanMenu[activeTibetBhutanTabIdx].name} →
+                          </Link>
                         </div>
 
                         {/* Grid */}

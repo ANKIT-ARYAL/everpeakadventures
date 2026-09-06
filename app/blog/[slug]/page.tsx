@@ -289,7 +289,7 @@ export default async function BlogPostDetailPage({
                 </h1>
 
                 {post.excerpt && (
-                  <p className="text-gray-500 text-lg md:text-xl italic mt-6 border-l-4 border-[#24a0ed] pl-5 leading-relaxed">
+                  <p className="text-gray-500 text-lg md:text-xl italic mt-6 border-l-4 border-[#24a0ed] pl-5 leading-relaxed text-justify">
                     {stripHtml(post.excerpt)}
                   </p>
                 )}
@@ -297,7 +297,7 @@ export default async function BlogPostDetailPage({
 
               {/* BLOG BODY */}
 
-              <div className="blog-content prose prose-lg max-w-none text-gray-600 prose-headings:font-black prose-headings:oswald prose-headings:uppercase prose-headings:text-[#112233] prose-a:text-[#24a0ed] hover:prose-a:text-[#1a85c7]">
+              <div className="blog-content prose prose-lg max-w-none text-gray-600 prose-headings:font-black prose-headings:oswald prose-headings:uppercase prose-headings:text-[#112233] prose-a:text-[#24a0ed] hover:prose-a:text-[#1a85c7] text-justify">
                 {post.content ? (
                   <div
                     dangerouslySetInnerHTML={{

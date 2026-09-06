@@ -259,7 +259,7 @@ export default async function TourDetailPage({ params }: PageProps) {
   ].filter((id): id is string => Boolean(id));
 
   return (
-    <div className="journey-page min-h-screen bg-[#f4f6f8] font-sans text-gray-800 pb-24">
+    <div className="journey-page min-h-screen bg-[#f4f6f8] font-sans text-gray-800 pb-24 text-justify">
 
       {/* Breadcrumbs */}
       <div className="mx-auto px-5 lg:px-20 pt-28 pb-4 text-[13px] font-bold text-gray-400 uppercase tracking-wider">

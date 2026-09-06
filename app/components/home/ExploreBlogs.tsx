@@ -34,7 +34,7 @@ export default function ExploreBlogs({ posts = [], title, subtitle }: ExploreBlo
   }
 
   return (
-    <section className="py-24 bg-foreground text-background relative overflow-hidden font-sans border-t border-background/10">
+    <section className="py-24 bg-foreground text-background relative overflow-hidden font-sans border-t border-background/10 text-justify">
       <div className="relative z-10 px-5 lg:px-20">
 
         {/* HEADER */}

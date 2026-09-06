@@ -46,13 +46,13 @@ export default function WhyChooseUs({ features = [], badge, title, titleHighligh
             {title ?? 'Why Choose '} <span className="text-accent-amber">{titleHighlight ?? 'Ever Peak Adventures'}</span>?
           </h2>
           
-          <div className="text-background/70 text-lg md:text-xl leading-relaxed mt-2 font-sans">
+          <div className="text-background/70 text-lg md:text-xl leading-relaxed mt-2 font-sans text-justify">
             <RichText html={subtitle ?? 'We combine years of Himalayan expertise, personalized service, and a passion for adventure to deliver safe, authentic, and unforgettable trekking experiences throughout Nepal.'} />
           </div>
         </Reveal>
 
         {/* Grid Section */}
-        <Stagger className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <Stagger className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 text-justify">
           {features.map((feature) => (
             <StaggerItem
               key={feature.id} 

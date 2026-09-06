@@ -83,10 +83,10 @@ export default function ContentPageForm({ categories = [], initialData, isEditin
           </h1>
           <p className="text-gray-500 mt-1">Create a page inside a main category and sub-category.</p>
         </div>
-        <div className="flex items-center gap-2">
-          <Link href="/admin/pages" className="p-2 bg-gray-100 rounded-lg hover:bg-gray-200">
+        <div className="flex items-center gap-3">
+          <button type="button" onClick={() => router.back()} className="p-2 bg-gray-100 rounded-lg hover:bg-gray-200">
             <ArrowLeft className="w-4 h-4" />
-          </Link>
+          </button>
           <button
             type="submit"
             disabled={loading}

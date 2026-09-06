@@ -20,7 +20,7 @@ export default function TripReviewsSection({ reviews }: TripReviewsSectionProps)
   if (!reviews || reviews.length === 0) return null;
 
   return (
-    <div id="reviews" className="scroll-mt-[118px]">
+    <div id="reviews" className="scroll-mt-[118px] text-justify">
       <Reveal className="bg-white rounded-xl p-6 md:p-8 shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-gray-100 space-y-6">
         <h2 className="text-xl md:text-2xl font-bold oswald uppercase text-[#112233] border-b pb-3 mb-6">
           Client Reviews

@@ -1,13 +1,4 @@
-export type ImageSlotKey =
-  | 'logo'
-  | 'footerBg'
-  | 'homeHero'
-  | 'ctaBg'
-  | 'aboutFeatured'
-  | 'founder'
-  | 'trustedStory'
-  | 'trustedHero'
-  | 'loginHero';
+export type ImageSlotKey = string;
 
 export interface ImageSlot {
   key: ImageSlotKey;
@@ -15,7 +6,7 @@ export interface ImageSlot {
   group: string;
 }
 
-export const IMAGE_SLOTS: ImageSlot[] = [
+export const STATIC_IMAGE_SLOTS: ImageSlot[] = [
   { key: 'logo', label: 'Site Logo', group: 'Branding' },
   { key: 'footerBg', label: 'Footer Background', group: 'Branding' },
   { key: 'loginHero', label: 'Login Screen Hero', group: 'Branding' },
@@ -25,4 +16,5 @@ export const IMAGE_SLOTS: ImageSlot[] = [
   { key: 'founder', label: 'Founder Image', group: 'About Us' },
   { key: 'trustedStory', label: 'Trusted Partner Story Image', group: 'About Us' },
   { key: 'trustedHero', label: 'Trusted Partner Hero Image', group: 'About Us' },
+  { key: 'bookingHero', label: 'Booking Form Hero', group: 'Dynamic Pages' },
 ];

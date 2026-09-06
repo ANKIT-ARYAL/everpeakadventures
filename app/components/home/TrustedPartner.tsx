@@ -31,7 +31,7 @@ export default function TrustedPartner({ content }: TrustedPartnerProps) {
           <h3 className="font-display font-medium text-2xl text-foreground">
             {content.reviewCountText}
           </h3>
-          <p className="text-foreground/60 text-lg leading-relaxed">
+          <p className="text-foreground/60 text-lg leading-relaxed text-justify">
             {content.badgeTitle}. {stripHtml(content.badgeSubtitle)}
           </p>
         </div>
@@ -62,7 +62,7 @@ export default function TrustedPartner({ content }: TrustedPartnerProps) {
           <h3 className="font-display font-medium text-2xl text-foreground">
             {content.storyTitle}
           </h3>
-          <div className="text-foreground/60 text-lg leading-relaxed">
+          <div className="text-foreground/60 text-lg leading-relaxed text-justify">
             <RichText html={content.storyDescription} />
           </div>
         </div>

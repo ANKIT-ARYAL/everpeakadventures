@@ -83,9 +83,9 @@ export default function PageCategoryForm({ parents = [], initialData, isEditing 
           </p>
         </div>
         <div className="flex items-center gap-2">
-          <Link href="/admin/pages/categories" className="p-2 bg-gray-100 rounded-lg hover:bg-gray-200">
+          <button type="button" onClick={() => router.back()} className="p-2 bg-gray-100 rounded-lg hover:bg-gray-200">
             <ArrowLeft className="w-4 h-4" />
-          </Link>
+          </button>
           <button
             type="submit"
             disabled={loading}

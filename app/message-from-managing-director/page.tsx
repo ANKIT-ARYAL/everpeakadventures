@@ -1,8 +1,13 @@
-import React from 'react';
-import { Mail, Award, ShieldCheck, Users, Footprints } from 'lucide-react';
-import { prisma } from '@/lib/prisma';
-import { Reveal, Stagger, StaggerItem } from '@/app/components/animations/Motion';
-import PageHero from '@/app/components/ui/PageHero';
+import React from "react";
+import { Mail, Award, ShieldCheck, Users, Footprints } from "lucide-react";
+import { prisma } from "@/lib/prisma";
+import {
+  Reveal,
+  Stagger,
+  StaggerItem,
+} from "@/app/components/animations/Motion";
+import PageHero from "@/app/components/ui/PageHero";
+import RichText from "@/app/components/RichText";
 
 export default async function MessageFromFounderPage() {
   const content = await prisma.directorMessageContent.findFirst({
@@ -16,26 +21,24 @@ export default async function MessageFromFounderPage() {
       <p>Ever Peak Adventures was founded in 2024 with a simple vision—to provide exceptional service, professional guidance, and unforgettable Himalayan adventures. Every trip we organize reflects our commitment to safety, responsible tourism, and personalized hospitality.</p>
       <p>When you choose Ever Peak Adventures, you become part of our family. We promise clear communication, genuine care, and support from your very first inquiry until your safe return home.</p>
     `,
-    founderName: 'Dipesh Aryal',
-    founderTitle: 'Founder, Ever Peak Adventures',
-    founderEmail: 'dipesh@everpeakadventure.com',
-    founderImage: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=400&fit=crop',
+    founderName: "Dipesh Aryal",
+    founderTitle: "Founder, Ever Peak Adventures",
+    founderEmail: "dipesh@everpeakadventure.com",
+    founderImage:
+      "https://everpeakadventures.com/wp-content/uploads/2026/03/Dipesh-Aryal-Ever-peak-Adventure.png",
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 font-sans text-slate-900">
-      
-      <PageHero 
-        slug="message-from-managing-director" 
-        fallbackTitle="Message From Founder" 
+    <div className="min-h-screen bg-slate-50 font-sans text-slate-900 text-justify">
+      <PageHero
+        slug="message-from-managing-director"
+        fallbackTitle="Message From Founder"
         fallbackSubtitle="Explore Higher. Feel Deeper."
       />
 
       <div className="py-12 px-5 lg:px-20">
-        
         {/* Main Card Container */}
         <div className="bg-white rounded-[2.5rem] p-10 md:p-14 shadow-xl border border-gray-100 relative mt-[-100px] z-30">
-          
           <div className="flex justify-end mb-8">
             <div className="bg-gray-50 border border-gray-100 px-4 py-2 rounded-full text-lg font-bold text-[#112233] tracking-wide">
               Estb - 2024
@@ -46,66 +49,74 @@ export default async function MessageFromFounderPage() {
           <div className="flex flex-col md:flex-row gap-10 items-start mb-10">
             {/* Founder Photo */}
             <div className="w-full md:w-[320px] h-[400px] rounded-3xl overflow-hidden shrink-0 shadow-lg border border-gray-100 bg-gray-50">
-              <img 
-                src={data.founderImage} 
-                alt={data.founderName} 
+              <img
+                src="https://everpeakadventures.com/wp-content/uploads/2026/03/Dipesh-Aryal-Ever-peak-Adventure.png"
+                alt={data.founderName}
                 className="w-full h-full object-cover"
               />
             </div>
-
-            {/* Intro Text & Quick Stat Badges */}
-            <div className="flex-1 space-y-6">
-              {/* Feature Badge Grid */}
-              <Stagger className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
-                <StaggerItem className="flex items-center gap-4 bg-gray-50 border border-gray-100 px-4 py-3 rounded-2xl text-lg font-bold text-[#112233]">
-                  <span className="w-10 h-10 rounded-full bg-accent-amber/10 flex items-center justify-center shrink-0">
-                    <Award className="w-5 h-5 text-accent-amber" />
-                  </span>
-                  <span>15+ Years Experience</span>
-                </StaggerItem>
-                <StaggerItem className="flex items-center gap-4 bg-gray-50 border border-gray-100 px-4 py-3 rounded-2xl text-lg font-bold text-[#112233]">
-                  <span className="w-10 h-10 rounded-full bg-accent-amber/10 flex items-center justify-center shrink-0">
-                    <ShieldCheck className="w-5 h-5 text-accent-amber" />
-                  </span>
-                  <span>Nepal Himalayan Expert</span>
-                </StaggerItem>
-                <StaggerItem className="flex items-center gap-4 bg-gray-50 border border-gray-100 px-4 py-3 rounded-2xl text-lg font-bold text-[#112233]">
-                  <span className="w-10 h-10 rounded-full bg-accent-amber/10 flex items-center justify-center shrink-0">
-                    <Footprints className="w-5 h-5 text-accent-amber" />
-                  </span>
-                  <span>Porter → Guide → Founder</span>
-                </StaggerItem>
-                <StaggerItem className="flex items-center gap-4 bg-gray-50 border border-gray-100 px-4 py-3 rounded-2xl text-lg font-bold text-[#112233]">
-                  <span className="w-10 h-10 rounded-full bg-accent-amber/10 flex items-center justify-center shrink-0">
-                    <Users className="w-5 h-5 text-accent-amber" />
-                  </span>
-                  <span>10,000+ Happy Travelers</span>
-                </StaggerItem>
-              </Stagger>
-            </div>
+            {/* Remaining Dynamic HTML Content */}
+            <Reveal>
+              <h2 className="text-2xl md:text-3xl font-extrabold text-[#222222] mb-6 oswald uppercase tracking-tight">
+                Message From Managing Director
+              </h2>
+              <RichText
+                className="text-lg text-gray-600 leading-relaxed mb-8"
+                html={data.contentHtml}
+              />
+            </Reveal>
           </div>
-
-          {/* Remaining Dynamic HTML Content */}
-          <Reveal>
-            <div 
-              className="wordpress-content space-y-6 text-gray-600 text-lg leading-relaxed pt-4"
-              dangerouslySetInnerHTML={{ __html: data.contentHtml }}
-            />
-          </Reveal>
-
+          {/* Intro Text & Quick Stat Badges */}
+          <div className="flex-1 space-y-6">
+            {/* Feature Badge Grid */}
+            <Stagger className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
+              <StaggerItem className="flex items-center gap-4 bg-gray-50 border border-gray-100 px-4 py-3 rounded-2xl text-lg font-bold text-[#112233]">
+                <span className="w-10 h-10 rounded-full bg-accent-amber/10 flex items-center justify-center shrink-0">
+                  <Award className="w-5 h-5 text-accent-amber" />
+                </span>
+                <span>15+ Years Experience</span>
+              </StaggerItem>
+              <StaggerItem className="flex items-center gap-4 bg-gray-50 border border-gray-100 px-4 py-3 rounded-2xl text-lg font-bold text-[#112233]">
+                <span className="w-10 h-10 rounded-full bg-accent-amber/10 flex items-center justify-center shrink-0">
+                  <ShieldCheck className="w-5 h-5 text-accent-amber" />
+                </span>
+                <span>Nepal Himalayan Expert</span>
+              </StaggerItem>
+              <StaggerItem className="flex items-center gap-4 bg-gray-50 border border-gray-100 px-4 py-3 rounded-2xl text-lg font-bold text-[#112233]">
+                <span className="w-10 h-10 rounded-full bg-accent-amber/10 flex items-center justify-center shrink-0">
+                  <Footprints className="w-5 h-5 text-accent-amber" />
+                </span>
+                <span>Porter → Guide → Founder</span>
+              </StaggerItem>
+              <StaggerItem className="flex items-center gap-4 bg-gray-50 border border-gray-100 px-4 py-3 rounded-2xl text-lg font-bold text-[#112233]">
+                <span className="w-10 h-10 rounded-full bg-accent-amber/10 flex items-center justify-center shrink-0">
+                  <Users className="w-5 h-5 text-accent-amber" />
+                </span>
+                <span>10,000+ Happy Travelers</span>
+              </StaggerItem>
+            </Stagger>
+          </div>
           {/* Highlight Callout Box */}
-          <Reveal delay={0.1} className="mt-10 bg-accent-amber/5 border border-accent-amber/20 p-8 rounded-3xl text-[#112233] text-lg md:text-xl font-medium leading-relaxed shadow-inner">
-            Thank you for placing your trust in Ever Peak Adventures. I look forward to welcoming you to Nepal and helping you experience the Himalayas in the safest, most meaningful, and unforgettable way possible.
+          <Reveal
+            delay={0.1}
+            className="mt-10 bg-accent-amber/5 border border-accent-amber/20 p-8 rounded-3xl text-[#112233] text-lg md:text-xl font-medium leading-relaxed shadow-inner"
+          >
+            Thank you for placing your trust in Ever Peak Adventures. I look
+            forward to welcoming you to Nepal and helping you experience the
+            Himalayas in the safest, most meaningful, and unforgettable way
+            possible.
           </Reveal>
 
           {/* Email / Signature Bar */}
           <Reveal className="pt-10 mt-10 border-t border-gray-100 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
             <div>
-              <h4 className="font-display font-medium text-[#112233] text-2xl mb-1">{data.founderName}</h4>
+              <h4 className="font-display font-medium text-[#112233] text-2xl mb-1">
+                {data.founderName}
+              </h4>
               <p className="text-lg text-gray-500">{data.founderTitle}</p>
             </div>
 
-            <a 
+            <a
               href={`mailto:${data.founderEmail}`}
               className="inline-flex items-center gap-3 bg-white hover:bg-gray-50 border border-gray-100 text-[#112233] text-lg font-bold px-6 py-4 rounded-2xl transition-colors shadow-sm"
             >
@@ -113,9 +124,7 @@ export default async function MessageFromFounderPage() {
               <span>{data.founderEmail}</span>
             </a>
           </Reveal>
-
         </div>
-
       </div>
     </div>
   );

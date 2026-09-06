@@ -80,7 +80,7 @@ export default function PackingListSection({ items, categories = [] }: PackingLi
   if (activeCategories.length === 0) return null;
 
   return (
-    <div className="bg-white rounded-2xl border border-[#eaedf2] p-6 lg:p-8 shadow-sm">
+    <div className="bg-white rounded-2xl border border-[#eaedf2] p-6 lg:p-8 shadow-sm text-justify">
       <div className="mb-8">
         <h2 className="text-3xl font-black text-[#112233] mb-2 tracking-tight">Packing List</h2>
         <p className="text-gray-500 text-sm">Everything you need, organized for a safe and comfortable trek.</p>
@@ -138,7 +138,7 @@ export default function PackingListSection({ items, categories = [] }: PackingLi
                       </div>
                     )}
                     
-                    <div className={`grid gap-x-8 gap-y-4 flex-1 ${config.subtitle ? 'md:w-2/3 sm:grid-cols-2' : 'sm:grid-cols-2 md:grid-cols-3'}`}>
+                    <div className={`grid gap-x-8  gap-y-2 flex-1 ${config.subtitle ? 'md:w-2/3 sm:grid-cols-2' : 'sm:grid-cols-2 md:grid-cols-3'}`}>
                       {catItems.map((item) => (
                         <div key={item.id} className="flex items-start gap-3">
                           <div className="bg-[#1e857c] rounded-full p-1 mt-0.5 shrink-0">

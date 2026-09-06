@@ -2,18 +2,23 @@
 
 import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Save, ArrowLeft } from 'lucide-react';
-import Link from 'next/link';
+import { Save, ArrowLeft, Plus, Trash2, GripVertical } from 'lucide-react';
 import toast, { Toaster } from 'react-hot-toast';
-import TipTapEditor from '@/app/components/admin/TipTapEditor';
 import ToggleShow from '../components/ToggleShow';
 import SectionCard from '@/app/components/admin/SectionCard';
+import MediaUploader from '@/app/components/admin/MediaUploader';
 
 const defaultContent = {
   published: true,
   title: 'Responsible Travel',
   subtitle: 'Have questions or ready to plan your Himalayan adventure?',
-  contentHtml: '',
+  contentHtml: '', // This will hold our JSON stringified cards
+};
+
+type Card = {
+  title: string;
+  description: string;
+  image: string;
 };
 
 export default function ResponsibleTravelPage() {
@@ -21,6 +26,7 @@ export default function ResponsibleTravelPage() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [form, setForm] = useState(defaultContent);
+  const [cards, setCards] = useState<Card[]>([]);
 
   useEffect(() => {
     (async () => {
@@ -34,6 +40,31 @@ export default function ResponsibleTravelPage() {
             subtitle: json.data.subtitle || '',
             contentHtml: json.data.contentHtml || '',
           });
+
+          // Parse cards
+          if (json.data.contentHtml) {
+            try {
+              // Try parsing as JSON first
+              const parsedCards = JSON.parse(json.data.contentHtml);
+              if (Array.isArray(parsedCards)) {
+                setCards(parsedCards);
+              }
+            } catch (e) {
+              // Fallback: Parse the old HTML structure using regex
+              const htmlStr = json.data.contentHtml;
+              const h3Matches = [...htmlStr.matchAll(/<h3[^>]*>(.*?)<\/h3>/g)];
+              const pMatches = [...htmlStr.matchAll(/<p[^>]*>(.*?)<\/p>/g)];
+              const legacyCards: Card[] = [];
+              for (let i = 0; i < h3Matches.length; i++) {
+                legacyCards.push({
+                  title: h3Matches[i][1].replace(/<[^>]+>/g, '').trim(),
+                  description: pMatches[i] ? pMatches[i][1].replace(/<[^>]+>/g, '').trim() : '',
+                  image: ''
+                });
+              }
+              setCards(legacyCards);
+            }
+          }
         }
       } catch (err: any) {
         toast.error(err.message);
@@ -48,20 +79,56 @@ export default function ResponsibleTravelPage() {
     setForm(prev => ({ ...prev, [name]: value }));
   };
 
+  const addCard = () => {
+    setCards(prev => [...prev, { title: '', description: '', image: '' }]);
+  };
+
+  const removeCard = (idx: number) => {
+    setCards(prev => prev.filter((_, i) => i !== idx));
+  };
+
+  const updateCard = (idx: number, field: keyof Card, value: string) => {
+    setCards(prev => {
+      const clone = [...prev];
+      clone[idx][field] = value;
+      return clone;
+    });
+  };
+
+  const moveCard = (idx: number, direction: 'up' | 'down') => {
+    if (direction === 'up' && idx > 0) {
+      setCards(prev => {
+        const clone = [...prev];
+        [clone[idx], clone[idx - 1]] = [clone[idx - 1], clone[idx]];
+        return clone;
+      });
+    } else if (direction === 'down' && idx < cards.length - 1) {
+      setCards(prev => {
+        const clone = [...prev];
+        [clone[idx], clone[idx + 1]] = [clone[idx + 1], clone[idx]];
+        return clone;
+      });
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setSaving(true);
+
+    const dataToSave = {
+      ...form,
+      contentHtml: JSON.stringify(cards),
+    };
 
     try {
       const res = await fetch('/api/responsible-travel', {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(form),
+        body: JSON.stringify(dataToSave),
       });
       if (!res.ok) throw new Error('Failed to save Responsible Travel page');
 
       toast.success('Responsible Travel page saved successfully!');
-      router.push('/admin/responsible-travel');
       router.refresh();
     } catch (err: any) {
       toast.error(err.message);
@@ -87,9 +154,9 @@ export default function ResponsibleTravelPage() {
       
       <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div className="flex items-center gap-3">
-          <Link href="/admin" className="p-2 bg-gray-100 rounded-lg hover:bg-gray-200">
+          <button type="button" onClick={() => router.back()} className="p-2 bg-gray-100 rounded-lg hover:bg-gray-200">
             <ArrowLeft className="w-4 h-4" />
-          </Link>
+          </button>
           <h1 className="text-xl font-black uppercase text-[#112233]">Responsible Travel</h1>
         </div>
         <div className="flex items-center gap-2">
@@ -112,19 +179,76 @@ export default function ResponsibleTravelPage() {
 
         <div>
           <label className="block font-bold mb-1">Subtitle</label>
-          <input type="text" name="subtitle" value={form.subtitle} onChange={handleChange} className="w-full p-3 border rounded-lg text-lg font-medium focus:border-[#24a0ed] outline-none" placeholder="Have questions or ready to plan..." />
+          <input type="text" name="subtitle" value={form.subtitle} onChange={handleChange} className="w-full p-3 border rounded-lg text-lg font-medium focus:border-[#24a0ed] outline-none text-justify" placeholder="Have questions or ready to plan..." />
         </div>
       </SectionCard>
 
-      <SectionCard title="Content">
-        <div>
-          <label className="block font-bold mb-1">Content</label>
-          <TipTapEditor
-            value={form.contentHtml}
-            onChange={(html) => setForm(prev => ({ ...prev, contentHtml: html }))}
-            placeholder="Write the Responsible Travel content here..."
-            minHeight="400px"
-          />
+      <SectionCard title="Bento Grid Cards">
+        <div className="space-y-6">
+          {cards.map((card, idx) => (
+            <div key={idx} className="bg-gray-50 border border-gray-200 p-6 rounded-xl flex flex-col gap-4 relative">
+              <div className="absolute top-4 right-4 flex gap-2">
+                <button type="button" onClick={() => moveCard(idx, 'up')} disabled={idx === 0} className="p-1.5 bg-white border border-gray-200 rounded text-gray-500 hover:text-gray-700 hover:bg-gray-50 disabled:opacity-50">
+                  ↑
+                </button>
+                <button type="button" onClick={() => moveCard(idx, 'down')} disabled={idx === cards.length - 1} className="p-1.5 bg-white border border-gray-200 rounded text-gray-500 hover:text-gray-700 hover:bg-gray-50 disabled:opacity-50">
+                  ↓
+                </button>
+                <button type="button" onClick={() => removeCard(idx)} className="p-1.5 bg-white border border-red-200 rounded text-red-500 hover:text-red-700 hover:bg-red-50 ml-2">
+                  <Trash2 className="w-4 h-4" />
+                </button>
+              </div>
+              
+              <div className="flex items-center gap-3 border-b border-gray-200 pb-4 mb-2">
+                <GripVertical className="w-5 h-5 text-gray-400" />
+                <h3 className="font-bold text-[#112233] text-lg uppercase">Card {idx + 1}</h3>
+              </div>
+              
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <div className="space-y-4">
+                  <div>
+                    <label className="block font-bold mb-1 text-[10px] uppercase tracking-wider text-gray-500">Title</label>
+                    <input 
+                      type="text" 
+                      value={card.title} 
+                      onChange={(e) => updateCard(idx, 'title', e.target.value)} 
+                      className="w-full p-3 border rounded-lg font-medium focus:border-[#24a0ed] outline-none" 
+                      placeholder="e.g. Leave No Trace" 
+                    />
+                  </div>
+                  <div>
+                    <label className="block font-bold mb-1 text-[10px] uppercase tracking-wider text-gray-500">Description</label>
+                    <textarea 
+                      value={card.description} 
+                      onChange={(e) => updateCard(idx, 'description', e.target.value)} 
+                      className="w-full p-3 border rounded-lg focus:border-[#24a0ed] outline-none min-h-[120px]" 
+                      placeholder="Write the text here..." 
+                    />
+                  </div>
+                </div>
+                
+                <div>
+                  <label className="block font-bold mb-1 text-[10px] uppercase tracking-wider text-gray-500">Background Image (Optional)</label>
+                  <p className="text-[10px] text-gray-400 mb-2">Upload a stunning background image for this card.</p>
+                  <MediaUploader
+                    type="image"
+                    value={card.image}
+                    onChange={(url) => updateCard(idx, 'image', url)}
+                    label={`Upload Card ${idx + 1} Image`}
+                    heightClass="h-[210px]"
+                  />
+                </div>
+              </div>
+            </div>
+          ))}
+          
+          <button 
+            type="button" 
+            onClick={addCard}
+            className="w-full border-2 border-dashed border-gray-300 rounded-xl p-6 text-gray-500 font-bold hover:bg-gray-50 hover:text-[#24a0ed] hover:border-[#24a0ed] transition-colors flex items-center justify-center gap-2 uppercase tracking-wide"
+          >
+            <Plus className="w-5 h-5" /> Add New Card
+          </button>
         </div>
       </SectionCard>
     </form>

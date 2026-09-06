@@ -11,5 +11,5 @@ export default async function ClientReviewsWrapper() {
 
   if (section && !section.published) return null;
 
-  return <ClientReviews reviews={reviews} section={section} />;
+  return <ClientReviews reviews={reviews} section={section} theme="dark" />;
 }

@@ -18,7 +18,7 @@ interface BlueBannerProps {
 
 export default function BlueBanner({ data }: BlueBannerProps) {
   return (
-    <section className="relative w-full py-20 px-6 bg-accent-amber overflow-hidden font-sans">
+    <section className="relative w-full py-20 px-6 bg-accent-amber overflow-hidden font-sans text-justify">
       {/* Background Image / Texture overlay */}
       <div 
         className="absolute inset-0 opacity-10 pointer-events-none mix-blend-overlay"

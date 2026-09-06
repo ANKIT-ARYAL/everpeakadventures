@@ -128,7 +128,7 @@ export default function DirectorMessagePage() {
 
         <div>
           <label className="block font-bold mb-1 text-[10px] uppercase tracking-wider">Founder Image</label>
-          <p className="text-[10px] text-gray-400 mb-2">Profile photo for the founder's message.</p>
+          <p className="text-[10px] text-gray-400 mb-2">Profile photo for the founders message.</p>
           <MediaUploader
             type="image"
             value={form.founderImage}

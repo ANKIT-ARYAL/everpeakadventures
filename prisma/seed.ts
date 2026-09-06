@@ -1061,7 +1061,7 @@ itinerary: [
     data: {
       contentHtml: `
         <h2 class="text-2xl md:text-3xl font-extrabold text-[#222222] mb-6 oswald uppercase tracking-tight">Message From Managing Director</h2>
-        <div class="space-y-4 text-gray-600 text-[14px] leading-relaxed">
+        <div class="space-y-4 text-gray-600 leading-relaxed">
           <p>Welcome to Ever Peak Adventures. When we founded this company, our goal was simple yet profound: to share the raw majesty of the Himalayas while ensuring absolute safety, deep cultural respect, and sustainable tourism.</p>
           <p>Nepal is not just a destination; it is a living sanctuary of mountains, ancient traditions, and warm-hearted communities. Every trek we design is crafted to give you a genuine, life-changing connection with this incredible landscape.</p>
           <p>Whether you are stepping onto the glaciers of Everest Base Camp or exploring the green valleys of Annapurna, our dedicated team of local experts is with you every step of the way.</p>
