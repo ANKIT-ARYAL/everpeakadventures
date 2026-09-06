@@ -29,7 +29,7 @@ export default async function MessageFromFounderPage() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 font-sans text-slate-900 text-justify">
+    <div className="min-h-screen bg-slate-50 font-sans text-slate-900">
       <PageHero
         slug="message-from-managing-director"
         fallbackTitle="Message From Founder"
@@ -61,7 +61,7 @@ export default async function MessageFromFounderPage() {
                 Message From Managing Director
               </h2>
               <RichText
-                className="text-lg text-gray-600 leading-relaxed mb-8"
+                className="text-lg text-gray-600 leading-relaxed mb-8 text-justify"
                 html={data.contentHtml}
               />
             </Reveal>
@@ -118,7 +118,7 @@ export default async function MessageFromFounderPage() {
 
             <a
               href={`mailto:${data.founderEmail}`}
-              className="inline-flex items-center gap-3 bg-white hover:bg-gray-50 border border-gray-100 text-[#112233] text-lg font-bold px-6 py-4 rounded-2xl transition-colors shadow-sm"
+              className="inline-flex items-center gap-3 bg-white hover:bg-gray-50 border border-gray-100 text-[#112233] text-lg font-bold px-6 py-4 rounded-2xl transition-colors shadow-sm w-fit"
             >
               <Mail className="w-5 h-5 text-accent-amber" />
               <span>{data.founderEmail}</span>

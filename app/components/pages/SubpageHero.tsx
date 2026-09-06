@@ -42,7 +42,7 @@ export default function SubpageHero({ title, subtitle, image }: SubpageHeroProps
           {title}
         </h1>
         {subtitle && (
-          <p className="text-[1.5rem] text-white/90 font-sans font-medium drop-shadow-md">
+          <p className="text-[1rem] md:text-[1.5rem] text-white/90 font-sans font-medium drop-shadow-md">
             {subtitle}
           </p>
         )}
