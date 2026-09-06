@@ -42,8 +42,8 @@ next-env.d.ts
 
 /app/generated/prisma
 
-# Ignore local uploads but keep the folders
-public/uploads/images/*
-public/uploads/documents/*
-!public/uploads/images/.gitkeep
-!public/uploads/documents/.gitkeep
+# Ignore local uploads but keep the folders (commented out for Vercel demo)
+# public/uploads/images/*
+# public/uploads/documents/*
+# !public/uploads/images/.gitkeep
+# !public/uploads/documents/.gitkeep

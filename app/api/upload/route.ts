@@ -4,6 +4,7 @@ import { writeFile, mkdir } from 'node:fs/promises';
 import path from 'node:path';
 import { requireAdmin } from "@/app/lib/require-admin";
 import { prisma } from '@/lib/prisma';
+import { createClient } from '@supabase/supabase-js';
 
 const ALLOWED_IMAGE = ['image/jpeg', 'image/png', 'image/webp', 'image/gif', 'image/svg+xml', 'image/avif'];
 const ALLOWED_VIDEO = ['video/mp4', 'video/webm', 'video/ogg', 'video/quicktime'];
@@ -36,16 +37,45 @@ export async function POST(request: Request) {
     const ext = file.name.split('.').pop() || (type === 'video' ? 'mp4' : 'jpg');
     const filename = `${randomUUID()}.${ext}`;
     const subdir = type === 'video' ? 'videos' : 'images';
-
-    // Save locally to public/uploads/images or public/uploads/videos
-    const uploadDir = path.join(process.cwd(), 'public', 'uploads', subdir);
-    await mkdir(uploadDir, { recursive: true });
-
     const buffer = Buffer.from(await file.arrayBuffer());
-    const filePath = path.join(uploadDir, filename);
-    await writeFile(filePath, buffer);
+    
+    let url = `/uploads/${subdir}/${filename}`;
 
-    const url = `/uploads/${subdir}/${filename}`;
+    // Upload to Supabase if credentials exist, otherwise local filesystem
+    if (process.env.NEXT_PUBLIC_SUPABASE_URL && process.env.SUPABASE_SERVICE_ROLE_KEY) {
+      const supabase = createClient(
+        process.env.NEXT_PUBLIC_SUPABASE_URL,
+        process.env.SUPABASE_SERVICE_ROLE_KEY
+      );
+      
+      const bucketName = process.env.SUPABASE_BUCKET_NAME || 'media';
+      const storagePath = `${subdir}/${filename}`;
+      
+      const { error } = await supabase
+        .storage
+        .from(bucketName)
+        .upload(storagePath, buffer, {
+          contentType: file.type,
+          upsert: false
+        });
+        
+      if (error) {
+        throw new Error('Failed to upload to Supabase: ' + error.message);
+      }
+      
+      const { data: publicUrlData } = supabase
+        .storage
+        .from(bucketName)
+        .getPublicUrl(storagePath);
+        
+      url = publicUrlData.publicUrl;
+    } else {
+      // Save locally
+      const uploadDir = path.join(process.cwd(), 'public', 'uploads', subdir);
+      await mkdir(uploadDir, { recursive: true });
+      const filePath = path.join(uploadDir, filename);
+      await writeFile(filePath, buffer);
+    }
 
     await prisma.mediaAsset.upsert({
       where: { url },
@@ -67,7 +97,7 @@ export async function POST(request: Request) {
 
     return NextResponse.json({ success: true, url, name: file.name, size: file.size });
   } catch (error: any) {
-    console.error('Local upload failed:', error);
+    console.error('Upload failed:', error);
     return NextResponse.json(
       { success: false, error: error.message || 'Internal Server Error' },
       { status: 500 }
