@@ -191,6 +191,19 @@ body {
 }
 
 /* Highlights list exact styling */
+.highlights-list div, 
+.highlights-list article,
+.exclusions-list div,
+.exclusions-list article,
+.rich-content div,
+.rich-content article {
+  margin-left: 0 !important;
+  margin-right: 0 !important;
+  max-width: none !important;
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+}
+
 .highlights-list ul {
   list-style: none;
   padding: 0;
@@ -251,6 +264,39 @@ body {
   background-size: 60%;
   background-position: center;
   background-repeat: no-repeat;
+}
+
+/* Fix nested list items so they don't inherit the large padding/icons */
+.highlights-list ul ul,
+.exclusions-list ul ul {
+  list-style-type: disc;
+  padding-left: 1.5rem;
+  margin-top: 0.25rem;
+}
+
+.highlights-list li li,
+.exclusions-list li li {
+  padding: 0.15rem 0;
+  border-bottom: none;
+  font-size: 14px;
+}
+
+.highlights-list li li::before,
+.exclusions-list li li::before {
+  content: none !important;
+}
+
+/* Hide empty list items that cause extra crosses */
+.highlights-list li:empty,
+.exclusions-list li:empty {
+  display: none !important;
+}
+
+/* Remove margins from paragraphs inside lists for tighter spacing */
+.highlights-list p,
+.exclusions-list p {
+  margin: 0;
+  padding: 0;
 }
 
 @layer utilities {

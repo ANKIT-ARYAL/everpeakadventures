@@ -596,7 +596,7 @@ export default async function TrekDetailPage({ params }: PageProps) {
 
                 <Reveal className="journey-panel bg-white rounded-xl p-8 shadow-sm border border-gray-100">
                   <div className="flex items-center gap-3 mb-6">
-                    <div className="w-12 h-12 bg-[#eaf4f1] rounded-full flex items-center justify-center shrink-0">
+                    <div className="w-12 h-12 bg-[#eaf4f1] rounded-full flex items-center shrink-0 justify-center">
                       <Mountain className="w-6 h-6 text-[#1e857c]" />
                     </div>
                     <div>
