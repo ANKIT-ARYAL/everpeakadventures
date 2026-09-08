@@ -582,7 +582,7 @@ export default function NavbarClient({
               </Link>
 
               {activeDropdown === "about" && (
-                <div className="absolute top-[80px] left-0 w-64 bg-white rounded-xl shadow-xl border border-gray-100 py-3 animate-in fade-in slide-in-from-top-4 duration-200">
+                <div className="absolute top-[70px] left-0 w-64 bg-white rounded-xl shadow-xl border border-gray-100 py-3 animate-in fade-in slide-in-from-top-4 duration-200">
                   <Link
                     href="/about-us"
                     className="flex items-center gap-3 px-5 py-2.5 text-[14px] text-[#112233] font-bold hover:text-accent-amber hover:bg-gray-50 transition-colors normal-case"
