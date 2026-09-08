@@ -36,7 +36,7 @@ export default function SubpageHero({ title, subtitle, image }: SubpageHeroProps
       {/* Content */}
       <motion.div 
         style={{ opacity }}
-        className="relative z-20 text-center mt-16 px-5 lg:px-20"
+        className="relative z-20 text-center mt-16 px-5 lg:px-20 max-w-[1400px] mx-auto w-full"
       >
         <h1 className="text-[2.5rem]  font-display font-black text-white tracking-tight drop-shadow-xl mb-4">
           {title}

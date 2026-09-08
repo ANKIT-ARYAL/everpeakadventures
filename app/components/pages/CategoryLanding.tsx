@@ -42,7 +42,7 @@ export default function CategoryLanding({
       />
 
       <section className="py-12">
-        <div className="px-5 lg:px-20">
+        <div className="px-5 lg:px-20 max-w-[1400px] mx-auto w-full">
           {descriptionHtml && (
             <div className="mb-10">
               <div className="grid grid-cols-1 lg:grid-cols-[340px_1fr] gap-8 items-start">

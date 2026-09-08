@@ -263,8 +263,8 @@ export default function AdminShell({
   return (
     <div className="min-h-screen w-full max-w-full overflow-x-hidden bg-[#f0f2f5] flex font-sans text-gray-800 admin-panel">
 
-      {/* Sidebar - fixed on desktop, drawer on mobile */}
-      <aside className={`bg-[#101b25] text-gray-300 flex-col fixed inset-y-0 left-0 z-50 overflow-y-auto hidden lg:flex transition-all duration-300 ${collapsed ? 'w-16' : 'w-64 lg:w-64 xl:w-72 2xl:w-80'}`}>
+      {/* Sidebar - sticky on desktop, drawer on mobile */}
+      <aside className={`bg-[#101b25] text-gray-300 flex-col sticky top-0 h-screen z-40 overflow-y-auto hidden lg:flex transition-all duration-300 shrink-0 ${collapsed ? 'w-16' : 'w-64 lg:w-64 xl:w-72 2xl:w-80'}`}>
         {renderNav()}
       </aside>
 
@@ -283,7 +283,7 @@ export default function AdminShell({
       </aside>
 
       {/* Main Content Viewport */}
-      <main className={`flex-1 min-w-0 flex flex-col transition-all duration-300 ${collapsed ? 'lg:ml-16 xl:ml-16 2xl:ml-20' : 'lg:ml-64 xl:ml-72 2xl:ml-80'}`}>
+      <main className="flex-1 min-w-0 flex flex-col transition-all duration-300">
         
         {/* Top Navbar */}
         <header className="bg-white border-b border-gray-200 h-16 shrink-0 flex items-center justify-between px-4 sm:px-6 z-30 sticky top-0 min-w-0">

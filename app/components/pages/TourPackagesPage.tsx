@@ -43,7 +43,7 @@ export default function TourPackagesPage({ packages = [], currentPage = 1, total
 
       {/* TOUR PACKAGES GRID */}
       <section className="py-16">
-        <div className="px-5 lg:px-20">
+        <div className="px-5 lg:px-20 max-w-[1400px] mx-auto w-full">
           
           {packages.length === 0 ? (
             <div className="text-center py-20 text-gray-500">

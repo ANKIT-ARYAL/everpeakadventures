@@ -35,13 +35,13 @@ export default function CtaBanner({ data }: CtaBannerProps) {
       <div className="absolute inset-0 bg-black/60 backdrop-blur-[2px] z-10" />
 
       {/* Content Container */}
-      <Reveal className="relative z-20 flex flex-col items-center text-center px-5 lg:px-20">
+      <Reveal className="relative z-20 flex flex-col items-center text-center px-5 lg:px-20 max-w-[1400px] mx-auto w-full">
         
         <h2 className="text-4xl md:text-5xl lg:text-6xl font-display font-medium text-white mb-6 tracking-tight leading-[1.1]">
           {data.title}
         </h2>
 
-        <p className="text-white/80 text-lg md:text-xl font-sans mb-12 leading-relaxed px-5 lg:px-20">
+        <p className="text-white/80 text-lg md:text-xl font-sans mb-12 leading-relaxed px-5 lg:px-20 max-w-[1400px] mx-auto w-full">
           {stripHtml(data.subtitle)}
         </p>
 

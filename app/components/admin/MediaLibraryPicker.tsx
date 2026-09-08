@@ -51,7 +51,7 @@ export default function MediaLibraryPicker({ open, onClose, onSelect, kind = 'an
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 p-4" onClick={onClose}>
       <div
-        className="bg-white rounded-2xl w-full max-h-[85vh] flex flex-col overflow-hidden shadow-2xl px-5 lg:px-20"
+        className="bg-white rounded-2xl w-full max-h-[85vh] flex flex-col overflow-hidden shadow-2xl px-5 lg:px-20 max-w-[1400px] mx-auto w-full"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex items-center justify-between px-5 py-4 border-b border-gray-200">

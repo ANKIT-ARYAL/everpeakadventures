@@ -17,7 +17,7 @@ interface BestSellersProps {
 export default function BestSellers({ data, title, subtitle }: BestSellersProps) {
   return (
     <div className='bg-background text-foreground py-24 border-b border-foreground/10'>
-      <section className="px-5 lg:px-20">
+      <section className="px-5 lg:px-20 max-w-[1400px] mx-auto w-full">
         <Reveal className="flex flex-col md:flex-row md:items-end justify-between mb-16 gap-6">
           <div>
             <h2 className="text-4xl md:text-5xl font-display font-medium tracking-tight mb-4 ">

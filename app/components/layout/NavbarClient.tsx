@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
@@ -66,6 +66,19 @@ export default function NavbarClient({
   const pathname = usePathname() || "";
 
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  const handleMouseEnter = (dropdown: string, callback?: () => void) => {
+    if (timeoutRef.current) clearTimeout(timeoutRef.current);
+    setActiveDropdown(dropdown);
+    if (callback) callback();
+  };
+
+  const handleMouseLeave = () => {
+    timeoutRef.current = setTimeout(() => {
+      setActiveDropdown(null);
+    }, 150);
+  };
 
   // Mobile state
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -124,7 +137,7 @@ export default function NavbarClient({
 
   return (
     <>
-      <header className={`fixed top-0 w-full z-50 ${headerClasses}`}>
+      <header className={`fixed top-0 w-full max-w-[1920px] mx-auto left-0 right-0 z-50 ${headerClasses}`}>
         {/* DESKTOP NAV */}
         <div className="hidden lg:flex h-20 items-center justify-between px-5 lg:px-20">
           <Link href="/" className="flex items-center">
@@ -146,11 +159,8 @@ export default function NavbarClient({
             {/* 1. NEPAL */}
             <div
               className="relative group py-7"
-              onMouseEnter={() => {
-                setActiveDropdown("nepal");
-                setActiveNepalTabIdx(0);
-              }}
-              onMouseLeave={() => setActiveDropdown(null)}
+              onMouseEnter={() => handleMouseEnter("nepal", () => setActiveNepalTabIdx(0))}
+              onMouseLeave={handleMouseLeave}
             >
               <Link
                 href="/tour-destination/nepal"
@@ -160,7 +170,7 @@ export default function NavbarClient({
                 <ChevronDown className="w-4 h-4" />
               </Link>
               {activeDropdown === "nepal" && (
-                <div className="fixed top-[80px] left-1/2 -translate-x-1/2 w-[1100px] bg-white rounded-b-2xl shadow-2xl border-t border-gray-100 flex overflow-hidden text-[#112233]">
+                <div className="fixed top-[80px] left-1/2 -translate-x-1/2 w-[95vw] xl:w-[1100px] max-w-[1100px] bg-white rounded-b-2xl shadow-2xl border-t border-gray-100 flex overflow-hidden text-[#112233]">
                   {/* Sidebar Tabs */}
                   <div className="w-[300px] bg-gray-50 flex flex-col py-4 border-r border-gray-100">
                     {nepalTabs.map((tab: any, idx: number) => {
@@ -249,11 +259,8 @@ export default function NavbarClient({
             {/* 2. NEPAL TREKKING */}
             <div
               className="relative group py-7"
-              onMouseEnter={() => {
-                setActiveDropdown("trekking");
-                setActiveTrekkingTabIdx(0);
-              }}
-              onMouseLeave={() => setActiveDropdown(null)}
+              onMouseEnter={() => handleMouseEnter("trekking", () => setActiveTrekkingTabIdx(0))}
+              onMouseLeave={handleMouseLeave}
             >
               <Link
                 href="/trekking"
@@ -264,7 +271,7 @@ export default function NavbarClient({
               </Link>
 
               {activeDropdown === "trekking" && (
-                <div className="fixed top-[80px] left-1/2 -translate-x-1/2 w-[1100px] bg-white rounded-b-2xl shadow-2xl border-t border-gray-100 flex overflow-hidden">
+                <div className="fixed top-[80px] left-1/2 -translate-x-1/2 w-[95vw] xl:w-[1100px] max-w-[1100px] bg-white rounded-b-2xl shadow-2xl border-t border-gray-100 flex overflow-hidden">
                   {/* Sidebar Regions */}
                   <div className="w-72 bg-gray-50 flex flex-col py-4 border-r border-gray-100">
                     {nepalTrekkingTabs.map((region: any, idx: number) => {
@@ -358,11 +365,8 @@ export default function NavbarClient({
             {/* 3. NEPAL TOURS */}
             <div
               className="relative group py-7"
-              onMouseEnter={() => {
-                setActiveDropdown("tours");
-                setActiveToursTabIdx(0);
-              }}
-              onMouseLeave={() => setActiveDropdown(null)}
+              onMouseEnter={() => handleMouseEnter("tours", () => setActiveToursTabIdx(0))}
+              onMouseLeave={handleMouseLeave}
             >
               <Link
                 href="/tour-destination/nepal"
@@ -373,7 +377,7 @@ export default function NavbarClient({
               </Link>
 
               {activeDropdown === "tours" && (
-                <div className="fixed top-[80px] left-1/2 -translate-x-1/2 w-[1100px] bg-white rounded-b-2xl shadow-2xl border-t border-gray-100 flex overflow-hidden text-[#112233]">
+                <div className="fixed top-[80px] left-1/2 -translate-x-1/2 w-[95vw] xl:w-[1100px] max-w-[1100px] bg-white rounded-b-2xl shadow-2xl border-t border-gray-100 flex overflow-hidden text-[#112233]">
                   {/* Sidebar Tabs */}
                   <div className="w-[300px] bg-gray-50 flex flex-col py-4 border-r border-gray-100 shrink-0">
                     {nepalToursTabs?.map((tab: any, idx: number) => {
@@ -465,11 +469,8 @@ export default function NavbarClient({
             {/* 4. TIBET & BHUTAN */}
             <div
               className="relative group py-7"
-              onMouseEnter={() => {
-                setActiveDropdown("tibet-bhutan");
-                setActiveTibetBhutanTabIdx(0);
-              }}
-              onMouseLeave={() => setActiveDropdown(null)}
+              onMouseEnter={() => handleMouseEnter("tibet-bhutan", () => setActiveTibetBhutanTabIdx(0))}
+              onMouseLeave={handleMouseLeave}
             >
               <Link
                 href="/tour-destination/tibet"
@@ -480,7 +481,7 @@ export default function NavbarClient({
               </Link>
 
               {activeDropdown === "tibet-bhutan" && (
-                <div className="fixed top-[80px] left-1/2 -translate-x-1/2 w-[1100px] bg-white rounded-b-2xl shadow-2xl border-t border-gray-100 flex overflow-hidden text-[#112233]">
+                <div className="fixed top-[80px] left-1/2 -translate-x-1/2 w-[95vw] xl:w-[1100px] max-w-[1100px] bg-white rounded-b-2xl shadow-2xl border-t border-gray-100 flex overflow-hidden text-[#112233]">
                   {/* Sidebar Tabs */}
                   <div className="w-[300px] bg-gray-50 flex flex-col py-4 border-r border-gray-100">
                     {tibetBhutanMenu.map((tab: any, idx: number) => {
@@ -569,8 +570,8 @@ export default function NavbarClient({
             {/* 5. ABOUT US */}
             <div
               className="relative group py-7"
-              onMouseEnter={() => setActiveDropdown("about")}
-              onMouseLeave={() => setActiveDropdown(null)}
+              onMouseEnter={() => handleMouseEnter("about")}
+              onMouseLeave={handleMouseLeave}
             >
               <Link
                 href="/about-us"

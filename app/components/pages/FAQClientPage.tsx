@@ -40,7 +40,7 @@ export default function FAQClientPage({ faqs = [], heroTitle, heroSubtitle, hero
 
       {/* MAIN CONTENT GRID */}
       <section className="py-16">
-        <div className="px-5 lg:px-20">
+        <div className="px-5 lg:px-20 max-w-[1400px] mx-auto w-full">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
             
             {/* LEFT: Accordion List */}

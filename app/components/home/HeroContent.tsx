@@ -82,7 +82,7 @@ export default function HeroContent({ hero }: HeroContentProps) {
 
   return (
     <>
-      <div className="relative z-10 w-full flex flex-col justify-center h-full px-5 lg:px-20 ">
+      <div className="relative z-10 w-full flex flex-col justify-center h-full px-5 lg:px-20 max-w-[1400px] mx-auto w-full ">
         <motion.div
           className="w-full"
           variants={container}

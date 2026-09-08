@@ -140,7 +140,7 @@ export default function QuickSearchModal({ isOpen, onClose }: QuickSearchModalPr
           transition={{ type: "spring", bounce: 0, duration: 0.4 }}
           className="relative w-full bg-white shadow-2xl flex flex-col max-h-[80vh] z-10 rounded-b-3xl"
         >
-          <div className="w-full flex flex-col h-full max-h-[80vh] px-5 lg:px-20">
+          <div className="w-full flex flex-col h-full max-h-[80vh] px-5 lg:px-20 max-w-[1400px] mx-auto w-full">
             {/* Top Search Bar */}
             <div className="flex items-center px-6 py-5 border-b border-gray-100 gap-4 bg-white shrink-0">
             {loading ? (
@@ -201,7 +201,7 @@ export default function QuickSearchModal({ isOpen, onClose }: QuickSearchModalPr
               <div className="py-12 text-center">
                 <Compass className="w-12 h-12 text-gray-300 mx-auto mb-3" />
                 <h4 className="text-base font-bold text-gray-700">No results found for &ldquo;{query}&rdquo;</h4>
-                <p className="text-xs text-gray-400 mt-1 px-5 lg:px-20">
+                <p className="text-xs text-gray-400 mt-1 px-5 lg:px-20 max-w-[1400px] mx-auto w-full">
                   Try searching for Everest, Annapurna, Manaslu, cultural tours, or travel guides.
                 </p>
               </div>

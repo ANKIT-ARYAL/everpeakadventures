@@ -117,7 +117,7 @@ export default async function Footer() {
 
   return (
     <footer className="bg-[#0b1521] text-[#EFE6D8] font-sans border-t border-[#EFE6D8]/10 pt-10">
-      <div className="px-5 lg:px-20">
+      <div className="px-5 lg:px-20 max-w-[1400px] mx-auto w-full">
         
         {/* ROW 1: Trust Items (from image top row) */}
         {trustItems.length > 0 && (
@@ -130,7 +130,7 @@ export default async function Footer() {
                     <Icon className="w-6 h-6 text-accent-amber" />
                   </div>
                   <h4 className="font-bold text-lg lg:text-[15px] mb-2">{item.title}</h4>
-                  <p className="text-md text-[#EFE6D8]/60 leading-relaxed px-5 lg:px-20">
+                  <p className="text-md text-[#EFE6D8]/60 leading-relaxed px-5 lg:px-20 max-w-[1400px] mx-auto w-full">
                     {item.subtitle.replace(/<[^>]*>?/gm, '')}
                   </p>
                 </div>
@@ -230,7 +230,7 @@ export default async function Footer() {
 
       {/* ROW 4: Bottom Bar */}
       <div className="border-t border-[#EFE6D8]/10 bg-[#112233]">
-        <div className="py-6 flex flex-col lg:flex-row items-center justify-between gap-6 text-[12px] text-[#EFE6D8]/60 px-5 lg:px-20">
+        <div className="py-6 flex flex-col lg:flex-row items-center justify-between gap-6 text-[12px] text-[#EFE6D8]/60 px-5 lg:px-20 max-w-[1400px] mx-auto w-full">
           
           <div className="flex flex-col sm:flex-row items-center gap-4">
             <span className="font-medium">We Accept</span>

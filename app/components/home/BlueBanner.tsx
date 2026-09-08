@@ -32,7 +32,7 @@ export default function BlueBanner({ data }: BlueBannerProps) {
       <div className="relative z-10 flex flex-col lg:flex-row items-center justify-between gap-10 text-center lg:text-left ">
         
         {/* Left Text Content */}
-        <Reveal className="px-5 lg:px-20">
+        <Reveal className="px-5 lg:px-20 max-w-[1400px] mx-auto w-full">
           <h2 className="text-3xl md:text-4xl lg:text-5xl font-display font-medium text-white mb-4 tracking-tight leading-snug">
             {data.title}
           </h2>
@@ -42,7 +42,7 @@ export default function BlueBanner({ data }: BlueBannerProps) {
         </Reveal>
 
         {/* Right Button */}
-        <Reveal delay={0.15} className="px-5 lg:px-20">
+        <Reveal delay={0.15} className="px-5 lg:px-20 max-w-[1400px] mx-auto w-full">
           <Link
             href={data.buttonLink}
             className="inline-flex items-center gap-3 bg-white hover:bg-gray-50 text-accent-amber font-semibold text-lg px-8 py-4 rounded-full shadow-lg transition-all duration-300 whitespace-nowrap hover:scale-105"

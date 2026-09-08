@@ -538,7 +538,7 @@ export default function MediaLibraryModal({
       onClick={handleBackdropClick}
     >
       <div
-        className="relative bg-white rounded-2xl w-full h-[90vh] flex flex-col overflow-hidden shadow-2xl px-5 lg:px-20"
+        className="relative bg-white rounded-2xl w-full h-[90vh] flex flex-col overflow-hidden shadow-2xl px-5 lg:px-20 max-w-[1400px] mx-auto w-full"
         onPointerDown={(event) => {
           event.stopPropagation();
         }}

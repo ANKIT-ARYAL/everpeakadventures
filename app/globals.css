@@ -255,13 +255,13 @@ body {
 
 @layer utilities {
   .site-container {
-    @apply w-full px-5 sm:px-6 lg:px-8;
+    @apply w-full max-w-[1440px] mx-auto px-5 sm:px-6 lg:px-8;
   }
   .site-container-narrow {
-    @apply w-full px-5 sm:px-6 lg:px-20;
+    @apply w-full max-w-[1200px] mx-auto px-5 sm:px-6 lg:px-20;
   }
   .site-container-wide {
-    @apply w-full px-5 sm:px-6 lg:px-20;
+    @apply w-full max-w-[1920px] mx-auto px-5 sm:px-6 lg:px-20;
   }
   
   /* Responsive text utilities */
@@ -297,6 +297,17 @@ body {
   
   .flex > * {
     min-width: 0;
+  }
+}
+
+@layer base {
+  /* Scale safely on zoom out / huge screens and prevent hardcoded width overflow */
+  body {
+    max-width: 100vw;
+    overflow-x: hidden;
+  }
+  div, section, main, header, footer, nav, article {
+    max-width: 100vw;
   }
 }
 

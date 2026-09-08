@@ -53,7 +53,7 @@ export default function ContactUsClient({ info, heroTitle, heroSubtitle, heroIma
         <div className="absolute top-0 right-0 -mr-40 -mt-40 w-96 h-96 rounded-full bg-[#f59e0b]/5 blur-3xl pointer-events-none" />
         <div className="absolute bottom-0 left-0 -ml-40 -mb-40 w-96 h-96 rounded-full bg-[#112233]/5 blur-3xl pointer-events-none" />
 
-        <div className="relative z-10 px-5 lg:px-20">
+        <div className="relative z-10 px-5 lg:px-20 max-w-[1400px] mx-auto w-full">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-20">
             
             {/* LEFT COLUMN: Contact Details */}

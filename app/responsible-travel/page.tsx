@@ -142,7 +142,7 @@ export default async function ResponsibleTravelPage() {
                       <h3 className="font-extrabold mb-4 leading-tight tracking-tight text-[#112233] text-xl md:text-2xl">
                         {reason.title}
                       </h3>
-                      <p className="leading-relaxed text-base md:text-lg text-gray-600 text-start">
+                      <p className="leading-relaxed text-base md:text-lg text-gray-600 text-pretty">
                         {reason.description}
                       </p>
                     </div>

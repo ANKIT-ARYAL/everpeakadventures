@@ -49,7 +49,7 @@ export default function ClientReviews({
 
   return (
     <section className={sectionClasses}>
-      <div className="relative z-10 px-5 lg:px-20">
+      <div className="relative z-10 px-5 lg:px-20 max-w-[1400px] mx-auto w-full">
         
         {/* HEADER */}
         <Reveal className="flex flex-col md:flex-row justify-between items-start md:items-end mb-16 gap-6">
@@ -76,7 +76,7 @@ export default function ClientReviews({
                   <Star key={i} className="w-5 h-5 fill-current" />
                 ))}
               </div>
-              <p className="text-lg leading-relaxed font-sans mb-8 italic text-justify">
+              <p className="text-lg leading-relaxed font-sans mb-8 italic text-pretty">
                 &quot;{stripHtml(review.quote)}&quot;
               </p>
 

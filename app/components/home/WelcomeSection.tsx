@@ -64,7 +64,7 @@ export default function WelcomeSection({
 
   return (
     <section className="py-24 px-6 bg-foreground text-background">
-      <div className="flex flex-col lg:flex-row gap-10 lg:gap-16 items-center px-5 lg:px-20">
+      <div className="flex flex-col lg:flex-row gap-10 lg:gap-16 items-center px-5 lg:px-20 max-w-[1400px] mx-auto w-full">
         
         {/* Left Side: Auto-swiping Image Carousel */}
         <Reveal className="w-full lg:w-1/2 aspect-[4/5] md:aspect-[1/1] lg:aspect-[4/5] relative rounded-2xl overflow-hidden shadow-2xl max-h-[500px]">

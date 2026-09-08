@@ -30,7 +30,7 @@ interface FeaturedTreksProps {
 export default function FeaturedTreks({ treks = [], label, title }: FeaturedTreksProps) {
   return (
     <section className="py-24 bg-foreground text-background border-b border-background/10 font-sans">
-      <div className="px-5 lg:px-20">
+      <div className="px-5 lg:px-20 max-w-[1400px] mx-auto w-full">
         <Reveal className="flex flex-col md:flex-row md:items-end justify-between mb-16 gap-6">
           <div>
             <h2 className="text-4xl md:text-5xl font-display font-medium tracking-tight mb-4 text-background">

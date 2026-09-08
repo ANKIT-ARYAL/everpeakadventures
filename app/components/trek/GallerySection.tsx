@@ -151,7 +151,7 @@ export default function GallerySection({ photos }: Props) {
             <img
               src={photos[index].src}
               alt={photos[index].caption || `Gallery image ${index + 1}`}
-              className={`max-h-full object-contain transition-transform duration-300 ${ zoomed ? 'scale-150 cursor-zoom-out' : 'cursor-zoom-in' } px-5 lg:px-20`}
+              className={`max-h-full object-contain transition-transform duration-300 ${ zoomed ? 'scale-150 cursor-zoom-out' : 'cursor-zoom-in' } px-5 lg:px-20 max-w-[1400px] mx-auto w-full`}
               onClick={() => setZoomed((z) => !z)}
             />
 

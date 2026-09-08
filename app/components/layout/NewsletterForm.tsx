@@ -56,7 +56,7 @@ export default function NewsletterForm() {
   }
 
   return (
-    <form className="relative flex flex-col sm:flex-row items-center gap-3 w-full px-5 lg:px-20 pb-8" onSubmit={handleSubmit}>
+    <form className="relative flex flex-col sm:flex-row items-center gap-3 w-full px-5 lg:px-20 max-w-[1400px] mx-auto w-full pb-8" onSubmit={handleSubmit}>
       <div className="relative w-full">
         <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
         <input 

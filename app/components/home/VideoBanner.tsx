@@ -61,7 +61,7 @@ export default function VideoBanner({ data }: VideoBannerProps) {
       <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-black/80 z-10" />
 
       {/* Content */}
-      <Reveal className="relative z-20 text-center flex flex-col items-center px-5 lg:px-20">
+      <Reveal className="relative z-20 text-center flex flex-col items-center px-5 lg:px-20 max-w-[1400px] mx-auto w-full">
         
         <a 
           href={data?.videoUrl || data?.buttonLink || '/tour'}
@@ -84,7 +84,7 @@ export default function VideoBanner({ data }: VideoBannerProps) {
           {data?.title || 'Explore Full Itineraries & Trip Ideas For Trekking'}
         </h2>
         
-        <p className="text-white/70 text-lg md:text-xl font-sans leading-relaxed mb-10 px-5 lg:px-20">
+        <p className="text-white/70 text-lg md:text-xl font-sans leading-relaxed mb-10 px-5 lg:px-20 max-w-[1400px] mx-auto w-full">
           {stripHtml(data?.subtitle) || 'Carefully crafted trekking plans designed for every trail, pace, and adventure level.'}
         </p>
 

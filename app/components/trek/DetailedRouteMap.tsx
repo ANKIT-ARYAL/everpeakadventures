@@ -180,7 +180,7 @@ export default function DetailedRouteMap({
     220 - (elev - elevationBase) / elevationRange * 200;
 
   return (
-    <div className="w-full px-5 lg:px-20">
+    <div className="w-full px-5 lg:px-20 max-w-[1400px] mx-auto w-full">
       <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
         {/* Header with Title */}
         <div className="p-6 border-b border-gray-200 bg-gradient-to-r from-gray-50 to-white">
@@ -291,7 +291,7 @@ export default function DetailedRouteMap({
 
           {/* Legend - Top Left Overlay */}
           {showLegend && (
-            <div className="absolute top-16 left-4 z-10 bg-white/95 backdrop-blur-sm rounded-lg border border-gray-200 p-3 shadow-lg min-w-[200px] px-5 lg:px-20">
+            <div className="absolute top-16 left-4 z-10 bg-white/95 backdrop-blur-sm rounded-lg border border-gray-200 p-3 shadow-lg min-w-[200px] px-5 lg:px-20 max-w-[1400px] mx-auto w-full">
               {maxAltitude && (
                 <div className="font-bold text-md text-gray-700 uppercase tracking-wider mb-2 border-b pb-2 text-red-600">
                   Max. Altitude: {maxAltitude}m

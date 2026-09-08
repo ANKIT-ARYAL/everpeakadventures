@@ -34,7 +34,7 @@ const getLucideIcon = (title: string) => {
 export default function WhyChooseUs({ features = [], badge, title, titleHighlight, subtitle }: WhyChooseUsProps) {
   return (
     <section className="py-24 px-6 bg-foreground text-background font-sans border-t border-background/10">
-      <div className="px-5 lg:px-20">
+      <div className="px-5 lg:px-20 max-w-[1400px] mx-auto w-full">
         
         {/* Header Section */}
         <Reveal className="mb-20 flex flex-col items-start">

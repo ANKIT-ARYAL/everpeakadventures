@@ -70,7 +70,7 @@ export default function TrekkingPage({
 
       {/* TREKKING PACKAGES GRID */}
       <section className="py-12 lg:py-16">
-        <div className="site-container px-5 lg:px-20">
+        <div className="site-container px-5 lg:px-20 max-w-[1400px] mx-auto w-full">
           {/* SEARCH SUMMARY BAR (Only visible if a search is active) */}
           {hasSearchFilters && (
             <div className="mb-10 bg-white rounded-2xl p-6 md:px-8 border border-gray-100 shadow-[0_4px_20px_rgba(0,0,0,0.03)] flex flex-col md:flex-row md:items-center justify-between gap-4">

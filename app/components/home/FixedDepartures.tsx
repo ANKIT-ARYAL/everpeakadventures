@@ -44,7 +44,7 @@ export default function FixedDepartures({ data = [], label, title, embedded = fa
           : "scroll-mt-[118px] py-24 px-6 bg-foreground min-w-0"
       }
     >
-      <div className={embedded ? "min-w-0" : "px-5 lg:px-20 min-w-0"}>
+      <div className={embedded ? "min-w-0" : "px-5 lg:px-20 max-w-[1400px] mx-auto w-full min-w-0"}>
         
         {/* Header Section */}
         <Reveal className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4 min-w-0">

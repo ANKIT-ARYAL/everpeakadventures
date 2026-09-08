@@ -71,7 +71,7 @@ export default async function TourDestinationPage({ params }: PageProps) {
           <h2 className="text-xl md:text-2xl font-bold oswald uppercase mb-4 text-[#222222]">
             {destinationName}
           </h2>
-          <div className="text-gray-600 text-lg leading-relaxed space-y-4">
+          <div className="text-gray-600 text-lg leading-relaxed space-y-4 text-justify">
             <p className="font-medium text-gray-700">{getDestinationDescription(destinationName)}</p>
             <p className="text-lg text-gray-500 pt-2">
               At Ever Peak Adventures, we design authentic and safe travel experiences that allow you to explore {destinationName}&apos;s natural beauty, cultural heritage, and adventurous spirit with confidence and comfort.

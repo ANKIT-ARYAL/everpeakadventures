@@ -19,7 +19,7 @@ export default function TrustedPartner({ content }: TrustedPartnerProps) {
     <section className="w-full font-sans bg-background text-foreground border-t border-foreground/10">
       
       {/* Top Section: Trust Metrics (Clean Banner Layout) */}
-      <div className="py-12 lg:py-20 grid grid-cols-1 md:grid-cols-3 gap-8 lg:gap-12 px-5 lg:px-20">
+      <div className="py-12 lg:py-20 grid grid-cols-1 md:grid-cols-3 gap-8 lg:gap-12 px-5 lg:px-20 max-w-[1400px] mx-auto w-full">
         
         {/* Metric 1: Reputation */}
         <div className="flex flex-col items-center md:items-start text-center md:text-left gap-4">

@@ -36,7 +36,7 @@ export default function PageHeroClient({ title, subtitle, image }: Props) {
         initial={{ y: 30, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1], delay: 0.1 }}
-        className="relative z-20 text-center mt-16 px-5 lg:px-20"
+        className="relative z-20 text-center mt-16 px-5 lg:px-20 max-w-[1400px] mx-auto w-full"
       >
         <h1 className="text-4xl md:text-6xl font-black text-white oswald tracking-wide uppercase drop-shadow-xl mb-4">
           {title}

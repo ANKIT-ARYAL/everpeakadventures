@@ -6,7 +6,7 @@ export default function HeroSearchBar() {
   const [isMobileExpanded, setIsMobileExpanded] = useState(false);
 
   return (
-    <div className="relative z-30 w-full h-0 px-5 lg:px-20">
+    <div className="relative z-30 w-full h-0 px-5 lg:px-20 max-w-[1400px] mx-auto w-full">
       <div className="absolute left-5 right-5 lg:left-5 lg:right-5 top-0 -translate-y-1/2 flex justify-end lg:justify-center">
         
         {/* Mobile Collapsed State (Just the icon) */}

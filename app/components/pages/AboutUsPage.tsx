@@ -26,7 +26,7 @@ interface AboutPageProps {
 
 export default function AboutUsPage({ data }: AboutPageProps) {
   return (
-    <div className="min-h-screen font-sans bg-white text-slate-900 text-justify">
+    <div className="min-h-screen font-sans bg-white text-slate-900">
       
       {/* HERO SECTION */}
       <PageHero 
@@ -38,7 +38,7 @@ export default function AboutUsPage({ data }: AboutPageProps) {
 
       {/* MAIN CONTENT SECTION */}
       <section className="py-24 relative overflow-hidden">
-        <div className="flex flex-col relative z-10 px-5 lg:px-20">
+        <div className="flex flex-col relative z-10 px-5 lg:px-20 max-w-[1400px] mx-auto w-full">
           <div className="flex flex-col lg:flex-row gap-12 items-start">
             
             {/* LEFT COLUMN: Image & Statistics Grid */}
@@ -57,7 +57,7 @@ export default function AboutUsPage({ data }: AboutPageProps) {
               <h2 className="text-3xl md:text-4xl font-display font-medium text-[#112233] mb-8 tracking-tight">
                 About Ever Peak Adventures
               </h2>
-              <div className="space-y-6 text-gray-600 text-lg leading-relaxed">
+              <div className="space-y-6 text-gray-600 text-lg leading-relaxed text-justify">
                 <RichText html={data.paragraph1} />
                 <RichText html={data.paragraph2} />
                 <RichText html={data.paragraph3} />
@@ -90,20 +90,20 @@ export default function AboutUsPage({ data }: AboutPageProps) {
       {/* COMPANY CULTURE BANNER */}
       <Reveal className="bg-[#00af87] text-white py-20 px-5 shadow-inner relative overflow-hidden">
         <div className="absolute inset-0 bg-black/10 pointer-events-none" />
-        <div className="flex flex-col md:flex-row items-center justify-between gap-10 relative z-10 px-5 lg:px-20">
+        <div className="flex flex-col md:flex-row items-center justify-between gap-10 relative z-10 px-5 lg:px-20 max-w-[1400px] mx-auto w-full">
           <h2 className="text-3xl md:text-4xl font-display font-medium tracking-tight">
             {data.cultureTitle}
           </h2>
           <RichText
             html={data.cultureText}
-            className="text-xl md:text-2xl font-medium leading-relaxed text-left md:text-right text-white/90 px-5 lg:px-20"
+            className="text-xl md:text-2xl font-medium leading-relaxed text-left md:text-right text-white/90 px-5 lg:px-20 max-w-[1400px] mx-auto w-full"
           />
         </div>
       </Reveal>
 
       {/* MISSION, VISION & GOALS */}
       <section className="py-24 relative overflow-hidden bg-slate-50">
-        <div className="relative z-10 px-5 lg:px-20">
+        <div className="relative z-10 px-5 lg:px-20 max-w-[1400px] mx-auto w-full">
           <Stagger className="grid grid-cols-1 md:grid-cols-3 gap-8">
             
             <StaggerItem className="bg-white border border-gray-100 rounded-[2.5rem] p-10 md:p-12 flex flex-col justify-between shadow-xl relative overflow-hidden group">

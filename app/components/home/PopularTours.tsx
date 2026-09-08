@@ -27,7 +27,7 @@ interface PopularToursProps {
 export default function PopularTours({ tours = [], title, subtitle }: PopularToursProps) {
   return (
     <section className="py-24 bg-background relative overflow-hidden font-sans border-t border-gray-200 dark:border-gray-800">
-      <div className="relative z-10 px-5 lg:px-20">
+      <div className="relative z-10 px-5 lg:px-20 max-w-[1400px] mx-auto w-full">
 
         {/* HEADER */}
         <Reveal className="flex flex-col md:flex-row justify-between items-start md:items-end mb-16 gap-6">

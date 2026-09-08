@@ -42,9 +42,9 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
       lang="en"
-      className={`${fontOutfit.variable} ${fontManrope.variable} h-full antialiased`}
+      className={`${fontOutfit.variable} ${fontManrope.variable} h-full antialiased bg-[var(--background)]`}
     >
-      <body className="min-h-full flex flex-col overflow-x-hidden w-full">
+      <body className="min-h-full flex flex-col overflow-x-hidden w-full max-w-[1920px] mx-auto relative shadow-[0_0_60px_rgba(0,0,0,0.05)]">
         {isAdmin ? (
           <MotionProvider>
             {children}

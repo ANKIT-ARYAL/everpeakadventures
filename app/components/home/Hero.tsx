@@ -34,7 +34,7 @@ export default async function Hero() {
 
   return (
     <>
-      <section className="relative w-full min-h-[80dvh] overflow-hidden flex flex-col justify-center pt-28 pb-20">
+      <section className="relative w-full h-[80vh] min-h-[500px] max-h-[800px] xl:max-h-[700px] overflow-hidden flex flex-col justify-center pt-28 pb-20">
         {/* MEDIA (youtube video | uploaded video | image) */}
         <HeroMedia
           mediaType={(mediaType === "youtube" || mediaType === "video" || mediaType === "image" ? mediaType : "youtube")}
@@ -46,7 +46,7 @@ export default async function Hero() {
         <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent pointer-events-none" />
 
         {/* OVERLAY: Gradient from top for navbar legibility */}
-        <div className="absolute top-0 left-0 right-0 h-screen bg-gradient-to-b from-black/70 to-transparent pointer-events-none z-10" />
+        <div className="absolute top-0 left-0 right-0 h-[60%] bg-gradient-to-b from-black/70 to-transparent pointer-events-none z-10" />
 
         {/* CONTENT */}
         <HeroContent hero={hero} />
