@@ -77,6 +77,10 @@ export default function NavbarClient({
   const handleMouseLeave = () => {
     timeoutRef.current = setTimeout(() => {
       setActiveDropdown(null);
+      setLockedNepalTabIdx(null);
+      setLockedTrekkingTabIdx(null);
+      setLockedToursTabIdx(null);
+      setLockedTibetBhutanTabIdx(null);
     }, 150);
   };
 
@@ -89,10 +93,14 @@ export default function NavbarClient({
   const [scrolled, setScrolled] = useState(false);
 
   const [activeNepalTabIdx, setActiveNepalTabIdx] = useState<number>(0);
+  const [lockedNepalTabIdx, setLockedNepalTabIdx] = useState<number | null>(null);
   const [activeTrekkingTabIdx, setActiveTrekkingTabIdx] = useState<number>(0);
+  const [lockedTrekkingTabIdx, setLockedTrekkingTabIdx] = useState<number | null>(null);
   const [activeToursTabIdx, setActiveToursTabIdx] = useState<number>(0);
+  const [lockedToursTabIdx, setLockedToursTabIdx] = useState<number | null>(null);
   const [activeTibetBhutanTabIdx, setActiveTibetBhutanTabIdx] =
     useState<number>(0);
+  const [lockedTibetBhutanTabIdx, setLockedTibetBhutanTabIdx] = useState<number | null>(null);
   const [searchModalOpen, setSearchModalOpen] = useState(false);
 
   const isSlugPage =
@@ -178,12 +186,29 @@ export default function NavbarClient({
                       return (
                         <div
                           key={tab.name}
-                          onMouseEnter={() => setActiveNepalTabIdx(idx)}
-                          className={`flex items-center gap-3 px-6 py-3 cursor-pointer transition-colors ${isActive ? "bg-white text-[#112233] border-l-4 border-l-accent-amber font-extrabold shadow-sm relative -mr-[1px]" : "text-gray-600 hover:text-[#112233] hover:bg-gray-100 font-semibold border-l-4 border-l-transparent"}`}
+                          onMouseEnter={() => {
+                            if (lockedNepalTabIdx === null) {
+                              setActiveNepalTabIdx(idx);
+                            }
+                          }}
+                          onClick={() => {
+                            if (lockedNepalTabIdx === idx) {
+                              setLockedNepalTabIdx(null);
+                            } else {
+                              setLockedNepalTabIdx(idx);
+                              setActiveNepalTabIdx(idx);
+                            }
+                          }}
+                          className={`flex items-center justify-between gap-3 px-6 py-3 cursor-pointer transition-colors ${isActive ? "bg-white text-[#112233] border-l-4 border-l-accent-amber font-extrabold shadow-sm relative -mr-[1px]" : "text-gray-600 hover:text-[#112233] hover:bg-gray-100 font-semibold border-l-4 border-l-transparent"}`}
                         >
-                          <span className="text-[14px] normal-case tracking-normal">
-                            {tab.name}
-                          </span>
+                          <div className="flex items-center gap-3">
+                            <span className="text-[14px] normal-case tracking-normal">
+                              {tab.name}
+                            </span>
+                          </div>
+                          {lockedNepalTabIdx === idx && (
+                            <div className="w-1.5 h-1.5 rounded-full bg-accent-amber/50" />
+                          )}
                         </div>
                       );
                     })}
@@ -280,15 +305,32 @@ export default function NavbarClient({
                       return (
                         <div
                           key={region.slug}
-                          onMouseEnter={() => setActiveTrekkingTabIdx(idx)}
-                          className={`flex items-center gap-3 px-6 py-3 cursor-pointer transition-colors ${isActive ? "bg-white text-[#112233] border-l-4 border-l-accent-amber font-extrabold shadow-sm relative -mr-[1px]" : "text-gray-600 hover:text-[#112233] hover:bg-gray-100 font-semibold border-l-4 border-l-transparent"}`}
+                          onMouseEnter={() => {
+                            if (lockedTrekkingTabIdx === null) {
+                              setActiveTrekkingTabIdx(idx);
+                            }
+                          }}
+                          onClick={() => {
+                            if (lockedTrekkingTabIdx === idx) {
+                              setLockedTrekkingTabIdx(null);
+                            } else {
+                              setLockedTrekkingTabIdx(idx);
+                              setActiveTrekkingTabIdx(idx);
+                            }
+                          }}
+                          className={`flex items-center justify-between gap-3 px-6 py-3 cursor-pointer transition-colors ${isActive ? "bg-white text-[#112233] border-l-4 border-l-accent-amber font-extrabold shadow-sm relative -mr-[1px]" : "text-gray-600 hover:text-[#112233] hover:bg-gray-100 font-semibold border-l-4 border-l-transparent"}`}
                         >
-                          <Icon
-                            className={`w-5 h-5 ${isActive ? "text-accent-amber" : "text-gray-400"}`}
-                          />
-                          <span className="text-[14px] normal-case tracking-normal">
-                            {region.name}
-                          </span>
+                          <div className="flex items-center gap-3">
+                            <Icon
+                              className={`w-5 h-5 ${isActive ? "text-accent-amber" : "text-gray-400"}`}
+                            />
+                            <span className="text-[14px] normal-case tracking-normal">
+                              {region.name}
+                            </span>
+                          </div>
+                          {lockedTrekkingTabIdx === idx && (
+                            <div className="w-1.5 h-1.5 rounded-full bg-accent-amber/50" />
+                          )}
                         </div>
                       );
                     })}
@@ -385,15 +427,32 @@ export default function NavbarClient({
                       return (
                         <div
                           key={tab.slug}
-                          onMouseEnter={() => setActiveToursTabIdx(idx)}
-                          className={`flex items-center gap-3 px-6 py-3 cursor-pointer transition-colors ${isActive ? "bg-white text-[#112233] border-l-4 border-l-accent-amber font-extrabold shadow-sm relative -mr-[1px]" : "text-gray-500 hover:bg-gray-100 hover:text-[#112233] font-bold border-l-4 border-l-transparent"}`}
+                          onMouseEnter={() => {
+                            if (lockedToursTabIdx === null) {
+                              setActiveToursTabIdx(idx);
+                            }
+                          }}
+                          onClick={() => {
+                            if (lockedToursTabIdx === idx) {
+                              setLockedToursTabIdx(null);
+                            } else {
+                              setLockedToursTabIdx(idx);
+                              setActiveToursTabIdx(idx);
+                            }
+                          }}
+                          className={`flex items-center justify-between gap-3 px-6 py-3 cursor-pointer transition-colors ${isActive ? "bg-white text-[#112233] border-l-4 border-l-accent-amber font-extrabold shadow-sm relative -mr-[1px]" : "text-gray-500 hover:bg-gray-100 hover:text-[#112233] font-bold border-l-4 border-l-transparent"}`}
                         >
-                          <Sun
-                            className={`w-5 h-5 ${isActive ? "text-accent-amber" : "text-gray-400"}`}
-                          />
-                          <span className="text-[14px] normal-case tracking-normal">
-                            {tab.name}
-                          </span>
+                          <div className="flex items-center gap-3">
+                            <Sun
+                              className={`w-5 h-5 ${isActive ? "text-accent-amber" : "text-gray-400"}`}
+                            />
+                            <span className="text-[14px] normal-case tracking-normal">
+                              {tab.name}
+                            </span>
+                          </div>
+                          {lockedToursTabIdx === idx && (
+                            <div className="w-1.5 h-1.5 rounded-full bg-accent-amber/50" />
+                          )}
                         </div>
                       );
                     })}
@@ -489,12 +548,29 @@ export default function NavbarClient({
                       return (
                         <div
                           key={tab.name}
-                          onMouseEnter={() => setActiveTibetBhutanTabIdx(idx)}
-                          className={`flex items-center gap-3 px-6 py-3 cursor-pointer transition-colors ${isActive ? "bg-white text-[#112233] border-l-4 border-l-accent-amber font-extrabold shadow-sm relative -mr-[1px]" : "text-gray-600 hover:text-[#112233] hover:bg-gray-100 font-semibold border-l-4 border-l-transparent"}`}
+                          onMouseEnter={() => {
+                            if (lockedTibetBhutanTabIdx === null) {
+                              setActiveTibetBhutanTabIdx(idx);
+                            }
+                          }}
+                          onClick={() => {
+                            if (lockedTibetBhutanTabIdx === idx) {
+                              setLockedTibetBhutanTabIdx(null);
+                            } else {
+                              setLockedTibetBhutanTabIdx(idx);
+                              setActiveTibetBhutanTabIdx(idx);
+                            }
+                          }}
+                          className={`flex items-center justify-between gap-3 px-6 py-3 cursor-pointer transition-colors ${isActive ? "bg-white text-[#112233] border-l-4 border-l-accent-amber font-extrabold shadow-sm relative -mr-[1px]" : "text-gray-600 hover:text-[#112233] hover:bg-gray-100 font-semibold border-l-4 border-l-transparent"}`}
                         >
-                          <span className="text-[14px] normal-case tracking-normal">
-                            {tab.name}
-                          </span>
+                          <div className="flex items-center gap-3">
+                            <span className="text-[14px] normal-case tracking-normal">
+                              {tab.name}
+                            </span>
+                          </div>
+                          {lockedTibetBhutanTabIdx === idx && (
+                            <div className="w-1.5 h-1.5 rounded-full bg-accent-amber/50" />
+                          )}
                         </div>
                       );
                     })}
@@ -734,105 +810,20 @@ export default function NavbarClient({
                     >
                       <div className="px-6 py-4 flex flex-col">
                         <div className="border-l-2 border-[#1e857c] ml-2 pl-6 flex flex-col gap-4">
-                          <Link
-                            href="/trekking"
-                            className="flex items-center justify-between text-[#112233] font-semibold text-[15px]"
-                            onClick={() => setMobileMenuOpen(false)}
-                          >
-                            <span className="flex items-center gap-2">
-                              <div className="w-1 h-1 rounded-full bg-[#1e857c] shrink-0" />{" "}
-                              Trekking in Nepal
-                            </span>
-                            <ChevronRight className="w-4 h-4 text-gray-400" />
-                          </Link>
-                          <Link
-                            href="/tour-destination/nepal"
-                            className="flex items-center justify-between text-[#112233] font-semibold text-[15px]"
-                            onClick={() => setMobileMenuOpen(false)}
-                          >
-                            <span className="flex items-center gap-2">
-                              <div className="w-1 h-1 rounded-full bg-[#1e857c] shrink-0" />{" "}
-                              Tours in Nepal
-                            </span>
-                            <ChevronRight className="w-4 h-4 text-gray-400" />
-                          </Link>
-                          <Link
-                            href="/activities/peak-climbing"
-                            className="flex items-center justify-between text-[#112233] font-semibold text-[15px]"
-                            onClick={() => setMobileMenuOpen(false)}
-                          >
-                            <span className="flex items-center gap-2">
-                              <div className="w-1 h-1 rounded-full bg-[#1e857c] shrink-0" />{" "}
-                              Peak Climbing
-                            </span>
-                            <ChevronRight className="w-4 h-4 text-gray-400" />
-                          </Link>
-                          <Link
-                            href="/activities/helicopter-tours"
-                            className="flex items-center justify-between text-[#112233] font-semibold text-[15px]"
-                            onClick={() => setMobileMenuOpen(false)}
-                          >
-                            <span className="flex items-center gap-2">
-                              <div className="w-1 h-1 rounded-full bg-[#1e857c] shrink-0" />{" "}
-                              Helicopter Tours
-                            </span>
-                            <ChevronRight className="w-4 h-4 text-gray-400" />
-                          </Link>
-                          <Link
-                            href="/activities/wildlife-safari"
-                            className="flex items-center justify-between text-[#112233] font-semibold text-[15px]"
-                            onClick={() => setMobileMenuOpen(false)}
-                          >
-                            <span className="flex items-center gap-2">
-                              <div className="w-1 h-1 rounded-full bg-[#1e857c] shrink-0" />{" "}
-                              Wildlife Safari
-                            </span>
-                            <ChevronRight className="w-4 h-4 text-gray-400" />
-                          </Link>
-                          <Link
-                            href="/activities/rafting"
-                            className="flex items-center justify-between text-[#112233] font-semibold text-[15px]"
-                            onClick={() => setMobileMenuOpen(false)}
-                          >
-                            <span className="flex items-center gap-2">
-                              <div className="w-1 h-1 rounded-full bg-[#1e857c] shrink-0" />{" "}
-                              Rafting
-                            </span>
-                            <ChevronRight className="w-4 h-4 text-gray-400" />
-                          </Link>
-                          <Link
-                            href="/activities/bungee-jump"
-                            className="flex items-center justify-between text-[#112233] font-semibold text-[15px]"
-                            onClick={() => setMobileMenuOpen(false)}
-                          >
-                            <span className="flex items-center gap-2">
-                              <div className="w-1 h-1 rounded-full bg-[#1e857c] shrink-0" />{" "}
-                              Bungee Jump
-                            </span>
-                            <ChevronRight className="w-4 h-4 text-gray-400" />
-                          </Link>
-                          <Link
-                            href="/activities/mountain-flight"
-                            className="flex items-center justify-between text-[#112233] font-semibold text-[15px]"
-                            onClick={() => setMobileMenuOpen(false)}
-                          >
-                            <span className="flex items-center gap-2">
-                              <div className="w-1 h-1 rounded-full bg-[#1e857c] shrink-0" />{" "}
-                              Mountain Flight
-                            </span>
-                            <ChevronRight className="w-4 h-4 text-gray-400" />
-                          </Link>
-                          <Link
-                            href="/activities/day-tours"
-                            className="flex items-center justify-between text-[#112233] font-semibold text-[15px]"
-                            onClick={() => setMobileMenuOpen(false)}
-                          >
-                            <span className="flex items-center gap-2">
-                              <div className="w-1 h-1 rounded-full bg-[#1e857c] shrink-0" />{" "}
-                              Day Tours
-                            </span>
-                            <ChevronRight className="w-4 h-4 text-gray-400" />
-                          </Link>
+                          {nepalTabs.map((tab: any) => (
+                            <Link
+                              key={tab.name}
+                              href={tab.href}
+                              className="flex items-center justify-between text-[#112233] font-semibold text-[15px]"
+                              onClick={() => setMobileMenuOpen(false)}
+                            >
+                              <span className="flex items-center gap-2">
+                                <div className="w-1 h-1 rounded-full bg-[#1e857c] shrink-0" />{" "}
+                                {tab.name}
+                              </span>
+                              <ChevronRight className="w-4 h-4 text-gray-400" />
+                            </Link>
+                          ))}
                         </div>
                       </div>
                     </motion.div>

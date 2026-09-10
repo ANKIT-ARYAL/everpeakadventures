@@ -9,21 +9,6 @@ import MediaUploader from '@/app/components/admin/MediaUploader';
 import SectionCard from '@/app/components/admin/SectionCard';
 import ToggleShow from '../components/ToggleShow';
 
-const ALLOWED_SLUGS = [
-  "trekking",
-  "tour",
-  "blog",
-  "faq",
-  "contact-us",
-  "our-team",
-  "legal-document",
-  "testimonials",
-  "why-ever-peak-adventures",
-  "responsible-travel",
-  "terms-and-conditions",
-  "privacy-policy",
-];
-
 interface Props {
   initialData?: any;
   isEditing?: boolean;
@@ -32,9 +17,19 @@ interface Props {
 export default function ActivityForm({ initialData, isEditing = false }: Props) {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
+  const [slugEdited, setSlugEdited] = useState(false);
+
+  const slugify = (s: string) =>
+    s
+      .toLowerCase()
+      .replace(/&/g, ' and ')
+      .replace(/[^a-z0-9]+/g, ' ')
+      .trim()
+      .replace(/\s+/g, '-')
+      .replace(/^-|-$/g, '');
 
   const [form, setForm] = useState({
-    slug: initialData?.slug || '',
+    slug: initialData?.slug || (initialData?.title ? slugify(initialData.title) : ''),
     title: initialData?.title || '',
     description: initialData?.description || '',
     heroImage: initialData?.heroImage || '',
@@ -46,6 +41,15 @@ export default function ActivityForm({ initialData, isEditing = false }: Props) 
       ...prev,
       [name]: value,
     }));
+
+    if (name === 'title' && !slugEdited) {
+      setForm(prev => ({ ...prev, slug: slugify(value) }));
+    }
+  };
+
+  const handleSlugChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSlugEdited(true);
+    setForm(prev => ({ ...prev, slug: e.target.value }));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -55,7 +59,7 @@ export default function ActivityForm({ initialData, isEditing = false }: Props) 
     try {
       const payload = { ...form };
 
-      const url = isEditing ? `/api/activities/${initialData?.id}` : '/api/activities';
+      const url = isEditing ? `/api/admin/activities/${initialData?.id}` : '/api/admin/activities';
       const res = await fetch(url, {
         method: isEditing ? 'PUT' : 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -103,12 +107,15 @@ export default function ActivityForm({ initialData, isEditing = false }: Props) 
       <SectionCard title="Hero Details" defaultOpen>
         <div>
           <label className="block font-bold mb-1">Page Slug *</label>
-          <select name="slug" required value={form.slug} onChange={handleChange} className="w-full p-2.5 border rounded-lg bg-gray-50 focus:border-[#24a0ed] outline-none">
-            <option value="" disabled>Select a page...</option>
-            {ALLOWED_SLUGS.map(slug => (
-              <option key={slug} value={slug}>{slug}</option>
-            ))}
-          </select>
+          <input
+            type="text"
+            name="slug"
+            required
+            value={form.slug}
+            onChange={handleSlugChange}
+            className="w-full p-2.5 border rounded-lg bg-gray-50 focus:border-[#24a0ed] outline-none"
+            placeholder="auto-generated from title (editable)"
+          />
         </div>
 
         <div>

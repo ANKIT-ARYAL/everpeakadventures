@@ -1,3 +1,4 @@
+import { whatsappUrl } from "@/app/lib/whatsapp";
 import React from 'react';
 import Link from 'next/link';
 import { Phone, Mail, MapPin, ChevronRight, Send, Clock, ShieldCheck, Footprints, Headphones, Users, Award, Star } from 'lucide-react';
@@ -175,7 +176,7 @@ export default async function Footer() {
             <div className="flex items-center gap-2.5">
               <SocialIcon href={(settings as any)?.facebookUrl || '#'} icon={FaFacebookF} />
               <SocialIcon href={(settings as any)?.instagramUrl || '#'} icon={FaInstagram} />
-              <SocialIcon href={`https://wa.me/${settings?.whatsapp || '9851093960'}`} icon={FaWhatsapp} />
+              <SocialIcon href={whatsappUrl(settings?.whatsapp || '9851093960')} icon={FaWhatsapp} />
               <SocialIcon href={(settings as any)?.youtubeUrl || '#'} icon={FaYoutube} />
               <SocialIcon href={`mailto:${settings?.email || 'info@everpeakadventures.com'}`} icon={Mail} />
             </div>

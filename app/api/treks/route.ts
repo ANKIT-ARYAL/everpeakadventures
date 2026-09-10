@@ -66,6 +66,7 @@ export async function POST(request: Request) {
         rating: body.rating ? Number(body.rating) : null,
         altitudeData: body.altitudeData || [],
         elevationProfile: body.elevationProfile || [],
+        reviews: Array.isArray(body.reviews) ? body.reviews : [],
         highlights: body.highlights || null,
         inclusions: body.inclusions || null,
         exclusions: body.exclusions || null,
@@ -80,6 +81,9 @@ export async function POST(request: Request) {
         videoType: body.videoType || null,
         isBestSeller: body.isBestSeller || false,
         order: Number(body.order) || 0,
+        seoTitle: body.seoTitle || null,
+        metaDescription: body.metaDescription || null,
+        focusKeyphrase: body.focusKeyphrase || null,
         groupPrices: {
           create: (body.groupPrices || []).map((g: any) => ({
             groupSize: g.groupSize,

@@ -27,9 +27,8 @@ export function Reveal({ children, className, delay = 0, y = 24 }: RevealProps) 
   return (
     <motion.div
       className={className}
-      initial="hidden"
-      whileInView="visible"
-      viewport={{ once: true, amount: 0.1 }}
+      initial={false}
+      animate="visible"
       variants={{
         hidden: { opacity: 0, y },
         visible: {
@@ -50,13 +49,12 @@ interface StaggerProps {
   amount?: number;
 }
 
-export function Stagger({ children, className, amount = 0.15 }: StaggerProps) {
+export function Stagger({ children, className }: StaggerProps) {
   return (
     <motion.div
       className={className}
-      initial="hidden"
-      whileInView="visible"
-      viewport={{ once: true, amount: 0.1 }}
+      initial={false}
+      animate="visible"
       variants={{
         hidden: {},
         visible: { transition: { staggerChildren: 0.2, delayChildren: 0.1 } },
@@ -69,7 +67,7 @@ export function Stagger({ children, className, amount = 0.15 }: StaggerProps) {
 
 export function StaggerItem({ children, className, id }: { children: React.ReactNode; className?: string; id?: string }) {
   return (
-    <motion.div id={id} className={className} variants={fadeUp}>
+    <motion.div id={id} className={className} initial={false} animate="visible" variants={fadeUp}>
       {children}
     </motion.div>
   );

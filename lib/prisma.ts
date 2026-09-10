@@ -2,15 +2,25 @@ import { PrismaClient } from '@prisma/client';
 import { PrismaPg } from '@prisma/adapter-pg';
 import { Pool } from 'pg';
 
-const connectionString = process.env.DATABASE_URL;
+export const transactionOptions = {
+  maxWait: 15_000,
+  timeout: 30_000,
+};
 
-const pool = new Pool({ connectionString });
-const adapter = new PrismaPg(pool);
+function createPrismaClient() {
+  const pool = new Pool({
+    connectionString: process.env.DATABASE_URL,
+    connectionTimeoutMillis: 15_000,
+  });
+  return new PrismaClient({
+    adapter: new PrismaPg(pool),
+    transactionOptions,
+  });
+}
 
 const globalForPrisma = global as unknown as { prisma: PrismaClient };
 
-export const prisma =
-  globalForPrisma.prisma ||
-  new PrismaClient({ adapter });
+// Construct the pool only when creating the shared client, including during HMR.
+export const prisma = globalForPrisma.prisma ?? createPrismaClient();
 
 if (process.env.NODE_ENV !== 'production') globalForPrisma.prisma = prisma;

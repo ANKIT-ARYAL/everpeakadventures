@@ -6,6 +6,8 @@ import { XMLParser } from 'fast-xml-parser';
 import { unserialize } from 'php-unserialize';
 import fs from 'fs';
 import path from 'path';
+import Papa from 'papaparse';
+import JSZip from 'jszip';
 
 export async function PUT(request: Request) {
   try {
@@ -14,19 +16,210 @@ export async function PUT(request: Request) {
     const mode = url.searchParams.get('mode') || 'append';
     const fileName = url.searchParams.get('fileName') || '';
 
-    let rawData = '';
-    
-    const localFilePath = path.join(process.cwd(), fileName);
-    if (fileName && fs.existsSync(localFilePath)) {
-      console.log(`Reading large file directly from disk: ${localFilePath}`);
-      rawData = fs.readFileSync(localFilePath, 'utf-8');
-    } else {
-      rawData = await request.text();
-    }
-
     let data: Record<string, any>[] = [];
-    
+    let localFilePath = '';
+    let rawData = '';
+
     try {
+      if (fileName?.toLowerCase().endsWith('.zip')) {
+        const arrayBuffer = await request.arrayBuffer();
+        const zip = await JSZip.loadAsync(arrayBuffer);
+        
+        const getCsvData = async (pattern: string) => {
+          const candidate = zip.file(new RegExp(pattern, 'i'));
+          if (candidate && candidate.length > 0) {
+            const content = await candidate[0].async('string');
+            return Papa.parse(content, { header: true, skipEmptyLines: true }).data as any[];
+          }
+          return [];
+        };
+
+        const posts = await getCsvData('posts\\.csv$');
+        const postmeta = await getCsvData('postmeta\\.csv$');
+        const taxonomyTerms = await getCsvData('taxonomy-terms\\.csv$');
+        const yoastIndexable = await getCsvData('wpps_yoast_indexable\\.csv$');
+
+        const normalizedType = (dataType || 'all').toLowerCase();
+        const allowedTrekTypes = new Set(['trekking', 'trek', 'trip']);
+        const allowedTourTypes = new Set(['tour', 'tours']);
+
+        const matchingPosts = posts.filter((p: any) => {
+          const postType = String(p.post_type || '').toLowerCase();
+          if (normalizedType === 'tour') return allowedTourTypes.has(postType);
+          if (normalizedType === 'trek') return allowedTrekTypes.has(postType);
+          return allowedTrekTypes.has(postType) || allowedTourTypes.has(postType);
+        });
+
+        if (matchingPosts.length === 0) {
+          return NextResponse.json({ success: true, message: 'No supported posts found in the zip for the selected import type.' });
+        }
+
+        const trekPosts = matchingPosts.filter((p: any) => allowedTrekTypes.has(String(p.post_type || '').toLowerCase()));
+        const tourPosts = matchingPosts.filter((p: any) => allowedTourTypes.has(String(p.post_type || '').toLowerCase()));
+
+        const mappedTreks: any[] = [];
+        for (const post of trekPosts) {
+          const postId = post.ID;
+
+          const meta: Record<string, string> = {};
+          postmeta.filter((m: any) => String(m.post_id) === String(postId)).forEach((m: any) => {
+            meta[m.meta_key] = m.meta_value;
+          });
+
+          const terms = taxonomyTerms.filter((t: any) => String(t.post_id) === String(postId) && (t.taxonomy === 'trekking-types' || t.taxonomy === 'trek-region'));
+          const regions = terms.map((t: any) => t.slug);
+          const region = regions.length > 0 ? regions[0].replace(/-region$/, '') : (meta['region'] || meta['trip_region'] || 'Nepal');
+
+          const seo = yoastIndexable.find((y: any) => String(y.object_id) === String(postId));
+
+          const title = post.post_title || 'Untitled';
+          const slug = post.post_name || title.toLowerCase().replace(/[^a-z0-9]+/g, '-');
+          const content = post.post_content || '';
+          const excerpt = post.post_excerpt || '';
+          const description = excerpt || content.substring(0, 150);
+
+          const salePriceStr = meta['_sale_price'] || meta['sale_price'] || meta['trip_discount_price'] || meta['discount_price'] || '';
+          const regPriceStr = meta['_regular_price'] || meta['regular_price'] || meta['trip_price'] || meta['price'] || '0';
+
+          const originalPriceVal = parseFloat(regPriceStr.replace(/[^0-9.]/g, '')) || 0;
+          const discPriceVal = salePriceStr ? parseFloat(salePriceStr.replace(/[^0-9.]/g, '')) : null;
+
+          const price = discPriceVal || originalPriceVal;
+          const originalPrice = discPriceVal && discPriceVal < originalPriceVal ? originalPriceVal : null;
+          const discountedPrice = discPriceVal || null;
+
+          mappedTreks.push({
+            id: String(postId),
+            slug,
+            title,
+            description: description.substring(0, 250),
+            overview: content,
+            heroImage: post.featured_image_url || '',
+            gallery: [],
+            price,
+            originalPrice,
+            discountedPrice,
+            durationDays: meta['duration'] || meta['trip_duration'] || meta['itinerary_duration'] || '14 Days',
+            region,
+            regions,
+            difficulty: meta['difficulty'] || meta['trip_difficulty'] || 'Moderate',
+            maxAltitude: meta['max_altitude'] || meta['altitude'] || meta['trip_altitude'] || '',
+            meals: meta['meals'] || meta['trip_meals'] || 'B.B.',
+            groupSize: meta['group_size'] || meta['trip_group_size'] || meta['group'] || '',
+            bestSeason: meta['best_season'] || meta['season'] || meta['trip_season'] || meta['best-time'] || '',
+            accommodation: meta['accommodation'] || meta['trip_accommodation'] || '',
+            activity: 'Trekking',
+            highlights: meta['highlight'] || '',
+            inclusions: meta['package-include'] || meta['package_include'] || '',
+            exclusions: meta['package-exclude'] || meta['package_exclude'] || '',
+            packingList: meta['equipment_amp_trekking_gears'] || '',
+            itinerary: [],
+            seoTitle: seo?.title || '',
+            metaDescription: seo?.description || '',
+            focusKeyphrase: seo?.primary_focus_keyword || ''
+          });
+        }
+
+        const mappedTours: any[] = [];
+        for (const post of tourPosts) {
+          const postId = post.ID;
+
+          const meta: Record<string, string> = {};
+          postmeta.filter((m: any) => String(m.post_id) === String(postId)).forEach((m: any) => {
+            meta[m.meta_key] = m.meta_value;
+          });
+
+          const title = post.post_title || 'Untitled';
+          const slug = post.post_name || title.toLowerCase().replace(/[^a-z0-9]+/g, '-');
+          const content = post.post_content || '';
+          const excerpt = post.post_excerpt || '';
+          const description = excerpt || content.substring(0, 150);
+
+          const salePriceStr = meta['_sale_price'] || meta['sale_price'] || meta['trip_discount_price'] || meta['discount_price'] || '';
+          const regPriceStr = meta['_regular_price'] || meta['regular_price'] || meta['trip_price'] || meta['price'] || '0';
+          const originalPriceVal = parseFloat(regPriceStr.replace(/[^0-9.]/g, '')) || 0;
+          const discPriceVal = salePriceStr ? parseFloat(salePriceStr.replace(/[^0-9.]/g, '')) : null;
+          const price = discPriceVal || originalPriceVal;
+          const originalPrice = discPriceVal && discPriceVal < originalPriceVal ? originalPriceVal : null;
+          const discountedPrice = discPriceVal || null;
+
+          mappedTours.push({
+            id: String(postId),
+            slug,
+            title,
+            description: description.substring(0, 250),
+            overview: content,
+            heroImage: post.featured_image_url || '',
+            gallery: [],
+            price,
+            originalPrice,
+            discountedPrice,
+            duration: meta['duration'] || meta['trip_duration'] || meta['itinerary_duration'] || '7 Days',
+            bestTime: meta['best_season'] || meta['season'] || meta['trip_season'] || meta['best-time'] || '',
+            destination: meta['region'] || meta['trip_region'] || 'Nepal',
+            grade: meta['difficulty'] || meta['trip_difficulty'] || 'Easy / Moderate',
+            maxAltitude: meta['max_altitude'] || meta['altitude'] || meta['trip_altitude'] || '1,350 m',
+            startPoint: meta['start_point'] || 'Kathmandu',
+            endPoint: meta['end_point'] || 'Kathmandu',
+            meals: meta['meals'] || meta['trip_meals'] || 'B.B.',
+            activity: meta['activity'] || 'Sightseeing / Tour',
+            groupSize: meta['group_size'] || meta['trip_group_size'] || meta['group'] || '1 - 10',
+            highlights: meta['highlight'] || '',
+            inclusions: meta['package-include'] || meta['package_include'] || '',
+            exclusions: meta['package-exclude'] || meta['package_exclude'] || '',
+            packingList: meta['equipment_amp_trekking_gears'] || '',
+            itinerary: [],
+          });
+        }
+
+        await prisma.$transaction(async (tx) => {
+          if (mode === 'overwrite') {
+            if (normalizedType === 'tour' || normalizedType === 'all') {
+              await tx.departure.deleteMany({ where: { tripType: 'tour' } });
+              await tx.tour.deleteMany({});
+            }
+            if (normalizedType === 'trek' || normalizedType === 'all') {
+              await tx.departure.deleteMany({ where: { tripType: 'trek' } });
+              await tx.trek.deleteMany({});
+            }
+          }
+
+          if ((normalizedType === 'trek' || normalizedType === 'all') && mappedTreks.length > 0) {
+            await tx.trek.createMany({
+              data: mappedTreks.map(t => { const { id, ...rest } = t; return rest; }),
+              skipDuplicates: true,
+            });
+          }
+
+          if ((normalizedType === 'tour' || normalizedType === 'all') && mappedTours.length > 0) {
+            await tx.tour.createMany({
+              data: mappedTours.map(t => { const { id, ...rest } = t; return rest; }),
+              skipDuplicates: true,
+            });
+          }
+        }, {
+          timeout: 20000,
+        });
+
+        const totalImported = (normalizedType === 'trek' ? mappedTreks.length : 0) + (normalizedType === 'tour' ? mappedTours.length : 0) + (normalizedType === 'all' ? mappedTreks.length + mappedTours.length : 0);
+        return NextResponse.json({
+          success: true,
+          message: normalizedType === 'tour'
+            ? `Successfully imported ${mappedTours.length} tours from ZIP!`
+            : normalizedType === 'trek'
+              ? `Successfully imported ${mappedTreks.length} treks from ZIP!`
+              : `Successfully imported ${mappedTreks.length} treks and ${mappedTours.length} tours from ZIP!`,
+          importedCount: totalImported,
+        });
+      }
+
+      // If not ZIP, continue with normal read
+      if (fileName && fs.existsSync(localFilePath)) {
+        console.log(`Reading large file directly from disk: ${localFilePath}`);
+        rawData = fs.readFileSync(localFilePath, 'utf-8');
+      } else {
+        rawData = await request.text();
+      }
       if (fileName?.toLowerCase().endsWith('.xml')) {
         const parser = new XMLParser({
           ignoreAttributes: false,
@@ -39,6 +232,9 @@ export async function PUT(request: Request) {
         const xmlObj = parser.parse(rawData);
         const items = xmlObj?.rss?.channel?.item || xmlObj?.data?.item || xmlObj?.items?.item || [];
         data = Array.isArray(items) ? items : [items];
+      } else if (fileName?.toLowerCase().endsWith('.csv') || fileName?.toLowerCase().endsWith('.cvs')) {
+        const parsed = Papa.parse(rawData, { header: true, skipEmptyLines: true });
+        data = parsed.data as Record<string, any>[];
       } else {
         data = JSON.parse(rawData);
       }

@@ -1,7 +1,7 @@
 "use client";
 
-import React, { useState } from "react";
-import { Backpack, Shirt, Bath, BriefcaseMedical, Compass, ChevronDown, Check } from "lucide-react";
+import { useId, useState } from "react";
+import { Backpack, Shirt, Bath, BriefcaseMedical, Compass, ChevronDown, Check, type LucideIcon } from "lucide-react";
 
 interface PackingItem {
   id: string;
@@ -15,7 +15,7 @@ interface PackingListSectionProps {
   categories?: { name: string; description: string | null }[];
 }
 
-const CATEGORY_CONFIG: Record<string, { icon: React.FC<any>; bg: string; color: string; subtitle?: string; desc?: string }> = {
+const CATEGORY_CONFIG: Record<string, { icon: LucideIcon; bg: string; color: string; subtitle?: string; desc?: string }> = {
   "MAIN TREKKING GEAR": { 
     icon: Backpack, 
     bg: "bg-[#eef8f8]", 
@@ -62,6 +62,7 @@ const CATEGORY_ORDER = [
 ];
 
 export default function PackingListSection({ items, categories = [] }: PackingListSectionProps) {
+  const sectionId = useId();
   const [openCategories, setOpenCategories] = useState<Record<string, boolean>>({
     "MAIN TREKKING GEAR": true
   });
@@ -80,10 +81,10 @@ export default function PackingListSection({ items, categories = [] }: PackingLi
   if (activeCategories.length === 0) return null;
 
   return (
-    <div className="bg-white rounded-2xl border border-[#eaedf2] p-6 lg:p-8 shadow-sm text-justify">
+    <div className="bg-white rounded-2xl border border-[#eaedf2] min-w-0 p-4 sm:p-6 lg:p-8 shadow-sm text-left">
       <div className="mb-8">
         <h2 className="text-3xl font-black text-[#112233] mb-2 tracking-tight">Packing List</h2>
-        <p className="text-gray-500 text-sm">Everything you need, organized for a safe and comfortable trek.</p>
+        <p className="text-gray-500 text-[14px]">Everything you need, organized for a safe and comfortable trek.</p>
       </div>
 
       <div className="space-y-4">
@@ -93,36 +94,42 @@ export default function PackingListSection({ items, categories = [] }: PackingLi
           const dynamicCategory = categories.find(c => c.name === cat);
           const dynamicDesc = dynamicCategory?.description;
           const Icon = config.icon;
-          const isOpen = openCategories[cat];
+          const isOpen = Boolean(openCategories[cat]);
+          const panelId = `${sectionId}-panel-${idx}`;
 
           return (
             <div key={cat} className="border-b border-[#eaedf2] pb-4 last:border-0 last:pb-0">
               <button 
+                type="button"
+                aria-expanded={isOpen}
+                aria-controls={panelId}
                 onClick={() => toggleCategory(cat)}
-                className="w-full flex items-center justify-between py-2 group focus:outline-none"
+                className="w-full flex items-center justify-between gap-3 py-3 text-left group rounded-lg focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#1e857c]"
               >
-                <div className="flex items-center justify-start gap-4">
-                  <div className={`w-12 h-12 rounded-xl flex items-center justify-center ${config.bg} ${config.color} transition-transform group-hover:scale-105`}>
+                <div className="flex min-w-0 items-center justify-start gap-3 sm:gap-4">
+                  <div className={`w-10 h-10 sm:w-12 sm:h-12 shrink-0 rounded-xl flex items-center justify-center ${config.bg} ${config.color} motion-safe:transition-transform motion-safe:group-hover:scale-105`}>
                     <Icon className="w-6 h-6" />
                   </div>
-                  <h3 className="text-[15px] font-bold text-[#112233] tracking-wide">{cat}</h3>
+                  <h3 className="min-w-0 text-sm sm:text-[17px] font-bold leading-relaxed text-[#112233] tracking-wide">{cat}</h3>
                 </div>
-                <div className="flex items-center gap-3">
-                  <span className={`w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-bold transition-colors ${isOpen ? 'bg-[#1e857c] text-white' : 'bg-[#eef8f8] text-[#367c82]'}`}>
+                <div className="flex shrink-0 items-center gap-2 sm:gap-3">
+                  <span className={`w-6 h-6 rounded-full flex items-center justify-center text-[14px] font-bold transition-colors ${isOpen ? 'bg-[#1e857c] text-white' : 'bg-[#eef8f8] text-[#367c82]'}`}>
                     {idx + 1}
                   </span>
-                  <ChevronDown className={`w-5 h-5 text-gray-400 transition-transform duration-300 ${isOpen ? 'rotate-180' : ''}`} />
+                  <ChevronDown className={`w-5 h-5 text-gray-400 transition-transform duration-300 motion-reduce:transition-none ${isOpen ? 'rotate-180' : ''}`} />
                 </div>
               </button>
 
-              <div 
-                className={`grid transition-all duration-300 ease-in-out ${isOpen ? 'grid-rows-[1fr] opacity-100 mt-4' : 'grid-rows-[0fr] opacity-0'}`}
+              <div
+                id={panelId}
+                inert={!isOpen}
+                className={`grid min-w-0 motion-reduce:transition-none transition-all duration-300 ease-in-out ${isOpen ? 'grid-rows-[1fr] opacity-100 mt-4' : 'grid-rows-[0fr] opacity-0'}`}
               >
                 <div className="overflow-hidden">
-                  <div className="bg-[#f8f9fc] rounded-xl border border-[#eaedf2] p-6 lg:p-8 flex flex-col md:flex-row gap-8">
+                  <div className="bg-[#f8f9fc] rounded-xl border border-[#eaedf2] p-4 sm:p-6 space-y-5 sm:space-y-6">
                     {config.subtitle && (
-                      <div className="md:w-1/3 shrink-0">
-                        <div className="inline-block bg-[#eaf5f5] text-[#1e857c] text-xs font-bold px-3 py-1.5 rounded mb-4">
+                      <div className="max-w-[65ch]">
+                        <div className="text-[#1e857c] font-semibold mb-2">
                           {config.subtitle}
                         </div>
                         {dynamicDesc ? (
@@ -131,23 +138,23 @@ export default function PackingListSection({ items, categories = [] }: PackingLi
                             dangerouslySetInnerHTML={{ __html: dynamicDesc }} 
                           />
                         ) : config.desc ? (
-                          <p className="text-sm text-gray-600 leading-relaxed">
+                          <p className="text-sm text-gray-600 leading-relaxed text-pretty">
                             {config.desc}
                           </p>
                         ) : null}
                       </div>
                     )}
                     
-                    <div className={`grid gap-x-8  gap-y-2 flex-1 ${config.subtitle ? 'md:w-2/3 sm:grid-cols-2' : 'sm:grid-cols-2 md:grid-cols-3'}`}>
+                    <ul className="grid grid-cols-[repeat(auto-fit,minmax(min(100%,15rem),1fr))] items-stretch gap-3">
                       {catItems.map((item) => (
-                        <div key={item.id} className="flex items-start gap-3">
+                        <li key={item.id} className="flex min-w-0 items-start gap-3 rounded-lg border border-[#e4e9ed] bg-white px-4 py-3.5">
                           <div className="bg-[#1e857c] rounded-full p-1 mt-0.5 shrink-0">
-                            <Check className="w-3 h-3 text-white" strokeWidth={3} />
+                            <Check aria-hidden="true" className="w-3 h-3 text-white" strokeWidth={3} />
                           </div>
-                          <span className="text-[14px] text-gray-700 font-medium leading-tight pt-0.5">{item.name}</span>
-                        </div>
+                          <span className="min-w-0 break-words text-sm text-gray-700 font-medium leading-6">{item.name}</span>
+                        </li>
                       ))}
-                    </div>
+                    </ul>
                   </div>
                 </div>
               </div>

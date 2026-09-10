@@ -2,20 +2,23 @@
 "use client";
 
 import React, { useEffect } from "react";
-import Link from "next/link";
+import { useRouter } from "next/navigation";
 import SubpageHero from "./SubpageHero";
 import { Stagger, StaggerItem } from "../animations/Motion";
 import { SearchX, FilterX } from "lucide-react";
+import TrekCard from "@/app/components/ui/TrekCard";
 
 interface Trek {
   id: string;
   slug: string | null;
   title: string;
   description: string;
+  overview?: string | null;
   heroImage: string;
   durationDays: string;
   price: number;
   discountedPrice?: number | null;
+  lowestPrice?: number | null;
   region: string;
   difficulty: string;
 }
@@ -41,16 +44,17 @@ export default function TrekkingPage({
   searchFilters = [],
   totalFound = 0,
 }: TrekkingPageProps) {
+  const router = useRouter();
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: "instant" });
   }, [currentPage]);
 
   const hasSearchFilters = searchFilters.length > 0;
 
-  // Hard reload to completely clear Next.js cache and refresh the page instantly
+  // Clear filters through client navigation without requiring a reload.
   const handleClearFilters = (e: React.MouseEvent) => {
     e.preventDefault();
-    window.location.href = "/trekking";
+    router.push("/trekking");
   };
 
   return (
@@ -116,70 +120,10 @@ export default function TrekkingPage({
               </button>
             </div>
           ) : (
-            <Stagger className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 xl:gap-8">
+            <Stagger className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
               {treks.map((trek) => (
-                <StaggerItem
-                  key={trek.id}
-                  className="journey-card bg-white rounded-2xl overflow-hidden border border-gray-100 shadow-[0_4px_20px_rgba(0,0,0,0.04)] flex flex-col justify-between group hover:shadow-xl hover:-translate-y-1 transition-all duration-300"
-                >
-                  <Link
-                    href={`/trekking/${trek.slug ? trek.slug : trek.id}`}
-                    className="flex flex-col h-full"
-                  >
-                    {/* Image & Price Badge */}
-                    <div className="relative h-64 overflow-hidden bg-gray-100">
-                      <img
-                        src={
-                          trek.heroImage ||
-                          "https://ml978xhbpkuo.i.optimole.com/cb:t1g8.6c6/w:259/h:68/q:mauto/f:best/https://everpeakadventures.com/wp-content/uploads/2025/03/Untitled-design-123456-e1783511870519.png"
-                        }
-                        alt={trek.title}
-                        className={`w-full h-full ${!trek.heroImage ? "object-contain p-4 bg-white" : "object-cover"} group-hover:scale-105 transition-transform duration-700 ease-out`}
-                      />
-                      {trek.price && (
-                        <div className="absolute top-4 right-4 bg-red-500/95 backdrop-blur-sm text-white font-sans font-black text-sm px-3 py-1.5 rounded-full shadow-sm pointer-events-none">
-                          US${" "}
-                          {(
-                            trek.discountedPrice ?? trek.price
-                          ).toLocaleString()}
-                        </div>
-                      )}
-                    </div>
-
-                    {/* Card Content */}
-                    <div className="p-6 flex flex-col flex-1 justify-between">
-                      <div>
-                        <h3 className="font-bold text-[#112233] text-xl line-clamp-2 mb-4 group-hover:text-[#24a0ed] transition-colors min-h-[56px] leading-snug">
-                          {trek.title}
-                        </h3>
-                      </div>
-
-                      {/* Stats Grid */}
-                      <div className="grid grid-cols-2 gap-3 pt-4 border-t border-gray-100 text-center mb-6 text-md">
-                        <div className="bg-[#f8f9fa] p-3 rounded-xl border border-gray-100 group-hover:bg-[#f0f4f8] transition-colors">
-                          <span className="block text-[10px] text-gray-400 uppercase font-bold tracking-wider mb-1">
-                            Duration
-                          </span>
-                          <span className="font-bold text-[#112233] text-sm">
-                            {trek.durationDays}
-                          </span>
-                        </div>
-                        <div className="bg-[#f8f9fa] p-3 rounded-xl border border-gray-100 group-hover:bg-[#f0f4f8] transition-colors">
-                          <span className="block text-[10px] text-gray-400 uppercase font-bold tracking-wider mb-1">
-                            Difficulty
-                          </span>
-                          <span className="font-bold text-[#112233] text-sm">
-                            {trek.difficulty || "Moderate"}
-                          </span>
-                        </div>
-                      </div>
-
-                      {/* CTA Button */}
-                      <div className="w-full bg-[#112233] text-white font-bold py-3.5 rounded-xl text-center uppercase tracking-wider text-sm transition-colors group-hover:bg-[#24a0ed]">
-                        Explore Trek
-                      </div>
-                    </div>
-                  </Link>
+                <StaggerItem key={trek.id}>
+                  <TrekCard trek={trek} />
                 </StaggerItem>
               ))}
             </Stagger>

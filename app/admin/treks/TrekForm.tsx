@@ -32,6 +32,10 @@ interface TrekFormProps {
   initialData?: any;
   isEditing?: boolean;
   categories?: { name: string; slug: string; description?: string | null; image?: string | null }[];
+  activities?: {
+    slug: string;
+    title: string;
+  }[];
 }
 
 const REGION_CATEGORIES = [
@@ -61,9 +65,29 @@ const REGION_FROM_SLUG: Record<string, string> = Object.fromEntries(
   Object.entries(REGION_SLUGS).map(([k, v]) => [v, k])
 );
 
-export default function TrekForm({ initialData, isEditing = false, categories }: TrekFormProps) {
+export default function TrekForm({ initialData, isEditing = false, categories, activities = [] }: TrekFormProps) {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
+
+  const parseSelectedActivities = (value: string | null | undefined) =>
+    (value || '')
+      .split(/[,/]+/)
+      .map((item) => item.trim())
+      .filter(Boolean);
+
+  const activityOptions = useMemo(() => {
+    // Only use activities provided by the Activities admin table (activities prop).
+    // Do not fall back to hard-coded defaults — the user requested the list match the Activities admin.
+    const values = activities.map((activity) => ({ slug: activity.slug, title: activity.title }));
+
+    const seen = new Set<string>();
+    return values.filter((option) => {
+      const key = (option.title || option.slug || '').toLowerCase();
+      if (!key || seen.has(key)) return false;
+      seen.add(key);
+      return true;
+    });
+  }, [activities]);
 
   // Dynamic Slug Maps
   const dynamicSlugMap = categories && categories.length > 0
@@ -173,7 +197,27 @@ export default function TrekForm({ initialData, isEditing = false, categories }:
       Array.isArray(initialData?.reviews) && initialData.reviews.length > 0
         ? initialData.reviews
         : [{ name: '', location: '', rating: 5, avatar: '', comment: '' }],
+    seoTitle: initialData?.seoTitle || '',
+    metaDescription: initialData?.metaDescription || '',
+    focusKeyphrase: initialData?.focusKeyphrase || '',
   });
+
+  const selectedActivities = useMemo(
+    () => parseSelectedActivities(formData.activity),
+    [formData.activity],
+  );
+
+  const toggleActivity = (label: string) => {
+    setFormData((prev) => {
+      const next = parseSelectedActivities(prev.activity);
+      const exists = next.includes(label);
+      const updated = exists
+        ? next.filter((item) => item !== label)
+        : [...next, label];
+
+      return { ...prev, activity: updated.join(', ') };
+    });
+  };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
@@ -396,7 +440,7 @@ export default function TrekForm({ initialData, isEditing = false, categories }:
       payload.meals = formData.meals;
       payload.groupSize = derived.groupSize;
       payload.transport = formData.transport;
-      payload.activity = formData.activity;
+      payload.activity = selectedActivities.join(', ') || null;
       payload.startPoint = formData.startPoint;
       payload.endPoint = formData.endPoint;
       payload.rate = formData.rate ? Number(formData.rate) : null;
@@ -424,6 +468,11 @@ export default function TrekForm({ initialData, isEditing = false, categories }:
       payload.groupPrices = cleanGroupPrices;
       payload.departures = cleanSchedules;
       payload.reviews = formData.reviews;
+      
+      // SEO
+      payload.seoTitle = formData.seoTitle;
+      payload.metaDescription = formData.metaDescription;
+      payload.focusKeyphrase = formData.focusKeyphrase;
 
       const url = isEditing ? `/api/treks/${initialData?.id}` : '/api/treks';
       const method = isEditing ? 'PUT' : 'POST';
@@ -559,6 +608,7 @@ export default function TrekForm({ initialData, isEditing = false, categories }:
           <SectionCard title="Trip Overview / Description">
             <TipTapEditor value={formData.overview} onChange={(html) => setFormData(prev => ({ ...prev, overview: html }))} placeholder="Full descriptive overview of the trek..." minHeight="200px" />
           </SectionCard>
+
 
           <SectionCard title="Highlights">
             <TipTapEditor value={formData.highlights} onChange={(html) => setFormData(prev => ({ ...prev, highlights: html }))} placeholder="Enter trek highlights..." minHeight="120px" />
@@ -951,10 +1001,6 @@ export default function TrekForm({ initialData, isEditing = false, categories }:
                 <input type="text" name="endPoint" value={formData.endPoint} onChange={handleChange} placeholder="Kathmandu" className="w-full px-3 py-2 border border-gray-200 rounded-lg" />
               </div>
               <div>
-                <label className="block font-bold text-gray-700 mb-1">Activity</label>
-                <input type="text" name="activity" value={formData.activity} onChange={handleChange} placeholder="Trekking/Peak Climbing" className="w-full px-3 py-2 border border-gray-200 rounded-lg" />
-              </div>
-              <div>
                 <label className="block font-bold text-gray-700 mb-1">Transport</label>
                 <input type="text" name="transport" value={formData.transport} onChange={handleChange} placeholder="Flight / Bus" className="w-full px-3 py-2 border border-gray-200 rounded-lg" />
               </div>
@@ -1076,6 +1122,51 @@ export default function TrekForm({ initialData, isEditing = false, categories }:
               </button>
             </div>
           </SectionCard>
+
+          <SectionCard title="Activity" defaultOpen>
+            <div className="max-h-40 overflow-y-auto space-y-2">
+              {activityOptions.length === 0 ? (
+                <div className="p-3 text-sm text-gray-500">
+                  No activities found. Manage activities in the <a className="text-[#24a0ed] font-semibold hover:underline" href="/admin/activities">Activities</a> admin to make them available here.
+                </div>
+              ) : (
+                activityOptions.map((option) => {
+                  const checked = selectedActivities.includes(option.title);
+                  return (
+                    <label key={option.slug || option.title} className="flex items-center gap-2.5 cursor-pointer p-2 rounded-lg hover:bg-gray-50">
+                      <input
+                        type="checkbox"
+                        checked={checked}
+                        onChange={() => toggleActivity(option.title)}
+                        className="w-4 h-4 accent-[#24a0ed]"
+                      />
+                      <span className="font-medium text-gray-700">{option.title}</span>
+                    </label>
+                  );
+                })
+              )}
+            </div>
+          </SectionCard>
+          </div>
+
+          {/* SEO group */}
+          <div id="sec-seo" className="scroll-mt-24 mt-6">
+            <SectionCard title="Search Engine Optimization">
+              <div className="space-y-4">
+                <div>
+                  <label className="block font-bold text-gray-700 mb-1">Focus Keyphrase</label>
+                  <input type="text" name="focusKeyphrase" value={formData.focusKeyphrase} onChange={handleChange} placeholder="e.g. Everest Base Camp Trek" className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:border-[#24a0ed]" />
+                </div>
+                <div>
+                  <label className="block font-bold text-gray-700 mb-1">SEO Title</label>
+                  <input type="text" name="seoTitle" value={formData.seoTitle} onChange={handleChange} placeholder="Custom SEO Title" className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:border-[#24a0ed]" />
+                </div>
+                <div>
+                  <label className="block font-bold text-gray-700 mb-1">Meta Description</label>
+                  <textarea name="metaDescription" value={formData.metaDescription} onChange={handleChange} rows={3} placeholder="Write a compelling meta description..." className="w-full px-3 py-2 border border-gray-200 rounded-lg resize-none focus:outline-none focus:border-[#24a0ed]" />
+                </div>
+              </div>
+            </SectionCard>
           </div>
 
         </div>

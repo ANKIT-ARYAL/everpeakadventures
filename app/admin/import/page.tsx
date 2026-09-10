@@ -35,18 +35,26 @@ export default function DataImportPage() {
 
   const handleImport = async () => {
     if (!file) {
-      toast.error('Please select a JSON file to upload.');
+      toast.error('Please select a valid file to upload.');
       return;
     }
 
     setLoading(true);
     try {
-      const text = await file.text();
+      let bodyData: BodyInit;
+      let contentType = 'text/plain';
+
+      if (file.name.toLowerCase().endsWith('.zip')) {
+        bodyData = await file.arrayBuffer();
+        contentType = 'application/octet-stream';
+      } else {
+        bodyData = await file.text();
+      }
 
       const res = await fetch(`/api/admin/import?dataType=${dataType}&mode=${mode}&fileName=${encodeURIComponent(file.name)}`, {
         method: 'PUT',
-        headers: { 'Content-Type': 'text/plain' },
-        body: text,
+        headers: { 'Content-Type': contentType },
+        body: bodyData,
       });
 
       const result = await res.json();
@@ -130,7 +138,7 @@ export default function DataImportPage() {
               <input
                 type="file"
                 id="file-upload"
-                accept=".json,.xml"
+                accept=".json,.xml,.csv,.cvs,.zip"
                 onChange={handleFileChange}
                 className="hidden"
               />
@@ -140,10 +148,10 @@ export default function DataImportPage() {
                 </div>
                 <div>
                   <span className="block font-bold text-base sm:text-lg text-[#112233] mb-1">
-                    {file ? file.name : 'Click to select JSON file'}
+                    {file ? file.name : 'Click to select JSON, XML, CSV, or ZIP file'}
                   </span>
                   <span className="text-xs sm:text-sm text-gray-400">
-                    {file ? `${(file.size / 1024).toFixed(1)} KB` : 'Only JSON format is currently supported'}
+                    {file ? `${(file.size / 1024).toFixed(1)} KB` : 'JSON, XML, CSV, and ZIP formats are supported'}
                   </span>
                 </div>
               </label>

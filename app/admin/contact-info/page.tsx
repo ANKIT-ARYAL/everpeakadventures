@@ -5,5 +5,6 @@ export const dynamic = 'force-dynamic';
 
 export default async function ContactInfoPage() {
   const contactInfo = await prisma.contactInfo.findFirst();
-  return <ContactInfoForm contactData={contactInfo} />;
+  const settings = await prisma.siteSettings.findFirst();
+  return <ContactInfoForm contactData={{ ...contactInfo, whatsapp: settings?.whatsapp || "" }} />;
 }

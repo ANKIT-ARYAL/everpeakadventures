@@ -20,6 +20,7 @@ export default function ContactInfoForm({ contactData }: Props) {
     published: contactData?.published ?? true,
     address: contactData?.address || '',
     phone: contactData?.phone || '',
+    whatsapp: contactData?.whatsapp || '',
     email: contactData?.email || '',
     mapUrl: contactData?.mapUrl || '',
   });
@@ -40,6 +41,7 @@ export default function ContactInfoForm({ contactData }: Props) {
         body: JSON.stringify({
           address: contact.address,
           phone: contact.phone,
+          whatsapp: contact.whatsapp,
           email: contact.email,
           mapUrl: contact.mapUrl,
         }),
@@ -90,6 +92,11 @@ export default function ContactInfoForm({ contactData }: Props) {
         <div>
           <label className="block font-bold mb-1">Phone</label>
           <input type="text" name="phone" value={contact.phone} onChange={handleContactChange} className="w-full p-2.5 border rounded-lg focus:border-[#24a0ed] outline-none" placeholder="e.g. 9851093960" />
+        </div>
+
+        <div>
+          <label className="block font-bold mb-1">WhatsApp</label>
+          <input type="text" name="whatsapp" value={contact.whatsapp} onChange={handleContactChange} className="w-full p-2.5 border rounded-lg focus:border-[#24a0ed] outline-none" placeholder="e.g. +977 9851093960" />
         </div>
 
         <div>

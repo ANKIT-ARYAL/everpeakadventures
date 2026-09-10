@@ -50,6 +50,7 @@ export async function PUT(
           rating: body.rating ? Number(body.rating) : null,
           altitudeData: body.altitudeData || [],
           elevationProfile: body.elevationProfile || [],
+          reviews: Array.isArray(body.reviews) ? body.reviews : undefined,
           highlights: body.highlights,
           inclusions: body.inclusions,
           exclusions: body.exclusions,
@@ -63,6 +64,9 @@ export async function PUT(
           videoUrl: body.videoUrl || null,
           videoType: body.videoType || null,
           order: Number(body.order),
+          seoTitle: body.seoTitle || null,
+          metaDescription: body.metaDescription || null,
+          focusKeyphrase: body.focusKeyphrase || null,
           groupPrices: {
             create: (body.groupPrices || []).map((g: any) => ({
               groupSize: g.groupSize,
@@ -83,6 +87,11 @@ export async function PUT(
           },
         },
       });
+    }, {
+      // Remote pooled connections can take longer than Prisma's 2s default
+      // to establish. Keep all trek and relation changes in one transaction.
+      maxWait: 15_000,
+      timeout: 30_000,
     });
 
     return NextResponse.json({ success: true, trek: updatedTrek });

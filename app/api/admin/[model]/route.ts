@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { requireAdmin } from "@/app/lib/require-admin";
+import { revalidateTag } from 'next/cache';
 
 // Map URL slugs to actual Prisma delegate models
 const modelMap: Record<string, any> = {
@@ -17,6 +18,8 @@ const modelMap: Record<string, any> = {
   'subpage-heroes': prisma.subpageHero,
   departures: prisma.departure,
   'trust-items': prisma.trustItem,
+  // Activities admin endpoint
+  activities: prisma.activity,
 };
 
 // Map URL slugs to permission resources
@@ -34,6 +37,8 @@ const resourceByModel: Record<string, string> = {
   'subpage-heroes': 'subpage-hero',
   departures: 'departures',
   'trust-items': 'trust-items',
+  // Activities permissions
+  activities: 'activities',
 };
 
 export async function GET(
@@ -51,10 +56,11 @@ export async function GET(
   }
 
   try {
-    // 'subpage-heroes' has no `order` column — fall back to updatedAt
-    const hasOrder = ['subpage-heroes'].includes(model);
+    // Some models (e.g., subpage-heroes, activities) don't have an `order` column — fall back to updatedAt
+    const noOrderModels = ['subpage-heroes', 'activities'];
+    const useUpdatedAt = noOrderModels.includes(model);
     const items = await delegate.findMany({
-      orderBy: hasOrder ? { updatedAt: 'asc' } : { order: 'asc' },
+      orderBy: useUpdatedAt ? { updatedAt: 'asc' } : { order: 'asc' },
     });
     return NextResponse.json(items);
   } catch (error) {
@@ -79,6 +85,7 @@ export async function POST(
   try {
     const body = await request.json();
     const newItem = await delegate.create({ data: body });
+    revalidateTag(model, 'max');
     return NextResponse.json(newItem, { status: 201 });
   } catch (error) {
     return NextResponse.json({ error: 'Failed to create record', details: String(error) }, { status: 500 });

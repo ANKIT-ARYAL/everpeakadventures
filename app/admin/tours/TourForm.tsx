@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 import { Save, ArrowLeft, Plus, Trash2, Image as ImageIcon, ExternalLink } from 'lucide-react';
 import Link from 'next/link';
 import TipTapEditor from '@/app/components/admin/TipTapEditor';
+import PackingItemSelector from '@/app/admin/components/PackingItemSelector';
 import MediaUploader from '@/app/components/admin/MediaUploader';
 import FieldGrid from '@/app/components/admin/FieldGrid';
 import SectionCard from '@/app/components/admin/SectionCard';
@@ -73,10 +74,31 @@ export default function TourForm({
   initialData,
   isEditing = false,
   categories,
+  activities = [],
 }: TourFormProps) {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [newRegion, setNewRegion] = useState('');
+
+  const parseSelectedActivities = (value: string | null | undefined) =>
+    (value || '')
+      .split(/[,/]+/)
+      .map((item) => item.trim())
+      .filter(Boolean);
+
+  const activityOptions = useMemo(() => {
+    // Only use activities provided by the Activities admin table (activities prop).
+    // Do not fall back to hard-coded defaults — the user requested the list match the Activities admin.
+    const values = activities.map((activity) => ({ slug: activity.slug, title: activity.title }));
+
+    const seen = new Set<string>();
+    return values.filter((option) => {
+      const key = (option.title || option.slug || '').toLowerCase();
+      if (!key || seen.has(key)) return false;
+      seen.add(key);
+      return true;
+    });
+  }, [activities]);
 
   const dynamicSlugMap = categories && categories.length > 0
     ? Object.fromEntries(categories.map((c) => [c.name, c.slug]))
@@ -163,6 +185,7 @@ export default function TourForm({
     inclusions: initialData?.inclusions || '',
     exclusions: initialData?.exclusions || '',
     packingList: initialData?.packingList || '',
+    packingItemIds: (initialData?.packingItems || []).map((item: { id: string }) => item.id) as string[],
     
     itinerary:
       Array.isArray(initialData?.itinerary) && initialData.itinerary.length > 0
@@ -174,6 +197,23 @@ export default function TourForm({
         ? initialData.reviews
         : [{ name: '', location: '', rating: 5, avatar: '', comment: '' }],
   });
+
+  const selectedActivities = useMemo(
+    () => parseSelectedActivities(formData.activity),
+    [formData.activity],
+  );
+
+  const toggleActivity = (label: string) => {
+    setFormData((prev) => {
+      const next = parseSelectedActivities(prev.activity);
+      const exists = next.includes(label);
+      const updated = exists
+        ? next.filter((item) => item !== label)
+        : [...next, label];
+
+      return { ...prev, activity: updated.join(', ') };
+    });
+  };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
@@ -357,22 +397,29 @@ export default function TourForm({
     setLoading(true);
 
     try {
-      const cleanGroupPrices = formData.groupPrices.filter(
-        (g: any) => g.groupSize.trim() !== '' || g.price.trim() !== ''
-      );
-      const cleanSchedules = formData.departures.filter((s: any) => s.startDate.trim() !== '');
+      const cleanGroupPrices = (formData.groupPrices || []).filter((g: any) => {
+        const groupSize = String(g?.groupSize ?? '').trim();
+        const price = String(g?.price ?? '').trim();
+        return groupSize !== '' || price !== '';
+      });
+      const cleanSchedules = (formData.departures || []).filter((s: any) => {
+        const startDate = String(s?.startDate ?? '').trim();
+        return startDate !== '';
+      });
 
-      const payload = {
+      const payload: Record<string, any> = {
         ...formData,
-        gallery: formData.gallery.filter((i: string) => i.trim() !== ''),
+        gallery: (formData.gallery || []).filter((i: string) => String(i ?? '').trim() !== ''),
         groupPrices: cleanGroupPrices,
         departures: cleanSchedules,
         price: derived.priceFrom || Number(formData.price) || 0,
-        originalPrice: derived.originalPrice || Number(formData.price) || 0,
+        originalPrice: derived.originalPrice || Number(formData.originalPrice) || Number(formData.price) || 0,
         priceRange: derived.range,
         duration: derived.durationDays ? `${derived.durationDays}` : formData.duration || '0 Days',
         groupSize: derived.groupSize,
         maxAltitude: derived.maxAltitude,
+        activity: selectedActivities.join(', ') || null,
+        packingItemIds: formData.packingItemIds,
       };
 
       const url = isEditing ? `/api/admin/tours/${initialData?.id}` : '/api/admin/tours';
@@ -384,13 +431,16 @@ export default function TourForm({
         body: JSON.stringify(payload),
       });
 
-      if (!res.ok) throw new Error('Failed to save tour package');
+      if (!res.ok) {
+        const errorData = await res.json().catch(() => ({}));
+        throw new Error(errorData.error || errorData.details || errorData.message || 'Failed to save tour package');
+      }
 
       router.push('/admin/tours');
       router.refresh();
-    } catch (error) {
+    } catch (error: any) {
       console.error(error);
-      alert('Error saving tour package.');
+      alert(error.message || 'Error saving tour package.');
     } finally {
       setLoading(false);
     }
@@ -506,6 +556,7 @@ export default function TourForm({
             <SectionCard title="Trip Overview / Description">
               <TipTapEditor value={formData.overview} onChange={(html) => setFormData(prev => ({ ...prev, overview: html }))} placeholder="Full descriptive overview of the tour..." minHeight="200px" />
             </SectionCard>
+
 
             <SectionCard title="Highlights">
               <TipTapEditor value={formData.highlights} onChange={(html) => setFormData(prev => ({ ...prev, highlights: html }))} placeholder="Enter tour highlights..." minHeight="120px" />
@@ -688,8 +739,11 @@ export default function TourForm({
               <TipTapEditor value={formData.exclusions} onChange={(html) => setFormData(prev => ({ ...prev, exclusions: html }))} placeholder="Enter exclusions..." minHeight="150px" />
             </SectionCard>
 
-            <SectionCard title="Equipment & Gears">
-              <TipTapEditor value={formData.packingList} onChange={(html) => setFormData(prev => ({ ...prev, packingList: html }))} placeholder="Enter packing list..." minHeight="150px" />
+            <SectionCard title="Packing List Items">
+              <PackingItemSelector
+                selectedIds={formData.packingItemIds}
+                onChange={(ids) => setFormData(prev => ({ ...prev, packingItemIds: ids }))}
+              />
             </SectionCard>
           </div>
 
@@ -840,10 +894,6 @@ export default function TourForm({
                 <input type="text" name="meals" value={formData.meals} onChange={handleChange} placeholder="B.B." className="w-full px-3 py-2 border border-gray-200 rounded-lg" />
               </div>
               <div>
-                <label className="block font-bold text-gray-700 mb-1">Activity</label>
-                <input type="text" name="activity" value={formData.activity} onChange={handleChange} placeholder="Sightseeing" className="w-full px-3 py-2 border border-gray-200 rounded-lg" />
-              </div>
-              <div>
                 <label className="block font-bold text-gray-700 mb-1">Transport</label>
                 <input type="text" name="transport" value={formData.transport} onChange={handleChange} placeholder="Private Vehicle" className="w-full px-3 py-2 border border-gray-200 rounded-lg" />
               </div>
@@ -875,6 +925,31 @@ export default function TourForm({
                   <span className="font-medium text-gray-700">{cat}</span>
                 </label>
               ))}
+            </div>
+          </SectionCard>
+
+          <SectionCard title="Activity" defaultOpen>
+            <div className="max-h-40 overflow-y-auto space-y-2">
+              {activityOptions.length === 0 ? (
+                <div className="p-3 text-sm text-gray-500">
+                  No activities found. Manage activities in the <a className="text-[#24a0ed] font-semibold hover:underline" href="/admin/activities">Activities</a> admin to make them available here.
+                </div>
+              ) : (
+                activityOptions.map((option) => {
+                  const checked = selectedActivities.includes(option.title);
+                  return (
+                    <label key={option.slug || option.title} className="flex items-center gap-2.5 cursor-pointer p-2 rounded-lg hover:bg-gray-50">
+                      <input
+                        type="checkbox"
+                        checked={checked}
+                        onChange={() => toggleActivity(option.title)}
+                        className="w-4 h-4 accent-[#24a0ed]"
+                      />
+                      <span className="font-medium text-gray-700">{option.title}</span>
+                    </label>
+                  );
+                })
+              )}
             </div>
           </SectionCard>
 

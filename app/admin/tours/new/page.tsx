@@ -9,5 +9,5 @@ export default async function NewTourPage() {
     where: { published: true },
     orderBy: { order: 'asc' },
   });
-  return <TourForm isEditing={false} categories={categories}  />;
+  return <TourForm isEditing={false} categories={categories} activities={activities} />;
 }

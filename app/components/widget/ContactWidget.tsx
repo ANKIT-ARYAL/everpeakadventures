@@ -1,5 +1,6 @@
 "use client";
 
+import { whatsappUrl } from "@/app/lib/whatsapp";
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { Phone, Mail, MessageSquareText, X, ArrowLeft, CheckCircle2, MapPin, Send, Headset } from "lucide-react";
@@ -64,7 +65,7 @@ export default function ContactWidget({
       value: whatsapp,
       icon: <FaWhatsapp className="w-5 h-5 text-[#25D366]" />,
       bg: "bg-[#25D366]/10",
-      href: `https://wa.me/${whatsapp}`,
+      href: whatsappUrl(whatsapp),
       external: true,
     },
     ...(viber ? [{

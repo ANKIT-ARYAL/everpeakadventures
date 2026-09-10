@@ -105,6 +105,11 @@ model Trek {
   packingItems PackingItem[]
   reviews      Json?
 
+  // SEO
+  focusKeyphrase  String?
+  seoTitle        String?
+  metaDescription String? @db.Text
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }

@@ -17,23 +17,80 @@ export default function FixedDepartures({ data = [], label, title, embedded = fa
   const [selectedMonth, setSelectedMonth] = useState<string>('All');
 
   const getMonthYear = (dateStr: string) => {
-    const d = new Date(dateStr);
-    if (isNaN(d.getTime())) return null;
-    return d.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+    if (!dateStr) return null;
+
+    // Try native parse first (handles ISO and many locale strings)
+    const parsed = Date.parse(dateStr);
+    if (!isNaN(parsed)) {
+      const d = new Date(parsed);
+      return d.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+    }
+
+    // Fallback: try to parse common formatted strings like "Sep 11, 2026" or "September 11, 2026" or "September 2026"
+    const shortMonthRegex = /^([A-Za-z]+)\s+(\d{1,2}),\s*(\d{4})$/; // e.g. Sep 11, 2026
+    const monthYearRegex = /^([A-Za-z]+)\s*(\d{4})$/; // e.g. September 2026
+    const m1 = dateStr.match(shortMonthRegex);
+    if (m1) {
+      const monthName = m1[1];
+      const day = Number(m1[2]);
+      const year = Number(m1[3]);
+      const monthIndex = new Date(`${monthName} 1, ${year}`).getMonth();
+      if (!Number.isNaN(monthIndex)) {
+        return new Date(year, monthIndex, day).toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+      }
+    }
+    const m2 = dateStr.match(monthYearRegex);
+    if (m2) {
+      const monthName = m2[1];
+      const year = Number(m2[2]);
+      const monthIndex = new Date(`${monthName} 1, ${year}`).getMonth();
+      if (!Number.isNaN(monthIndex)) {
+        return new Date(year, monthIndex, 1).toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+      }
+    }
+
+    return null;
   };
 
   const availableMonths = useMemo(() => {
     const months = data
       .map(trip => getMonthYear(trip.startDate))
       .filter((month): month is string => month !== null);
-    
-    return Array.from(new Set(months));
+
+    // Unique
+    const unique = Array.from(new Set(months));
+
+    // Sort chronologically ascending using a reliable parse (prepend day 1)
+    unique.sort((a, b) => {
+      const ta = Date.parse('1 ' + a);
+      const tb = Date.parse('1 ' + b);
+      return (isNaN(ta) ? 0 : ta) - (isNaN(tb) ? 0 : tb);
+    });
+
+    return unique;
   }, [data]);
 
   const filteredData = useMemo(() => {
     if (selectedMonth === 'All') return data;
     return data.filter(trip => getMonthYear(trip.startDate) === selectedMonth);
   }, [data, selectedMonth]);
+
+  // Pagination
+  const PAGE_SIZE = 4;
+  const [page, setPage] = useState<number>(0);
+  const totalPages = Math.max(1, Math.ceil(filteredData.length / PAGE_SIZE));
+
+  // Reset page when filter changes
+  React.useEffect(() => setPage(0), [selectedMonth]);
+
+  // Clamp page when filteredData size / totalPages change to avoid empty pages
+  React.useEffect(() => {
+    if (page > totalPages - 1) {
+      setPage(Math.max(0, totalPages - 1));
+    }
+  }, [totalPages]);
+
+  const paginated = filteredData.slice(page * PAGE_SIZE, (page + 1) * PAGE_SIZE);
 
   return (
     <section
@@ -95,7 +152,7 @@ export default function FixedDepartures({ data = [], label, title, embedded = fa
                 No departures found for {selectedMonth}.
               </div>
             ) : (
-              filteredData.map((trip) => (
+              paginated.map((trip) => (
                 <StaggerItem
                   key={trip.id} 
                   className="group grid grid-cols-1 md:grid-cols-12 items-center gap-4 py-5 border-b border-background/10 hover:bg-background/5 transition-colors px-4 -mx-4 rounded-xl min-w-0 overflow-hidden"
@@ -152,6 +209,30 @@ export default function FixedDepartures({ data = [], label, title, embedded = fa
               ))
             )}
           </Stagger>
+
+          {/* Pagination Controls */}
+          {filteredData.length > PAGE_SIZE && (
+            <div className="flex items-center justify-center gap-3 py-6">
+              <button
+                onClick={() => setPage((p) => Math.max(0, p - 1))}
+                disabled={page === 0}
+                className={`px-4 py-2 rounded-lg border bg-background/5 text-background/90 ${page === 0 ? 'opacity-50 cursor-not-allowed' : 'hover:bg-background/10'}`}
+              >
+                Previous
+              </button>
+
+              <div className="text-sm text-background/70">Page {page + 1} of {totalPages}</div>
+
+              <button
+                onClick={() => setPage((p) => Math.min(totalPages - 1, p + 1))}
+                disabled={page >= totalPages - 1}
+                className={`px-4 py-2 rounded-lg border bg-background/5 text-background/90 ${page >= totalPages - 1 ? 'opacity-50 cursor-not-allowed' : 'hover:bg-background/10'}`}
+              >
+                Next
+              </button>
+            </div>
+          )}
+
         </div>
         
       </div>

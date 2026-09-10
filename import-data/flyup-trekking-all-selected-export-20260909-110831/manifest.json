@@ -1,0 +1,678 @@
+{
+    "plugin": "FlyUp Universal Post Data Exporter",
+    "plugin_version": "1.1.0",
+    "site_url": "https://everpeakadventures.com/",
+    "generated_at": "2026-09-09 16:53:31",
+    "post_type": "trekking",
+    "status_filter": "all",
+    "matching_posts": 40,
+    "status_counts": {
+        "publish": 38,
+        "draft": 2
+    },
+    "selection": {
+        "posts": true,
+        "meta_keys": [
+            "_edit_last",
+            "_edit_lock",
+            "_flyup_seo_focus_keyphrase",
+            "_flyup_seo_setup_score",
+            "_ftac_altitude_rows",
+            "_ftb_costing_rows",
+            "_ftb_duration",
+            "_ftb_fixed_departures",
+            "_ftb_regular_price",
+            "_thumbnail_id",
+            "accommodation",
+            "activity",
+            "best-time",
+            "duration",
+            "end_at",
+            "equipment_amp_trekking_gears",
+            "gallery",
+            "group_size_costing_setup",
+            "highlight",
+            "itinerary_detail",
+            "max-altitude",
+            "meals-bld",
+            "package_exclude",
+            "package_include",
+            "price",
+            "r",
+            "rate",
+            "route-map",
+            "start_at",
+            "trekking-grade",
+            "_flyup_ctl_views",
+            "_flyup_ctl_views_daily",
+            "_flyup_seo_description",
+            "_flyup_seo_title",
+            "day-1",
+            "day-10",
+            "day-11",
+            "day-12",
+            "day-13",
+            "day-14",
+            "day-15",
+            "day-16",
+            "day-17",
+            "day-18",
+            "day-19",
+            "day-2",
+            "day-20",
+            "day-21",
+            "day-22",
+            "day-23",
+            "day-24",
+            "day-25",
+            "day-26",
+            "day-27",
+            "day-3",
+            "day-4",
+            "day-5",
+            "day-6",
+            "day-7",
+            "day-8",
+            "day-9",
+            "description-1",
+            "description-10",
+            "description-11",
+            "description-12",
+            "description-13",
+            "description-14",
+            "description-15",
+            "description-16",
+            "description-17",
+            "description-18",
+            "description-19",
+            "description-2",
+            "description-20",
+            "description-21",
+            "description-22",
+            "description-23",
+            "description-24",
+            "description-25",
+            "description-26",
+            "description-27",
+            "description-3",
+            "description-4",
+            "description-5",
+            "description-6",
+            "description-7",
+            "description-8",
+            "description-9",
+            "_field_87485",
+            "package-include",
+            "trekking-gallery",
+            "destination",
+            "package-exclude",
+            "start_and_end_date",
+            "transportation",
+            "trip-start-and-end",
+            "_flyup_pti_quick_edit_log",
+            "_oembed_8624ea031c6f4ccff9606d9541ef2abe",
+            "_oembed_ae02defbc3e72051c78afc31ecb2997d",
+            "litespeed_no_vpi"
+        ],
+        "taxonomies": [
+            "trekking-types"
+        ],
+        "custom_tables": [
+            "wpps_yoast_seo_links",
+            "wpps_yoast_indexable",
+            "wpps_yoast_primary_term"
+        ]
+    },
+    "exported_files": [
+        "posts.csv",
+        "postmeta.csv",
+        "taxonomy-terms.csv",
+        "custom-tables/*.csv"
+    ],
+    "meta_key_count": 100,
+    "meta_rows": 2945,
+    "meta_summary": [
+        {
+            "meta_key": "_edit_last",
+            "rows_count": 40,
+            "posts_count": 40
+        },
+        {
+            "meta_key": "_edit_lock",
+            "rows_count": 40,
+            "posts_count": 40
+        },
+        {
+            "meta_key": "_flyup_seo_focus_keyphrase",
+            "rows_count": 38,
+            "posts_count": 38
+        },
+        {
+            "meta_key": "_flyup_seo_setup_score",
+            "rows_count": 38,
+            "posts_count": 38
+        },
+        {
+            "meta_key": "_ftac_altitude_rows",
+            "rows_count": 38,
+            "posts_count": 38
+        },
+        {
+            "meta_key": "_ftb_costing_rows",
+            "rows_count": 38,
+            "posts_count": 38
+        },
+        {
+            "meta_key": "_ftb_duration",
+            "rows_count": 38,
+            "posts_count": 38
+        },
+        {
+            "meta_key": "_ftb_fixed_departures",
+            "rows_count": 38,
+            "posts_count": 38
+        },
+        {
+            "meta_key": "_ftb_regular_price",
+            "rows_count": 38,
+            "posts_count": 38
+        },
+        {
+            "meta_key": "_thumbnail_id",
+            "rows_count": 38,
+            "posts_count": 38
+        },
+        {
+            "meta_key": "accommodation",
+            "rows_count": 38,
+            "posts_count": 38
+        },
+        {
+            "meta_key": "activity",
+            "rows_count": 38,
+            "posts_count": 38
+        },
+        {
+            "meta_key": "best-time",
+            "rows_count": 38,
+            "posts_count": 38
+        },
+        {
+            "meta_key": "duration",
+            "rows_count": 38,
+            "posts_count": 38
+        },
+        {
+            "meta_key": "end_at",
+            "rows_count": 38,
+            "posts_count": 38
+        },
+        {
+            "meta_key": "equipment_amp_trekking_gears",
+            "rows_count": 38,
+            "posts_count": 38
+        },
+        {
+            "meta_key": "gallery",
+            "rows_count": 38,
+            "posts_count": 38
+        },
+        {
+            "meta_key": "group_size_costing_setup",
+            "rows_count": 38,
+            "posts_count": 38
+        },
+        {
+            "meta_key": "highlight",
+            "rows_count": 38,
+            "posts_count": 38
+        },
+        {
+            "meta_key": "itinerary_detail",
+            "rows_count": 38,
+            "posts_count": 38
+        },
+        {
+            "meta_key": "max-altitude",
+            "rows_count": 38,
+            "posts_count": 38
+        },
+        {
+            "meta_key": "meals-bld",
+            "rows_count": 38,
+            "posts_count": 38
+        },
+        {
+            "meta_key": "package_exclude",
+            "rows_count": 38,
+            "posts_count": 38
+        },
+        {
+            "meta_key": "package_include",
+            "rows_count": 38,
+            "posts_count": 38
+        },
+        {
+            "meta_key": "price",
+            "rows_count": 38,
+            "posts_count": 38
+        },
+        {
+            "meta_key": "r",
+            "rows_count": 38,
+            "posts_count": 38
+        },
+        {
+            "meta_key": "rate",
+            "rows_count": 38,
+            "posts_count": 38
+        },
+        {
+            "meta_key": "route-map",
+            "rows_count": 38,
+            "posts_count": 38
+        },
+        {
+            "meta_key": "start_at",
+            "rows_count": 38,
+            "posts_count": 38
+        },
+        {
+            "meta_key": "trekking-grade",
+            "rows_count": 38,
+            "posts_count": 38
+        },
+        {
+            "meta_key": "_flyup_ctl_views",
+            "rows_count": 37,
+            "posts_count": 37
+        },
+        {
+            "meta_key": "_flyup_ctl_views_daily",
+            "rows_count": 37,
+            "posts_count": 37
+        },
+        {
+            "meta_key": "_flyup_seo_description",
+            "rows_count": 37,
+            "posts_count": 37
+        },
+        {
+            "meta_key": "_flyup_seo_title",
+            "rows_count": 32,
+            "posts_count": 32
+        },
+        {
+            "meta_key": "day-1",
+            "rows_count": 28,
+            "posts_count": 28
+        },
+        {
+            "meta_key": "day-10",
+            "rows_count": 28,
+            "posts_count": 28
+        },
+        {
+            "meta_key": "day-11",
+            "rows_count": 28,
+            "posts_count": 28
+        },
+        {
+            "meta_key": "day-12",
+            "rows_count": 28,
+            "posts_count": 28
+        },
+        {
+            "meta_key": "day-13",
+            "rows_count": 28,
+            "posts_count": 28
+        },
+        {
+            "meta_key": "day-14",
+            "rows_count": 28,
+            "posts_count": 28
+        },
+        {
+            "meta_key": "day-15",
+            "rows_count": 28,
+            "posts_count": 28
+        },
+        {
+            "meta_key": "day-16",
+            "rows_count": 28,
+            "posts_count": 28
+        },
+        {
+            "meta_key": "day-17",
+            "rows_count": 28,
+            "posts_count": 28
+        },
+        {
+            "meta_key": "day-18",
+            "rows_count": 28,
+            "posts_count": 28
+        },
+        {
+            "meta_key": "day-19",
+            "rows_count": 28,
+            "posts_count": 28
+        },
+        {
+            "meta_key": "day-2",
+            "rows_count": 28,
+            "posts_count": 28
+        },
+        {
+            "meta_key": "day-20",
+            "rows_count": 28,
+            "posts_count": 28
+        },
+        {
+            "meta_key": "day-21",
+            "rows_count": 28,
+            "posts_count": 28
+        },
+        {
+            "meta_key": "day-22",
+            "rows_count": 28,
+            "posts_count": 28
+        },
+        {
+            "meta_key": "day-23",
+            "rows_count": 28,
+            "posts_count": 28
+        },
+        {
+            "meta_key": "day-24",
+            "rows_count": 28,
+            "posts_count": 28
+        },
+        {
+            "meta_key": "day-25",
+            "rows_count": 28,
+            "posts_count": 28
+        },
+        {
+            "meta_key": "day-26",
+            "rows_count": 28,
+            "posts_count": 28
+        },
+        {
+            "meta_key": "day-27",
+            "rows_count": 28,
+            "posts_count": 28
+        },
+        {
+            "meta_key": "day-3",
+            "rows_count": 28,
+            "posts_count": 28
+        },
+        {
+            "meta_key": "day-4",
+            "rows_count": 28,
+            "posts_count": 28
+        },
+        {
+            "meta_key": "day-5",
+            "rows_count": 28,
+            "posts_count": 28
+        },
+        {
+            "meta_key": "day-6",
+            "rows_count": 28,
+            "posts_count": 28
+        },
+        {
+            "meta_key": "day-7",
+            "rows_count": 28,
+            "posts_count": 28
+        },
+        {
+            "meta_key": "day-8",
+            "rows_count": 28,
+            "posts_count": 28
+        },
+        {
+            "meta_key": "day-9",
+            "rows_count": 28,
+            "posts_count": 28
+        },
+        {
+            "meta_key": "description-1",
+            "rows_count": 28,
+            "posts_count": 28
+        },
+        {
+            "meta_key": "description-10",
+            "rows_count": 28,
+            "posts_count": 28
+        },
+        {
+            "meta_key": "description-11",
+            "rows_count": 28,
+            "posts_count": 28
+        },
+        {
+            "meta_key": "description-12",
+            "rows_count": 28,
+            "posts_count": 28
+        },
+        {
+            "meta_key": "description-13",
+            "rows_count": 28,
+            "posts_count": 28
+        },
+        {
+            "meta_key": "description-14",
+            "rows_count": 28,
+            "posts_count": 28
+        },
+        {
+            "meta_key": "description-15",
+            "rows_count": 28,
+            "posts_count": 28
+        },
+        {
+            "meta_key": "description-16",
+            "rows_count": 28,
+            "posts_count": 28
+        },
+        {
+            "meta_key": "description-17",
+            "rows_count": 28,
+            "posts_count": 28
+        },
+        {
+            "meta_key": "description-18",
+            "rows_count": 28,
+            "posts_count": 28
+        },
+        {
+            "meta_key": "description-19",
+            "rows_count": 28,
+            "posts_count": 28
+        },
+        {
+            "meta_key": "description-2",
+            "rows_count": 28,
+            "posts_count": 28
+        },
+        {
+            "meta_key": "description-20",
+            "rows_count": 28,
+            "posts_count": 28
+        },
+        {
+            "meta_key": "description-21",
+            "rows_count": 28,
+            "posts_count": 28
+        },
+        {
+            "meta_key": "description-22",
+            "rows_count": 28,
+            "posts_count": 28
+        },
+        {
+            "meta_key": "description-23",
+            "rows_count": 28,
+            "posts_count": 28
+        },
+        {
+            "meta_key": "description-24",
+            "rows_count": 28,
+            "posts_count": 28
+        },
+        {
+            "meta_key": "description-25",
+            "rows_count": 28,
+            "posts_count": 28
+        },
+        {
+            "meta_key": "description-26",
+            "rows_count": 28,
+            "posts_count": 28
+        },
+        {
+            "meta_key": "description-27",
+            "rows_count": 28,
+            "posts_count": 28
+        },
+        {
+            "meta_key": "description-3",
+            "rows_count": 28,
+            "posts_count": 28
+        },
+        {
+            "meta_key": "description-4",
+            "rows_count": 28,
+            "posts_count": 28
+        },
+        {
+            "meta_key": "description-5",
+            "rows_count": 28,
+            "posts_count": 28
+        },
+        {
+            "meta_key": "description-6",
+            "rows_count": 28,
+            "posts_count": 28
+        },
+        {
+            "meta_key": "description-7",
+            "rows_count": 28,
+            "posts_count": 28
+        },
+        {
+            "meta_key": "description-8",
+            "rows_count": 28,
+            "posts_count": 28
+        },
+        {
+            "meta_key": "description-9",
+            "rows_count": 28,
+            "posts_count": 28
+        },
+        {
+            "meta_key": "_field_87485",
+            "rows_count": 19,
+            "posts_count": 19
+        },
+        {
+            "meta_key": "package-include",
+            "rows_count": 19,
+            "posts_count": 19
+        },
+        {
+            "meta_key": "trekking-gallery",
+            "rows_count": 19,
+            "posts_count": 19
+        },
+        {
+            "meta_key": "destination",
+            "rows_count": 17,
+            "posts_count": 17
+        },
+        {
+            "meta_key": "package-exclude",
+            "rows_count": 17,
+            "posts_count": 17
+        },
+        {
+            "meta_key": "start_and_end_date",
+            "rows_count": 17,
+            "posts_count": 17
+        },
+        {
+            "meta_key": "transportation",
+            "rows_count": 17,
+            "posts_count": 17
+        },
+        {
+            "meta_key": "trip-start-and-end",
+            "rows_count": 17,
+            "posts_count": 17
+        },
+        {
+            "meta_key": "_flyup_pti_quick_edit_log",
+            "rows_count": 1,
+            "posts_count": 1
+        },
+        {
+            "meta_key": "_oembed_8624ea031c6f4ccff9606d9541ef2abe",
+            "rows_count": 1,
+            "posts_count": 1
+        },
+        {
+            "meta_key": "_oembed_ae02defbc3e72051c78afc31ecb2997d",
+            "rows_count": 1,
+            "posts_count": 1
+        },
+        {
+            "meta_key": "litespeed_no_vpi",
+            "rows_count": 1,
+            "posts_count": 1
+        }
+    ],
+    "taxonomies": [
+        {
+            "taxonomy": "trekking-types",
+            "assigned_posts": 31,
+            "unique_terms": 8,
+            "relationships": 31
+        }
+    ],
+    "custom_tables": [
+        {
+            "table": "wpps_yoast_seo_links",
+            "file": "custom-tables/wpps_yoast_seo_links.csv",
+            "rows": 53,
+            "references": {
+                "post_id": 53
+            }
+        },
+        {
+            "table": "wpps_yoast_indexable",
+            "file": "custom-tables/wpps_yoast_indexable.csv",
+            "rows": 40,
+            "references": {
+                "object_id": 40
+            }
+        },
+        {
+            "table": "wpps_yoast_primary_term",
+            "file": "custom-tables/wpps_yoast_primary_term.csv",
+            "rows": 31,
+            "references": {
+                "post_id": 31
+            }
+        }
+    ],
+    "notes": [
+        "Only checked data from the scan screen is included in this ZIP.",
+        "posts.csv contains raw wp_posts fields plus featured image and permalink helper columns when Core Post Data is selected.",
+        "postmeta.csv preserves raw stored meta_value, including serialized JetEngine/custom-field values, but only for selected meta keys.",
+        "taxonomy-terms.csv contains only selected taxonomy assignments.",
+        "Custom tables are exported only when selected and when rows reference selected post IDs through recognized reference columns.",
+        "Media files themselves are not copied into this export package."
+    ]
+}

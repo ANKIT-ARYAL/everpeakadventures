@@ -2,6 +2,7 @@
 import { prisma } from "@/lib/prisma";
 import Link from 'next/link';
 import AddNewButton from "../components/AddNewButton";
+import QuickAddActivity from './QuickAddActivity';
 import ViewButton from "../components/ViewButton";
 import EditButton from "../components/EditButton";
 import DeleteButton from "../components/DeleteButton";
@@ -52,7 +53,10 @@ export default async function AdminActivityPage() {
         </div>
       }
     >
-      <div className="flex flex-col gap-6 pb-10 min-w-0">
+      <div className="flex flex-col gap-6 pb-10 min-w-0"> 
+        {/* Quick inline add to make adding activities fast like the packing list */}
+        <QuickAddActivity />
+
         <ResponsiveTable
           headers={['Slug', 'Title', 'Subtitle', 'Actions']}
           rows={tableRows}

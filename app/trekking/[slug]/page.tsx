@@ -29,6 +29,7 @@ import StickySectionNav from "@/app/components/trek/StickySectionNav";
 import StickyBookingSidebar from "@/app/components/trek/StickyBookingSidebar";
 import RouteMapImage from "@/app/components/trek/RouteMapImage";
 import TripReviewsSection from "@/app/components/trek/TripReviewsSection";
+import PackageItemsGrid from "@/app/components/trek/PackageItemsGrid";
 import PackingListSection from "@/app/components/trek/PackingListSection";
 import VideoSyncedElevationProfile, { ElevationPoint } from "@/app/components/trek/VideoSyncedElevationProfile";
 import TrekVideoWithSync from "@/app/components/trek/TrekVideoWithSync";
@@ -37,7 +38,8 @@ import {
   Stagger,
   StaggerItem,
 } from "@/app/components/animations/Motion";
-import { toHtml } from "@/app/lib/html";
+import { stripHtml, toHtml } from "@/app/lib/html";
+import { extractTrekPreparation } from "@/app/components/trek/TrekPreparationSections";
 import FAQAccordion from "@/app/components/FAQAccordion";
 import FixedDepartures from "@/app/components/home/FixedDepartures";
 import {
@@ -156,10 +158,11 @@ export default async function TrekDetailPage({ params }: PageProps) {
   );
 
   const itineraryDays = Array.isArray(trek.itinerary)
-    ? (trek.itinerary as any[])
+    ? (trek.itinerary as any[]).filter(day => day && (String(day.title || "").trim() || stripHtml(day.desc)))
     : [];
 
-  const packingItems = trek.packingItems || [];
+  const preparation = extractTrekPreparation(trek.highlights);
+  const packingItems = (trek.packingItems || []).filter(item => item.name.trim());
    
   const packingCategories = await prisma.packingCategory.findMany();
 
@@ -211,13 +214,19 @@ export default async function TrekDetailPage({ params }: PageProps) {
       ? minPrice
       : (trek.discountedPrice ?? trek.price);
 
-  const trekReviews = Array.isArray(trek.reviews) ? (trek.reviews as any[]) : [];
+  const trekReviews = (Array.isArray(trek.reviews) ? (trek.reviews as any[]) : []).filter(review => review && typeof review.comment === "string" && review.comment.trim());
+  const hasContent = (value?: string | null) => Boolean(stripHtml(value).replace(/&#(?:160|x[aA]0);/g, '').trim() || /<(?:img|video|iframe)\b/i.test(value || ''));
+  const hasQuickFacts = [trek.startPoint, trek.durationDays, trek.difficulty, trek.meals, trek.groupSize, trek.bestSeason, trek.maxAltitude, trek.activity, trek.accommodation].some(value => value?.trim());
+  const hasOverview = hasContent(trek.overview);
+  const hasHighlights = hasContent(preparation.highlights);
+  const hasInclusions = hasContent(trek.inclusions);
+  const hasExclusions = hasContent(trek.exclusions);
   const sectionNavIds = [
-    'key-points',
-    'trip-overview',
-    trek.highlights ? 'highlights' : null,
+    hasQuickFacts ? 'key-points' : null,
+    hasOverview ? 'trip-overview' : null,
+    hasHighlights ? 'highlights' : null,
     itineraryDays.length > 0 ? 'itinerary' : null,
-    'include',
+    hasInclusions || hasExclusions ? 'include' : null,
     trek.mapImage || elevationProfile.length > 0 ? 'altitude-chart' : null,
     packingItems.length > 0 ? 'equipment' : null,
     trekReviews.length > 0 ? 'reviews' : null,
@@ -243,7 +252,15 @@ export default async function TrekDetailPage({ params }: PageProps) {
           MAIN GRID
       ========================================================= */}
       <section className="site-container relative z-20" data-sticky-booking-section>
-        <div className="grid grid-cols-1 md:grid-cols-[minmax(0,1fr)_300px] lg:grid-cols-[minmax(0,1fr)_340px] xl:grid-cols-[minmax(0,2fr)_410px] gap-6 xl:gap-8 md:items-start">
+        <div className="grid grid-cols-1 md:grid-cols-[minmax(0,1fr)_300px] lg:grid-cols-[minmax(0,1fr)_340px] xl:grid-cols-[minmax(0,2fr)_410px] gap-6 xl:gap-8 md:items-start md:[&>aside]:col-start-2 md:[&>aside]:row-start-1 md:[&>aside]:row-span-2">
+
+          <div className="min-w-0 w-full md:col-start-1 md:row-start-1">
+            <TrekGalleryGrid
+              title={trek.title}
+              mainImage={heroImage}
+              galleryImages={galleryImages}
+            />
+          </div>
 
           {/* =====================================================
               RIGHT SIDEBAR
@@ -412,16 +429,8 @@ export default async function TrekDetailPage({ params }: PageProps) {
           {/* =====================================================
               RIGHT COLUMN (Now Main Content on Left, order-1)
           ===================================================== */}
-          <div className="min-w-0 space-y-6 md:order-1">
+          <div className="trek-detail-sections min-w-0 space-y-6 md:col-start-1 md:row-start-2">
 
-            {/* Gallery */}
-            <div className="w-full">
-              <TrekGalleryGrid
-                title={trek.title}
-                mainImage={heroImage}
-                galleryImages={galleryImages}
-              />
-            </div>
 
             {/* Title & Quick Info */}
             <div className="space-y-4 pb-2">
@@ -465,11 +474,13 @@ export default async function TrekDetailPage({ params }: PageProps) {
             </div>
 
             {/* Short Description */}
-            <div className="text-lg text-gray-600 leading-relaxed pb-4">
-              <div className="line-clamp-3 overflow-hidden text-ellipsis [&>p]:inline text-justify" dangerouslySetInnerHTML={{ __html: toHtml(trek.overview) }} />
-            </div>
+            {trek.description && (
+              <div className="text-[17px] text-gray-600 leading-relaxed pb-4">
+                <div className="line-clamp-3 overflow-hidden text-ellipsis [&>p]:inline text-justify" dangerouslySetInnerHTML={{ __html: toHtml(trek.description) }} />
+              </div>
+            )}
 
-            <section className="mt-10">
+            {hasQuickFacts && (<section className="mt-10">
               {/* ===================================================
                   QUICK FACTS (Unified Card UI) - Fully Responsive Grid
               =================================================== */}
@@ -478,39 +489,39 @@ export default async function TrekDetailPage({ params }: PageProps) {
               <div className="bg-white rounded-3xl p-5 sm:p-6 md:p-8 shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-gray-100 min-w-0">
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-5 md:gap-6 min-w-0">
                   
-                  <div className="flex items-start gap-3.5 min-w-0">
+                  {trek.startPoint?.trim() && (<div className="flex items-start gap-3.5 min-w-0">
                     <MapPin className="w-5 h-5 sm:w-6 sm:h-6 text-gray-700 shrink-0 stroke-[1.5] mt-0.5" />
                     <div className="flex flex-col min-w-0 overflow-hidden">
                       <span className="text-xs sm:text-[14px] text-gray-500 font-bold mb-0.5 uppercase tracking-wider">Destination</span>
                       <span className="text-sm sm:text-[15px] font-bold text-[#112233] truncate" title={trek.startPoint || "Nepal"}>{trek.startPoint || "Nepal"}</span>
                     </div>
-                  </div>
+                  </div>)}
 
-                  <div className="flex items-start gap-3.5 min-w-0">
+                  {trek.durationDays?.trim() && (<div className="flex items-start gap-3.5 min-w-0">
                     <Calendar className="w-5 h-5 sm:w-6 sm:h-6 text-gray-700 shrink-0 stroke-[1.5] mt-0.5" />
                     <div className="flex flex-col min-w-0 overflow-hidden">
                       <span className="text-xs sm:text-[14px] text-gray-500 font-bold mb-0.5 uppercase tracking-wider">Duration</span>
                       <span className="text-sm sm:text-[15px] font-bold text-[#112233] truncate" title={String(trek.durationDays)}>{trek.durationDays}</span>
                     </div>
-                  </div>
+                  </div>)}
 
-                  <div className="flex items-start gap-3.5 min-w-0">
+                  {trek.difficulty?.trim() && (<div className="flex items-start gap-3.5 min-w-0">
                     <ActivityIcon className="w-5 h-5 sm:w-6 sm:h-6 text-gray-700 shrink-0 stroke-[1.5] mt-0.5" />
                     <div className="flex flex-col min-w-0 overflow-hidden">
                       <span className="text-xs sm:text-[14px] text-gray-500 font-bold mb-0.5 uppercase tracking-wider">Trip Difficulty</span>
                       <span className="text-sm sm:text-[15px] font-bold text-amber-600 truncate" title={String(trek.difficulty)}>{trek.difficulty}</span>
                     </div>
-                  </div>
+                  </div>)}
 
-                  <div className="flex items-start gap-3.5 min-w-0">
+                  {trek.accommodation?.trim() && (<div className="flex items-start gap-3.5 min-w-0">
                     <Home className="w-5 h-5 sm:w-6 sm:h-6 text-gray-700 shrink-0 stroke-[1.5] mt-0.5" />
                     <div className="flex flex-col min-w-0 overflow-hidden">
                       <span className="text-xs sm:text-[14px] text-gray-500 font-bold mb-0.5 uppercase tracking-wider">Accommodation</span>
                       <span className="text-sm sm:text-[15px] font-bold text-[#112233] truncate" title={trek.accommodation || "Hotel / Guesthouse"}>{trek.accommodation || "Hotel / Guesthouse"}</span>
                     </div>
-                  </div>
+                  </div>)}
 
-                  <div className="flex items-start gap-3.5 min-w-0">
+                  {trek.meals?.trim() && (<div className="flex items-start gap-3.5 min-w-0">
                     <Utensils className="w-5 h-5 sm:w-6 sm:h-6 text-gray-700 shrink-0 stroke-[1.5] mt-0.5" />
                     <div className="flex flex-col min-w-0 overflow-hidden">
                       <span className="text-xs sm:text-[14px] text-gray-500 font-bold mb-0.5 uppercase tracking-wider">Meals</span>
@@ -519,19 +530,19 @@ export default async function TrekDetailPage({ params }: PageProps) {
                         <div className="w-3.5 h-3.5 rounded-full border border-gray-400 flex items-center justify-center text-[8px] text-gray-400 font-bold cursor-help shrink-0" title="Breakfast, Lunch, Dinner">i</div>
                       </span>
                     </div>
-                  </div>
+                  </div>)}
 
-                  <div className="flex items-start gap-3.5 min-w-0">
+                  {trek.groupSize?.trim() && (<div className="flex items-start gap-3.5 min-w-0">
                     <svg className="w-5 h-5 sm:w-6 sm:h-6 text-gray-700 shrink-0 stroke-[1.5] mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
                     </svg>
                     <div className="flex flex-col min-w-0 overflow-hidden">
                       <span className="text-xs sm:text-[14px] text-gray-500 font-bold mb-0.5 uppercase tracking-wider">Group Size</span>
-                      <span className="text-sm sm:text-[15px] font-bold text-[#112233] truncate">Min. 1 Pax</span>
+                      <span className="text-sm sm:text-[15px] font-bold text-[#112233] truncate">{trek.groupSize}</span>
                     </div>
-                  </div>
+                  </div>)}
 
-                  <div className="flex items-start gap-3.5 min-w-0">
+                  {trek.bestSeason?.trim() && (<div className="flex items-start gap-3.5 min-w-0">
                     <svg className="w-5 h-5 sm:w-6 sm:h-6 text-gray-700 shrink-0 stroke-[1.5] mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" d="M3 15a4 4 0 004 4h9a5 5 0 10-.1-9.999 5.002 5.002 0 10-9.78 2.096A4.001 4.001 0 003 15z" />
                     </svg>
@@ -539,64 +550,66 @@ export default async function TrekDetailPage({ params }: PageProps) {
                       <span className="text-xs sm:text-[14px] text-gray-500 font-bold mb-0.5 uppercase tracking-wider">Best Time</span>
                       <span className="text-sm sm:text-[15px] font-bold text-[#112233] truncate" title={trek.bestSeason || "Mar - May & Sept - Dec"}>{trek.bestSeason || "Mar - May & Sept - Dec"}</span>
                     </div>
-                  </div>
+                  </div>)}
 
-                  <div className="flex items-start gap-3.5 min-w-0">
+                  {trek.maxAltitude?.trim() && (<div className="flex items-start gap-3.5 min-w-0">
                     <Mountain className="w-5 h-5 sm:w-6 sm:h-6 text-gray-700 shrink-0 stroke-[1.5] mt-0.5" />
                     <div className="flex flex-col min-w-0 overflow-hidden">
                       <span className="text-xs sm:text-[14px] text-gray-500 font-bold mb-0.5 uppercase tracking-wider">Max. Elevation</span>
                       <span className="text-sm sm:text-[15px] font-bold text-[#112233] truncate" title={String(trek.maxAltitude)}>{trek.maxAltitude}</span>
                     </div>
-                  </div>
+                  </div>)}
 
-                  <div className="flex items-start gap-3.5 min-w-0">
+                  {trek.activity?.trim() && (<div className="flex items-start gap-3.5 min-w-0">
                     <Flag className="w-5 h-5 sm:w-6 sm:h-6 text-gray-700 shrink-0 stroke-[1.5] mt-0.5" />
                     <div className="flex flex-col min-w-0 overflow-hidden">
                       <span className="text-xs sm:text-[14px] text-gray-500 font-bold mb-0.5 uppercase tracking-wider">Activities</span>
                       <span className="text-sm sm:text-[15px] font-bold text-[#112233] truncate" title={trek.activity || "Trekking"}>{trek.activity || "Trekking"}</span>
                     </div>
-                  </div>
+                  </div>)}
 
                 </div>
               </div>
-            </section>
+            </section>)}
 
             {/* ===================================================
                 TRIP OVERVIEW
             =================================================== */}
+            {hasOverview && (<>
             <div
               id="trip-overview"
               className="scroll-mt-[118px]"
             />
 
-            <Reveal className="bg-white rounded-xl p-8 shadow-sm border border-gray-100 space-y-4">
+            <Reveal className="bg-white rounded-xl p-5 sm:p-8 shadow-sm border border-gray-100 space-y-4">
 
               <h2 className="text-xl font-bold oswald uppercase text-[#112233] border-b pb-3">
                 Trip Overview
               </h2>
 
               <div
-                className="text-gray-600 text-md md:text-lg leading-relaxed rich-content text-justify"
+                className="text-gray-600 text-[17px] leading-relaxed rich-content overflow-hidden text-justify"
                 dangerouslySetInnerHTML={{
                   __html: toHtml(trek.overview),
                 }}
               />
 
             </Reveal>
+            </>)}
 
             {/* ===================================================
                 HIGHLIGHTS
             =================================================== */}
-            {trek.highlights && (
+            {hasHighlights && (
               <>
                 <div
                   id="highlights"
-                  className="scroll-mt-[118px] text-justify"
+                  className="scroll-mt-[118px]"
                 />
 
-                <Reveal className="journey-panel bg-white rounded-xl p-8 shadow-sm border border-gray-100">
-                  <div className="flex items-center gap-3 mb-6">
-                    <div className="w-12 h-12 bg-[#eaf4f1] rounded-full flex items-center shrink-0 justify-center">
+                <Reveal className="journey-panel bg-white rounded-xl p-5 sm:p-8 shadow-sm border border-gray-100">
+                  <div className="flex items-center gap-3 mb-5 sm:mb-6">
+                    <div className="w-10 h-10 sm:w-12 sm:h-12 bg-[#eaf4f1] rounded-full flex items-center shrink-0 justify-center">
                       <Mountain className="w-6 h-6 text-[#1e857c]" />
                     </div>
                     <div>
@@ -608,14 +621,16 @@ export default async function TrekDetailPage({ params }: PageProps) {
                   </div>
 
                   <div
-                    className="highlights-list"
+                    className="highlights-list text-justify leading-relaxed [&>:first-child]:!mt-0 [&_h4]:!mb-3 [&_h4]:!mt-6"
                     dangerouslySetInnerHTML={{
-                      __html: toHtml(trek.highlights),
+                      __html: preparation.highlights,
                     }}
                   />
                 </Reveal>
               </>
             )}
+
+
 
             {/* ===================================================
                 ITINERARY
@@ -627,99 +642,92 @@ export default async function TrekDetailPage({ params }: PageProps) {
                   className="scroll-mt-[118px]"
                 />
 
-                <Reveal className="bg-white rounded-xl p-8 shadow-sm border border-gray-100 space-y-4">
+                <Reveal className="bg-white rounded-xl p-5 sm:p-8 shadow-sm border border-gray-100 space-y-4">
 
-                  <h2 className="text-xl font-bold oswald uppercase text-[#112233] border-b pb-3">
+                  <h2 className="border-b pb-3 text-lg font-bold uppercase tracking-[0.08em] text-[#112233] oswald sm:text-xl md:text-2xl">
                     Itinerary
                   </h2>
                   <div className="journey-itinerary space-y-4">
                     {itineraryDays.map((day: any, index: number) => (
                       <details
                         key={index}
-                        className="group rounded-xl bg-white border border-gray-200 overflow-hidden shadow-sm transition-all duration-300 open:shadow-md"
+                        className="group overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-[0_8px_22px_rgba(17,34,51,0.04)] transition-all duration-300 open:shadow-[0_10px_26px_rgba(17,34,51,0.08)]"
                       >
-                        <summary className="list-none cursor-pointer flex items-center justify-between gap-4 p-4 transition-colors hover:bg-gray-50">
-                          <div className="flex items-center gap-4">
-                            {/* Day Badge */}
-                            <div className="bg-gray-100 text-gray-600 group-open:bg-[#f26522] group-open:text-white rounded-xl flex flex-col items-center justify-center w-[54px] h-[54px] shrink-0 transition-colors">
-                              <span className="text-[10px] font-bold uppercase tracking-wider mb-0.5">Day</span>
-                              <span className="text-xl font-black leading-none oswald">{(day.day || index + 1).toString().padStart(2, '0')}</span>
+                        <summary className="list-none cursor-pointer p-4 transition-colors hover:bg-gray-50 sm:p-5">
+                          <div className="grid grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-3 sm:gap-4">
+                            <div className="flex h-11 w-11 shrink-0 flex-col items-center justify-center rounded-xl bg-[#f26522] text-white shadow-sm transition-colors group-open:bg-[#e85b15] sm:h-[58px] sm:w-[58px]">
+                              <span className="text-[8px] font-bold uppercase tracking-[0.18em] sm:text-[9px]">Day</span>
+                              <span className="text-base font-black leading-none oswald sm:text-[1.65rem]">{(day.day || index + 1).toString().padStart(2, '0')}</span>
                             </div>
-                            <h3 className="font-bold text-[#112233] text-[17px]">{day.title}</h3>
-                          </div>
-                          
-                          <div className="flex items-center gap-5 shrink-0">
-                            {/* Decorative Icon */}
-                            <Mountain className="w-6 h-6 text-gray-600 hidden sm:block stroke-[1.5]" />
-                            {/* Caret */}
-                            <div className="w-9 h-9 rounded-full border border-gray-200 flex items-center justify-center text-gray-500 hover:bg-gray-50 transition-colors">
-                              <ChevronDown className="w-5 h-5 group-open:rotate-180 transition-transform duration-300" />
+
+                            <h3 className="min-w-0 overflow-hidden text-left text-sm font-extrabold leading-tight tracking-tight text-[#112233] break-words whitespace-normal sm:text-[1.2rem]">
+                              {day.title}
+                            </h3>
+
+                            <div className="flex shrink-0 items-center justify-end gap-3 sm:gap-4">
+                              <Mountain className="hidden h-5 w-5 text-gray-600 sm:block" strokeWidth={1.8} />
+                              <div className="flex h-9 w-9 items-center justify-center rounded-full border border-gray-200 bg-white text-gray-500 transition-colors group-hover:bg-gray-50">
+                                <ChevronDown className="h-4 w-4 transition-transform duration-300 group-open:rotate-180" />
+                              </div>
                             </div>
                           </div>
                         </summary>
-
-                        <div className="px-6 py-6 border-t border-gray-100 bg-white">
-                          
-                          {/* Description */}
+ 
+                        <div className="border-t border-gray-100 bg-white px-4 py-5 sm:px-6 sm:py-6">
                           <div
-                            className="text-gray-600 text-[14px] leading-relaxed mb-6"
+                            className="mb-6 text-justify text-[15px] leading-relaxed text-gray-600"
                             dangerouslySetInnerHTML={{
                               __html: toHtml(day.desc),
                             }}
                           />
-
-                          {/* 4-Grid Stats */}
+ 
                           {(day.startPoint || day.endPoint || day.distance || day.hours) && (
-                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4 mb-6">
-                              {day.startPoint && (
-                                <div className="flex items-center gap-4 p-4 rounded-xl border border-gray-100 bg-white shadow-[0_2px_8px_rgb(0,0,0,0.02)]">
-                                  <div className="bg-gray-50 w-12 h-12 rounded-lg border border-gray-100 flex items-center justify-center text-[#f26522] shrink-0">
-                                    <MapPin className="w-5 h-5 stroke-[1.5]" />
+                              <div className="mb-6 grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-4">
+                                {day.startPoint && (
+                                  <div className="min-w-0 w-full rounded-xl border border-gray-100 bg-[#f9fafb] p-3 sm:p-4 shadow-[0_2px_8px_rgba(17,34,51,0.02)]">
+                                    <div className="flex gap-3 items-center text-center">                                      
+                                        <MapPin className="h-5 w-5" strokeWidth={1.8} />                                      
+                                      <div className="mt-2 mb-1 text-[14px] font-bold uppercase tracking-[0.06em] text-[#112233]">Starting Point</div>
+                                    </div>
+                                    <div className="mt-2 text-sm text-gray-600 sm:text-[14px] w-full">{day.startPoint}</div>
                                   </div>
-                                  <div>
-                                    <div className="text-[14px] font-bold text-[#112233] mb-0.5">Starting Point</div>
-                                    <div className="text-[13px] text-gray-500">{day.startPoint}</div>
-                                  </div>
-                                </div>
-                              )}
+                                )}
 
-                              {day.endPoint && (
-                                <div className="flex items-center gap-4 p-4 rounded-xl border border-gray-100 bg-white shadow-[0_2px_8px_rgb(0,0,0,0.02)]">
-                                  <div className="bg-gray-50 w-12 h-12 rounded-lg border border-gray-100 flex items-center justify-center text-[#f26522] shrink-0">
-                                    <Flag className="w-5 h-5 stroke-[1.5]" />
+                                {day.endPoint && (
+                                  <div className="min-w-0 w-full rounded-xl border border-gray-100 bg-[#f9fafb] p-3 sm:p-4 shadow-[0_2px_8px_rgba(17,34,51,0.02)]">
+                                    <div className="flex gap-3 items-center text-center">                                      
+                                        <Flag className="h-5 w-5" strokeWidth={1.8} />                                      
+                                      <div className="mt-2 mb-1 text-[14px] font-bold uppercase tracking-[0.06em] text-[#112233]">Ending Point</div>
+                                    </div>
+                                    <div className="mt-2 text-sm text-gray-600 sm:text-[14px] w-full">{day.endPoint}</div>
                                   </div>
-                                  <div>
-                                    <div className="text-[14px] font-bold text-[#112233] mb-0.5">Ending Point</div>
-                                    <div className="text-[13px] text-gray-500">{day.endPoint}</div>
-                                  </div>
-                                </div>
-                              )}
+                                )}
 
-                              {day.hours && (
-                                <div className="flex items-center gap-4 p-4 rounded-xl border border-gray-100 bg-white shadow-[0_2px_8px_rgb(0,0,0,0.02)]">
-                                  <div className="bg-gray-50 w-12 h-12 rounded-lg border border-gray-100 flex items-center justify-center text-[#f26522] shrink-0">
-                                    <Clock className="w-5 h-5 stroke-[1.5]" />
+                                {day.hours && (
+                                  <div className="min-w-0 w-full rounded-xl border border-gray-100 bg-[#f9fafb] p-3 sm:p-4 shadow-[0_2px_8px_rgba(17,34,51,0.02)]">
+                                    <div className="flex gap-3 items-center text-center">
+                                      
+                                        <Clock className="h-5 w-5" strokeWidth={1.8} />
+                                      
+                                      <div className="mt-2 mb-1 text-[14px] font-bold uppercase tracking-[0.06em] text-[#112233]">Duration</div>
+                                    </div>
+                                    <div className="mt-2 text-gray-600 text-sm sm:text-[14px] w-full">{day.hours}</div>
                                   </div>
-                                  <div>
-                                    <div className="text-[14px] font-bold text-[#112233] mb-0.5">Duration</div>
-                                    <div className="text-[13px] text-gray-500">{day.hours}</div>
-                                  </div>
-                                </div>
-                              )}
+                                )}
 
-                              {day.distance && (
-                                <div className="flex items-center gap-4 p-4 rounded-xl border border-gray-100 bg-white shadow-[0_2px_8px_rgb(0,0,0,0.02)]">
-                                  <div className="bg-gray-50 w-12 h-12 rounded-lg border border-gray-100 flex items-center justify-center text-[#f26522] shrink-0">
-                                    <Map className="w-5 h-5 stroke-[1.5]" />
+                                {day.distance && (
+                                  <div className="min-w-0 w-full rounded-xl border border-gray-100 bg-[#f9fafb] p-3 sm:p-4 shadow-[0_2px_8px_rgba(17,34,51,0.02)]">
+                                    <div className="flex gap-3 items-center text-center">
+                                      
+                                        <Map className="h-5 w-5" strokeWidth={1.8} />
+                                      
+                                      <div className="mt-2 mb-1 text-[14px] font-bold uppercase tracking-[0.06em] text-[#112233]">Total Distance</div>
+                                    </div>
+                                    <div className="mt-2 text-sm text-gray-600 sm:text-[14px] w-full">{day.distance}</div>
                                   </div>
-                                  <div>
-                                    <div className="text-[14px] font-bold text-[#112233] mb-0.5">Total Distance</div>
-                                    <div className="text-[13px] text-gray-500">{day.distance}</div>
-                                  </div>
-                                </div>
-                              )}
-                            </div>
-                          )}
+                                )}
+                              </div>
+                            )}
 
                           {/* Important Note */}
                           {day.note && (
@@ -760,6 +768,7 @@ export default async function TrekDetailPage({ params }: PageProps) {
             {/* ===================================================
                 INCLUDES / EXCLUDES
             =================================================== */}
+            {(hasInclusions || hasExclusions) && (<>
             <div
               id="include"
               className="scroll-mt-[118px]"
@@ -767,10 +776,10 @@ export default async function TrekDetailPage({ params }: PageProps) {
 
             <Stagger className="flex flex-col gap-6">
 
-              <StaggerItem className="bg-white rounded-xl p-8 shadow-sm border border-gray-100">
+              {hasInclusions && (<StaggerItem className="min-w-0 bg-white rounded-3xl p-5 sm:p-6 md:p-8 shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-gray-100">
 
-                <div className="flex items-center gap-3 mb-6">
-                  <div className="w-12 h-12 bg-[#eaf4f1] rounded-full flex items-center justify-center shrink-0">
+                <div className="flex items-center gap-3 mb-5 sm:mb-6">
+                  <div className="w-10 h-10 sm:w-12 sm:h-12 bg-[#eaf4f1] rounded-full flex items-center justify-center shrink-0">
                     <Mountain className="w-6 h-6 text-[#1e857c]" />
                   </div>
                   <div>
@@ -782,23 +791,18 @@ export default async function TrekDetailPage({ params }: PageProps) {
                 </div>
 
                 {trek.inclusions && (
-                  <div
-                    className="highlights-list text-justify"
-                    dangerouslySetInnerHTML={{
-                      __html: toHtml(trek.inclusions),
-                    }}
-                  />
+                  <div className="min-w-0"><PackageItemsGrid content={trek.inclusions} included={true} /></div>
                 )}
 
-              </StaggerItem>
+              </StaggerItem>)}
 
-              <StaggerItem
+              {hasExclusions && (<StaggerItem
                 id="exclude"
-                className="bg-white rounded-xl p-8 shadow-sm border border-gray-100 scroll-mt-[118px]"
+                className="min-w-0 bg-white rounded-3xl p-5 sm:p-6 md:p-8 shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-gray-100 scroll-mt-[118px]"
               >
 
-                <div className="flex items-center gap-3 mb-6">
-                  <div className="w-12 h-12 bg-[#fdeded] rounded-full flex items-center justify-center shrink-0">
+                <div className="flex items-center gap-3 mb-5 sm:mb-6">
+                  <div className="w-10 h-10 sm:w-12 sm:h-12 bg-[#fdeded] rounded-full flex items-center justify-center shrink-0">
                     <Mountain className="w-6 h-6 text-[#c84c31]" />
                   </div>
                   <div>
@@ -810,17 +814,13 @@ export default async function TrekDetailPage({ params }: PageProps) {
                 </div>
 
                 {trek.exclusions && (
-                  <div
-                    className="exclusions-list text-justify"
-                    dangerouslySetInnerHTML={{
-                      __html: toHtml(trek.exclusions),
-                    }}
-                  />
+                  <div className="min-w-0"><PackageItemsGrid content={trek.exclusions} included={false} /></div>
                 )}
 
-              </StaggerItem>
+              </StaggerItem>)}
 
             </Stagger>
+            </>)}
 
             {/* =========================================================
                 ROUTE MAP & ELEVATION PROFILE (VIDEO SYNCED)

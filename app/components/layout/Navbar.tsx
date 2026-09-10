@@ -38,15 +38,49 @@ function getIconForCategory(name: string, slug: string): string {
   return "Mountain";
 }
 
+function normalizeActivityFilter(value: string | null | undefined) {
+  if (!value) return "";
+
+  return value
+    .toLowerCase()
+    .replace(/&/g, " and ")
+    .replace(/[^a-z0-9]+/g, " ")
+    .trim()
+    .replace(/\s+/g, "-")
+    .replace(/^-|-$/g, "");
+}
+
+function matchesActivityFilter(activity: string | null | undefined, filter: string) {
+  const normalizedFilter = normalizeActivityFilter(filter);
+
+  if (!normalizedFilter) return false;
+
+  const candidates = (activity ?? "")
+    .split(/[,/]/)
+    .map((part) => normalizeActivityFilter(part))
+    .filter(Boolean);
+
+  const GENERIC = new Set(['tour', 'tours', 'trek', 'treks', 'trip', 'trips', 'day']);
+
+  return candidates.some((candidate) => {
+    if (!candidate) return false;
+    if (candidate === normalizedFilter) return true;
+
+    // Avoid matching generic tokens (e.g. 'tour') against specific filters like 'helicopter-tour'
+    if (GENERIC.has(candidate) || GENERIC.has(normalizedFilter)) return false;
+
+    return candidate.includes(normalizedFilter) || normalizedFilter.includes(candidate);
+  });
+}
+
 const getNavbarData = unstable_cache(
   async () => {
     const settings = await prisma.siteSettings.findFirst();
 
     // Fetch all published treks
 
-    const allTreks = await prisma.trek.findMany({
+    const allTreksRaw = await prisma.trek.findMany({
       where: { published: true },
-
       select: {
         title: true,
         slug: true,
@@ -55,19 +89,26 @@ const getNavbarData = unstable_cache(
         region: true,
         heroImage: true,
         difficulty: true,
+        activity: true,
         price: true,
         discountedPrice: true,
         groupPrices: true,
       },
-
       orderBy: { order: "asc" },
     });
 
+    const allTreksMap = new Map();
+    for (const t of allTreksRaw) {
+      if (!allTreksMap.has(t.slug)) {
+        allTreksMap.set(t.slug, t);
+      }
+    }
+    const allTreks = Array.from(allTreksMap.values());
+
     // Fetch all published tours
 
-    const allTours = await prisma.tour.findMany({
+    const allToursRaw = await prisma.tour.findMany({
       where: { published: true },
-
       select: {
         title: true,
         slug: true,
@@ -81,9 +122,16 @@ const getNavbarData = unstable_cache(
         activity: true,
         regions: true,
       },
-
       orderBy: { order: "asc" },
     });
+
+    const allToursMap = new Map();
+    for (const t of allToursRaw) {
+      if (!allToursMap.has(t.slug)) {
+        allToursMap.set(t.slug, t);
+      }
+    }
+    const allTours = Array.from(allToursMap.values());
 
     const parsePrice = (val: string | undefined | null) => {
       if (!val) return 0;
@@ -109,30 +157,24 @@ const getNavbarData = unstable_cache(
       return minPrice;
     };
 
-    // 1. NEPAL MEGA MENU (9 Tabs)
+    // 1. NEPAL MEGA MENU (derived from admin Activities)
 
+    const publishedActivities = await prisma.activity.findMany({
+      where: { published: true },
+      orderBy: { title: 'asc' },
+      select: { title: true, slug: true },
+    });
+
+    // Keep the two umbrella tabs first, then append activities from the admin panel.
     const nepalActivities = [
       { name: "Trekking in Nepal", type: "trek", filter: "all-trekking" },
-
       { name: "Tours in Nepal", type: "tour", filter: "all-tours" },
-
-      { name: "Peak Climbing", type: "tour", filter: "peak-climbing" },
-
-      { name: "Helicopter Tours", type: "tour", filter: "helicopter-tours" },
-
-      { name: "Wildlife Safari", type: "tour", filter: "wildlife-safari" },
-
-      { name: "Rafting", type: "tour", filter: "rafting" },
-
-      { name: "Bungee Jump", type: "tour", filter: "bungee-jump" },
-
-      { name: "Mountain Flight", type: "tour", filter: "mountain-flight" },
-
-      { name: "Day Tours", type: "tour", filter: "day-tours" },
+      // dynamic activities from admin (will match both tours and treks)
+      ...publishedActivities.map((a) => ({ name: a.title, filter: a.slug })),
     ];
 
     const nepalTabs = nepalActivities.map((act) => {
-      let items = [];
+      let items: any[] = [];
 
       if (act.filter === "all-trekking") {
         items = allTreks
@@ -141,7 +183,8 @@ const getNavbarData = unstable_cache(
               !t.title.toLowerCase().includes("bhutan") &&
               !t.title.toLowerCase().includes("tibet"),
           )
-          .slice(0, 8);
+          .slice(0, 10)
+          .map((t) => ({ ...t, _type: 'trek' }));
       } else if (act.filter === "all-tours") {
         items = allTours
           .filter(
@@ -149,9 +192,14 @@ const getNavbarData = unstable_cache(
               (t.destination || "").toLowerCase().includes("nepal") ||
               (t.primaryDestination || "").toLowerCase().includes("nepal"),
           )
-          .slice(0, 8);
+          .slice(0, 10)
+          .map((t) => ({ ...t, _type: 'tour' }));
       } else {
-        items = allTours.filter((t) => t.activity === act.filter).slice(0, 8);
+        const matchedTours = allTours.filter((t) => matchesActivityFilter(t.activity, act.filter)).map((t) => ({ ...t, _type: 'tour' }));
+        const matchedTreks = allTreks.filter((t) => matchesActivityFilter(t.activity, act.filter)).map((t) => ({ ...t, _type: 'trek' }));
+
+        // Combine tours first then treks, keep original ordering and limit to 10
+        items = [...matchedTours, ...matchedTreks].slice(0, 10);
       }
 
       return {
@@ -160,7 +208,7 @@ const getNavbarData = unstable_cache(
         slug: act.filter,
 
         href:
-          act.type === "trek"
+          act.filter === "all-trekking"
             ? "/trekking"
             : act.filter === "all-tours"
               ? "/tour-destination/nepal"
@@ -177,38 +225,32 @@ const getNavbarData = unstable_cache(
 
           lowestPrice: getMinPrice(t),
 
-          type: act.type,
+          type: t._type === 'trek' ? 'trek' : 'tour',
         })),
       };
     });
 
-    // 2. NEPAL TREKKING (7 Regions)
+    // 2. NEPAL TREKKING (Dynamic Categories)
 
-    const targetTrekRegions = [
-      { name: "Everest Region", slug: "everest" },
-
-      { name: "Annapurna Region", slug: "annapurna" },
-
-      { name: "Manaslu Region", slug: "manaslu" },
-
-      { name: "Langtang Region", slug: "langtang" },
-
-      { name: "Mustang Region", slug: "mustang" },
-
-      { name: "Kanchenjunga Region", slug: "kanchenjunga" },
-
-      { name: "Dolpo Region", slug: "dolpo" },
-    ];
+    const targetTrekRegions = await prisma.trekCategory.findMany({
+      where: { published: true },
+      orderBy: { order: "asc" },
+      select: { name: true, slug: true },
+    });
 
     const nepalTrekkingTabs = targetTrekRegions.map((region) => {
       const cleanSlug = region.slug.toLowerCase();
 
       const matchedTreks = allTreks
         .filter((t) => {
+          if (cleanSlug === 'all-trekking-packages' || region.name.toLowerCase().includes('all trekking')) {
+            return true;
+          }
+
           const inRegions =
             t.regions &&
             t.regions.some(
-              (r) =>
+              (r: string) =>
                 r.toLowerCase().includes(cleanSlug) ||
                 r.toLowerCase().includes(region.name.toLowerCase()),
             );
@@ -220,7 +262,7 @@ const getNavbarData = unstable_cache(
 
           return inRegions || inRegion;
         })
-        .slice(0, 8);
+        .slice(0, 10);
 
       // NO FALLBACK
 
@@ -272,13 +314,13 @@ const getNavbarData = unstable_cache(
           return (
             t.regions &&
             t.regions.some(
-              (r) =>
+              (r: string) =>
                 r.toLowerCase().includes(cleanSlug) ||
                 r.toLowerCase().includes(cat.name.toLowerCase()),
             )
           );
         })
-        .slice(0, 8);
+        .slice(0, 10);
 
       return {
         name: cat.name,
@@ -312,7 +354,7 @@ const getNavbarData = unstable_cache(
             (t.destination || "").toLowerCase().includes(tab.dest) ||
             (t.primaryDestination || "").toLowerCase().includes(tab.dest),
         )
-        .slice(0, 8);
+        .slice(0, 10);
 
       // NO FALLBACK
 

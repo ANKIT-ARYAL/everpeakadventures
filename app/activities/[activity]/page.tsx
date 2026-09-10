@@ -15,29 +15,48 @@ interface PageProps {
 export default async function ActivityPage({ params }: PageProps) {
   const { activity } = await params;
 
-  // Clean up the URL slug for querying
-  const cleanActivity = activity.replace(/-/g, ' ').toLowerCase();
+  // Normalize helpers matching Navbar's behavior
+  function normalizeActivityFilter(value: string | null | undefined) {
+    if (!value) return "";
 
-  // Fetch treks and tours with matching activity
-  const [treks, tours, hero] = await Promise.all([
-    prisma.trek.findMany({
-      where: {
-        activity: { contains: cleanActivity, mode: 'insensitive' },
-        published: true,
-      },
-      orderBy: { order: 'asc' },
-    }),
-    prisma.tour.findMany({
-      where: {
-        activity: { contains: cleanActivity, mode: 'insensitive' },
-        published: true,
-      },
-      orderBy: { order: 'asc' },
-    }),
-    prisma.activity.findFirst({
-      where: { slug: activity, published: true }
-    })
+    return value
+      .toLowerCase()
+      .replace(/&/g, " and ")
+      .replace(/[^a-z0-9]+/g, " ")
+      .trim()
+      .replace(/\s+/g, "-")
+      .replace(/^-|-$/g, "");
+  }
+
+  function matchesActivityFilter(activity: string | null | undefined, filter: string) {
+    const normalizedFilter = normalizeActivityFilter(filter);
+
+    if (!normalizedFilter) return false;
+
+    const candidates = (activity ?? "")
+      .split(/[,/]/)
+      .map((part) => normalizeActivityFilter(part))
+      .filter(Boolean as any);
+
+    const GENERIC = new Set(['tour', 'tours', 'trek', 'treks', 'trip', 'trips', 'day']);
+
+    return candidates.some((candidate) => {
+      if (!candidate) return false;
+      if (candidate === normalizedFilter) return true;
+      if (GENERIC.has(candidate) || GENERIC.has(normalizedFilter)) return false;
+      return candidate.includes(normalizedFilter) || normalizedFilter.includes(candidate);
+    });
+  }
+
+  // Fetch all published treks and tours and filter using the same matching logic as the navbar
+  const [allTreks, allTours, hero] = await Promise.all([
+    prisma.trek.findMany({ where: { published: true }, orderBy: { order: 'asc' } }),
+    prisma.tour.findMany({ where: { published: true }, orderBy: { order: 'asc' } }),
+    prisma.activity.findFirst({ where: { slug: activity, published: true } }),
   ]);
+
+  const treks = allTreks.filter((t) => matchesActivityFilter((t as any).activity, activity));
+  const tours = allTours.filter((t) => matchesActivityFilter((t as any).activity, activity));
 
   // Generate a clean, human-readable title from the URL slug
   const fallbackTitle = activity
@@ -64,8 +83,7 @@ export default async function ActivityPage({ params }: PageProps) {
         <div className="relative z-10 px-5 lg:px-20">
           <h1 className="text-4xl md:text-5xl font-black text-white oswald uppercase tracking-wider mb-4">
             {activityTitle}
-          </h1>
-          <HeroSearchBar />
+          </h1>        
         </div>
       </section>
 

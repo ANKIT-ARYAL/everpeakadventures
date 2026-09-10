@@ -2,7 +2,6 @@
 
 import React, { useState } from 'react';
 import { Camera, Star } from 'lucide-react';
-import Image from 'next/image';
 import Lightbox from 'yet-another-react-lightbox';
 import 'yet-another-react-lightbox/styles.css';
 
@@ -17,7 +16,7 @@ export default function TrekGalleryGrid({ title, mainImage, galleryImages }: Tre
   const [photoIndex, setPhotoIndex] = useState(0);
 
   // Combine main image with gallery images for the lightbox
-  const allImages = [mainImage, ...galleryImages.filter(img => img !== mainImage)];
+  const allImages = [...new Set([mainImage, ...galleryImages].filter(Boolean))];
   const slides = allImages.map(src => ({ src }));
 
   // Pick the first two gallery images for the right side, or fallback to the main image
@@ -64,7 +63,7 @@ export default function TrekGalleryGrid({ title, mainImage, galleryImages }: Tre
         <div className="hidden lg:flex flex-col gap-2 md:gap-4 h-full">
           <div 
             className="flex-1 relative group cursor-pointer overflow-hidden"
-            onClick={() => openLightbox(1)}
+            onClick={() => openLightbox(Math.max(0, allImages.indexOf(rightImage1)))}
           >
             <img 
               src={rightImage1} 
@@ -76,7 +75,7 @@ export default function TrekGalleryGrid({ title, mainImage, galleryImages }: Tre
           
           <div 
             className="flex-1 relative group cursor-pointer overflow-hidden"
-            onClick={() => openLightbox(2)}
+            onClick={() => openLightbox(Math.max(0, allImages.indexOf(rightImage2)))}
           >
             <img 
               src={rightImage2} 
@@ -97,6 +96,8 @@ export default function TrekGalleryGrid({ title, mainImage, galleryImages }: Tre
       </div>
 
       <Lightbox
+        className="trek-gallery-lightbox"
+        carousel={{ padding: 0, imageFit: "contain" }}
         open={lightboxOpen}
         close={() => setLightboxOpen(false)}
         index={photoIndex}

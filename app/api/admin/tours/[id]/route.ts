@@ -1,7 +1,25 @@
 import { NextResponse } from 'next/server';
-import { prisma } from '@/lib/prisma';
+import { prisma, transactionOptions } from '@/lib/prisma';
 import { requireAdmin } from "@/app/lib/require-admin";
 import { parseDepartureDate } from "@/lib/departures";
+
+const toSafeString = (value: unknown) => value == null ? '' : String(value).trim();
+
+const normalizeGroupPrice = (groupPrice: any) => ({
+  groupSize: toSafeString(groupPrice?.groupSize),
+  groupType: toSafeString(groupPrice?.groupType) || 'Best Value',
+  price: toSafeString(groupPrice?.price),
+});
+
+const normalizeDeparture = (departure: any) => ({
+  tripType: 'tour',
+  startDate: parseDepartureDate(departure?.startDate) || new Date(),
+  endDate: parseDepartureDate(departure?.endDate),
+  groupSize: toSafeString(departure?.groupSize),
+  status: toSafeString(departure?.status) || 'Guaranteed',
+  seatsLeft: Number(departure?.seatsLeft) || 12,
+  recurring: Boolean(departure?.recurring),
+});
 
 export async function GET(
   request: Request,
@@ -42,7 +60,18 @@ export async function PUT(
 
   try {
     const body = await request.json();
-    delete body.id; // Prevent updating ID field
+    delete body.id;
+
+    const cleanGroupPrices = Array.isArray(body.groupPrices)
+      ? body.groupPrices.filter((groupPrice: any) => toSafeString(groupPrice?.groupSize) !== '' || toSafeString(groupPrice?.price) !== '')
+      : [];
+    const cleanDepartures = Array.isArray(body.departures)
+      ? body.departures.filter((departure: any) => toSafeString(departure?.startDate) !== '')
+      : [];
+    const nextSlug = toSafeString(body.slug) || toSafeString(body.title)
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/(^-|-$)+/g, '');
 
     const updatedTour = await prisma.$transaction(async (tx) => {
       await tx.tourGroupPrice.deleteMany({ where: { tourId: id } });
@@ -51,75 +80,68 @@ export async function PUT(
       return tx.tour.update({
         where: { id },
         data: {
-          title: body.title,
-          slug: body.slug,
+          title: toSafeString(body.title) || 'Untitled Tour',
+          slug: nextSlug || `tour-${Date.now()}`,
           description: body.description,
           overview: body.overview,
-          heroImage: body.heroImage || body.image,
-          gallery: body.gallery || [],
-          duration: body.duration,
+          heroImage: toSafeString(body.heroImage || body.image) || '',
+          gallery: Array.isArray(body.gallery) ? body.gallery.filter((item: unknown) => toSafeString(item) !== '') : [],
+          duration: toSafeString(body.duration),
           price: Number(body.price) || 0,
           discountedPrice: body.discountedPrice ? Number(body.discountedPrice) : null,
           originalPrice: body.originalPrice ? Number(body.originalPrice) : null,
           priceRange: body.priceRange || null,
           isAllInclusive: body.isAllInclusive ?? false,
           bestTime: body.bestTime,
-          destination: body.destination,
-          primaryDestination: body.primaryDestination || null,
-          grade: body.grade,
-          maxAltitude: body.maxAltitude,
-          startPoint: body.startPoint,
-          endPoint: body.endPoint,
-          meals: body.meals,
-          activity: body.activity || null,
-          groupSize: body.groupSize || null,
-          transport: body.transport || null,
+          destination: toSafeString(body.destination) || 'nepal',
+          primaryDestination: toSafeString(body.primaryDestination) || null,
+          grade: toSafeString(body.grade) || 'Easy / Moderate',
+          maxAltitude: toSafeString(body.maxAltitude) || '1,350 m',
+          startPoint: toSafeString(body.startPoint) || 'Kathmandu',
+          endPoint: toSafeString(body.endPoint) || 'Kathmandu',
+          meals: toSafeString(body.meals) || 'B.B.',
+          activity: toSafeString(body.activity) || null,
+          groupSize: toSafeString(body.groupSize) || null,
+          transport: toSafeString(body.transport) || null,
           rate: body.rate ? Number(body.rate) : null,
           rating: body.rating ? Number(body.rating) : null,
           altitudeData: body.altitudeData || [],
-          mapUrl: body.mapUrl || null,
-          mapImage: body.mapImage || null,
+          mapUrl: toSafeString(body.mapUrl) || null,
+          mapImage: toSafeString(body.mapImage) || null,
           routeMap: body.routeMap ?? null,
-          regions: body.regions || [],
-          videoUrl: body.videoUrl || null,
-          videoType: body.videoType || null,
-          focusKeyphrase: body.focusKeyphrase || null,
-          seoTitle: body.seoTitle || null,
-          metaDescription: body.metaDescription || null,
+          regions: Array.isArray(body.regions) ? body.regions : [],
+          videoUrl: toSafeString(body.videoUrl) || null,
+          videoType: toSafeString(body.videoType) || null,
+          focusKeyphrase: toSafeString(body.focusKeyphrase) || null,
+          seoTitle: toSafeString(body.seoTitle) || null,
+          metaDescription: toSafeString(body.metaDescription) || null,
+          reviews: Array.isArray(body.reviews) ? body.reviews : undefined,
           highlights: body.highlights,
           inclusions: body.inclusions,
           exclusions: body.exclusions,
           packingItems: {
-            set: (body.packingItemIds || []).map((id: string) => ({ id }))
+            set: (Array.isArray(body.packingItemIds) ? body.packingItemIds : [])
+              .filter(Boolean)
+              .map((packingItemId: string) => ({ id: packingItemId })),
           },
           itinerary: body.itinerary || [],
           isBestSeller: body.isBestSeller || false,
           order: Number(body.order) || 0,
           groupPrices: {
-            create: (body.groupPrices || []).map((g: any) => ({
-              groupSize: g.groupSize,
-              groupType: g.groupType,
-              price: g.price,
-            })),
+            create: cleanGroupPrices.map(normalizeGroupPrice),
           },
           departures: {
-            create: (body.departures || []).map((s: any) => ({
-              tripType: 'tour',
-              startDate: parseDepartureDate(s.startDate) || new Date(),
-              endDate: parseDepartureDate(s.endDate),
-              groupSize: s.groupSize || null,
-              status: s.status || 'Guaranteed',
-              seatsLeft: Number(s.seatsLeft) || 12,
-              recurring: !!s.recurring,
-            })),
+            create: cleanDepartures.map(normalizeDeparture),
           },
         },
       });
-    });
+    }, transactionOptions);
 
     return NextResponse.json(updatedTour);
   } catch (error) {
-    return NextResponse.json({ error: 'Failed to update tour record', details: String(error) }, { status: 500 });
+    const message = error instanceof Error ? error.message : String(error);
+    // Surface the actual DB/validation error to the client so the admin UI can show the real cause
+    return NextResponse.json({ error: message, details: message }, { status: 500 });
   }
 }
 

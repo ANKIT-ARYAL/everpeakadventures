@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { requireAdmin } from "@/app/lib/require-admin";
+import { revalidateTag } from 'next/cache';
 
 const modelMap: Record<string, any> = {
   treks: prisma.trek,
@@ -20,6 +21,7 @@ const modelMap: Record<string, any> = {
   'tour-categories': prisma.tourCategory,
   'page-categories': prisma.pageCategory,
   pages: prisma.contentPage,
+  activities: prisma.activity,
 };
 
 const resourceByModel: Record<string, string> = {
@@ -40,6 +42,7 @@ const resourceByModel: Record<string, string> = {
   'tour-categories': 'tour-categories',
   'page-categories': 'page-categories',
   pages: 'pages',
+  activities: 'activities',
 };
 
 export async function PUT(
@@ -62,6 +65,7 @@ export async function PUT(
       where: { id },
       data: body,
     });
+    revalidateTag(model, 'max');
     return NextResponse.json(updated);
   } catch (error) {
     return NextResponse.json({ error: 'Failed to update record' }, { status: 500 });
@@ -83,6 +87,7 @@ export async function DELETE(
 
   try {
     await delegate.delete({ where: { id } });
+    revalidateTag(model, 'max');
     return NextResponse.json({ success: true });
   } catch (error) {
     return NextResponse.json({ error: 'Failed to delete record' }, { status: 500 });

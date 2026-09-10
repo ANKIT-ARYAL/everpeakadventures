@@ -79,6 +79,22 @@ export default function AdminShell({
     }
   }, [collapsed, mounted]);
 
+  // Make right-side admin panels scrollable and constrained to viewport height on XL+ screens.
+  // Many admin forms use `xl:sticky xl:top-24 xl:self-start` — find those elements at runtime and add
+  // an `admin-right-scrollable` class so they get a max-height and overflow auto.
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    try {
+      const all = Array.from(document.querySelectorAll('[class]')) as Element[];
+      const targets = all.filter((el) => {
+        const cls = (el.getAttribute('class') || '');
+        return cls.includes('xl:sticky') && cls.includes('xl:top-24') && cls.includes('xl:self-start');
+      });
+      targets.forEach((el) => el.classList.add('admin-right-scrollable'));
+    } catch (e) {
+      // silent
+    }
+  }, [mounted]);
 
   const can = (perm: string) => isSuperAdmin || permissions.includes(perm);
 
@@ -260,11 +276,13 @@ export default function AdminShell({
     </>
   );
 
+  const mainPaddingClass = collapsed ? 'lg:pl-16' : 'lg:pl-64 xl:pl-72 2xl:pl-80';
+
   return (
     <div className="min-h-screen w-full max-w-full overflow-x-hidden bg-[#f0f2f5] flex font-sans text-gray-800 admin-panel">
 
-      {/* Sidebar - sticky on desktop, drawer on mobile */}
-      <aside className={`bg-[#101b25] text-gray-300 flex-col sticky top-0 h-screen z-40 overflow-y-auto hidden lg:flex transition-all duration-300 shrink-0 ${collapsed ? 'w-16' : 'w-64 lg:w-64 xl:w-72 2xl:w-80'}`}>
+      {/* Sidebar - desktop column (fixed), drawer on mobile. Fixed so it doesn't stretch with page content */}
+      <aside className={`bg-[#101b25] text-gray-300 flex-col z-40 overflow-y-auto hidden lg:fixed lg:inset-y-0 lg:left-0 lg:top-0 lg:flex transition-all duration-300 shrink-0 ${collapsed ? 'w-16' : 'w-64 lg:w-64 xl:w-72 2xl:w-80'}`}>
         {renderNav()}
       </aside>
 
@@ -282,8 +300,8 @@ export default function AdminShell({
         {renderNav()}
       </aside>
 
-      {/* Main Content Viewport */}
-      <main className="flex-1 min-w-0 flex flex-col transition-all duration-300">
+      {/* Main Content Viewport (becomes the scroll container) */}
+      <main className={`${mainPaddingClass} flex-1 min-w-0 flex flex-col transition-all duration-300 h-screen overflow-auto`}>
         
         {/* Top Navbar */}
         <header className="bg-white border-b border-gray-200 h-16 shrink-0 flex items-center justify-between px-4 sm:px-6 z-30 sticky top-0 min-w-0">

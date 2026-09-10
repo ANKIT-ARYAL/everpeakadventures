@@ -351,6 +351,8 @@ export default function TipTapEditor({
   /* ------------------------------------------------------------------------ */
 
   const editor = useEditor({
+    immediatelyRender: false,
+    shouldRerenderOnTransaction: true,
     extensions: [
       StarterKit.configure({
         heading: {
@@ -1272,9 +1274,20 @@ export default function TipTapEditor({
           outline: none;
         }
 
-        .ProseMirror * {
-          color: #000000 !important;
-        }
+        .ProseMirror p { margin: 0.5rem 0; }
+        .ProseMirror ul { list-style: disc; padding-left: 1.5rem; margin: 0.75rem 0; }
+        .ProseMirror ol { list-style: decimal; padding-left: 1.5rem; margin: 0.75rem 0; }
+        .ProseMirror ul ul { list-style: circle; }
+        .ProseMirror li { display: list-item; margin: 0.25rem 0; }
+        .ProseMirror li p { margin: 0; }
+        .ProseMirror h1 { font-size: 2rem; font-weight: 700; margin: 1rem 0 0.5rem; }
+        .ProseMirror h2 { font-size: 1.5rem; font-weight: 700; margin: 1rem 0 0.5rem; }
+        .ProseMirror h3 { font-size: 1.25rem; font-weight: 700; margin: 1rem 0 0.5rem; }
+        .ProseMirror h4 { font-size: 1.125rem; font-weight: 700; margin: 1rem 0 0.5rem; }
+        .ProseMirror a { color: #1678b5; text-decoration: underline; }
+        .ProseMirror hr { border: 0; border-top: 1px solid #cbd5e1; margin: 1rem 0; }
+        .ProseMirror pre { overflow-x: auto; }
+        .ProseMirror code { font-family: monospace; }
 
         .ProseMirror p.is-editor-empty:first-child::before {
           content: attr(data-placeholder);

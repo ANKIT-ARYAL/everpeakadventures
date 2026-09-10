@@ -1,5 +1,6 @@
 "use client";
 
+import { whatsappUrl } from "@/app/lib/whatsapp";
 import React, { useState } from 'react';
 import { MapPin, Phone, Mail, Clock, MessageCircle, Send } from 'lucide-react';
 import { submitContactForm } from '@/app/actions/contact';
@@ -9,6 +10,7 @@ interface ContactInfoProps {
   info: {
     address: string;
     phone: string;
+    whatsapp?: string;
     email: string;
     mapUrl: string;
   };
@@ -20,6 +22,26 @@ interface ContactInfoProps {
 export default function ContactUsClient({ info, heroTitle, heroSubtitle, heroImage }: ContactInfoProps) {
   const [submitting, setSubmitting] = useState(false);
   const [feedback, setFeedback] = useState<{ success: boolean; message: string } | null>(null);
+
+  // Live contact info fetched on the client so admin updates appear without a full page refresh.
+  const [liveInfo, setLiveInfo] = useState<any | null>(null);
+
+  React.useEffect(() => {
+    let mounted = true;
+    (async () => {
+      try {
+        const res = await fetch('/api/contact-info', { cache: 'no-store' });
+        if (!res.ok) return;
+        const json = await res.json();
+        if (mounted && json?.success) setLiveInfo(json.data ?? null);
+      } catch (err) {
+        // ignore - keep server-provided info if fetch fails
+      }
+    })();
+    return () => { mounted = false; };
+  }, []);
+
+  const displayInfo = liveInfo ?? info;
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -77,7 +99,7 @@ export default function ContactUsClient({ info, heroTitle, heroSubtitle, heroIma
                   </div>
                   <div>
                     <h3 className="font-bold text-[#112233] text-lg mb-1">Our Office</h3>
-                    <p className="text-gray-500">{info?.address || 'Thamel, Kathmandu, Nepal'}</p>
+                    <p className="text-gray-500">{displayInfo?.address || 'Thamel, Kathmandu, Nepal'}</p>
                     <p className="text-gray-400 text-sm mt-1">Open for walk-ins</p>
                   </div>
                 </div>
@@ -90,13 +112,13 @@ export default function ContactUsClient({ info, heroTitle, heroSubtitle, heroIma
                   <div>
                     <h3 className="font-bold text-[#112233] text-lg mb-1">Direct Contact</h3>
                     <p className="text-gray-500 mb-1 flex items-center gap-2">
-                      <Phone className="w-4 h-4 text-gray-400"/> {info?.phone || '+977 9851093960'}
+                      <Phone className="w-4 h-4 text-gray-400"/> {displayInfo?.phone || '+977 9851093960'}
                     </p>
                     <p className="text-gray-500 mb-1 flex items-center gap-2">
-                      <MessageCircle className="w-4 h-4 text-green-500"/> WhatsApp: +977 9851093960
+                      <MessageCircle className="w-4 h-4 text-green-500"/> <a href={whatsappUrl(displayInfo?.whatsapp || '+977 9851093960')} target="_blank" rel="noopener noreferrer">{displayInfo?.whatsapp || '+977 9851093960'}</a>
                     </p>
                     <p className="text-gray-500 flex items-center gap-2">
-                      <Mail className="w-4 h-4 text-gray-400"/> {info?.email || 'info@everpeakadventures.com'}
+                      <Mail className="w-4 h-4 text-gray-400"/> {displayInfo?.email || 'info@everpeakadventures.com'}
                     </p>
                   </div>
                 </div>
@@ -225,7 +247,7 @@ export default function ContactUsClient({ info, heroTitle, heroSubtitle, heroIma
       <section className="h-[500px] w-full bg-gray-100 relative">
         <iframe
           title="Our Location"
-          src={info?.mapUrl || "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3532.246473636257!2d85.3150!3d27.7172!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zThe Kathmandu!5e0!3m2!1sen!2snp!4v1650000000000!5m2!1sen!2snp"}
+          src={displayInfo?.mapUrl || "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3532.246473636257!2d85.3150!3d27.7172!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zThe Kathmandu!5e0!3m2!1sen!2snp!4v1650000000000!5m2!1sen!2snp"}
           width="100%"
           height="100%"
           style={{ border: 0 }}

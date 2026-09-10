@@ -297,7 +297,7 @@ export default async function BlogPostDetailPage({
 
               {/* BLOG BODY */}
 
-              <div className="blog-content prose prose-lg max-w-none text-gray-600 prose-headings:font-black prose-headings:oswald prose-headings:uppercase prose-headings:text-[#112233] prose-a:text-[#24a0ed] hover:prose-a:text-[#1a85c7] text-justify">
+              <div className="blog-content prose max-w-none text-[17px] text-gray-600 prose-headings:font-black prose-headings:oswald prose-headings:uppercase prose-headings:text-[#112233] prose-p:my-6 prose-p:leading-8 prose-p:text-[1.04rem] prose-li:my-2 prose-a:text-[#24a0ed] hover:prose-a:text-[#1a85c7] text-justify">
                 {post.content ? (
                   <div
                     dangerouslySetInnerHTML={{
