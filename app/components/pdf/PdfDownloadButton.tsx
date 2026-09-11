@@ -36,6 +36,7 @@ export default function PdfDownloadButton({ pdfElementId, title }: { pdfElementI
         scale: 2,
         useCORS: true,
         logging: false,
+        windowWidth: 794,
         onclone: (clonedDoc) => {
           // Un-hide the wrapper in the cloned document so the content is visible
           const wrapper = clonedDoc.getElementById(pdfElementId);
@@ -51,13 +52,23 @@ export default function PdfDownloadButton({ pdfElementId, title }: { pdfElementI
       
       const imgData = canvas.toDataURL('image/jpeg', 1.0);
       
-      const pdf = new jsPDF({
-        orientation: 'portrait',
-        unit: 'px',
-        format: [canvas.width / 2, canvas.height / 2]
-      });
+      const pdf = new jsPDF('p', 'pt', 'a4');
+      const pdfWidth = pdf.internal.pageSize.getWidth();
+      const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
+      const pageHeight = pdf.internal.pageSize.getHeight();
       
-      pdf.addImage(imgData, 'JPEG', 0, 0, canvas.width / 2, canvas.height / 2);
+      let heightLeft = pdfHeight;
+      let position = 0;
+      
+      pdf.addImage(imgData, 'JPEG', 0, position, pdfWidth, pdfHeight);
+      heightLeft -= pageHeight;
+      
+      while (heightLeft > 0) {
+        position -= pageHeight;
+        pdf.addPage();
+        pdf.addImage(imgData, 'JPEG', 0, position, pdfWidth, pdfHeight);
+        heightLeft -= pageHeight;
+      }
       
       const finalFilename = `${title.toLowerCase().replace(/[^a-z0-9]+/g, '-')}-itinerary.pdf`;
       pdf.save(finalFilename);
