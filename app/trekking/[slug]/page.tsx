@@ -33,6 +33,8 @@ import PackageItemsGrid from "@/app/components/trek/PackageItemsGrid";
 import PackingListSection from "@/app/components/trek/PackingListSection";
 import VideoSyncedElevationProfile, { ElevationPoint } from "@/app/components/trek/VideoSyncedElevationProfile";
 import TrekVideoWithSync from "@/app/components/trek/TrekVideoWithSync";
+import TrekPdfTemplate from "@/app/components/pdf/TrekPdfTemplate";
+import PdfDownloadButton from "@/app/components/pdf/PdfDownloadButton";
 import {
   Reveal,
   Stagger,
@@ -165,6 +167,8 @@ export default async function TrekDetailPage({ params }: PageProps) {
   const packingItems = (trek.packingItems || []).filter(item => item.name.trim());
    
   const packingCategories = await prisma.packingCategory.findMany();
+  
+  const siteSettings = await prisma.siteSettings.findFirst();
 
   const parsePrice = (value?: string | null) => {
     const number = Number(
@@ -395,14 +399,7 @@ export default async function TrekDetailPage({ params }: PageProps) {
                 </svg>
                 Customize
               </Link>
-              <button className="bg-white border border-gray-300 hover:border-[#24a0ed] hover:text-[#24a0ed] hover:shadow-md text-gray-800 font-bold text-sm uppercase tracking-wider py-4 rounded-xl text-center transition-all flex justify-center items-center gap-2">
-                <svg viewBox="0 0 24 24" className="w-4 h-4 fill-none stroke-current stroke-2" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
-                  <polyline points="7 10 12 15 17 10" />
-                  <line x1="12" y1="15" x2="12" y2="3" />
-                </svg>
-                Download PDF
-              </button>
+              <PdfDownloadButton pdfElementId="pdf-content-wrapper" title={trek.title} />
             </div>
             
             {/* Reviews / Badges */}
@@ -970,6 +967,9 @@ export default async function TrekDetailPage({ params }: PageProps) {
 
         </section>
       )}
+
+      {/* Hidden PDF Template for Generation */}
+      <TrekPdfTemplate trek={trek} heroImage={heroImage} siteSettings={siteSettings} />
 
     </div>
   );

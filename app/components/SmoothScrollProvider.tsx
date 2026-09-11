@@ -23,6 +23,35 @@ export default function SmoothScrollProvider({ children }: { children: React.Rea
     }
   }, [pathname]);
 
+  // Global listener for details/summary toggles or DOM size changes
+  useEffect(() => {
+    const handleToggle = () => {
+      if (lenisRef.current?.lenis) {
+        // Small delay to allow DOM to finish painting/expanding
+        setTimeout(() => {
+          lenisRef.current.lenis.resize();
+        }, 50);
+        setTimeout(() => {
+          lenisRef.current.lenis.resize();
+        }, 350); // Second resize for any CSS transitions (duration-300)
+      }
+    };
+
+    // Listen to native toggle events (accordions/details)
+    document.addEventListener('toggle', handleToggle, true);
+    
+    // Also observe body height changes forcefully
+    const observer = new ResizeObserver(() => {
+      handleToggle();
+    });
+    observer.observe(document.body);
+
+    return () => {
+      document.removeEventListener('toggle', handleToggle, true);
+      observer.disconnect();
+    };
+  }, []);
+
   return (
     <ReactLenis ref={lenisRef} root options={{ lerp: 0.05, duration: 2.0, smoothWheel: true, wheelMultiplier: 0.8 }}>
       {children}

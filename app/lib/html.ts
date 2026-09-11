@@ -54,8 +54,29 @@ export function sanitizeHtml(html?: string | null): string {
 // Also sanitizes any AI-generated HTML attributes.
 export function toHtml(value?: string | null): string {
   if (!value) return '';
-  if (/<[a-z][\s\S]*>/i.test(value)) {
-    return sanitizeHtml(value);
+  
+  // Normalize <div> to <p> since some rich text editors save paragraphs as divs, 
+  // which lack the proper CSS margins and break regex matchers.
+  let html = value.trim().replace(/<div\b[^>]*>/gi, '<p>').replace(/<\/div>/gi, '</p>');
+
+  // If the content lacks block elements like <p> but has newlines, we should format the newlines.
+  if (!/<(p|div|ul|ol|h[1-6]|blockquote|table)[^>]*>/i.test(html)) {
+    // Split by double newlines into paragraphs, wrap in <p>, and join with <br/> for extra gap
+    const paragraphs = html.split(/\n\s*\n/).filter(p => p.trim());
+    if (paragraphs.length > 1) {
+      html = paragraphs.map(p => `<p>${p.replace(/\n/g, '<br/>')}</p>`).join('<br/>');
+    } else {
+      html = `<p>${html.replace(/\n/g, '<br/>')}</p>`;
+    }
   }
-  return `<p>${value.replace(/\r\n?/g, '\n').replace(/\n/g, '<br/>')}</p>`;
+
+  if (/<[a-z][\s\S]*>/i.test(html)) {
+    let sanitized = sanitizeHtml(html);
+    // The user explicitly requested an extra line break after each paragraph.
+    // If the content is from a rich text editor (already contains <p>), we add a <br/> after each </p>.
+    sanitized = sanitized.replace(/<\/p>(?!\s*(?:<br\s*\/?>)?\s*$)/gi, '</p><br/>');
+    return sanitized;
+  }
+  
+  return `<p>${html}</p>`;
 }

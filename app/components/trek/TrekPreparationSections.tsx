@@ -20,7 +20,7 @@ export function extractTrekPreparation(value: string | null | undefined): Prepar
     highlights: toHtml(value), medication: [], clothing: [], equipment: [], introduction: "",
   };
   // Accept editor lists and imported paragraphs without consuming adjacent highlights.
-  const heading = /<(p|h[2-6])\b[^>]*>\s*(?:<(?:strong|b)\b[^>]*>\s*)?(Medication(?:s)?|Clothing\s*\/\s*Equipment\s+List|Clothing(?:\s+List)?|Equipment(?:\s+List)?)\s*(?:<\/(?:strong|b)>\s*)?<\/\1>/gi;
+  const heading = /<(p|h[2-6])\b[^>]*>\s*(?:<(?:strong|b)\b[^>]*>\s*)?(Medication(?:s)?|Clothing\s*\/\s*Equipment\s+List|Clothing(?:\s+List)?|Equipment(?:\s+List)?)\s*(?:<\/(?:strong|b)>\s*)?<\/\1>(?:\s*<br\s*\/?>)?/gi;
   const source = result.highlights;
   const sections = Array.from(source.matchAll(heading));
   for (const section of sections.reverse()) {
@@ -29,7 +29,7 @@ export function extractTrekPreparation(value: string | null | undefined): Prepar
     const entries: string[] = [];
     let introduction = "";
     while (end < source.length) {
-      const block = /^\s*<(p|ul|ol)\b[^>]*>([\s\S]*?)<\/\1>/i.exec(source.slice(end));
+      const block = /^\s*<(p|ul|ol)\b[^>]*>([\s\S]*?)<\/\1>(?:\s*<br\s*\/?>)?/i.exec(source.slice(end));
       if (!block) break;
       const [, tag, content] = block;
       if (tag.toLowerCase() !== "p") {

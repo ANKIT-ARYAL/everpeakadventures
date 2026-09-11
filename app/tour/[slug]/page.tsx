@@ -33,6 +33,8 @@ import PackingListSection from "@/app/components/trek/PackingListSection";
 import PackageItemsGrid from "@/app/components/trek/PackageItemsGrid";
 import VideoSyncedElevationProfile, { ElevationPoint } from "@/app/components/trek/VideoSyncedElevationProfile";
 import TrekVideoWithSync from "@/app/components/trek/TrekVideoWithSync";
+import TrekPdfTemplate from "@/app/components/pdf/TrekPdfTemplate";
+import PdfDownloadButton from "@/app/components/pdf/PdfDownloadButton";
 import {
   Reveal,
   Stagger,
@@ -178,6 +180,8 @@ export default async function TourDetailPage({ params }: PageProps) {
   const packingItems = (tour.packingItems || []).filter(item => item.name.trim());
    
   const packingCategories = await prisma.packingCategory.findMany();
+  
+  const siteSettings = await prisma.siteSettings.findFirst();
 
   const parsePrice = (value?: string | null) => {
     const number = Number(
@@ -411,22 +415,15 @@ export default async function TourDetailPage({ params }: PageProps) {
             </div>
 
             {/* Extra Sidebar Actions */}
-            <div className="grid grid-cols-2 gap-4 mt-2">
-              <Link href="/send-inquiry" className="bg-white border border-gray-300 hover:border-[#24a0ed] hover:text-[#24a0ed] hover:shadow-md text-gray-800 font-bold text-sm uppercase tracking-wider py-4 rounded-xl text-center transition-all flex justify-center items-center gap-2">
+            <div className="grid grid-cols-2 gap-3 mt-8">
+              <button className="flex items-center justify-center gap-2 py-3.5 rounded-xl border border-gray-200 text-sm font-bold text-[#112233] bg-white hover:bg-gray-50 hover:border-gray-300 transition-colors uppercase tracking-wider">
                 <svg viewBox="0 0 24 24" className="w-4 h-4 fill-none stroke-current stroke-2" strokeLinecap="round" strokeLinejoin="round">
                   <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
                   <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
                 </svg>
                 Customize
-              </Link>
-              <button className="bg-white border border-gray-300 hover:border-[#24a0ed] hover:text-[#24a0ed] hover:shadow-md text-gray-800 font-bold text-sm uppercase tracking-wider py-4 rounded-xl text-center transition-all flex justify-center items-center gap-2">
-                <svg viewBox="0 0 24 24" className="w-4 h-4 fill-none stroke-current stroke-2" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
-                  <polyline points="7 10 12 15 17 10" />
-                  <line x1="12" y1="15" x2="12" y2="3" />
-                </svg>
-                Download PDF
               </button>
+              <PdfDownloadButton pdfElementId="pdf-content-wrapper" title={tour.title} />
             </div>
             
             {/* Reviews / Badges */}
@@ -991,6 +988,9 @@ export default async function TourDetailPage({ params }: PageProps) {
 
         </section>
       )}
+
+      {/* Hidden PDF Template for Generation */}
+      <TrekPdfTemplate trek={tour} heroImage={heroImage} siteSettings={siteSettings} />
 
     </div>
   );
