@@ -79,22 +79,7 @@ export default function AdminShell({
     }
   }, [collapsed, mounted]);
 
-  // Make right-side admin panels scrollable and constrained to viewport height on XL+ screens.
-  // Many admin forms use `xl:sticky xl:top-24 xl:self-start` — find those elements at runtime and add
-  // an `admin-right-scrollable` class so they get a max-height and overflow auto.
-  useEffect(() => {
-    if (typeof window === 'undefined') return;
-    try {
-      const all = Array.from(document.querySelectorAll('[class]')) as Element[];
-      const targets = all.filter((el) => {
-        const cls = (el.getAttribute('class') || '');
-        return cls.includes('xl:sticky') && cls.includes('xl:top-24') && cls.includes('xl:self-start');
-      });
-      targets.forEach((el) => el.classList.add('admin-right-scrollable'));
-    } catch (e) {
-      // silent
-    }
-  }, [mounted]);
+
 
   const can = (perm: string) => isSuperAdmin || permissions.includes(perm);
 

@@ -286,7 +286,7 @@ export default function FaqForm({ initialData, isEditing = false, relatedPages =
         </div>
 
         {/* Right Sidebar: Target Page / Destination */}
-        <div className="space-y-4 sm:space-y-6 xl:sticky xl:top-24 xl:self-start min-w-0">
+        <div className="space-y-4 sm:space-y-6 xl:sticky xl:top-24 xl:self-start min-w-0 admin-right-scrollable">
           <SectionCard title="Show On Page">
             <div className="space-y-4">
               <p className="text-xs text-gray-500 leading-relaxed">

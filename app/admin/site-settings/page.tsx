@@ -449,7 +449,7 @@ export default function SiteSettingsPage() {
         </div>
 
         {/* Right Sidebar */}
-        <div className="space-y-4 sm:space-y-6 xl:sticky xl:top-24 xl:self-start min-w-0">
+        <div className="space-y-4 sm:space-y-6 xl:sticky xl:top-24 xl:self-start min-w-0 admin-right-scrollable">
           
           <SectionCard title="Logo">
             <MediaUploader value={form.logoImage} onChange={(url) => setForm(prev => ({ ...prev, logoImage: url }))} label="Upload Logo" heightClass="h-36" />

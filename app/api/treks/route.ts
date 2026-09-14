@@ -66,6 +66,7 @@ export async function POST(request: Request) {
         rating: body.rating ? Number(body.rating) : null,
         altitudeData: body.altitudeData || [],
         elevationProfile: body.elevationProfile || [],
+        isPopular: body.isPopular || false,
         reviews: Array.isArray(body.reviews) ? body.reviews : [],
         highlights: body.highlights || null,
         inclusions: body.inclusions || null,

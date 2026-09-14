@@ -64,6 +64,8 @@ export async function PUT(
           videoUrl: body.videoUrl || null,
           videoType: body.videoType || null,
           order: Number(body.order),
+          isBestSeller: body.isBestSeller || false,
+          isPopular: body.isPopular || false,
           seoTitle: body.seoTitle || null,
           metaDescription: body.metaDescription || null,
           focusKeyphrase: body.focusKeyphrase || null,

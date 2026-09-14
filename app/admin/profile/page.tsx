@@ -90,7 +90,7 @@ function ProfileForm() {
         </div>
 
         {/* Right Sidebar */}
-        <div className="space-y-4 sm:space-y-6 xl:sticky xl:top-24 xl:self-start min-w-0">
+        <div className="space-y-4 sm:space-y-6 xl:sticky xl:top-24 xl:self-start min-w-0 admin-right-scrollable">
           <SectionCard title="Security">
             <div className="space-y-4">
               <div>

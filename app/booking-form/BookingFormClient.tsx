@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/set-state-in-effect */
 'use client';
 
 import React, { useState } from 'react';
@@ -26,6 +27,7 @@ interface TripOption {
   duration: string;
   price: number;
   image: string;
+  groupPrices?: { groupSize: string; groupType: string; price: string }[];
 }
 
 interface Props {
@@ -43,7 +45,7 @@ export default function BookingFormClient({ trips, logoImage }: Props) {
 
   const isFixedDeparture = !!departureIdParam || !!departureStartParam;
 
-  const selectedTrip = trips.find(t => t.id === tripIdParam) || trips[0] || {
+  const initialTrip = trips.find(t => t.id === tripIdParam) || trips[0] || {
     id: 'default',
     title: 'Nepal Heritage, Wildlife & Himalayan Discovery Tour',
     type: 'tour' as const,
@@ -52,10 +54,11 @@ export default function BookingFormClient({ trips, logoImage }: Props) {
     image: 'https://images.unsplash.com/photo-1544644181-1484b3fdfc62?q=80&w=600&auto=format&fit=crop'
   };
 
-  const basePrice = pricePerPersonParam > 0 ? pricePerPersonParam : selectedTrip.price;
+  const basePrice = pricePerPersonParam > 0 ? pricePerPersonParam : initialTrip.price;
 
   const [form, setForm] = useState<{
     tripTitle: string;
+    groupSize: string;
     fullName: string;
     email: string;
     phone: string;
@@ -68,7 +71,8 @@ export default function BookingFormClient({ trips, logoImage }: Props) {
     notes: string;
     agreed: boolean;
   }>({
-    tripTitle: selectedTrip.title,
+    tripTitle: initialTrip.title,
+    groupSize: '1 Person (Private) - US$ ' + basePrice + ' PP',
     fullName: '',
     email: '',
     phone: '',
@@ -86,18 +90,67 @@ export default function BookingFormClient({ trips, logoImage }: Props) {
   const [submitting, setSubmitting] = useState(false);
   const [success, setSuccess] = useState(false);
 
-  const selectedTripType = trips.find(t => t.title === form.tripTitle)?.type || selectedTrip.type;
+  const selectedTrip = React.useMemo(() => {
+    return trips.find(t => t.title === form.tripTitle) || initialTrip;
+  }, [trips, form.tripTitle, initialTrip]);
+
+  const selectedTripType = selectedTrip.type;
 
   const totalTravellers = Number(form.adultMale || 0) + Number(form.adultFemale || 0) + Number(form.childMale || 0) + Number(form.childFemale || 0);
 
-  const derivedGroupSize =
-    totalTravellers >= 5
-      ? `5+ Pax - Group Discount (${totalTravellers} travellers)`
-      : totalTravellers >= 2
-        ? `2-4 Pax - Small Group (${totalTravellers} travellers)`
-        : `1 Pax - Solo Traveller`;
-  
-  const estimatedTotalNum = basePrice * (totalTravellers || 1);
+  const availableGroups = React.useMemo(() => {
+    const fixedGroups = [
+      { label: '1 Person (Private)', type: 'Private' },
+      { label: '2-4 Persons (Small Group)', type: 'Small Group' },
+      { label: '5-9 Persons (Best Value)', type: 'Best Value' },
+      { label: '10+ Persons (Super Group)', type: 'Super Group' }
+    ];
+
+    return fixedGroups.map(fg => {
+      const dbGroup = selectedTrip.groupPrices?.find(gp => gp.groupType?.toLowerCase() === fg.type.toLowerCase());
+      const currentBasePrice = (isFixedDeparture && pricePerPersonParam > 0) ? pricePerPersonParam : (selectedTrip.price || 0);
+      
+      let priceVal = currentBasePrice;
+      if (!isFixedDeparture && dbGroup && dbGroup.price && dbGroup.price.trim() !== '') {
+        const parsed = parseFloat(dbGroup.price.replace(/,/g, '').replace(/US\$\s?/i, ''));
+        if (!isNaN(parsed) && parsed > 0) {
+          priceVal = parsed;
+        }
+      }
+      
+      return `${fg.label} - US$ ${priceVal} PP`;
+    });
+  }, [selectedTrip, isFixedDeparture, pricePerPersonParam]);
+
+  React.useEffect(() => {
+    let targetIndex = 0;
+    if (totalTravellers >= 10) {
+      targetIndex = 3;
+    } else if (totalTravellers >= 5) {
+      targetIndex = 2;
+    } else if (totalTravellers >= 2) {
+      targetIndex = 1;
+    } else {
+      targetIndex = 0;
+    }
+    
+    if (availableGroups[targetIndex]) {
+      setForm(prev => ({ ...prev, groupSize: availableGroups[targetIndex] }));
+    }
+  }, [totalTravellers, availableGroups]);
+
+  const getSelectedTierPrice = () => {
+    if (isFixedDeparture && pricePerPersonParam > 0) return pricePerPersonParam;
+    
+    const match = (form.groupSize || '').match(/US\$\s*([\d,.]+)/i);
+    if (match) {
+      const parsed = parseFloat(match[1].replace(/,/g, ''));
+      if (!isNaN(parsed)) return parsed;
+    }
+    return selectedTrip.price || 0;
+  };
+
+  const estimatedTotalNum = getSelectedTierPrice() * (totalTravellers || 1);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     const { name, value, type } = e.target;
@@ -153,7 +206,7 @@ export default function BookingFormClient({ trips, logoImage }: Props) {
     try {
       const payload = {
         tripTitle: form.tripTitle,
-        groupSize: derivedGroupSize,
+        groupSize: isFixedDeparture ? `Fixed Departure (${totalTravellers} pax)` : form.groupSize,
         fullName: form.fullName,
         email: form.email,
         phone: `${selectedCountryOption?.dialCode || ''} ${form.phone}`.trim(),
@@ -206,7 +259,9 @@ export default function BookingFormClient({ trips, logoImage }: Props) {
               setSuccess(false); 
               setSelectedCountryOption(null);
               setForm({ 
-                tripTitle: selectedTrip.title, fullName: '', email: '', phone: '', country: '', 
+                tripTitle: initialTrip.title, 
+                groupSize: '1 Person (Private) - US$ ' + basePrice + ' PP',
+                fullName: '', email: '', phone: '', country: '', 
                 travelDate: departureStartParam || '', 
                 adultMale: 1, adultFemale: 0, childMale: 0, childFemale: 0, notes: '', agreed: false 
               }); 
@@ -255,7 +310,7 @@ export default function BookingFormClient({ trips, logoImage }: Props) {
             </div>
             <div>
               <span className="block text-xs text-gray-400 font-bold uppercase tracking-wider mb-1">Duration</span>
-              <span className="text-lg font-bold text-[#112233]">{selectedTrip.duration}</span>
+              <span className="text-lg font-bold text-[#112233]">{selectedTrip.duration} Days</span>
             </div>
             <div>
               <span className="block text-xs text-gray-400 font-bold uppercase tracking-wider mb-1">From</span>
@@ -314,6 +369,22 @@ export default function BookingFormClient({ trips, logoImage }: Props) {
                   onChange={handleChange}
                   className="w-full p-4 border border-gray-200 rounded-xl text-lg sm:text-xl bg-white focus:border-[#1a5b88] focus:outline-none"
                 />
+              </div>
+            )}
+            
+            {!isFixedDeparture && (
+              <div className="col-span-1 md:col-span-2">
+                <label className="block text-lg font-bold text-gray-700 mb-2">No. of Persons / Price <span className="text-red-500">*</span></label>
+                <select
+                  name="groupSize"
+                  value={form.groupSize}
+                  onChange={handleChange}
+                  className="w-full p-4 border border-gray-200 rounded-xl text-lg sm:text-xl bg-white text-[#1a5b88] font-bold focus:border-[#1a5b88] focus:outline-none"
+                >
+                  {availableGroups.map((group, idx) => (
+                    <option key={idx} value={group}>{group}</option>
+                  ))}
+                </select>
               </div>
             )}
           </div>

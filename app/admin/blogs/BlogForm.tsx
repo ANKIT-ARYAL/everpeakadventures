@@ -209,7 +209,7 @@ export default function BlogForm({ initialData, isEditing = false }: Props) {
         </div>
 
         {/* Right Sidebar: Meta Attributes */}
-        <div className="space-y-4 sm:space-y-6 xl:sticky xl:top-24 xl:self-start min-w-0">
+        <div className="space-y-4 sm:space-y-6 xl:sticky xl:top-24 xl:self-start min-w-0 admin-right-scrollable">
           
           <SectionCard title="Featured Image *">
             <MediaUploader value={form.image} onChange={(url) => setForm(prev => ({ ...prev, image: url }))} label="Upload Featured Image" heightClass="h-44" />

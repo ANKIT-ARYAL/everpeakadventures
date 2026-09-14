@@ -4,6 +4,7 @@ import React from "react";
 import { prisma } from "@/lib/prisma";
 import { notFound } from "next/navigation";
 import Link from "next/link";
+import { Metadata } from "next";
 import {
   Calendar,
   Clock,
@@ -82,6 +83,37 @@ interface PageProps {
 
 const FALLBACK_IMAGE =
   "https://ml978xhbpkuo.i.optimole.com/cb:t1g8.6c6/w:259/h:68/q:mauto/f:best/https://everpeakadventures.com/wp-content/uploads/2025/03/Untitled-design-123456-e1783511870519.png";
+
+const getDisplayGroupSize = (type: string, original: string) => {
+  switch (type?.toLowerCase()) {
+    case 'private': return '1 person';
+    case 'small group': return '2-4 people';
+    case 'best value': return '5-9 people';
+    case 'super group': return '10+ people';
+    default: return original || '1 person';
+  }
+};
+
+export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
+  const { slug } = await params;
+  const trek = await prisma.trek.findFirst({
+    where: { slug: slug as string },
+    select: { seoTitle: true, metaDescription: true, focusKeyphrase: true, title: true, heroImage: true }
+  });
+
+  if (!trek) return {};
+
+  return {
+    title: trek.seoTitle || `${trek.title} | Everpeak Adventures`,
+    description: trek.metaDescription || `Join us for the amazing ${trek.title} trek.`,
+    keywords: trek.focusKeyphrase || undefined,
+    openGraph: {
+      title: trek.seoTitle || trek.title,
+      description: trek.metaDescription || undefined,
+      images: trek.heroImage ? [trek.heroImage] : [],
+    }
+  };
+}
 
 export default async function TrekDetailPage({ params }: PageProps) {
   const { slug } = await params;
@@ -376,7 +408,7 @@ export default async function TrekDetailPage({ params }: PageProps) {
                   </summary>
 
                   <div className="bg-white">
-                    <div className="flex justify-between items-center font-bold text-gray-400 uppercase tracking-widest text-[9px] px-4 py-3 border-b border-gray-100">
+                    <div className="flex justify-between items-center font-bold text-gray-400 uppercase tracking-widest text-[9px] px-4 py-3 border-b border-gray-100">                      
                       <span className="w-1/3">Group Size</span>
                       <span className="w-1/3 text-center">Price / Pax</span>
                       <span className="w-1/3 text-right">Action</span>
@@ -394,10 +426,17 @@ export default async function TrekDetailPage({ params }: PageProps) {
                             className="flex justify-between items-center px-4 py-3 border-b border-gray-100 last:border-0"
                           >
                             <div className="font-semibold text-[#112233] w-1/3">
-                              {gp.groupSize}
+                              <div className="flex flex-col">
+                                <span>{getDisplayGroupSize(gp.groupType, gp.groupSize)}</span>
+                                {gp.groupType && (
+                                  <span className="text-[10px] text-gray-500 font-normal uppercase tracking-wider">{gp.groupType}</span>
+                                )}
+                              </div>
                             </div>
                             <div className="font-bold text-[#1a73e8] w-1/3 text-center">
-                              US$ {gp.price}
+                              {gp.price && gp.price.trim() !== '' 
+                                ? `US$ ${gp.price.replace(/US\$\s?/i, '')}` 
+                                : trek.price ? `US$ ${trek.price}` : '—'}
                             </div>
                             <div className="w-1/3 text-right">
                               <Link
@@ -707,7 +746,7 @@ export default async function TrekDetailPage({ params }: PageProps) {
                           </span>
                           <span className="text-sm sm:text-[15px] font-bold text-[#112233] truncate">
                             {trek.groupSize}
-                          </span>
+                          </span>                          
                         </div>
                       </div>
                     )}

@@ -105,6 +105,7 @@ export async function POST(request: Request) {
         },
         itinerary: body.itinerary || [],
         isBestSeller: body.isBestSeller || false,
+        isPopular: body.isPopular || false,
         order: Number(body.order) || 0,
         groupPrices: {
           create: cleanGroupPrices.map(normalizeGroupPrice),

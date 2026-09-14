@@ -153,6 +153,7 @@ export default function TrekForm({ initialData, isEditing = false, categories, a
     videoType: initialData?.videoType || 'youtube',
     order: initialData?.order || 0,
     isBestSeller: initialData?.isBestSeller || false,
+    isPopular: initialData?.isPopular || false,
     altitudeData: initialData?.altitudeData || [],
 
     // Region taxonomy (checkboxes)
@@ -261,6 +262,14 @@ export default function TrekForm({ initialData, isEditing = false, categories, a
     setFormData(prev => {
       const updated = [...prev.groupPrices];
       updated[index] = { ...updated[index], [key]: value };
+      
+      if (key === 'groupType') {
+        if (value === 'Private') updated[index].groupSize = '1 person';
+        else if (value === 'Small Group') updated[index].groupSize = '2-4 people';
+        else if (value === 'Best Value') updated[index].groupSize = '5-9 people';
+        else if (value === 'Super Group') updated[index].groupSize = '10+ people';
+      }
+      
       return { ...prev, groupPrices: updated };
     });
   };
@@ -268,7 +277,7 @@ export default function TrekForm({ initialData, isEditing = false, categories, a
   const addGroupPriceRow = () => {
     setFormData(prev => ({
       ...prev,
-      groupPrices: [...prev.groupPrices, { groupSize: '', groupType: 'Best Value', price: '' }],
+      groupPrices: [...prev.groupPrices, { groupSize: '5-9 people', groupType: 'Best Value', price: '' }],
     }));
   };
 
@@ -462,6 +471,7 @@ export default function TrekForm({ initialData, isEditing = false, categories, a
       payload.videoUrl = formData.videoUrl;
       payload.videoType = formData.videoType;
       payload.isBestSeller = formData.isBestSeller || false;
+      payload.isPopular = formData.isPopular || false;
       payload.order = formData.order || 0;
       
       // Nested
@@ -630,8 +640,8 @@ export default function TrekForm({ initialData, isEditing = false, categories, a
             <div className="space-y-3">
               {/* Desktop Header */}
               <div className="hidden lg:grid grid-cols-4 gap-3 px-3 py-2 bg-gray-50 text-gray-500 uppercase text-[10px] tracking-wider font-bold rounded-t-lg border-b border-gray-100">
-                <span>Pax / No. of Persons</span>
                 <span>Group Type</span>
+                <span>Pax / No. of Persons</span>
                 <span>Price per Person</span>
                 <span className="text-right">Action</span>
               </div>
@@ -641,16 +651,17 @@ export default function TrekForm({ initialData, isEditing = false, categories, a
                   <FieldGrid cols={4} className="items-end">
                   {/* Mobile Label + Input */}
                   <div>
-                    <label className="lg:hidden block text-[10px] font-bold text-gray-400 uppercase tracking-wider">Pax / No. of Persons</label>
-                    <input type="text" value={g.groupSize} onChange={(e) => handleGroupPriceChange(idx, 'groupSize', e.target.value)} placeholder="2 - 4 Pax" className="w-full px-3 py-2 border border-gray-200 rounded-lg" />
-                  </div>
-                  <div>
                     <label className="lg:hidden block text-[10px] font-bold text-gray-400 uppercase tracking-wider">Group Type</label>
                     <select value={g.groupType} onChange={(e) => handleGroupPriceChange(idx, 'groupType', e.target.value)} className="w-full px-3 py-2 border border-gray-200 rounded-lg bg-white">
+                      <option>Private</option>
                       <option>Small Group</option>
                       <option>Best Value</option>
                       <option>Super Group</option>
                     </select>
+                  </div>
+                  <div>
+                    <label className="lg:hidden block text-[10px] font-bold text-gray-400 uppercase tracking-wider">Pax / No. of Persons</label>
+                    <input type="text" value={g.groupSize} readOnly disabled className="w-full px-3 py-2 border border-gray-200 rounded-lg bg-gray-50 text-gray-500 cursor-not-allowed" />
                   </div>
                   <div>
                     <label className="lg:hidden block text-[10px] font-bold text-gray-400 uppercase tracking-wider">Price per Person</label>
@@ -918,7 +929,7 @@ export default function TrekForm({ initialData, isEditing = false, categories, a
         </div>
 
 {/* ============ RIGHT SIDEBAR ============ */}
-        <div className="space-y-4 sm:space-y-6 xl:sticky xl:top-24 xl:self-start">
+        <div className="space-y-4 sm:space-y-6 xl:sticky xl:top-24 xl:self-start admin-right-scrollable">
 
           {/* Media group */}
           <div id="sec-media" className="scroll-mt-24">
@@ -1085,6 +1096,40 @@ export default function TrekForm({ initialData, isEditing = false, categories, a
             )}
           </SectionCard>
           </div>
+
+          <SectionCard title="Featured/Best Seller">
+            <div className="space-y-4">
+              <div className="flex items-center gap-3">
+                <input
+                  type="checkbox"
+                  id="isBestSeller"
+                  name="isBestSeller"
+                  checked={formData.isBestSeller}
+                  onChange={(e) => setFormData(prev => ({ ...prev, isBestSeller: e.target.checked }))}
+                  className="w-4 h-4 text-[#24a0ed] rounded border-gray-300 focus:ring-[#24a0ed]"
+                />
+                <label htmlFor="isBestSeller" className="font-bold text-gray-700 cursor-pointer select-none">
+                  Mark as Best Seller
+                </label>
+              </div>
+              <div className="flex items-center gap-3">
+                <input
+                  type="checkbox"
+                  id="isPopular"
+                  name="isPopular"
+                  checked={formData.isPopular}
+                  onChange={(e) => setFormData(prev => ({ ...prev, isPopular: e.target.checked }))}
+                  className="w-4 h-4 text-[#24a0ed] rounded border-gray-300 focus:ring-[#24a0ed]"
+                />
+                <label htmlFor="isPopular" className="font-bold text-gray-700 cursor-pointer select-none">
+                  Mark as Most Popular
+                </label>
+              </div>
+            </div>
+            <p className="text-xs text-gray-500 mt-3 leading-relaxed">
+              Enabling these will display the respective badges on the trip cards and feature them in the homepage sections.
+            </p>
+          </SectionCard>
 
           {/* Categories group */}
           <div id="sec-categories" className="scroll-mt-24">

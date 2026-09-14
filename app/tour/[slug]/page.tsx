@@ -5,6 +5,7 @@ import React from "react";
 import { prisma } from "@/lib/prisma";
 import { notFound } from "next/navigation";
 import Link from "next/link";
+import { Metadata } from "next";
 import {
   Calendar,
   Clock,
@@ -89,6 +90,37 @@ interface PageProps {
  */
 const FALLBACK_IMAGE =
   "https://ml978xhbpkuo.i.optimole.com/cb:t1g8.6c6/w:259/h:68/q:mauto/f:best/https://everpeakadventures.com/wp-content/uploads/2025/03/Untitled-design-123456-e1783511870519.png";
+
+const getDisplayGroupSize = (type: string, original: string) => {
+  switch (type?.toLowerCase()) {
+    case 'private': return '1 person';
+    case 'small group': return '2-4 people';
+    case 'best value': return '5-9 people';
+    case 'super group': return '10+ people';
+    default: return original || '1 person';
+  }
+};
+
+export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
+  const { slug } = await params;
+  const tour = await prisma.tour.findFirst({
+    where: { slug: slug as string },
+    select: { seoTitle: true, metaDescription: true, focusKeyphrase: true, title: true, heroImage: true }
+  });
+
+  if (!tour) return {};
+
+  return {
+    title: tour.seoTitle || `${tour.title} | Everpeak Adventures`,
+    description: tour.metaDescription || `Join us for the amazing ${tour.title} tour.`,
+    keywords: tour.focusKeyphrase || undefined,
+    openGraph: {
+      title: tour.seoTitle || tour.title,
+      description: tour.metaDescription || undefined,
+      images: tour.heroImage ? [tour.heroImage] : [],
+    }
+  };
+}
 
 export default async function TourDetailPage({ params }: PageProps) {
   const { slug } = await params;
@@ -414,10 +446,17 @@ export default async function TourDetailPage({ params }: PageProps) {
                             className="flex justify-between items-center px-4 py-3 border-b border-gray-100 last:border-0"
                           >
                             <div className="font-semibold text-[#112233] w-1/3">
-                              {gp.groupSize}
+                              <div className="flex flex-col">
+                                <span>{getDisplayGroupSize(gp.groupType, gp.groupSize)}</span>
+                                {gp.groupType && (
+                                  <span className="text-[10px] text-gray-500 font-normal uppercase tracking-wider">{gp.groupType}</span>
+                                )}
+                              </div>
                             </div>
                             <div className="font-bold text-[#1a73e8] w-1/3 text-center">
-                              US$ {gp.price}
+                              {gp.price && gp.price.trim() !== '' 
+                                ? `US$ ${gp.price.replace(/US\$\s?/i, '')}` 
+                                : tour.price ? `US$ ${tour.price}` : '—'}
                             </div>
                             <div className="w-1/3 text-right">
                               <Link

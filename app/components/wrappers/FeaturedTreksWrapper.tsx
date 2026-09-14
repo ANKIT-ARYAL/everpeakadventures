@@ -3,7 +3,7 @@ import FeaturedTreks from "../home/FeaturedTreks";
 
 export default async function FeaturedTreksWrapper() {
   const treks = await prisma.trek.findMany({
-    where: { published: true, title: { not: '' } },
+    where: { isPopular: true, published: true, title: { not: '' } },
     orderBy: { order: 'asc' },
     take: 3,
     include: { groupPrices: true },
@@ -11,6 +11,7 @@ export default async function FeaturedTreksWrapper() {
 
   const section = await prisma.homeSectionContent.findFirst();
 
+  if (treks.length === 0) return null;
   if (section && !section.published) return null;
 
   const dataWithLowestPrice = treks.map((trek) => {

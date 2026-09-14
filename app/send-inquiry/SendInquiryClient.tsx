@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/set-state-in-effect */
 'use client';
 
 import React, { useState, useEffect } from 'react';
@@ -26,6 +27,7 @@ interface TripOption {
   duration: string;
   price: number;
   heroImage: string;
+  groupPrices?: { groupSize: string; groupType: string; price: string }[];
 }
 
 interface Props {
@@ -37,7 +39,7 @@ export default function SendInquiryClient({ trips, logoImage }: Props) {
   const searchParams = useSearchParams();
   const tripIdParam = searchParams.get('trip_id');
 
-  const selectedTrip = trips.find(t => t.id === tripIdParam) || trips[0] || {
+  const initialTrip = trips.find(t => t.id === tripIdParam) || trips[0] || {
     id: 'default',
     title: 'Nepal Heritage, Wildlife & Himalayan Discovery Tour',
     type: 'tour' as const,
@@ -62,7 +64,7 @@ export default function SendInquiryClient({ trips, logoImage }: Props) {
     notes: string;
     agreed: boolean;
   }>({
-    tripTitle: selectedTrip.title,
+    tripTitle: initialTrip.title,
     groupSize: '1 Pax - Solo Traveller',
     fullName: '',
     email: '',
@@ -81,8 +83,11 @@ export default function SendInquiryClient({ trips, logoImage }: Props) {
   const [submitting, setSubmitting] = useState(false);
   const [success, setSuccess] = useState(false);
 
-  // Determine the trip type from the currently selected trip in the dropdown
-  const selectedTripType = trips.find(t => t.title === form.tripTitle)?.type || selectedTrip.type;
+  const selectedTrip = React.useMemo(() => {
+    return trips.find(t => t.title === form.tripTitle) || initialTrip;
+  }, [trips, form.tripTitle, initialTrip]);
+
+  const selectedTripType = selectedTrip.type;
 
   useEffect(() => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -91,20 +96,57 @@ export default function SendInquiryClient({ trips, logoImage }: Props) {
 
   const totalTravellers = Number(form.adultMale || 0) + Number(form.adultFemale || 0) + Number(form.childMale || 0) + Number(form.childFemale || 0);
 
-  useEffect(() => {
-    let tier = '1 Pax - Solo Traveller';
-    if (totalTravellers >= 5) {
-      tier = `5+ Pax - Group Discount (US$ ${selectedTrip.price} PP)`;
-    } else if (totalTravellers >= 2) {
-      tier = `2-4 Pax - Small Group (US$ ${selectedTrip.price} PP)`;
-    } else {
-      tier = `1 Pax - Solo Traveller (US$ ${selectedTrip.price} PP)`;
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    setForm(prev => ({ ...prev, groupSize: tier }));
-  }, [totalTravellers, selectedTrip.price]);
+  const availableGroups = React.useMemo(() => {
+    const fixedGroups = [
+      { label: '1 Person (Private)', type: 'Private' },
+      { label: '2-4 Persons (Small Group)', type: 'Small Group' },
+      { label: '5-9 Persons (Best Value)', type: 'Best Value' },
+      { label: '10+ Persons (Super Group)', type: 'Super Group' }
+    ];
 
-  const estimatedTotalNum = selectedTrip.price * (totalTravellers || 1);
+    return fixedGroups.map(fg => {
+      const dbGroup = selectedTrip.groupPrices?.find(gp => gp.groupType?.toLowerCase() === fg.type.toLowerCase());
+      const basePrice = selectedTrip.price || 0;
+      
+      let priceVal = basePrice;
+      if (dbGroup && dbGroup.price && dbGroup.price.trim() !== '') {
+        const parsed = parseFloat(dbGroup.price.replace(/,/g, '').replace(/US\$\s?/i, ''));
+        if (!isNaN(parsed) && parsed > 0) {
+          priceVal = parsed;
+        }
+      }
+      
+      return `${fg.label} - US$ ${priceVal} PP`;
+    });
+  }, [selectedTrip]);
+
+  useEffect(() => {
+    let targetIndex = 0;
+    if (totalTravellers >= 10) {
+      targetIndex = 3;
+    } else if (totalTravellers >= 5) {
+      targetIndex = 2;
+    } else if (totalTravellers >= 2) {
+      targetIndex = 1;
+    } else {
+      targetIndex = 0;
+    }
+    
+    if (availableGroups[targetIndex]) {
+      setForm(prev => ({ ...prev, groupSize: availableGroups[targetIndex] }));
+    }
+  }, [totalTravellers, availableGroups]);
+
+  const getSelectedTierPrice = () => {
+    const match = form.groupSize.match(/US\$\s*([\d,.]+)/i);
+    if (match) {
+      const parsed = parseFloat(match[1].replace(/,/g, ''));
+      if (!isNaN(parsed)) return parsed;
+    }
+    return selectedTrip.price || 0;
+  };
+
+  const estimatedTotalNum = getSelectedTierPrice() * (totalTravellers || 1);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     const { name, value, type } = e.target;
@@ -204,7 +246,7 @@ export default function SendInquiryClient({ trips, logoImage }: Props) {
               setSuccess(false); 
               setSelectedCountryOption(null);
               setForm({ 
-                tripTitle: selectedTrip.title, groupSize: '1 Pax - Solo Traveller',
+                tripTitle: initialTrip.title, groupSize: '1 Pax - Solo Traveller',
                 fullName: '', email: '', phone: '', country: '', travelDate: '',
                 adultMale: 1, adultFemale: 0, childMale: 0, childFemale: 0,
                 notes: '', agreed: false 
@@ -269,12 +311,16 @@ export default function SendInquiryClient({ trips, logoImage }: Props) {
             <div className="space-y-1.5">
               <label className="font-bold text-gray-700 uppercase tracking-wider text-[11px] block">No. of Persons / Price *</label>
               <div className="flex items-center gap-3">
-                <input 
-                  type="text" 
-                  readOnly
+                <select 
+                  name="groupSize"
                   value={form.groupSize}
-                  className="w-full px-4 py-3 rounded-lg border border-gray-200 bg-gray-50/50 font-bold text-md text-[#24a0ed] focus:outline-none"
-                />
+                  onChange={handleChange}
+                  className="w-full px-4 py-3 rounded-lg border border-gray-200 bg-white font-medium text-md text-[#24a0ed] focus:outline-none focus:border-[#24a0ed]"
+                >
+                  {availableGroups.map((group, idx) => (
+                    <option key={idx} value={group}>{group}</option>
+                  ))}
+                </select>
                 <button 
                   type="button" 
                   onClick={() => window.open('https://wa.me/9851093960', '_blank')}

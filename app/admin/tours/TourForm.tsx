@@ -151,6 +151,7 @@ export default function TourForm({
     videoType: initialData?.videoType || 'youtube',
     order: initialData?.order || 0,
     isBestSeller: initialData?.isBestSeller ?? false,
+    isPopular: initialData?.isPopular ?? false,
 
     regions: initialData?.regions?.length
       ? initialData.regions
@@ -256,6 +257,14 @@ export default function TourForm({
     setFormData(prev => {
       const updated = [...prev.groupPrices];
       updated[index] = { ...updated[index], [key]: value };
+      
+      if (key === 'groupType') {
+        if (value === 'Private') updated[index].groupSize = '1 person';
+        else if (value === 'Small Group') updated[index].groupSize = '2-4 people';
+        else if (value === 'Best Value') updated[index].groupSize = '5-9 people';
+        else if (value === 'Super Group') updated[index].groupSize = '10+ people';
+      }
+      
       return { ...prev, groupPrices: updated };
     });
   };
@@ -263,7 +272,7 @@ export default function TourForm({
   const addGroupPriceRow = () => {
     setFormData(prev => ({
       ...prev,
-      groupPrices: [...prev.groupPrices, { groupSize: '', groupType: 'Best Value', price: '' }],
+      groupPrices: [...prev.groupPrices, { groupSize: '5-9 people', groupType: 'Best Value', price: '' }],
     }));
   };
 
@@ -575,8 +584,8 @@ export default function TourForm({
 
               <div className="space-y-3">
                 <div className="hidden xl:grid grid-cols-4 gap-3 px-3 py-2 bg-gray-50 text-gray-500 uppercase text-[10px] tracking-wider font-bold rounded-t-lg border-b border-gray-100">
-                  <span>Pax / No. of Persons</span>
                   <span>Group Type</span>
+                  <span>Pax / No. of Persons</span>
                   <span>Price per Person</span>
                   <span className="text-right">Action</span>
                 </div>
@@ -585,16 +594,17 @@ export default function TourForm({
                   <div key={idx} className="p-3 rounded-lg border border-gray-100 bg-gray-50/50 xl:bg-transparent xl:rounded-none xl:border-t xl:border-gray-100 xl:p-2">
                     <FieldGrid cols={4} className="items-end">
                       <div>
-                        <label className="xl:hidden block text-[10px] font-bold text-gray-400 uppercase tracking-wider">Pax / No. of Persons</label>
-                        <input type="text" value={g.groupSize} onChange={(e) => handleGroupPriceChange(idx, 'groupSize', e.target.value)} placeholder="1 - 2 Pax" className="w-full px-3 py-2 border border-gray-200 rounded-lg" />
-                      </div>
-                      <div>
                         <label className="xl:hidden block text-[10px] font-bold text-gray-400 uppercase tracking-wider">Group Type</label>
                         <select value={g.groupType} onChange={(e) => handleGroupPriceChange(idx, 'groupType', e.target.value)} className="w-full px-3 py-2 border border-gray-200 rounded-lg bg-white">
+                          <option>Private</option>
                           <option>Small Group</option>
                           <option>Best Value</option>
                           <option>Super Group</option>
                         </select>
+                      </div>
+                      <div>
+                        <label className="xl:hidden block text-[10px] font-bold text-gray-400 uppercase tracking-wider">Pax / No. of Persons</label>
+                        <input type="text" value={g.groupSize} readOnly disabled className="w-full px-3 py-2 border border-gray-200 rounded-lg bg-gray-50 text-gray-500 cursor-not-allowed" />
                       </div>
                       <div>
                         <label className="xl:hidden block text-[10px] font-bold text-gray-400 uppercase tracking-wider">Price per Person</label>
@@ -818,7 +828,7 @@ export default function TourForm({
         </div>
 
         {/* ============ RIGHT SIDEBAR ============ */}
-        <div className="space-y-4 sm:space-y-6 xl:sticky xl:top-24 xl:self-start min-w-0">
+        <div className="space-y-4 sm:space-y-6 xl:sticky xl:top-24 xl:self-start min-w-0 admin-right-scrollable">
 
           <SectionCard title="Featured Image">
             <MediaUploader value={formData.heroImage} onChange={(url) => setFormData(prev => ({ ...prev, heroImage: url }))} heightClass="h-44" />
@@ -910,6 +920,40 @@ export default function TourForm({
                 <NumberInput type="number" name="order" value={formData.order} onChange={handleChange} className="w-full px-3 py-2 border border-gray-200 rounded-lg bg-gray-50" />
               </div>
             </div>
+          </SectionCard>
+
+          <SectionCard title="isFeatured/Best Seller">
+            <div className="space-y-4">
+              <div className="flex items-center gap-3">
+                <input
+                  type="checkbox"
+                  id="isBestSeller"
+                  name="isBestSeller"
+                  checked={formData.isBestSeller}
+                  onChange={(e) => setFormData(prev => ({ ...prev, isBestSeller: e.target.checked }))}
+                  className="w-4 h-4 text-[#24a0ed] rounded border-gray-300 focus:ring-[#24a0ed]"
+                />
+                <label htmlFor="isBestSeller" className="font-bold text-gray-700 cursor-pointer select-none">
+                  Mark as Best Seller
+                </label>
+              </div>
+              <div className="flex items-center gap-3">
+                <input
+                  type="checkbox"
+                  id="isPopular"
+                  name="isPopular"
+                  checked={formData.isPopular}
+                  onChange={(e) => setFormData(prev => ({ ...prev, isPopular: e.target.checked }))}
+                  className="w-4 h-4 text-[#24a0ed] rounded border-gray-300 focus:ring-[#24a0ed]"
+                />
+                <label htmlFor="isPopular" className="font-bold text-gray-700 cursor-pointer select-none">
+                  Mark as Most Popular
+                </label>
+              </div>
+            </div>
+            <p className="text-xs text-gray-500 mt-3 leading-relaxed">
+              Enabling these will display the respective badges on the trip cards and feature them in the homepage sections.
+            </p>
           </SectionCard>
 
           <SectionCard title="Tour Categories" defaultOpen>

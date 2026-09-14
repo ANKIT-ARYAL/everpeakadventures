@@ -100,6 +100,7 @@ model Trek {
   routeMap Json?
 
   isBestSeller Boolean @default(false)
+  isPopular    Boolean @default(false)
   order        Int     @default(0)
 
   packingItems PackingItem[]
@@ -185,6 +186,7 @@ model Tour {
   itinerary   Json?
 
   isBestSeller Boolean @default(false)
+  isPopular    Boolean @default(false)
   order        Int     @default(0)
 
   packingItems PackingItem[]

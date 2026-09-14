@@ -118,7 +118,7 @@ export default function TeamForm({ initialData, isEditing = false }: Props) {
         </div>
 
         {/* Right Sidebar */}
-        <div className="space-y-4 sm:space-y-6 xl:sticky xl:top-24 xl:self-start min-w-0">
+        <div className="space-y-4 sm:space-y-6 xl:sticky xl:top-24 xl:self-start min-w-0 admin-right-scrollable">
           
           <SectionCard title="Member Photo *">
             <MediaUploader value={form.image} onChange={(url) => setForm(prev => ({ ...prev, image: url }))} label="Upload Member Photo" heightClass="h-44" />

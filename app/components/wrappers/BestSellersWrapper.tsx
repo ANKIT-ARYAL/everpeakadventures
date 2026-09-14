@@ -1,42 +1,16 @@
-import { unstable_cache } from 'next/cache';
 import { prisma } from "@/lib/prisma";
 import BestSellers from "../home/BestSellers";
 
-const getCachedBestSellers = unstable_cache(
-  async () => prisma.trek.findMany({
+export default async function BestSellersWrapper() {
+  const bestSellers = await prisma.trek.findMany({
     where: { isBestSeller: true, published: true, title: { not: '' } },
     orderBy: { order: 'asc' },
     include: { groupPrices: true },
-  }),
-  ['best-sellers'],
-  { revalidate: 60, tags: ['treks'] }
-);
+  });
 
-const getCachedFallback = unstable_cache(
-  async () => prisma.trek.findMany({
-    where: { published: true, title: { not: '' } },
-    orderBy: { order: 'asc' },
-    take: 3,
-    include: { groupPrices: true },
-  }),
-  ['best-sellers-fallback'],
-  { revalidate: 60, tags: ['treks'] }
-);
+  if (bestSellers.length === 0) return null;
 
-const getCachedSection = unstable_cache(
-  async () => prisma.homeSectionContent.findFirst(),
-  ['home-section-content'],
-  { revalidate: 60, tags: ['sections'] }
-);
-
-export default async function BestSellersWrapper() {
-  const bestSellers = await getCachedBestSellers();
-
-  const rawData = bestSellers.length > 0
-    ? bestSellers
-    : await getCachedFallback();
-
-  const dataWithLowestPrice = rawData.map((trek) => {
+  const dataWithLowestPrice = bestSellers.map((trek) => {
     let minPrice = trek.discountedPrice ?? trek.price;
     if (trek.groupPrices && trek.groupPrices.length > 0) {
       trek.groupPrices.forEach(gp => {
@@ -50,7 +24,7 @@ export default async function BestSellersWrapper() {
     return { ...trek, lowestPrice: minPrice };
   });
 
-  const section = await getCachedSection();
+  const section = await prisma.homeSectionContent.findFirst();
 
   if (section && !section.published) return null;
 
