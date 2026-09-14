@@ -8,7 +8,7 @@ COPY prisma ./prisma/
 RUN pnpm install --frozen-lockfile
 COPY . .
 ENV DATABASE_URL="postgresql://postgres:postgres@localhost:5432/dummy"
-RUN pnpm dlx prisma generate && pnpm run build
+RUN pnpm run build
 
 # ---- Production runtime ----
 FROM node:20-alpine
