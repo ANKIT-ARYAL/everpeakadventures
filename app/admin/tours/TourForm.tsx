@@ -639,7 +639,13 @@ export default function TourForm({
                   </div>
                   <div className="min-w-[120px]">
                     <label className="block font-bold text-gray-600 mb-1 text-[10px] uppercase tracking-wider">Group Size</label>
-                    <input type="text" value={s.groupSize} onChange={(e) => handleScheduleChange(idx, 'groupSize', e.target.value)} placeholder="1 - 10 Pax" className="w-full px-3 py-2 border border-gray-200 rounded-lg bg-white" />
+                    <select value={s.groupSize} onChange={(e) => handleScheduleChange(idx, 'groupSize', e.target.value)} className="w-full px-3 py-2 border border-gray-200 rounded-lg bg-white">
+                      <option value="">Select Size...</option>
+                      <option value="1 Person (Private)">1 Person (Private)</option>
+                      <option value="2-4 Persons (Small Group)">2-4 Persons (Small Group)</option>
+                      <option value="5-9 Persons (Best Value)">5-9 Persons (Best Value)</option>
+                      <option value="10+ Persons (Super Group)">10+ Persons (Super Group)</option>
+                    </select>
                   </div>
                   <div>
                     <label className="block font-bold text-gray-600 mb-1 text-[10px] uppercase tracking-wider">Status</label>
