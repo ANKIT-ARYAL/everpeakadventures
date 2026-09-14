@@ -6,6 +6,7 @@ RUN corepack enable pnpm
 COPY package.json pnpm-lock.yaml ./
 RUN pnpm install --frozen-lockfile
 COPY . .
+ENV DATABASE_URL="postgresql://postgres:postgres@localhost:5432/dummy"
 RUN pnpm dlx prisma generate && pnpm run build
 
 # ---- Production runtime ----

@@ -42,3 +42,23 @@ jobs:
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
+
+      # Step E: Delete old versions
+      - name: Delete old packages
+        env:
+          GH_TOKEN: ${{ secrets.GH_PAT }}
+          PACKAGE_NAME: ${{ github.event.repository.name }}
+          OWNER: ${{ github.repository_owner }}
+        run: |
+          echo "Fetching versions for container package $PACKAGE_NAME..."
+          # Get all version IDs except the single most recent one
+          VERSION_IDS=$(gh api -H "Accept: application/vnd.github+json" /users/$OWNER/packages/container/$PACKAGE_NAME/versions --jq '.[1:] | .[].id' || echo "")
+          
+          if [ -z "$VERSION_IDS" ]; then
+            echo "No old versions to delete!"
+          else
+            for ID in $VERSION_IDS; do
+              echo "Deleting version ID: $ID"
+              gh api -X DELETE -H "Accept: application/vnd.github+json" /users/$OWNER/packages/container/$PACKAGE_NAME/versions/$ID || true
+            done
+          fi
