@@ -334,6 +334,8 @@ export default function FaqForm({ initialData, isEditing = false, relatedPages =
                     isClearable
                     placeholder="Search and select a slug..."
                     className="text-sm"
+                    menuPortalTarget={typeof document !== 'undefined' ? document.body : null}
+                    menuPosition="fixed"
                     styles={{
                       control: (base) => ({
                         ...base,
@@ -345,6 +347,21 @@ export default function FaqForm({ initialData, isEditing = false, relatedPages =
                           borderColor: '#24a0ed',
                         },
                       }),
+                      option: (base, state) => ({
+                        ...base,
+                        color: state.isSelected ? '#fff' : '#374151',
+                        backgroundColor: state.isSelected ? '#24a0ed' : state.isFocused ? '#f3f4f6' : 'transparent',
+                        cursor: 'pointer',
+                        '&:active': {
+                          backgroundColor: '#24a0ed',
+                          color: '#fff',
+                        },
+                      }),
+                      singleValue: (base) => ({
+                        ...base,
+                        color: '#374151',
+                      }),
+                      menuPortal: base => ({ ...base, zIndex: 9999 })
                     }}
                   />
                 </div>
