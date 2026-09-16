@@ -50,7 +50,7 @@ const DEFAULT_COLUMNS: FooterColumn[] = [
     links: [
       { label: 'About Us', href: '/about-us' },
       { label: 'Our Team', href: '/our-team' },
-      { label: 'Responsible Tourism', href: '/responsible-travel' },
+      { label: 'FAQs', href: '/faq' },
       { label: 'Reviews', href: '/testimonials' },
       { label: 'Contact Us', href: '/contact-us' },
     ],

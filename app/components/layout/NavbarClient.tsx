@@ -132,7 +132,7 @@ export default function NavbarClient({
 
   const headerClasses = isSolid
     ? "bg-[#112233] text-white shadow-md border-b border-gray-800 transition-all duration-300"
-    : "bg-transparent text-white border-transparent shadow-none transition-all duration-300";
+    : "bg-black/20 backdrop-blur-sm text-white border-transparent shadow-none transition-all duration-300";
 
   const toggleMobileSection = (section: string) => {
     if (expandedMobileSection === section) setExpandedMobileSection(null);
@@ -156,7 +156,7 @@ export default function NavbarClient({
             />
           </Link>
 
-          <div className="hidden lg:flex xl:gap-6 items-center gap-4 font-bold text-[13px] text-white">
+          <div className="hidden lg:flex xl:gap-6 items-center gap-4 font-bold text-[14px] text-white">
             <Link
               href="/"
               className="hover:text-accent-amber transition-colors uppercase"
