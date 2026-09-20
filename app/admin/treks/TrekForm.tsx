@@ -425,7 +425,7 @@ export default function TrekForm({ initialData, isEditing = false, categories, a
       
       // Core fields
       payload.title = formData.title;
-      payload.slug = formData.slug;
+      payload.slug = typeof formData.slug === 'string' ? formData.slug.trim() : formData.slug;
       payload.description = formData.description;
       payload.overview = formData.overview;
       payload.heroImage = formData.heroImage;

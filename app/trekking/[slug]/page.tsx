@@ -274,7 +274,9 @@ export default async function TrekDetailPage({ params }: PageProps) {
         .trim() || /<(?:img|video|iframe)\b/i.test(value || ""),
     );
   const hasQuickFacts = [
+    trek.region,
     trek.startPoint,
+    trek.endPoint,
     trek.durationDays,
     trek.difficulty,
     trek.meals,
@@ -283,7 +285,7 @@ export default async function TrekDetailPage({ params }: PageProps) {
     trek.maxAltitude,
     trek.activity,
     trek.accommodation,
-  ].some((value) => value?.trim());
+  ].some((value) => typeof value === 'string' && value.trim());
   const hasOverview = hasContent(trek.overview);
   const hasHighlights = hasContent(preparation.highlights);
   const hasInclusions = hasContent(trek.inclusions);
@@ -633,7 +635,7 @@ export default async function TrekDetailPage({ params }: PageProps) {
 
                 <div className="bg-white rounded-3xl p-5 sm:p-6 md:p-8 shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-gray-100 min-w-0">
                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-5 md:gap-6 min-w-0">
-                    {trek.startPoint?.trim() && (
+                    {trek.region?.trim() && (
                       <div className="flex items-start gap-3.5 min-w-0">
                         <MapPin className="w-5 h-5 sm:w-6 sm:h-6 text-gray-700 shrink-0 stroke-[1.5] mt-0.5" />
                         <div className="flex flex-col min-w-0 overflow-hidden">
@@ -642,9 +644,43 @@ export default async function TrekDetailPage({ params }: PageProps) {
                           </span>
                           <span
                             className="text-sm sm:text-[15px] font-bold text-[#112233] truncate"
-                            title={trek.startPoint || "Nepal"}
+                            title={trek.region || "Nepal"}
                           >
-                            {trek.startPoint || "Nepal"}
+                            {trek.region || "Nepal"}
+                          </span>
+                        </div>
+                      </div>
+                    )}
+
+                    {trek.startPoint?.trim() && (
+                      <div className="flex items-start gap-3.5 min-w-0">
+                        <MapPin className="w-5 h-5 sm:w-6 sm:h-6 text-gray-700 shrink-0 stroke-[1.5] mt-0.5" />
+                        <div className="flex flex-col min-w-0 overflow-hidden">
+                          <span className="text-xs sm:text-[14px] text-gray-500 font-bold mb-0.5 uppercase tracking-wider">
+                            Starting Point
+                          </span>
+                          <span
+                            className="text-sm sm:text-[15px] font-bold text-[#112233] truncate"
+                            title={trek.startPoint}
+                          >
+                            {trek.startPoint}
+                          </span>
+                        </div>
+                      </div>
+                    )}
+
+                    {trek.endPoint?.trim() && (
+                      <div className="flex items-start gap-3.5 min-w-0">
+                        <MapPin className="w-5 h-5 sm:w-6 sm:h-6 text-gray-700 shrink-0 stroke-[1.5] mt-0.5" />
+                        <div className="flex flex-col min-w-0 overflow-hidden">
+                          <span className="text-xs sm:text-[14px] text-gray-500 font-bold mb-0.5 uppercase tracking-wider">
+                            Ending Point
+                          </span>
+                          <span
+                            className="text-sm sm:text-[15px] font-bold text-[#112233] truncate"
+                            title={trek.endPoint}
+                          >
+                            {trek.endPoint}
                           </span>
                         </div>
                       </div>
