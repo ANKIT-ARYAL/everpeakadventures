@@ -14,6 +14,19 @@ export default async function WhyEverPeakAdventuresPage() {
     contentHtml: '<p>Welcome to Ever Peak Adventures.</p>',
   };
 
+  // Curated fallbacks keep the page visual even when legacy CMS content has no
+  // image field. A CMS-provided image always takes precedence below.
+  const reasonImageFallbacks: Record<string, string> = {
+    'Local Himalayan Experts': 'https://images.unsplash.com/photo-1526392060635-9d6019884377?q=80&w=1400&auto=format&fit=crop',
+    'Safety Without Compromise': 'https://images.unsplash.com/photo-1521336575822-6da63fb45455?q=80&w=1400&auto=format&fit=crop',
+    'Licensed & Trusted Company': 'https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?q=80&w=1400&auto=format&fit=crop',
+    'Personalized Adventures': 'https://images.unsplash.com/photo-1464278533981-50106e6176b1?q=80&w=1400&auto=format&fit=crop',
+    'Experienced Guides & Strong Support Team': 'https://images.unsplash.com/photo-1533130061792-64b345e4a833?q=80&w=1400&auto=format&fit=crop',
+    'Authentic Cultural Experiences': 'https://images.unsplash.com/photo-1544735716-392fe2489ffa?q=80&w=1400&auto=format&fit=crop',
+    'Responsible & Sustainable Tourism': 'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?q=80&w=1400&auto=format&fit=crop',
+    'Honest Service & Transparent Pricing': 'https://images.unsplash.com/photo-1516026672322-bc52d61a55d5?q=80&w=1400&auto=format&fit=crop',
+  };
+
   // Dynamically parse the DB HTML string into structured reasons
   const reasons: { title: string; description: string; image?: string }[] = [];
   if (data.contentHtml) {
@@ -21,7 +34,10 @@ export default async function WhyEverPeakAdventuresPage() {
       // Try parsing as JSON (new format)
       const parsedCards = JSON.parse(data.contentHtml);
       if (Array.isArray(parsedCards)) {
-        reasons.push(...parsedCards);
+        reasons.push(...parsedCards.map((reason) => ({
+          ...reason,
+          image: reason.image || reasonImageFallbacks[reason.title],
+        })));
       }
     } catch (e) {
       // Fallback: Parse the old HTML structure using regex
@@ -32,6 +48,7 @@ export default async function WhyEverPeakAdventuresPage() {
         reasons.push({
           title: h3Matches[i][1].replace(/<[^>]+>/g, '').trim(),
           description: (pMatches[i] ? pMatches[i][1].replace(/<[^>]+>/g, '').trim() : ''),
+          image: reasonImageFallbacks[h3Matches[i][1].replace(/<[^>]+>/g, '').trim()],
         });
       }
     }
@@ -40,9 +57,9 @@ export default async function WhyEverPeakAdventuresPage() {
   // Fallback if parsing fails or DB is empty
   if (reasons.length === 0) {
     reasons.push(
-      { title: "Local Himalayan Experts", description: "Founded and operated by experienced Nepali mountaineers, we bring deep local knowledge." },
-      { title: "Safety Without Compromise", description: "Your safety is our highest priority. We follow strict safety standards and provide professional guidance." },
-      { title: "Licensed & Trusted Company", description: "Fully licensed by the Ministry of Tourism, Government of Nepal, operating with transparency." }
+      { title: "Local Himalayan Experts", description: "Founded and operated by experienced Nepali mountaineers, we bring deep local knowledge.", image: reasonImageFallbacks['Local Himalayan Experts'] },
+      { title: "Safety Without Compromise", description: "Your safety is our highest priority. We follow strict safety standards and provide professional guidance.", image: reasonImageFallbacks['Safety Without Compromise'] },
+      { title: "Licensed & Trusted Company", description: "Fully licensed by the Ministry of Tourism, Government of Nepal, operating with transparency.", image: reasonImageFallbacks['Licensed & Trusted Company'] }
     );
   }
 

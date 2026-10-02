@@ -230,7 +230,7 @@ export default function NavbarClient({
                               </div>
                               <h3 className="text-2xl font-bold text-[#112233] normal-case tracking-tight">
                                 Handpicked{" "}
-                                {nepalTabs[activeNepalTabIdx].name.toLowerCase()}
+                                {nepalTabs[activeNepalTabIdx].name.toUpperCase()}
                               </h3>
                             </div>
                           </div>
@@ -352,18 +352,18 @@ export default function NavbarClient({
                                 {
                                   nepalTrekkingTabs[
                                     activeTrekkingTabIdx
-                                  ].name.split(" ")[0]
+                                  ].name.split(" ")[0].toUpperCase()
                                 }{" "}
                                 Trips
                               </div>
                               <h3 className="text-2xl font-bold text-[#112233] normal-case tracking-tight">
-                                Handpicked adventures in the{" "}
+                                Handpicked adventures in the<br></br>{" "}
                                 {
                                   nepalTrekkingTabs[
                                     activeTrekkingTabIdx
-                                  ].name.split(" ")[0]
+                                  ].name.split(" ")[0].toUpperCase()
                                 }{" "}
-                                region
+                                REGION
                               </h3>
                             </div>
                           </div>
@@ -475,10 +475,10 @@ export default function NavbarClient({
                                 Featured Tours
                               </div>
                               <h3 className="text-2xl font-bold text-[#112233] normal-case tracking-tight">
-                                Handpicked{" "}
+                                Handpicked<br></br>{" "}
                                 {nepalToursTabs[
                                   activeToursTabIdx
-                                ].name.toLowerCase()}
+                                ].name.toUpperCase()}
                               </h3>
                             </div>
                           </div>
@@ -595,7 +595,7 @@ export default function NavbarClient({
                                 Handpicked{" "}
                                 {tibetBhutanMenu[
                                   activeTibetBhutanTabIdx
-                                ].name.toLowerCase()}
+                                ].name.toUpperCase()}
                               </h3>
                             </div>
                           </div>
