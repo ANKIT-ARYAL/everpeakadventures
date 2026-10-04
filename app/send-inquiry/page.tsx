@@ -47,5 +47,9 @@ export default async function SendInquiryPage() {
     }))
   ];
 
-  return <SendInquiryClient trips={trips} logoImage={siteSettings?.logoImage ?? undefined} />;
+  return (
+    <React.Suspense fallback={<div className="min-h-screen flex items-center justify-center font-bold text-gray-500">Loading form...</div>}>
+      <SendInquiryClient trips={trips} logoImage={siteSettings?.logoImage ?? undefined} />
+    </React.Suspense>
+  );
 }
