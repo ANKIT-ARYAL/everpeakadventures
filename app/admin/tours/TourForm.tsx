@@ -146,7 +146,7 @@ export default function TourForm({
     grade: initialData?.grade || "Easy / Moderate",
     maxAltitude: initialData?.maxAltitude || "1,350 m",
     startPoint: initialData?.startPoint || "Kathmandu",
-    endPoint: initialData?.endPoint || "Kathmandu",    
+    endPoint: initialData?.endPoint || "Kathmandu",
     meals: initialData?.meals || "B.B.",
     activity: initialData?.activity || "",
     groupSize: initialData?.groupSize || "1 - 10",
@@ -1075,21 +1075,6 @@ export default function TourForm({
                         }
                         placeholder="Pokhara"
                         className="w-full px-3 py-2 border border-gray-200 rounded-lg bg-white"
-                      />
-                    </div>
-                    <div>
-                      <label className="block font-bold text-gray-700 mb-1">
-                        Best Time
-                      </label>
-                      <input
-                        type="text"
-                        name="bestTime"
-                        value={dayObj.bestTime}
-                        onChange={(e) =>
-                          handleItineraryChange(idx, "bestTime", e.target.value)
-                        }
-                        placeholder="Spring/Autumn"
-                        className="w-full px-3 py-2 border border-gray-200 rounded-lg"
                       />
                     </div>
                     <div>
