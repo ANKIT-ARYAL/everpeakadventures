@@ -12,6 +12,7 @@ import VideoBannerWrapper from "./components/wrappers/VideoBannerWrapper";
 import WelcomeSectionWrapper from "./components/wrappers/WelcomeSectionWrapper";
 import WhyChooseUsWrapper from "./components/wrappers/WhyChooseUsWrapper";
 
+export const revalidate = 3600; // 1 hour ISR cache
 
 export default function Home() {
   return (

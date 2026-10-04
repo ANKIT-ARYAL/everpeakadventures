@@ -590,7 +590,13 @@ export default async function TrekDetailPage({ params }: PageProps) {
                 </div>
                 <div className="text-[16px] text-[#333333]">
                   {trek.rate ? `${trek.rate}.0` : "5.0"}/5 from{" "}
-                  <a href="#review">835 reviews</a>
+                  <a 
+                    href={trekReviews.length > 0 ? "#reviews" : "https://www.tripadvisor.com/Attraction_Review-g293890-d34231219-Reviews-Ever_Peak_Adventures-Kathmandu_Kathmandu_Valley_Bagmati_Zone_Central_Region.html"} 
+                    className="underline text-[#24a0ed]"
+                    {...(trekReviews.length === 0 ? { target: "_blank", rel: "noopener noreferrer" } : {})}
+                  >
+                    {trekReviews.length > 0 ? `${trekReviews.length} Reviews` : "Reviews"}
+                  </a>
                 </div>
               </div>
 

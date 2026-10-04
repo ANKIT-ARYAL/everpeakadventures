@@ -1,6 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Outfit, Manrope } from "next/font/google";
-import { headers } from "next/headers";
+
 import "./globals.css";
 import Footer from "./components/layout/Footer";
 import Navbar from "./components/layout/Navbar";
@@ -34,33 +34,23 @@ export const viewport: Viewport = {
   viewportFit: "cover",
 };
 
-export default async function RootLayout({ children }: LayoutProps<"/">) {
-  const headersList = await headers();
-  const pathname = headersList.get("x-pathname") ?? "";
-  const isAdmin = pathname.startsWith("/admin");
+import RootClientWrapper from "./components/layout/RootClientWrapper";
 
+export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
       lang="en"
       className={`${fontOutfit.variable} ${fontManrope.variable} h-full antialiased bg-[var(--background)]`}
     >
       <body className="min-h-full flex flex-col overflow-x-hidden w-full max-w-[1920px] mx-auto relative shadow-[0_0_60px_rgba(0,0,0,0.05)]">
-        {isAdmin ? (
-          <MotionProvider>
-            {children}
-            <HomeLoader />
-          </MotionProvider>
-        ) : (
-          <SmoothScrollProvider>
-            <MotionProvider>
-              <Navbar />
-              {children}
-              <Footer />
-              <ContactWidgetWrapper />
-              <HomeLoader />
-            </MotionProvider>
-          </SmoothScrollProvider>
-        )}
+        <RootClientWrapper
+          navbar={<Navbar />}
+          footer={<Footer />}
+          contactWidget={<ContactWidgetWrapper />}
+          homeLoader={<HomeLoader />}
+        >
+          {children}
+        </RootClientWrapper>
       </body>
     </html>
   );

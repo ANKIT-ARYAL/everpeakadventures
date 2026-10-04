@@ -1,7 +1,7 @@
 import { prisma } from "@/lib/prisma";
 import TourPackagesPage from "../pages/TourPackagesPage";
 
-export const dynamic = 'force-dynamic';
+
 
 import { unstable_cache } from 'next/cache';
 

@@ -614,11 +614,12 @@ export default async function TourDetailPage({ params }: PageProps) {
                 </div>
                 <div className="text-[16px] text-[#333333]">
                   {tour.rate ? `${tour.rate}.0` : "5.0"}/5 from{" "}
-                  <a
-                    href="#review"
-                    className="text-[#00a3cc] hover:underline cursor-pointer"
+                  <a 
+                    href={tourReviews.length > 0 ? "#reviews" : "https://www.tripadvisor.com/Attraction_Review-g293890-d34231219-Reviews-Ever_Peak_Adventures-Kathmandu_Kathmandu_Valley_Bagmati_Zone_Central_Region.html"} 
+                    className="underline text-[#24a0ed]"
+                    {...(tourReviews.length === 0 ? { target: "_blank", rel: "noopener noreferrer" } : {})}
                   >
-                    835 reviews
+                    {tourReviews.length > 0 ? `${tourReviews.length} Reviews` : "Reviews"}
                   </a>
                 </div>
               </div>

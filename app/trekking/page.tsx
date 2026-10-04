@@ -1,7 +1,7 @@
 import { Suspense } from "react";
 import TrekkingPageWrapper from "@/app/components/wrappers/TrekkingPageWrapper";
 
-export const dynamic = 'force-dynamic';
+export const revalidate = 60;
 
 interface PageProps {
   searchParams: Promise<{
