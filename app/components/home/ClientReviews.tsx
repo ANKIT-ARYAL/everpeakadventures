@@ -149,7 +149,7 @@ export default function ClientReviews({
           {/* Action Button */}
           <div className="relative z-10 shrink-0 mt-6 lg:mt-0">
             <a
-              href="https://www.tripadvisor.com"
+              href="https://www.tripadvisor.com/Attraction_Review-g293890-d34231219-Reviews-Ever_Peak_Adventures-Kathmandu_Kathmandu_Valley_Bagmati_Zone_Central_Region.html"
               target="_blank"
               rel="noopener noreferrer"
               className="group/btn relative inline-flex items-center justify-center gap-3 bg-[#00af87] text-white font-sans font-semibold text-lg px-8 py-4 rounded-full overflow-hidden shadow-xl shadow-[#00af87]/20 transition-all hover:scale-105"
