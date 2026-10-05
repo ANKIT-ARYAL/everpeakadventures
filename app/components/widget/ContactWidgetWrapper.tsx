@@ -2,7 +2,7 @@ import { prisma } from "@/lib/prisma";
 import ContactWidget from "./ContactWidget";
 
 export default async function ContactWidgetWrapper() {
-  const settings = await prisma.contactWidgetSettings.findFirst();
+  const settings = await prisma.contactWidgetSettings.findFirst().catch(() => null);
 
   if (settings && !settings.published) return null;
 

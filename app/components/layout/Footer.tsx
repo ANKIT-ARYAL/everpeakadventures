@@ -104,14 +104,14 @@ const SocialIcon = ({ href, icon: Icon }: { href: string; icon: React.ElementTyp
 );
 
 export default async function Footer() {
-  const settings = await prisma.siteSettings.findFirst();
+  const settings = await prisma.siteSettings.findFirst().catch(() => null);
   
   // Fetch trust items
   const trustItems = await prisma.trustItem.findMany({
     where: { published: true },
     orderBy: { order: 'asc' },
     take: 5
-  });
+  }).catch(() => []);
 
   const columns = settings?.footerColumns ? clean(settings.footerColumns) : DEFAULT_COLUMNS;
   const logos = settings?.footerLogos ? cleanLogos(settings.footerLogos) : DEFAULT_LOGOS;

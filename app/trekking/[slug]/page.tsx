@@ -86,32 +86,46 @@ const FALLBACK_IMAGE =
 
 const getDisplayGroupSize = (type: string, original: string) => {
   switch (type?.toLowerCase()) {
-    case 'private': return '1 person';
-    case 'small group': return '2-4 people';
-    case 'best value': return '5-9 people';
-    case 'super group': return '10+ people';
-    default: return original || '1 person';
+    case "private":
+      return "1 person";
+    case "small group":
+      return "2-4 people";
+    case "best value":
+      return "5-9 people";
+    case "super group":
+      return "10+ people";
+    default:
+      return original || "1 person";
   }
 };
 
-export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
+export async function generateMetadata({
+  params,
+}: PageProps): Promise<Metadata> {
   const { slug } = await params;
   const trek = await prisma.trek.findFirst({
     where: { slug: slug as string },
-    select: { seoTitle: true, metaDescription: true, focusKeyphrase: true, title: true, heroImage: true }
+    select: {
+      seoTitle: true,
+      metaDescription: true,
+      focusKeyphrase: true,
+      title: true,
+      heroImage: true,
+    },
   });
 
   if (!trek) return {};
 
   return {
     title: trek.seoTitle || `${trek.title} | Everpeak Adventures`,
-    description: trek.metaDescription || `Join us for the amazing ${trek.title} trek.`,
+    description:
+      trek.metaDescription || `Join us for the amazing ${trek.title} trek.`,
     keywords: trek.focusKeyphrase || undefined,
     openGraph: {
       title: trek.seoTitle || trek.title,
       description: trek.metaDescription || undefined,
       images: trek.heroImage ? [trek.heroImage] : [],
-    }
+    },
   };
 }
 
@@ -285,7 +299,7 @@ export default async function TrekDetailPage({ params }: PageProps) {
     trek.maxAltitude,
     trek.activity,
     trek.accommodation,
-  ].some((value) => typeof value === 'string' && value.trim());
+  ].some((value) => typeof value === "string" && value.trim());
   const hasOverview = hasContent(trek.overview);
   const hasHighlights = hasContent(preparation.highlights);
   const hasInclusions = hasContent(trek.inclusions);
@@ -410,7 +424,7 @@ export default async function TrekDetailPage({ params }: PageProps) {
                   </summary>
 
                   <div className="bg-white">
-                    <div className="flex justify-between items-center font-bold text-gray-400 uppercase tracking-widest text-[9px] px-4 py-3 border-b border-gray-100">                      
+                    <div className="flex justify-between items-center font-bold text-gray-400 uppercase tracking-widest text-[9px] px-4 py-3 border-b border-gray-100">
                       <span className="w-1/3">Group Size</span>
                       <span className="w-1/3 text-center">Price / Pax</span>
                       <span className="w-1/3 text-right">Action</span>
@@ -429,16 +443,25 @@ export default async function TrekDetailPage({ params }: PageProps) {
                           >
                             <div className="font-semibold text-[#112233] w-1/3">
                               <div className="flex flex-col">
-                                <span>{getDisplayGroupSize(gp.groupType, gp.groupSize)}</span>
+                                <span>
+                                  {getDisplayGroupSize(
+                                    gp.groupType,
+                                    gp.groupSize,
+                                  )}
+                                </span>
                                 {gp.groupType && (
-                                  <span className="text-[10px] text-gray-500 font-normal uppercase tracking-wider">{gp.groupType}</span>
+                                  <span className="text-[10px] text-gray-500 font-normal uppercase tracking-wider">
+                                    {gp.groupType}
+                                  </span>
                                 )}
                               </div>
                             </div>
                             <div className="font-bold text-[#1a73e8] w-1/3 text-center">
-                              {gp.price && gp.price.trim() !== '' 
-                                ? `US$ ${gp.price.replace(/US\$\s?/i, '')}` 
-                                : trek.price ? `US$ ${trek.price}` : '—'}
+                              {gp.price && gp.price.trim() !== ""
+                                ? `US$ ${gp.price.replace(/US\$\s?/i, "")}`
+                                : trek.price
+                                  ? `US$ ${trek.price}`
+                                  : "—"}
                             </div>
                             <div className="w-1/3 text-right">
                               <Link
@@ -565,7 +588,7 @@ export default async function TrekDetailPage({ params }: PageProps) {
                   <Star className="w-3.5 h-3.5 fill-current" />
                 </div>
                 <div className="text-[10px] text-gray-400 font-bold">
-                  Based on 120 reviews
+                  Based on Real Reviews
                 </div>
               </div>
             </div>
@@ -590,12 +613,20 @@ export default async function TrekDetailPage({ params }: PageProps) {
                 </div>
                 <div className="text-[16px] text-[#333333]">
                   {trek.rate ? `${trek.rate}.0` : "5.0"}/5 from{" "}
-                  <a 
-                    href={trekReviews.length > 0 ? "#reviews" : "https://www.tripadvisor.com/Attraction_Review-g293890-d34231219-Reviews-Ever_Peak_Adventures-Kathmandu_Kathmandu_Valley_Bagmati_Zone_Central_Region.html"} 
+                  <a
+                    href={
+                      trekReviews.length > 0
+                        ? "#reviews"
+                        : "https://www.tripadvisor.com/Attraction_Review-g293890-d34231219-Reviews-Ever_Peak_Adventures-Kathmandu_Kathmandu_Valley_Bagmati_Zone_Central_Region.html"
+                    }
                     className="underline text-[#24a0ed]"
-                    {...(trekReviews.length === 0 ? { target: "_blank", rel: "noopener noreferrer" } : {})}
+                    {...(trekReviews.length === 0
+                      ? { target: "_blank", rel: "noopener noreferrer" }
+                      : {})}
                   >
-                    {trekReviews.length > 0 ? `${trekReviews.length} Reviews` : "Reviews"}
+                    {trekReviews.length > 0
+                      ? `${trekReviews.length} Reviews`
+                      : "Reviews"}
                   </a>
                 </div>
               </div>
@@ -788,7 +819,7 @@ export default async function TrekDetailPage({ params }: PageProps) {
                           </span>
                           <span className="text-sm sm:text-[15px] font-bold text-[#112233] truncate">
                             {trek.groupSize}
-                          </span>                          
+                          </span>
                         </div>
                       </div>
                     )}

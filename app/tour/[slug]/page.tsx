@@ -93,32 +93,46 @@ const FALLBACK_IMAGE =
 
 const getDisplayGroupSize = (type: string, original: string) => {
   switch (type?.toLowerCase()) {
-    case 'private': return '1 person';
-    case 'small group': return '2-4 people';
-    case 'best value': return '5-9 people';
-    case 'super group': return '10+ people';
-    default: return original || '1 person';
+    case "private":
+      return "1 person";
+    case "small group":
+      return "2-4 people";
+    case "best value":
+      return "5-9 people";
+    case "super group":
+      return "10+ people";
+    default:
+      return original || "1 person";
   }
 };
 
-export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
+export async function generateMetadata({
+  params,
+}: PageProps): Promise<Metadata> {
   const { slug } = await params;
   const tour = await prisma.tour.findFirst({
     where: { slug: slug as string },
-    select: { seoTitle: true, metaDescription: true, focusKeyphrase: true, title: true, heroImage: true }
+    select: {
+      seoTitle: true,
+      metaDescription: true,
+      focusKeyphrase: true,
+      title: true,
+      heroImage: true,
+    },
   });
 
   if (!tour) return {};
 
   return {
     title: tour.seoTitle || `${tour.title} | Everpeak Adventures`,
-    description: tour.metaDescription || `Join us for the amazing ${tour.title} tour.`,
+    description:
+      tour.metaDescription || `Join us for the amazing ${tour.title} tour.`,
     keywords: tour.focusKeyphrase || undefined,
     openGraph: {
       title: tour.seoTitle || tour.title,
       description: tour.metaDescription || undefined,
       images: tour.heroImage ? [tour.heroImage] : [],
-    }
+    },
   };
 }
 
@@ -447,16 +461,25 @@ export default async function TourDetailPage({ params }: PageProps) {
                           >
                             <div className="font-semibold text-[#112233] w-1/3">
                               <div className="flex flex-col">
-                                <span>{getDisplayGroupSize(gp.groupType, gp.groupSize)}</span>
+                                <span>
+                                  {getDisplayGroupSize(
+                                    gp.groupType,
+                                    gp.groupSize,
+                                  )}
+                                </span>
                                 {gp.groupType && (
-                                  <span className="text-[10px] text-gray-500 font-normal uppercase tracking-wider">{gp.groupType}</span>
+                                  <span className="text-[10px] text-gray-500 font-normal uppercase tracking-wider">
+                                    {gp.groupType}
+                                  </span>
                                 )}
                               </div>
                             </div>
                             <div className="font-bold text-[#1a73e8] w-1/3 text-center">
-                              {gp.price && gp.price.trim() !== '' 
-                                ? `US$ ${gp.price.replace(/US\$\s?/i, '')}` 
-                                : tour.price ? `US$ ${tour.price}` : '—'}
+                              {gp.price && gp.price.trim() !== ""
+                                ? `US$ ${gp.price.replace(/US\$\s?/i, "")}`
+                                : tour.price
+                                  ? `US$ ${tour.price}`
+                                  : "—"}
                             </div>
                             <div className="w-1/3 text-right">
                               <Link
@@ -580,7 +603,7 @@ export default async function TourDetailPage({ params }: PageProps) {
                   <Star className="w-3.5 h-3.5 fill-current" />
                 </div>
                 <div className="text-[10px] text-gray-400 font-bold">
-                  Based on 120 reviews
+                  Based on Real Reviews
                 </div>
               </div>
             </div>
@@ -614,12 +637,20 @@ export default async function TourDetailPage({ params }: PageProps) {
                 </div>
                 <div className="text-[16px] text-[#333333]">
                   {tour.rate ? `${tour.rate}.0` : "5.0"}/5 from{" "}
-                  <a 
-                    href={tourReviews.length > 0 ? "#reviews" : "https://www.tripadvisor.com/Attraction_Review-g293890-d34231219-Reviews-Ever_Peak_Adventures-Kathmandu_Kathmandu_Valley_Bagmati_Zone_Central_Region.html"} 
+                  <a
+                    href={
+                      tourReviews.length > 0
+                        ? "#reviews"
+                        : "https://www.tripadvisor.com/Attraction_Review-g293890-d34231219-Reviews-Ever_Peak_Adventures-Kathmandu_Kathmandu_Valley_Bagmati_Zone_Central_Region.html"
+                    }
                     className="underline text-[#24a0ed]"
-                    {...(tourReviews.length === 0 ? { target: "_blank", rel: "noopener noreferrer" } : {})}
+                    {...(tourReviews.length === 0
+                      ? { target: "_blank", rel: "noopener noreferrer" }
+                      : {})}
                   >
-                    {tourReviews.length > 0 ? `${tourReviews.length} Reviews` : "Reviews"}
+                    {tourReviews.length > 0
+                      ? `${tourReviews.length} Reviews`
+                      : "Reviews"}
                   </a>
                 </div>
               </div>
