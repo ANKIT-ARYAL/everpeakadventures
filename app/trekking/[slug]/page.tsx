@@ -46,6 +46,7 @@ import {
 import { stripHtml, toHtml } from "@/app/lib/html";
 import { extractTrekPreparation } from "@/app/components/trek/TrekPreparationSections";
 import FAQAccordion from "@/app/components/FAQAccordion";
+import TripAdvisorReviewCount from "@/app/components/TripAdvisorReviewCount";
 import FixedDepartures from "@/app/components/home/FixedDepartures";
 import {
   ensureRecurringInstances,
@@ -588,7 +589,7 @@ export default async function TrekDetailPage({ params }: PageProps) {
                   <Star className="w-3.5 h-3.5 fill-current" />
                 </div>
                 <div className="text-[10px] text-gray-400 font-bold">
-                  Based on Real Reviews
+                  Based on <TripAdvisorReviewCount />
                 </div>
               </div>
             </div>
@@ -626,7 +627,7 @@ export default async function TrekDetailPage({ params }: PageProps) {
                   >
                     {trekReviews.length > 0
                       ? `${trekReviews.length} Reviews`
-                      : "Reviews"}
+                      : <TripAdvisorReviewCount />}
                   </a>
                 </div>
               </div>

@@ -1,14 +1,14 @@
-const { PrismaClient } = require("@prisma/client");
-const prisma = new PrismaClient();
+const https = require('https');
 
-async function main() {
-  const trek = await prisma.trek.findFirst({
-    where: { title: { contains: "Chisapani" } },
-    select: { title: true, overview: true }
+https.get('https://www.tripadvisor.com/WidgetEmbed-cdspropertysummary?display=true&locationId=34231219', {
+  headers: {
+    'User-Agent': 'Mozilla/5.0'
+  }
+}, (res) => {
+  let data = '';
+  res.on('data', chunk => data += chunk);
+  res.on('end', () => {
+    console.log(res.statusCode);
+    console.log(data.substring(0, 500));
   });
-  console.log(trek?.title);
-  console.log("---");
-  console.log(trek?.overview);
-}
-
-main().catch(console.error).finally(() => prisma.$disconnect());
+}).on('error', err => console.log(err));

@@ -45,6 +45,7 @@ import {
 } from "@/app/components/animations/Motion";
 import { stripHtml, toHtml } from "@/app/lib/html";
 import FAQAccordion from "@/app/components/FAQAccordion";
+import TripAdvisorReviewCount from "@/app/components/TripAdvisorReviewCount";
 import FixedDepartures from "@/app/components/home/FixedDepartures";
 import {
   ensureRecurringInstances,
@@ -650,7 +651,7 @@ export default async function TourDetailPage({ params }: PageProps) {
                   >
                     {tourReviews.length > 0
                       ? `${tourReviews.length} Reviews`
-                      : "Reviews"}
+                      : <TripAdvisorReviewCount />}
                   </a>
                 </div>
               </div>
